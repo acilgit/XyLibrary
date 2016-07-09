@@ -1,4 +1,4 @@
-package com.test.baserefreshview.views;
+package com.xycode.xylibrary.base;
 
 import android.app.Activity;
 import android.app.ActivityManager;

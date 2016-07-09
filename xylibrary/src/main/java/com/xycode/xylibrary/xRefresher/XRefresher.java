@@ -1,16 +1,29 @@
-package com.test.baserefreshview.views;
+package com.xycode.xylibrary.xRefresher;
 
 /**
  * Created by XY on 2016/6/18.
  */
 
 import android.app.Activity;
+import android.app.Dialog;
+import android.content.Context;
+import android.support.annotation.ColorRes;
+import android.support.annotation.DimenRes;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.AttributeSet;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.LinearLayout;
 
 import com.alibaba.fastjson.JSONObject;
+import com.xycode.xylibrary.R;
+import com.xycode.xylibrary.adapter.XAdapter;
+import com.xycode.xylibrary.okHttp.OkHttp;
+import com.xycode.xylibrary.uiKit.recyclerview.HorizontalDividerItemDecoration;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -25,42 +38,85 @@ import okhttp3.Response;
 /**
  * Created by XY on 2016/6/17.
  */
-public class XRefresher<T> {
-
-    //    private static List<XRefresher> refreshListUtils = new ArrayList<>();
+public class XRefresher<T> extends LinearLayout {
 
     private static final int REFRESH = 1;
     private static final int LOAD = 2;
     private static String PAGE = "page";
     private static String PAGE_SIZE = "pageSize";
-    private static String TEXT_LOADING = "加载中...";
+    private static String TEXT_LOADING = "加载中";
 
-
-    private boolean loadMore;
+    private static XAdapter.ICustomerFooter iCustomerFooter;
+    private static int footerLayout = -1;
+    private static Dialog loadingDialog;
 
     private Activity activity;
+
     private RefreshState state;
+    private XAdapter<T> adapter;
 
-    private final SwipeRefreshLayout refreshView;
-    private final RecyclerView recyclerView;
+    private SwipeRefreshLayout swipe;
+    private RecyclerView recyclerView;
+
     private RefreshRequest refreshRequest;
-    private int lastVisibleItem = 0;
+    private RecyclerView.OnScrollListener onScrollListener;
 
-    private XRefresher(Activity activity, SwipeRefreshLayout refreshView, RecyclerView recyclerView, boolean loadMore) {
-        this.loadMore = loadMore;
-        setRefreshViewListener();
-        this.activity = activity;
-        this.refreshView = refreshView;
-        this.recyclerView = recyclerView;
+    private int lastVisibleItem = 0;
+    private boolean loadMore;
+
+    public static void setCustomerFooterView(@LayoutRes int footerLayout, XAdapter.ICustomerFooter iCustomerFooter) {
+        XRefresher.footerLayout = footerLayout;
+        XRefresher.iCustomerFooter = iCustomerFooter;
     }
 
-    private void setRefreshViewListener() {
-        refreshView.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+    public XRefresher(Context context) {
+        super(context, null);
+    }
+
+    public XRefresher(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        LayoutInflater.from(context).inflate(R.layout.layout_refresher, this, true);
+        swipe = (SwipeRefreshLayout) findViewById(R.id.swipe);
+        recyclerView = (RecyclerView) findViewById(R.id.rvMain);
+    }
+
+  public void setup(Activity activity, XAdapter<T> adapter, boolean loadMore, @NonNull RefreshRequest refreshRequest) {
+      setup(activity, adapter, loadMore, refreshRequest, 10);
+  }
+
+    public void setup(Activity activity, XAdapter<T> adapter, boolean loadMore, @NonNull RefreshRequest refreshRequest, int refreshPageSize) {
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(activity));
+        this.loadMore = loadMore;
+        this.activity = activity;
+        this.refreshRequest = refreshRequest;
+        this.state = new RefreshState(refreshPageSize);
+        this.adapter = adapter;
+        this.recyclerView.setAdapter(adapter);
+        ( (SwipeRefreshLayout) findViewById(R.id.swipe)).setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 refreshList();
             }
         });
+         if (loadMore){
+            if (iCustomerFooter != null && footerLayout != -1) {
+                this.adapter.setCustomerFooter(footerLayout, iCustomerFooter);
+            } else {
+                this.adapter.setCustomerFooter(R.layout.layout_load_more, new XAdapter.ICustomerFooter() {
+                    @Override
+                    public void bindFooter(XAdapter.CustomHolder holder, int footerState) {
+                        holder.getView(R.id.pbLoadMore).setVisibility(footerState == XAdapter.FOOTER_LOADING ? View.VISIBLE : View.GONE);
+                        holder.setText(R.id.tvLoading, footerState == XAdapter.FOOTER_LOADING ? "加载中..." : "加载更多");
+                        holder.getView(R.id.lMain).setVisibility(footerState == XAdapter.FOOTER_NO_MORE ? View.GONE : View.VISIBLE);
+                    }
+                });
+            }
+            setLoadMoreListener();
+        }
+    }
+
+    private void setLoadMoreListener() {
         recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -81,26 +137,10 @@ public class XRefresher<T> {
         });
     }
 
-    public XRefresher(final Activity activity, SwipeRefreshLayout refreshView, RecyclerView recyclerView, boolean loadMore, @NonNull RefreshRequest refreshRequest) {
-        this.loadMore = loadMore;
-        this.activity = activity;
-        this.refreshView = refreshView;
-        this.recyclerView = recyclerView;
-        this.refreshRequest = refreshRequest;
-        this.state = new RefreshState(10);
-        setRefreshViewListener();
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
     }
-
-    public XRefresher(Activity activity, SwipeRefreshLayout refreshView, RecyclerView recyclerView, boolean loadMore, @NonNull RefreshRequest refreshRequest, int refreshPageSize) {
-        this.loadMore = loadMore;
-        this.activity = activity;
-        this.refreshView = refreshView;
-        this.recyclerView = recyclerView;
-        this.refreshRequest = refreshRequest;
-        this.state = new RefreshState(refreshPageSize);
-        setRefreshViewListener();
-    }
-
 
     /**
      * 获取小区
@@ -123,6 +163,7 @@ public class XRefresher<T> {
         OkHttp.getInstance().postForm(url, OkHttp.getInstance().setFormBody(params), new OkHttp.OkResponse() {
             @Override
             public void handleJsonSuccess(Call call, Response response, JSONObject json) {
+                if (loadingDialog != null && loadingDialog.isShowing()) loadingDialog.dismiss();
                 List<T> newList = refreshRequest.setListData(json);
                 state.setLastPage(refreshRequest.setIsLastPageWhenGotJson(json));
                 final List<T> list = new ArrayList<>();
@@ -132,15 +173,15 @@ public class XRefresher<T> {
                     public void run() {
                         switch (refreshType) {
                             case REFRESH:
-                                refreshView.setRefreshing(false);
+                                swipe.setRefreshing(false);
                                 if (state.pageIndex == 0) state.pageIndex++;
                                 break;
                             default:
                                 list.addAll(getAdapter().getDataList());
-                                getAdapter().setFooterState(state.lastPage ? XAdapter.FOOTER_NO_MORE : XAdapter.FOOTER_MORE);
                                 state.pageIndex++;
                                 break;
                         }
+                        getAdapter().setFooterState(state.lastPage ? XAdapter.FOOTER_NO_MORE : XAdapter.FOOTER_MORE);
                     }
                 });
                 if (newList.size() > 0) {
@@ -171,9 +212,10 @@ public class XRefresher<T> {
 
             @Override
             public void handleJsonError(Call call, Response response, JSONObject json) {
+                if (loadingDialog != null && loadingDialog.isShowing()) loadingDialog.dismiss();
                 switch (refreshType) {
                     case REFRESH:
-                        refreshView.setRefreshing(false);
+                        swipe.setRefreshing(false);
                         break;
                     case LOAD:
                         getAdapter().setFooterState(state.lastPage ? XAdapter.FOOTER_NO_MORE : XAdapter.FOOTER_MORE);
@@ -183,15 +225,17 @@ public class XRefresher<T> {
 
             @Override
             protected void handleNoNetwork(Call call) {
+                if (loadingDialog != null && loadingDialog.isShowing()) loadingDialog.dismiss();
                 switch (refreshType) {
                     case REFRESH:
-                        refreshView.setRefreshing(false);
+                        swipe.setRefreshing(false);
                         break;
                     case LOAD:
                         getAdapter().setFooterState(state.lastPage ? XAdapter.FOOTER_NO_MORE : XAdapter.FOOTER_MORE);
                         break;
                 }
             }
+
         });
     }
 
@@ -203,17 +247,15 @@ public class XRefresher<T> {
     }
 
     public void refreshList(boolean showDialog) {
-        if (showDialog) {
-            if (activity instanceof BaseActivity)
-                ((BaseActivity) activity).showProgressDialog(TEXT_LOADING);
+        if (showDialog && showDialog) {
+            if (loadingDialog != null)
+                loadingDialog.show();
         }
         if (getAdapter().getDataList().size() > 0) {
             getDataByRefresh(getAdapter().getDataList().size());
         } else {
-            if (activity instanceof BaseActivity)
-                ((BaseActivity) activity).showProgressDialog(TEXT_LOADING);
             getDataByRefresh(state.pageDefaultSize);
-            refreshView.setRefreshing(false);
+            swipe.setRefreshing(false);
         }
     }
 
@@ -223,11 +265,28 @@ public class XRefresher<T> {
         return params;
     }*/
 
-    private XAdapter<T> getAdapter() {
-        if (recyclerView.getAdapter() instanceof XAdapter) {
-            return (XAdapter<T>) recyclerView.getAdapter();
-        }
-        return null;
+    public XAdapter<T> getAdapter() {
+        return adapter;
+    }
+
+    public RecyclerView getRecyclerView() {
+        return recyclerView;
+    }
+
+    public SwipeRefreshLayout getSwipeRefreshLayout() {
+        return swipe;
+    }
+
+    public void setRecyclerViewDivider(@ColorRes int dividerColor, @DimenRes int dividerHeight) {
+        recyclerView.addItemDecoration(new HorizontalDividerItemDecoration.Builder(activity)
+                        .colorResId(dividerColor).sizeResId(dividerHeight)
+//                .marginResId(R.dimen.item_margin_icon, R.dimen.item_margin_icon)
+                        .build()
+        );
+    }
+
+    public static void setLoadingDialog(Dialog loadingDialog) {
+        XRefresher.loadingDialog = loadingDialog;
     }
 
     public void resetPageParamsNames(String page, String pageSize) {
@@ -235,7 +294,7 @@ public class XRefresher<T> {
         this.PAGE_SIZE = pageSize;
     }
 
-    public static abstract class RefreshRequest<T> implements  IRefreshRequest<T>{
+    public static abstract class RefreshRequest<T> implements IRefreshRequest<T> {
 
         /**
          * 去重，可以通过 return newItem.getId().equals(listItem.getId()); 返回结果，
@@ -278,6 +337,7 @@ public class XRefresher<T> {
 
         /**
          * 最后把JSON中的List return
+         *
          * @param json
          * @return
          */
@@ -285,13 +345,13 @@ public class XRefresher<T> {
 
         /**
          * 处理Json 把JSON中的lastPage通过state.setLastPage() 传进去，
+         *
          * @param json
          * @return
          */
         boolean setIsLastPageWhenGotJson(JSONObject json);
 
     }
-
 
     public static class RefreshState implements Serializable {
         boolean lastPage = false;

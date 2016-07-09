@@ -1,4 +1,4 @@
-package com.test.baserefreshview.views;
+package com.xycode.xylibrary.adapter;
 
 
 import android.content.Context;
@@ -6,7 +6,6 @@ import android.net.Uri;
 import android.support.annotation.LayoutRes;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseArray;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,7 +28,6 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
     public static final int FOOTER_LOADING = 1;
     public static final int FOOTER_NO_MORE = 2;
 
-    private static final int LAYOUT_HEADER = -20330;
     private static final int LAYOUT_FOOTER = -20331;
     private List<T> mainList;
     private List<T> dataList;
@@ -39,8 +37,10 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
     private OnItemClickListener onItemClickListener;
     private OnItemLongClickListener onItemLongClickListener;
 
-    private final int defaultFooterLayout = android.R.layout.simple_list_item_1;
-    private int footerLayout = defaultFooterLayout;
+    private ICustomerFooter iCustomerFooter;
+
+    private final int noFooterLayout = -1;
+    private int footerLayout = noFooterLayout;
     private int footerState = FOOTER_NO_MORE;
 
     /**
@@ -79,10 +79,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
             final CustomHolder holder = new CustomHolder(itemView) {
                 @Override
                 protected void createHolder(final CustomHolder holder) {
-                    if (footerLayout == defaultFooterLayout) {
-                        TextView textView = ((CustomHolder) holder).getView(android.R.id.text1);
-                        textView.setGravity(Gravity.CENTER);
-                    }
+
                 }
             };
             return holder;
@@ -121,24 +118,9 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (position == dataList.size()) {
-            if (footerLayout == defaultFooterLayout) {
-                TextView textView = ((CustomHolder) holder).getView(android.R.id.text1);
-                switch (footerState) {
-                    case FOOTER_MORE:
-                        textView.setText("上拉加载更多");
-                        break;
-                    case FOOTER_LOADING:
-                        textView.setText("加载中...");
-                        break;
-                    case FOOTER_NO_MORE:
-                        break;
-                    default:
-                        break;
-                }
-            } else {
-                bindFooterView((CustomHolder) holder, footerState);
+            if (iCustomerFooter != null) {
+                iCustomerFooter.bindFooter((CustomHolder) holder, footerState);
             }
-            ((CustomHolder) holder).getRootView().setVisibility(footerState == FOOTER_NO_MORE ? View.GONE : View.VISIBLE);
             return;
         }
         bindingHolder(((CustomHolder) holder), dataList, position);
@@ -162,19 +144,11 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
      */
     public abstract void bindingHolder(CustomHolder holder, List<T> dataList, int pos);
 
-    public void setFooterLayout(@LayoutRes int footerLayout) {
-        this.footerLayout = footerLayout;
-    }
-
-    protected void bindFooterView(CustomHolder holder, int footerState) {
-
-    }
-
     public int getFooterState() {
         return footerState;
     }
 
-    protected void setFooterState(int footerState) {
+    public void setFooterState(int footerState) {
         this.footerState = footerState;
         notifyDataSetChanged();
     }
@@ -210,7 +184,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
      */
     @Override
     public int getItemCount() {
-        int footerCount = footerLayout == defaultFooterLayout ? 0 : 1;
+        int footerCount = footerLayout == noFooterLayout ? 0 : 1;
         if (dataList != null) {
             return dataList.size() + footerCount;
         }
@@ -276,6 +250,12 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
         this.onItemLongClickListener = onItemLongClickListener;
     }
 
+    public void setCustomerFooter(@LayoutRes int footerLayout, ICustomerFooter iCustomerFooter) {
+        this.footerLayout = footerLayout;
+        if (this.iCustomerFooter != null) this.iCustomerFooter = null;
+        this.iCustomerFooter = iCustomerFooter;
+    }
+
     /**
      * 重写此事件，用于处理holder rootView点击事件，处理完毕后再处理onItemClickListener()
      * 如果根组件已重写Touch等触摸方法，可能会使该方法失效，如：RippleView
@@ -297,6 +277,10 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
         List<T> list = new ArrayList<>();
         list.addAll(mainList);
         return list;
+    }
+
+    public interface ICustomerFooter {
+        void bindFooter(CustomHolder holder, int footerState);
     }
 
     /**

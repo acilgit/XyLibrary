@@ -6,13 +6,9 @@
     android:orientation="vertical"
     tools:context="com.test.baserefreshview.MainActivity">
 
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/swipe"
+    <com.xycode.xylibrary.xRefresher.XRefresher
+        android:id="@+id/xRefresher"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/rvMain"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </android.support.v4.widget.SwipeRefreshLayout>
+        android:layout_height="match_parent"/>
+
 </LinearLayout>

@@ -1,4 +1,4 @@
-package com.test.baserefreshview.views;
+package com.xycode.xylibrary.okHttp;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -85,6 +85,7 @@ public class OkHttp {
                         } catch (Exception e) {
                             e.printStackTrace();
                             okInit.parseResponseFailed(call, response);
+                            okResponse.handleParseError(call, response);
                         }
                     } else {
                         okInit.networkError(call, response);
@@ -128,6 +129,10 @@ public class OkHttp {
         }
 
         protected void handleJsonOther(Call call, Response response, JSONObject json) {
+
+        }
+
+        protected void handleParseError(Call call, Response response) {
 
         }
 
