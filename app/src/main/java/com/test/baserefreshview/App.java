@@ -6,8 +6,6 @@ import android.widget.Toast;
 import com.alibaba.fastjson.JSONObject;
 import com.xycode.xylibrary.okHttp.OkHttp;
 
-import java.util.HashMap;
-
 import okhttp3.Call;
 import okhttp3.Response;
 
@@ -71,10 +69,12 @@ public class App extends Application {
             }
 
             @Override
-            public HashMap<String, String> setDefaultParams(HashMap<String, String> defaultParams) {
+            public OkHttp.Param setDefaultParams(OkHttp.Param defaultParams) {
+                defaultParams.put("sectionId", "");
                 return defaultParams;
             }
 
         });
+
     }
 }

@@ -52,11 +52,14 @@ public class OkHttp {
         return client;
     }
 
+    public void get(String url, OkResponse okResponse) {
+        postForm(url, null, okResponse);
+    }
+
     public void postForm(String url, RequestBody body, final OkResponse okResponse) {
-        final Request request = new Request.Builder()
-                .url(url)
-                .post(body)
-                .build();
+        Request.Builder builder = new Request.Builder().url(url);
+        if(body != null) builder.post(body);
+        final Request request = builder.build();
         Call call = getClient().newCall(request);
         try {
             call.enqueue(new Callback() {
@@ -104,17 +107,17 @@ public class OkHttp {
         }
     }
 
-    public RequestBody setFormBody(HashMap<String, String> params) {
+    public static RequestBody setFormBody(Param params) {
         return setFormBody(params, true);
     }
 
-    public RequestBody setFormBody(HashMap<String, String> params, boolean addDefaultParams) {
+    public static RequestBody setFormBody(Param params, boolean addDefaultParams) {
         FormBody.Builder builder = new FormBody.Builder();
         for (String key : params.keySet()) {
             builder.add(key, params.get(key));
         }
         if (okInit != null && addDefaultParams) {
-            HashMap<String, String> defaultParams = okInit.setDefaultParams(new HashMap<String, String>());
+            Param defaultParams = okInit.setDefaultParams(new Param());
             for (String key : defaultParams.keySet()) {
                 builder.add(key, params.get(key));
             }
@@ -205,8 +208,28 @@ public class OkHttp {
          * @param defaultParams
          * @return
          */
-        HashMap<String, String> setDefaultParams(HashMap<String, String> defaultParams);
+        Param setDefaultParams(Param defaultParams);
 
     }
+
+    public static class Param extends HashMap<String, String> {
+
+        public Param() {
+            super();
+        }
+
+
+        public Param(String key, String value) {
+            super();
+            this.put(key, value);
+        }
+
+
+        public Param add(String key, String value) {
+            this.put(key, value);
+            return this;
+        }
+    }
+
 
 }

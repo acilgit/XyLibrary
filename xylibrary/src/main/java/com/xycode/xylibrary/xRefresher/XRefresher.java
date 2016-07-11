@@ -29,7 +29,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 
 import okhttp3.Call;
@@ -156,11 +155,11 @@ public class XRefresher<T> extends LinearLayout {
     }
 
     private void getDataByRefresh(final int page, final int pageSize, final int refreshType) {
-        HashMap<String, String> params = new HashMap<>();
+        OkHttp.Param params = new OkHttp.Param();
         params.put(PAGE, refreshType == REFRESH ? "1" : String.valueOf(page));
         params.put(PAGE_SIZE, String.valueOf(pageSize));
         String url = refreshRequest.setRequestParamsReturnUrl(params);
-        OkHttp.getInstance().postForm(url, OkHttp.getInstance().setFormBody(params), new OkHttp.OkResponse() {
+        OkHttp.getInstance().postForm(url, OkHttp.setFormBody(params), new OkHttp.OkResponse() {
             @Override
             public void handleJsonSuccess(Call call, Response response, JSONObject json) {
                 if (loadingDialog != null && loadingDialog.isShowing()) loadingDialog.dismiss();
@@ -289,9 +288,9 @@ public class XRefresher<T> extends LinearLayout {
         XRefresher.loadingDialog = loadingDialog;
     }
 
-    public void resetPageParamsNames(String page, String pageSize) {
-        this.PAGE = page;
-        this.PAGE_SIZE = pageSize;
+    public static void resetPageParamsNames(String page, String pageSize) {
+        XRefresher.PAGE = page;
+        XRefresher.PAGE_SIZE = pageSize;
     }
 
     public static abstract class RefreshRequest<T> implements IRefreshRequest<T> {
@@ -333,7 +332,7 @@ public class XRefresher<T> extends LinearLayout {
          * @param params
          * @return
          */
-        String setRequestParamsReturnUrl(HashMap<String, String> params);
+        String setRequestParamsReturnUrl(OkHttp.Param params);
 
         /**
          * 最后把JSON中的List return

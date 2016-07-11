@@ -162,6 +162,10 @@ public class ListBean implements Serializable {
             private String tags;
             private String coverPicture;
 
+            public Double compare() {
+                return price;
+            }
+
             public String getId() {
                 return id;
             }
