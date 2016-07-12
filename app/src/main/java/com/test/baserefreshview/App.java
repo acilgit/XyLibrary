@@ -4,6 +4,7 @@ import android.app.Application;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONObject;
+import com.xycode.xylibrary.okHttp.Header;
 import com.xycode.xylibrary.okHttp.OkHttp;
 import com.xycode.xylibrary.okHttp.Param;
 
@@ -76,8 +77,8 @@ public class App extends Application {
             }
 
             @Override
-            public Param setDefaultHeader(Param defaultHeader) {
-                return null;
+            public Header setDefaultHeader(Header defaultHeader) {
+                return new Header();
             }
 
         });

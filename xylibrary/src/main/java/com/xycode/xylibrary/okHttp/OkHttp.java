@@ -6,11 +6,13 @@ import com.alibaba.fastjson.JSONObject;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -23,13 +25,19 @@ import okio.BufferedSink;
 public class OkHttp {
 
     public static final MediaType MEDIA_TYPE_MARKDOWN = MediaType.parse("text/x-markdown; charset=utf-8");
+    public static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json; charset=utf-8");
+    public static final MediaType MEDIA_TYPE_MULTI_DATA = MediaType.parse("multipart/form-data; charset=utf-8");
 
     public static final int RESULT_ERROR = 0;
     public static final int RESULT_SUCCESS = 1;
     public static final int RESULT_VERIFY_ERROR = -1;
     public static final int RESULT_OTHER = 2;
 
-    private OkHttpClient client;
+    public static final long READ_TIMEOUT = 30;
+    public static final long CONNECT_TIMEOUT = 10;
+    public static final long WRITE_TIMEOUT = 60;
+
+    private static OkHttpClient client;
     private static IOkInit okInit;
 
     private static OkHttp instance;
@@ -51,9 +59,13 @@ public class OkHttp {
         }
     }
 
-    public OkHttpClient getClient() {
+    public static OkHttpClient getClient() {
         if (client == null) {
-            client = new OkHttpClient();
+            client = new OkHttpClient.Builder()
+                    .readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
+                    .connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS)
+                    .writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS)
+                    .build();
         }
         return client;
     }
@@ -162,7 +174,18 @@ public class OkHttp {
         return builder.build();
     }
 
-    public void postStream(String url, RequestBody body, Header header, OutputStream outputStream, final OkResponse okResponse) {
+    public static RequestBody setStreamBody(OutputStream outputStream, Param params, boolean addDefaultParams) {
+        FormBody.Builder builder = new FormBody.Builder();
+        for (String key : params.keySet()) {
+            builder.add(key, params.get(key));
+        }
+        if (addDefaultParams) {
+            Param defaultParams = okInit.setDefaultParams(new Param());
+            for (String key : defaultParams.keySet()) {
+                builder.add(key, params.get(key));
+            }
+        }
+
         RequestBody requestBody = new RequestBody() {
             @Override public MediaType contentType() {
                 return MEDIA_TYPE_MARKDOWN;
@@ -174,12 +197,16 @@ public class OkHttp {
             }
 
         };
+        return builder.build();
+    }
+
+   /* public void postStream(String url, RequestBody body, Header header, OutputStream outputStream, final OkResponse okResponse) {
         Request.Builder builder = new Request.Builder().url(url);
         if(body != null) builder.post(body);
         if(header == null || addDefaultHeader){
             Header defaultParams = okInit.setDefaultHeader(new Header());
             for (String key : defaultParams.keySet()) {
-                builder.addHeader(key, header.get(key));
+                builder.header(key, header.get(key));
             }
         }
 
@@ -229,14 +256,58 @@ public class OkHttp {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }*/
+
+    public static void uploadFile(String url, File file, final OkResponse okResponse, OkFileHelper.ProgressListener progressListener) {
+        RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("file", file.getName(), RequestBody.create(MEDIA_TYPE_MULTI_DATA, file))
+                .build();
+        OkFileHelper.ProgressRequestBody progressRequestBody = new OkFileHelper.ProgressRequestBody(requestBody, progressListener);
+        Request request = new Request.Builder()
+                .url(url)
+                .post(progressRequestBody)
+                .build();
+        OkHttp.getClient().newCall(request).enqueue(new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) {
+                if (response.isSuccessful()) {
+                    try {
+                        String strResult = response.body().string();
+                        JSONObject jsonObject = JSON.parseObject(strResult);
+                        int resultCode = okInit.judgeResponse(call, response, jsonObject);
+                        if (okInit.responseSuccess(call, response, jsonObject, resultCode)) return;
+                        switch (resultCode) {
+                            case RESULT_SUCCESS:
+                                okResponse.handleJsonSuccess(call, response, jsonObject);
+                                break;
+                            case RESULT_ERROR:
+                                okResponse.handleJsonError(call, response, jsonObject);
+                                break;
+                            case RESULT_VERIFY_ERROR:
+                                okResponse.handleJsonVerifyError(call, response, jsonObject);
+                                break;
+                            default:
+                                okResponse.handleJsonOther(call, response, jsonObject);
+                                break;
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        okInit.parseResponseFailed(call, response);
+                        okResponse.handleParseError(call, response);
+                    }
+                } else {
+                    okInit.networkError(call, response);
+                }
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                okInit.noNetwork(call);
+                okResponse.handleNoNetwork(call);
+            }
+        });
     }
-
-
-    public void run() throws Exception {
-
-    }
-
-
 
     public static abstract class OkResponse implements IOkResponseListener {
 

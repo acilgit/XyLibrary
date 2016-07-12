@@ -3,7 +3,10 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/BaseRefreshView.iml" filepath="$PROJECT_DIR$/BaseRefreshView.iml" />
+      <module fileurl="file://$PROJECT_DIR$/XRefreshView.iml" filepath="$PROJECT_DIR$/XRefreshView.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/xylibrary/xylibrary.iml" filepath="$PROJECT_DIR$/xylibrary/xylibrary.iml" />
       <module fileurl="file://$PROJECT_DIR$/xylibrary/xylibrary.iml" filepath="$PROJECT_DIR$/xylibrary/xylibrary.iml" />
     </modules>
   </component>
