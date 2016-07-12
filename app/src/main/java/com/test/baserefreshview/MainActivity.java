@@ -7,7 +7,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.test.baserefreshview.ListBean.Content.ContentBean;
 import com.xycode.xylibrary.adapter.XAdapter;
 import com.xycode.xylibrary.base.BaseActivity;
-import com.xycode.xylibrary.okHttp.OkHttp;
+import com.xycode.xylibrary.okHttp.Param;
 import com.xycode.xylibrary.xRefresher.XRefresher;
 
 import java.util.ArrayList;
@@ -37,7 +37,7 @@ public class MainActivity extends BaseActivity {
 
         xRefresher.setup(this, adapter, true, new XRefresher.RefreshRequest<ContentBean>() {
             @Override
-            public String setRequestParamsReturnUrl(OkHttp.Param params) {
+            public String setRequestParamsReturnUrl(Param params) {
 //                params.add("a", "b");
                 return "http://192.168.1.222:9000/append/store_recommend/sell_house_page";
             }

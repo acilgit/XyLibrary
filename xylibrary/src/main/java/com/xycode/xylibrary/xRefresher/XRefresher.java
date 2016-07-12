@@ -23,6 +23,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.xycode.xylibrary.R;
 import com.xycode.xylibrary.adapter.XAdapter;
 import com.xycode.xylibrary.okHttp.OkHttp;
+import com.xycode.xylibrary.okHttp.Param;
 import com.xycode.xylibrary.uiKit.recyclerview.HorizontalDividerItemDecoration;
 
 import java.io.Serializable;
@@ -155,7 +156,7 @@ public class XRefresher<T> extends LinearLayout {
     }
 
     private void getDataByRefresh(final int page, final int pageSize, final int refreshType) {
-        OkHttp.Param params = new OkHttp.Param();
+        Param params = new Param();
         params.put(PAGE, refreshType == REFRESH ? "1" : String.valueOf(page));
         params.put(PAGE_SIZE, String.valueOf(pageSize));
         String url = refreshRequest.setRequestParamsReturnUrl(params);
@@ -276,11 +277,11 @@ public class XRefresher<T> extends LinearLayout {
         return swipe;
     }
 
-    public void setRecyclerViewDivider(@ColorRes int dividerColor, @DimenRes int dividerHeight) {
+    public void setRecyclerViewDivider(@ColorRes int dividerColor, @DimenRes int dividerHeight, @DimenRes int marginLeft, @DimenRes int marginRight) {
         recyclerView.addItemDecoration(new HorizontalDividerItemDecoration.Builder(activity)
                         .colorResId(dividerColor).sizeResId(dividerHeight)
-//                .marginResId(R.dimen.item_margin_icon, R.dimen.item_margin_icon)
-                        .build()
+                .marginResId(marginLeft, marginRight)
+                .build()
         );
     }
 
@@ -332,7 +333,7 @@ public class XRefresher<T> extends LinearLayout {
          * @param params
          * @return
          */
-        String setRequestParamsReturnUrl(OkHttp.Param params);
+        String setRequestParamsReturnUrl(Param params);
 
         /**
          * 最后把JSON中的List return

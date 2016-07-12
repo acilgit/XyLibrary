@@ -3,21 +3,27 @@ package com.xycode.xylibrary.okHttp;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
+import java.io.OutputStream;
 
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okio.BufferedSink;
 
 /**
  * Created by XY on 2016/7/7.
  */
 public class OkHttp {
+
+    public static final MediaType MEDIA_TYPE_MARKDOWN = MediaType.parse("text/x-markdown; charset=utf-8");
+
     public static final int RESULT_ERROR = 0;
     public static final int RESULT_SUCCESS = 1;
     public static final int RESULT_VERIFY_ERROR = -1;
@@ -52,13 +58,32 @@ public class OkHttp {
         return client;
     }
 
-    public void get(String url, OkResponse okResponse) {
-        postForm(url, null, okResponse);
+    public void postForm(String url, OkResponse okResponse) {
+        postForm(url, setFormBody(new Param(), true), null, true, okResponse);
     }
 
-    public void postForm(String url, RequestBody body, final OkResponse okResponse) {
+    public void postForm(String url, RequestBody body, OkResponse okResponse) {
+        postForm(url, body, null, true, okResponse);
+    }
+
+    public void postForm(String url, RequestBody body,boolean addDefaultHeader, OkResponse okResponse) {
+        postForm(url, body, null, addDefaultHeader, okResponse);
+    }
+
+    public void postForm(String url, RequestBody body, Header header, OkResponse okResponse) {
+        postForm(url, body, header, true, okResponse);
+    }
+
+    public void postForm(String url, RequestBody body, Header header, boolean addDefaultHeader, final OkResponse okResponse) {
         Request.Builder builder = new Request.Builder().url(url);
         if(body != null) builder.post(body);
+        if(header == null || addDefaultHeader){
+            Header defaultParams = okInit.setDefaultHeader(new Header());
+            for (String key : defaultParams.keySet()) {
+                builder.addHeader(key, header.get(key));
+            }
+        }
+
         final Request request = builder.build();
         Call call = getClient().newCall(request);
         try {
@@ -107,16 +132,12 @@ public class OkHttp {
         }
     }
 
-    public static RequestBody setFormBody(Param params) {
-        return setFormBody(params, true);
-    }
-
     public static RequestBody setFormBody(Param params, boolean addDefaultParams) {
         FormBody.Builder builder = new FormBody.Builder();
         for (String key : params.keySet()) {
             builder.add(key, params.get(key));
         }
-        if (okInit != null && addDefaultParams) {
+        if (addDefaultParams) {
             Param defaultParams = okInit.setDefaultParams(new Param());
             for (String key : defaultParams.keySet()) {
                 builder.add(key, params.get(key));
@@ -124,6 +145,109 @@ public class OkHttp {
         }
         return builder.build();
     }
+
+    public static RequestBody setFileBody(File file, Param params, boolean addDefaultParams) {
+        FormBody.Builder builder = new FormBody.Builder();
+        for (String key : params.keySet()) {
+            builder.add(key, params.get(key));
+        }
+        if (addDefaultParams) {
+            Param defaultParams = okInit.setDefaultParams(new Param());
+            for (String key : defaultParams.keySet()) {
+                builder.add(key, params.get(key));
+            }
+        }
+        return builder.build();
+    }
+
+    public void run() throws Exception {
+        File file = new File("README.md");
+
+        Request request = new Request.Builder()
+                .url("https://api.github.com/markdown/raw")
+                .post(RequestBody.create(MEDIA_TYPE_MARKDOWN, file))
+                .build();
+
+        Response response = client.newCall(request).execute();
+        if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+
+    }
+
+    public void postStream(String url, RequestBody body, Header header, OutputStream outputStream, final OkResponse okResponse) {
+        RequestBody requestBody = new RequestBody() {
+            @Override public MediaType contentType() {
+                return MEDIA_TYPE_MARKDOWN;
+            }
+
+            @Override
+            public void writeTo(BufferedSink sink) throws IOException {
+                sink.outputStream().write();
+            }
+
+        };
+        Request.Builder builder = new Request.Builder().url(url);
+        if(body != null) builder.post(body);
+        if(header == null || addDefaultHeader){
+            Header defaultParams = okInit.setDefaultHeader(new Header());
+            for (String key : defaultParams.keySet()) {
+                builder.addHeader(key, header.get(key));
+            }
+        }
+
+        final Request request = builder.build();
+        Call call = getClient().newCall(request);
+        try {
+            call.enqueue(new Callback() {
+                @Override
+                public void onResponse(Call call, Response response) {
+                    if (response.isSuccessful()) {
+                        try {
+                            String strResult = response.body().string();
+                            JSONObject jsonObject = JSON.parseObject(strResult);
+                            int resultCode = okInit.judgeResponse(call, response, jsonObject);
+                            if (okInit.responseSuccess(call, response, jsonObject, resultCode)) return;
+                            switch (resultCode) {
+                                case RESULT_SUCCESS:
+                                    okResponse.handleJsonSuccess(call, response, jsonObject);
+                                    break;
+                                case RESULT_ERROR:
+                                    okResponse.handleJsonError(call, response, jsonObject);
+                                    break;
+                                case RESULT_VERIFY_ERROR:
+                                    okResponse.handleJsonVerifyError(call, response, jsonObject);
+                                    break;
+                                default:
+                                    okResponse.handleJsonOther(call, response, jsonObject);
+                                    break;
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            okInit.parseResponseFailed(call, response);
+                            okResponse.handleParseError(call, response);
+                        }
+                    } else {
+                        okInit.networkError(call, response);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    okInit.noNetwork(call);
+                    okResponse.handleNoNetwork(call);
+                }
+
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void run() throws Exception {
+
+    }
+
+
 
     public static abstract class OkResponse implements IOkResponseListener {
 
@@ -210,25 +334,15 @@ public class OkHttp {
          */
         Param setDefaultParams(Param defaultParams);
 
-    }
+        /**
+         * 设置默认Header
+         * 当使用setFormBody等方法设置requestBody时，可选是否加入默认请求头
+         *
+         * @param defaultHeader
+         * @return
+         */
+        Header setDefaultHeader(Header defaultHeader);
 
-    public static class Param extends HashMap<String, String> {
-
-        public Param() {
-            super();
-        }
-
-
-        public Param(String key, String value) {
-            super();
-            this.put(key, value);
-        }
-
-
-        public Param add(String key, String value) {
-            this.put(key, value);
-            return this;
-        }
     }
 
 

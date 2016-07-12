@@ -5,6 +5,7 @@ import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONObject;
 import com.xycode.xylibrary.okHttp.OkHttp;
+import com.xycode.xylibrary.okHttp.Param;
 
 import okhttp3.Call;
 import okhttp3.Response;
@@ -69,9 +70,14 @@ public class App extends Application {
             }
 
             @Override
-            public OkHttp.Param setDefaultParams(OkHttp.Param defaultParams) {
+            public Param setDefaultParams(Param defaultParams) {
                 defaultParams.put("sectionId", "");
                 return defaultParams;
+            }
+
+            @Override
+            public Param setDefaultHeader(Param defaultHeader) {
+                return null;
             }
 
         });

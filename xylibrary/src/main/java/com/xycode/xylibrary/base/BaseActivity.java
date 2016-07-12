@@ -67,42 +67,31 @@ public class BaseActivity extends AppCompatActivity {
         }
     }*/
 
-    public void start(Class<? extends BaseActivity> activityClass) {
+    public void start(Class<? extends Activity> activityClass) {
         Intent intent = new Intent();
         intent.setClass(this, activityClass);
         this.startActivity(intent);
     }
 
-    public void start(Class<? extends BaseActivity> activityClass, int requestCode) {
+    public void start(Class<? extends Activity> activityClass, int requestCode) {
         Intent intent = new Intent();
         intent.setClass(this, activityClass);
         this.startActivityForResult(intent, requestCode);
     }
 
-    public void start(Class<? extends BaseActivity> activityClass, BaseIntent baseIntent) {
+    public void start(Class<? extends Activity> activityClass, BaseIntent baseIntent) {
         Intent intent = new Intent();
         intent.setClass(this, activityClass);
         baseIntent.setIntent(intent);
         this.startActivity(intent);
     }
 
-    public void start(Class<? extends BaseActivity> activityClass, BaseIntent baseIntent, int requestCode) {
+    public void start(Class<? extends Activity> activityClass, BaseIntent baseIntent, int requestCode) {
         Intent intent = new Intent();
         intent.setClass(this, activityClass);
         baseIntent.setIntent(intent);
         this.startActivityForResult(intent, requestCode);
     }
-
-  /*  public void cancelVolleyRequestQueue() {
-        if (mVolleyRequestQueue != null) {
-            mVolleyRequestQueue.cancelAll(new RequestQueue.RequestFilter() {
-                @Override
-                public boolean apply(Request<?> request) {
-                    return true;
-                }
-            });
-        }
-    }*/
 
     public void showProgressDialog(CharSequence text) {
         showProgressDialog(text, false);
@@ -156,12 +145,6 @@ public class BaseActivity extends AppCompatActivity {
         }
     }
 
-  /*  public RequestQueue getVolleyRequestQueue() {
-        if (mVolleyRequestQueue == null) {
-            mVolleyRequestQueue = Volley.newRequestQueue(getApplicationContext());
-        }
-        return mVolleyRequestQueue;
-    }*/
 
     // 注册广播接收器
     // 当接收到广播时，退出Activity
@@ -178,38 +161,6 @@ public class BaseActivity extends AppCompatActivity {
         LocalBroadcastManager.getInstance(this).registerReceiver(mFinishReceiver, filter);
     }
 
-    /**
-     * @param // activity               设置的activity
-     * @param // drawerLayout           设置的控件
-     * @param // displayWidthPercentage 滑动范围
-     */
-    /*protected static void setDrawerLeftEdgeSize(Activity activity,
-                                                DrawerLayout drawerLayout, float displayWidthPercentage) {
-        if (activity == null || drawerLayout == null)
-            return;
-        try {
-            Field leftDraggerField = drawerLayout.getClass().getDeclaredField(
-                    "mLeftDragger");
-            leftDraggerField.setAccessible(true);
-            ViewDragHelper leftDragger = (ViewDragHelper) leftDraggerField
-                    .get(drawerLayout);
-
-            Field edgeSizeField = leftDragger.getClass().getDeclaredField(
-                    "mEdgeSize");
-            edgeSizeField.setAccessible(true);
-            int edgeSize = edgeSizeField.getInt(leftDragger);
-            DisplayMetrics dm = new DisplayMetrics();
-            activity.getWindowManager().getDefaultDisplay().getMetrics(dm);
-            edgeSizeField.setInt(leftDragger, Math.max(edgeSize,
-                    (int) (dm.widthPixels * displayWidthPercentage)));
-        } catch (NoSuchFieldException e) {
-            Log.d("NoSuchFieldException", e.toString());
-        } catch (IllegalArgumentException e) {
-            Log.d("IllegalArgumentExceptio", e.toString());
-        } catch (IllegalAccessException e) {
-            Log.d("IllegalAccessException", e.toString());
-        }
-    }*/
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
