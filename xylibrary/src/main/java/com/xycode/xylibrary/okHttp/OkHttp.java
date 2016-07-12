@@ -157,20 +157,9 @@ public class OkHttp {
                 builder.add(key, params.get(key));
             }
         }
+
+        RequestBody.create(MEDIA_TYPE_MARKDOWN, file);
         return builder.build();
-    }
-
-    public void run() throws Exception {
-        File file = new File("README.md");
-
-        Request request = new Request.Builder()
-                .url("https://api.github.com/markdown/raw")
-                .post(RequestBody.create(MEDIA_TYPE_MARKDOWN, file))
-                .build();
-
-        Response response = client.newCall(request).execute();
-        if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
-
     }
 
     public void postStream(String url, RequestBody body, Header header, OutputStream outputStream, final OkResponse okResponse) {
