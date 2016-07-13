@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="XRefresher">
+    　　 <attr name="android:hint"/>
+    　　 <attr name="android:hintSize"/>
+    　　 <attr name="android:background"/>
+    　　 <attr name="bg" format="color"/>
+    　　 </declare-styleable>
+</resources>

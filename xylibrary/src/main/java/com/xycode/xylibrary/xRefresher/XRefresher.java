@@ -4,9 +4,11 @@ package com.xycode.xylibrary.xRefresher;
  * Created by XY on 2016/6/18.
  */
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DimenRes;
 import android.support.annotation.LayoutRes;
@@ -18,6 +20,8 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.alibaba.fastjson.JSONObject;
 import com.xycode.xylibrary.R;
@@ -38,7 +42,7 @@ import okhttp3.Response;
 /**
  * Created by XY on 2016/6/17.
  */
-public class XRefresher<T> extends LinearLayout {
+public class XRefresher<T> extends RelativeLayout {
 
     private static final int REFRESH = 1;
     private static final int LOAD = 2;
@@ -57,6 +61,7 @@ public class XRefresher<T> extends LinearLayout {
 
     private SwipeRefreshLayout swipe;
     private RecyclerView recyclerView;
+    private TextView textView;
 
     private RefreshRequest refreshRequest;
     private RecyclerView.OnScrollListener onScrollListener;
@@ -70,14 +75,29 @@ public class XRefresher<T> extends LinearLayout {
     }
 
     public XRefresher(Context context) {
-        super(context, null);
+        super(context);
     }
 
     public XRefresher(Context context, AttributeSet attrs) {
         super(context, attrs);
         LayoutInflater.from(context).inflate(R.layout.layout_refresher, this, true);
+        TypedArray a=context.obtainStyledAttributes(attrs,R.styleable.XRefresher);
+
+        //获取里面属性用 "名字_ 属性" 连接起来
+        max=a.getInt(R.styleable.Meter_max, 100);
+        incrAmount=a.getInt(R.styleable.Meter_incr, 1);
+        decrAmount=-1*a.getInt(R.styleable.Meter_decr, 1);
+
+        a.recycle();
+    }
+
+    @Override
+    protected void onFinishInflate() {
+        super.onFinishInflate();
         swipe = (SwipeRefreshLayout) findViewById(R.id.swipe);
         recyclerView = (RecyclerView) findViewById(R.id.rvMain);
+        textView = (TextView) findViewById(R.id.tvMain);
+
     }
 
     public void setup(Activity activity, XAdapter<T> adapter, boolean loadMore, @NonNull RefreshRequest refreshRequest) {

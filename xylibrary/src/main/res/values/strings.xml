@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">XYLibrary</string>
+    <string name="text_no_data">没有数据</string>
 </resources>

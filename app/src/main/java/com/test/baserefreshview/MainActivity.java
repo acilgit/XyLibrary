@@ -16,7 +16,6 @@ import com.xycode.xylibrary.okHttp.Param;
 import com.xycode.xylibrary.xRefresher.XRefresher;
 
 import java.io.File;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,39 +71,6 @@ public class MainActivity extends BaseActivity {
 
         });
         xRefresher.refreshList();
-        xRefresher.setRecyclerViewDivider();
-
-        OkHttp.getInstance().postForm("url", OkHttp.setFormBody(new Param("key", "value"), false), new OkHttp.OkResponseListener() {
-            @Override
-            public void handleJsonSuccess(Call call, Response response, JSONObject json) {
-
-            }
-
-            @Override
-            public void handleJsonError(Call call, Response response, JSONObject json) {
-
-            }
-
-        });
-
-        OkHttp.uploadFile("url", new File("ag"), new OkHttp.OkResponseListener() {
-            @Override
-            public void handleJsonSuccess(Call call, Response response, JSONObject json) {
-
-            }
-
-            @Override
-            public void handleJsonError(Call call, Response response, JSONObject json) {
-
-            }
-        }, null);
-
-        start(MainActivity.class, new BaseIntent() {
-            @Override
-            public void setIntent(Intent intent) {
-                intent.
-            }
-        }, );
     }
 
 

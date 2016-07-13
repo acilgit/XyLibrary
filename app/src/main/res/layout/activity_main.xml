@@ -3,13 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:x="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     tools:context="com.test.baserefreshview.MainActivity">
 
-
-
     <com.xycode.xylibrary.xRefresher.XRefresher
         android:id="@+id/xRefresher"
+        x:bg="#ff0"
+
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
