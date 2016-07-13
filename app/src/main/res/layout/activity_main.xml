@@ -6,6 +6,8 @@
     android:orientation="vertical"
     tools:context="com.test.baserefreshview.MainActivity">
 
+
+
     <com.xycode.xylibrary.xRefresher.XRefresher
         android:id="@+id/xRefresher"
         android:layout_width="match_parent"

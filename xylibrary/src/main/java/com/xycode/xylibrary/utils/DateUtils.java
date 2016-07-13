@@ -11,7 +11,6 @@ import java.util.Date;
  */
 public class DateUtils {
 
-
     public static long getNow() {
         return System.currentTimeMillis();
     }

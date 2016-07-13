@@ -1,19 +1,10 @@
 package com.xycode.xylibrary.okHttp;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-
 import java.io.File;
 import java.io.IOException;
 
-import okhttp3.Call;
-import okhttp3.Callback;
 import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import okhttp3.RequestBody;
-import okhttp3.Response;
 import okio.Buffer;
 import okio.BufferedSink;
 import okio.ForwardingSink;
@@ -32,7 +23,7 @@ public class OkFileHelper {
         //实际的待包装请求体
         private final RequestBody requestBody;
         //进度回调接口
-        private final ProgressListener progressListener;
+        private final FileProgressListener fileProgressListener;
         //包装完成的BufferedSink
         private BufferedSink bufferedSink;
 
@@ -40,11 +31,11 @@ public class OkFileHelper {
          * 构造函数，赋值
          *
          * @param requestBody      待包装的请求体
-         * @param progressListener 回调接口
+         * @param fileProgressListener 回调接口
          */
-        public ProgressRequestBody(RequestBody requestBody, ProgressListener progressListener) {
+        public ProgressRequestBody(RequestBody requestBody, FileProgressListener fileProgressListener) {
             this.requestBody = requestBody;
-            this.progressListener = progressListener;
+            this.fileProgressListener = fileProgressListener;
         }
 
         /**
@@ -109,14 +100,16 @@ public class OkFileHelper {
                     //增加当前写入的字节数
                     bytesWritten += byteCount;
                     //回调
-                    progressListener.update(bytesWritten, contentLength, bytesWritten == contentLength);
+                    if (fileProgressListener != null) {
+                        fileProgressListener.update(bytesWritten, contentLength, bytesWritten == contentLength);
+                    }
                 }
             };
         }
     }
 
     //进度回调接口
-    public interface ProgressListener {
+    public interface FileProgressListener {
         void update(long bytesRead, long contentLength, boolean done);
     }
 }

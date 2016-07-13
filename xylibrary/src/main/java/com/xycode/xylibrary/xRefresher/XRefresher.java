@@ -80,12 +80,11 @@ public class XRefresher<T> extends LinearLayout {
         recyclerView = (RecyclerView) findViewById(R.id.rvMain);
     }
 
-  public void setup(Activity activity, XAdapter<T> adapter, boolean loadMore, @NonNull RefreshRequest refreshRequest) {
-      setup(activity, adapter, loadMore, refreshRequest, 10);
-  }
+    public void setup(Activity activity, XAdapter<T> adapter, boolean loadMore, @NonNull RefreshRequest refreshRequest) {
+        setup(activity, adapter, loadMore, refreshRequest, 10);
+    }
 
     public void setup(Activity activity, XAdapter<T> adapter, boolean loadMore, @NonNull RefreshRequest refreshRequest, int refreshPageSize) {
-
         recyclerView.setLayoutManager(new LinearLayoutManager(activity));
         this.loadMore = loadMore;
         this.activity = activity;
@@ -93,13 +92,13 @@ public class XRefresher<T> extends LinearLayout {
         this.state = new RefreshState(refreshPageSize);
         this.adapter = adapter;
         this.recyclerView.setAdapter(adapter);
-        ( (SwipeRefreshLayout) findViewById(R.id.swipe)).setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        ((SwipeRefreshLayout) findViewById(R.id.swipe)).setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 refreshList();
             }
         });
-         if (loadMore){
+        if (loadMore) {
             if (iCustomerFooter != null && footerLayout != -1) {
                 this.adapter.setCustomerFooter(footerLayout, iCustomerFooter);
             } else {
@@ -137,11 +136,6 @@ public class XRefresher<T> extends LinearLayout {
         });
     }
 
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-    }
-
     /**
      * 获取小区
      *
@@ -160,12 +154,12 @@ public class XRefresher<T> extends LinearLayout {
         params.put(PAGE, refreshType == REFRESH ? "1" : String.valueOf(page));
         params.put(PAGE_SIZE, String.valueOf(pageSize));
         String url = refreshRequest.setRequestParamsReturnUrl(params);
-        OkHttp.getInstance().postForm(url, OkHttp.setFormBody(params), new OkHttp.OkResponse() {
+        OkHttp.getInstance().postForm(url, OkHttp.setFormBody(params, false), new OkHttp.OkResponseListener() {
             @Override
             public void handleJsonSuccess(Call call, Response response, JSONObject json) {
                 if (loadingDialog != null && loadingDialog.isShowing()) loadingDialog.dismiss();
                 List<T> newList = refreshRequest.setListData(json);
-                state.setLastPage(refreshRequest.setIsLastPageWhenGotJson(json));
+                if (newList.size() < pageSize) state.setLastPage(true);
                 final List<T> list = new ArrayList<>();
 
                 activity.runOnUiThread(new Runnable() {
@@ -259,12 +253,6 @@ public class XRefresher<T> extends LinearLayout {
         }
     }
 
-/*    protected Map<String, String> setParamsForUrl() {
-        Map<String, String> params = new VolleyParams();
-        this.url = refreshRequest.setRequestParamsReturnUrl(params);
-        return params;
-    }*/
-
     public XAdapter<T> getAdapter() {
         return adapter;
     }
@@ -279,7 +267,7 @@ public class XRefresher<T> extends LinearLayout {
 
     public void setRecyclerViewDivider(@ColorRes int dividerColor, @DimenRes int dividerHeight, @DimenRes int marginLeft, @DimenRes int marginRight) {
         recyclerView.addItemDecoration(new HorizontalDividerItemDecoration.Builder(activity)
-                        .colorResId(dividerColor).sizeResId(dividerHeight)
+                .colorResId(dividerColor).sizeResId(dividerHeight)
                 .marginResId(marginLeft, marginRight)
                 .build()
         );
@@ -323,6 +311,18 @@ public class XRefresher<T> extends LinearLayout {
         protected int compareTo(T item0, T item1) {
             return 0;
         }
+
+        /**
+         * 处理Json 把JSON中的lastPage通过state.setLastPage() 传进去，
+         *
+         * @param json
+         * @return
+         */
+        protected boolean setIsLastPageWhenGotJson(JSONObject json) {
+            return false;
+        }
+
+        ;
     }
 
 
@@ -343,13 +343,6 @@ public class XRefresher<T> extends LinearLayout {
          */
         List<T> setListData(JSONObject json);
 
-        /**
-         * 处理Json 把JSON中的lastPage通过state.setLastPage() 传进去，
-         *
-         * @param json
-         * @return
-         */
-        boolean setIsLastPageWhenGotJson(JSONObject json);
 
     }
 

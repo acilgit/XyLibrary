@@ -1,11 +1,12 @@
 package com.xycode.xylibrary.okHttp;
 
+import android.support.annotation.NonNull;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
@@ -17,7 +18,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import okio.BufferedSink;
 
 /**
  * Created by XY on 2016/7/7.
@@ -51,12 +51,15 @@ public class OkHttp {
 
     /**
      * 初始化
-     *
      */
     public static void init(IOkInit iOkInit) {
         if (okInit == null) {
             okInit = iOkInit;
         }
+    }
+
+    public static void setMaxTransFileCount(int max) {
+        getClient().dispatcher().setMaxRequestsPerHost(max);
     }
 
     public static OkHttpClient getClient() {
@@ -70,78 +73,8 @@ public class OkHttp {
         return client;
     }
 
-    public void postForm(String url, OkResponse okResponse) {
-        postForm(url, setFormBody(new Param(), true), null, true, okResponse);
-    }
-
-    public void postForm(String url, RequestBody body, OkResponse okResponse) {
-        postForm(url, body, null, true, okResponse);
-    }
-
-    public void postForm(String url, RequestBody body,boolean addDefaultHeader, OkResponse okResponse) {
-        postForm(url, body, null, addDefaultHeader, okResponse);
-    }
-
-    public void postForm(String url, RequestBody body, Header header, OkResponse okResponse) {
-        postForm(url, body, header, true, okResponse);
-    }
-
-    public void postForm(String url, RequestBody body, Header header, boolean addDefaultHeader, final OkResponse okResponse) {
-        Request.Builder builder = new Request.Builder().url(url);
-        if(body != null) builder.post(body);
-        if(header == null || addDefaultHeader){
-            Header defaultParams = okInit.setDefaultHeader(new Header());
-            for (String key : defaultParams.keySet()) {
-                builder.addHeader(key, header.get(key));
-            }
-        }
-
-        final Request request = builder.build();
-        Call call = getClient().newCall(request);
-        try {
-            call.enqueue(new Callback() {
-                @Override
-                public void onResponse(Call call, Response response) {
-                    if (response.isSuccessful()) {
-                        try {
-                            String strResult = response.body().string();
-                            JSONObject jsonObject = JSON.parseObject(strResult);
-                            int resultCode = okInit.judgeResponse(call, response, jsonObject);
-                            if (okInit.responseSuccess(call, response, jsonObject, resultCode)) return;
-                            switch (resultCode) {
-                                case RESULT_SUCCESS:
-                                    okResponse.handleJsonSuccess(call, response, jsonObject);
-                                    break;
-                                case RESULT_ERROR:
-                                    okResponse.handleJsonError(call, response, jsonObject);
-                                    break;
-                                case RESULT_VERIFY_ERROR:
-                                    okResponse.handleJsonVerifyError(call, response, jsonObject);
-                                    break;
-                                default:
-                                    okResponse.handleJsonOther(call, response, jsonObject);
-                                    break;
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            okInit.parseResponseFailed(call, response);
-                            okResponse.handleParseError(call, response);
-                        }
-                    } else {
-                        okInit.networkError(call, response);
-                    }
-                }
-
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    okInit.noNetwork(call);
-                    okResponse.handleNoNetwork(call);
-                }
-
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public static RequestBody setFormBody(Param params) {
+        return setFormBody(params, true);
     }
 
     public static RequestBody setFormBody(Param params, boolean addDefaultParams) {
@@ -158,158 +91,166 @@ public class OkHttp {
         return builder.build();
     }
 
-    public static RequestBody setFileBody(File file, Param params, boolean addDefaultParams) {
-        FormBody.Builder builder = new FormBody.Builder();
-        for (String key : params.keySet()) {
-            builder.add(key, params.get(key));
-        }
-        if (addDefaultParams) {
-            Param defaultParams = okInit.setDefaultParams(new Param());
-            for (String key : defaultParams.keySet()) {
-                builder.add(key, params.get(key));
-            }
-        }
-
-        RequestBody.create(MEDIA_TYPE_MARKDOWN, file);
-        return builder.build();
+    public Call get(String url, boolean addDefaultHeader, OkResponseListener okResponseListener) {
+       return get(url, null, addDefaultHeader, okResponseListener);
     }
 
-    public static RequestBody setStreamBody(OutputStream outputStream, Param params, boolean addDefaultParams) {
-        FormBody.Builder builder = new FormBody.Builder();
-        for (String key : params.keySet()) {
-            builder.add(key, params.get(key));
-        }
-        if (addDefaultParams) {
-            Param defaultParams = okInit.setDefaultParams(new Param());
-            for (String key : defaultParams.keySet()) {
-                builder.add(key, params.get(key));
-            }
-        }
-
-        RequestBody requestBody = new RequestBody() {
-            @Override public MediaType contentType() {
-                return MEDIA_TYPE_MARKDOWN;
-            }
-
-            @Override
-            public void writeTo(BufferedSink sink) throws IOException {
-                sink.outputStream().write();
-            }
-
-        };
-        return builder.build();
+    public Call get(String url, Header header, boolean addDefaultHeader, final OkResponseListener okResponseListener) {
+        return postOrGet(url, null, header, addDefaultHeader, okResponseListener);
     }
 
-   /* public void postStream(String url, RequestBody body, Header header, OutputStream outputStream, final OkResponse okResponse) {
-        Request.Builder builder = new Request.Builder().url(url);
-        if(body != null) builder.post(body);
-        if(header == null || addDefaultHeader){
-            Header defaultParams = okInit.setDefaultHeader(new Header());
-            for (String key : defaultParams.keySet()) {
-                builder.header(key, header.get(key));
+    public Call postForm(String url, @NonNull RequestBody body, OkResponseListener okResponseListener) {
+      return  postForm(url, body, null, true, okResponseListener);
+    }
+
+    public Call postForm(String url, @NonNull RequestBody body, boolean addDefaultHeader, OkResponseListener okResponseListener) {
+        return postForm(url, body, null, addDefaultHeader, okResponseListener);
+    }
+
+    public Call postForm(String url, @NonNull RequestBody body, Header header, boolean addDefaultHeader,  OkResponseListener okResponseListener) {
+        return postOrGet(url, body, header, addDefaultHeader, okResponseListener);
+    }
+
+    private Call postOrGet(String url, RequestBody body, Header header, boolean addDefaultHeader, final OkResponseListener okResponseListener) {
+        final Request.Builder builder = new Request.Builder().url(url);
+        if (body != null) {
+            builder.post(body);
+        } else {
+            builder.get();
+        }
+        if (addDefaultHeader) {
+            Header defaultHeader = okInit.setDefaultHeader(new Header());
+            for (String key : defaultHeader.keySet()) {
+                builder.addHeader(key, header.get(key));
             }
         }
-
+        if (header == null) {
+            for (String key : header.keySet()) {
+                builder.addHeader(key, header.get(key));
+            }
+        }
         final Request request = builder.build();
-        Call call = getClient().newCall(request);
-        try {
+        final Call call = getClient().newCall(request);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Response response = call.execute();
+                    if (response != null) {
+                        responseResult(response, call, okResponseListener);
+                    } else {
+                        responseResultFailure(call, okResponseListener);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+        return call;
+        /**
+         * 普通请求通过Execute()调用线程执行
+         * execute也会通过okHttp的connectionPool来做请求，文件传输则使用线程池做enqueue请求可以限制文件同时上传的数量
+         * 下面注释的使用线程池来做请求
+         */
+        /*try {
             call.enqueue(new Callback() {
                 @Override
                 public void onResponse(Call call, Response response) {
-                    if (response.isSuccessful()) {
-                        try {
-                            String strResult = response.body().string();
-                            JSONObject jsonObject = JSON.parseObject(strResult);
-                            int resultCode = okInit.judgeResponse(call, response, jsonObject);
-                            if (okInit.responseSuccess(call, response, jsonObject, resultCode)) return;
-                            switch (resultCode) {
-                                case RESULT_SUCCESS:
-                                    okResponse.handleJsonSuccess(call, response, jsonObject);
-                                    break;
-                                case RESULT_ERROR:
-                                    okResponse.handleJsonError(call, response, jsonObject);
-                                    break;
-                                case RESULT_VERIFY_ERROR:
-                                    okResponse.handleJsonVerifyError(call, response, jsonObject);
-                                    break;
-                                default:
-                                    okResponse.handleJsonOther(call, response, jsonObject);
-                                    break;
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            okInit.parseResponseFailed(call, response);
-                            okResponse.handleParseError(call, response);
-                        }
-                    } else {
-                        okInit.networkError(call, response);
-                    }
                 }
-
                 @Override
                 public void onFailure(Call call, IOException e) {
                     okInit.noNetwork(call);
-                    okResponse.handleNoNetwork(call);
+                    okResponseListener.handleNoNetwork(call);
                 }
-
             });
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    }*/
+        }*/
+    }
 
-    public static void uploadFile(String url, File file, final OkResponse okResponse, OkFileHelper.ProgressListener progressListener) {
+    /**
+     * 文件上传，通过修改setMaxTransFileCount()来设置同时上传文件的数量
+     *
+     * @param url
+     * @param file
+     * @param okResponseListener
+     * @param fileProgressListener
+     */
+    public static Call uploadFile(String url, File file, final OkResponseListener okResponseListener, OkFileHelper.FileProgressListener fileProgressListener) {
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("file", file.getName(), RequestBody.create(MEDIA_TYPE_MULTI_DATA, file))
                 .build();
-        OkFileHelper.ProgressRequestBody progressRequestBody = new OkFileHelper.ProgressRequestBody(requestBody, progressListener);
+        OkFileHelper.ProgressRequestBody progressRequestBody = new OkFileHelper.ProgressRequestBody(requestBody, fileProgressListener);
         Request request = new Request.Builder()
                 .url(url)
                 .post(progressRequestBody)
                 .build();
-        OkHttp.getClient().newCall(request).enqueue(new Callback() {
+        Call call = OkHttp.getClient().newCall(request);
+        call.enqueue(new Callback() {
             @Override
             public void onResponse(Call call, Response response) {
-                if (response.isSuccessful()) {
-                    try {
-                        String strResult = response.body().string();
-                        JSONObject jsonObject = JSON.parseObject(strResult);
-                        int resultCode = okInit.judgeResponse(call, response, jsonObject);
-                        if (okInit.responseSuccess(call, response, jsonObject, resultCode)) return;
-                        switch (resultCode) {
-                            case RESULT_SUCCESS:
-                                okResponse.handleJsonSuccess(call, response, jsonObject);
-                                break;
-                            case RESULT_ERROR:
-                                okResponse.handleJsonError(call, response, jsonObject);
-                                break;
-                            case RESULT_VERIFY_ERROR:
-                                okResponse.handleJsonVerifyError(call, response, jsonObject);
-                                break;
-                            default:
-                                okResponse.handleJsonOther(call, response, jsonObject);
-                                break;
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        okInit.parseResponseFailed(call, response);
-                        okResponse.handleParseError(call, response);
-                    }
-                } else {
-                    okInit.networkError(call, response);
-                }
+                responseResult(response, call, okResponseListener);
             }
 
             @Override
             public void onFailure(Call call, IOException e) {
-                okInit.noNetwork(call);
-                okResponse.handleNoNetwork(call);
+                responseResultFailure(call, okResponseListener);
             }
         });
+        return call;
     }
 
-    public static abstract class OkResponse implements IOkResponseListener {
+    /**
+     * 响应处理返回请求的结果
+     *
+     * @param response
+     * @param call
+     * @param okResponseListener
+     */
+    private static void responseResult(Response response, Call call, OkResponseListener okResponseListener) {
+        if (response.isSuccessful()) {
+            try {
+                String strResult = response.body().string();
+                JSONObject jsonObject = JSON.parseObject(strResult);
+                int resultCode = okInit.judgeResponse(call, response, jsonObject);
+                if (okInit.responseSuccess(call, response, jsonObject, resultCode))
+                    return;
+                switch (resultCode) {
+                    case RESULT_SUCCESS:
+                        if (okResponseListener != null)
+                            okResponseListener.handleJsonSuccess(call, response, jsonObject);
+                        break;
+                    case RESULT_ERROR:
+                        if (okResponseListener != null)
+                            okResponseListener.handleJsonError(call, response, jsonObject);
+                        break;
+                    case RESULT_VERIFY_ERROR:
+                        if (okResponseListener != null)
+                            okResponseListener.handleJsonVerifyError(call, response, jsonObject);
+                        break;
+                    default:
+                        if (okResponseListener != null)
+                            okResponseListener.handleJsonOther(call, response, jsonObject);
+                        break;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                okInit.parseResponseFailed(call, response);
+                if (okResponseListener != null) okResponseListener.handleParseError(call, response);
+            }
+        } else {
+            okInit.networkError(call, response);
+        }
+
+    }
+
+    private static void responseResultFailure(Call call, OkResponseListener okResponseListener) {
+        okInit.noNetwork(call);
+        if (okResponseListener != null) okResponseListener.handleNoNetwork(call);
+    }
+
+    public static abstract class OkResponseListener implements IOkResponseListener {
 
         protected void handleJsonVerifyError(Call call, Response response, JSONObject json) {
 
@@ -334,7 +275,7 @@ public class OkHttp {
         void handleJsonError(Call call, Response response, JSONObject json);
     }
 
-   public interface IOkInit {
+    public interface IOkInit {
         /**
          * 对返回的结果进行判断
          * 0：结果错误

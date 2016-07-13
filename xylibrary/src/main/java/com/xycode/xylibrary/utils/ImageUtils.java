@@ -12,26 +12,6 @@ import android.media.ExifInterface;
 import android.net.Uri;
 import android.widget.ImageView;
 
-import com.facebook.binaryresource.BinaryResource;
-import com.facebook.binaryresource.FileBinaryResource;
-import com.facebook.cache.common.CacheKey;
-import com.facebook.common.executors.CallerThreadExecutor;
-import com.facebook.common.references.CloseableReference;
-import com.facebook.datasource.DataSource;
-import com.facebook.drawee.backends.pipeline.Fresco;
-import com.facebook.drawee.controller.ControllerListener;
-import com.facebook.drawee.interfaces.DraweeController;
-import com.facebook.drawee.view.DraweeView;
-import com.facebook.imagepipeline.cache.DefaultCacheKeyFactory;
-import com.facebook.imagepipeline.common.ResizeOptions;
-import com.facebook.imagepipeline.core.ImagePipeline;
-import com.facebook.imagepipeline.core.ImagePipelineFactory;
-import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
-import com.facebook.imagepipeline.image.CloseableImage;
-import com.facebook.imagepipeline.image.ImageInfo;
-import com.facebook.imagepipeline.request.ImageRequest;
-import com.facebook.imagepipeline.request.ImageRequestBuilder;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -302,6 +282,14 @@ public class ImageUtils {
             }
         }
         return localFile;
+
+
+getBitmapFromFrescoUri(context, null, new IGetFrescoBitmap() {
+    @Override
+    public void afterGotBitmap(Bitmap bitmap) {
+        ivPhoto.setBitmap(bitmap);
+    }
+});
     }
 
     public static void getBitmapFromFrescoUri(Context context, Uri uri, final IGetFrescoBitmap iGetFrescoBitmap) {
@@ -604,6 +592,8 @@ public class ImageUtils {
 
     public interface IGetFrescoImageInfo {
         void afterGotImageInfo(ImageInfo imageInfo);
+
     }
+
 
 }

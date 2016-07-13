@@ -7,6 +7,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.xycode.xylibrary.okHttp.Header;
 import com.xycode.xylibrary.okHttp.OkHttp;
 import com.xycode.xylibrary.okHttp.Param;
+import com.xycode.xylibrary.xRefresher.XRefresher;
 
 import okhttp3.Call;
 import okhttp3.Response;
@@ -60,6 +61,7 @@ public class App extends Application {
             public boolean responseSuccess(Call call, Response response, JSONObject json, int resultCode) {
                 switch (resultCode) {
                     case OkHttp.RESULT_VERIFY_ERROR:
+
                         return true;
                 }
                 return false;
@@ -82,6 +84,7 @@ public class App extends Application {
             }
 
         });
-
+        OkHttp.setMaxTransFileCount(2);
+        XRefresher.setLoadingDialog();
     }
 }
