@@ -1,5 +1,5 @@
 apply plugin: 'com.android.library'
-
+apply plugin: 'com.github.dcendents.android-maven'
 
 android {
     compileSdkVersion 23
@@ -28,7 +28,6 @@ dependencies {
     compile 'com.facebook.fresco:fresco:0.9.0'
     compile 'com.squareup.okhttp3:okhttp:3.4.0'
 }
-
 ext {
     bintrayRepo = 'maven'
     bintrayName = 'XyLibrary'
