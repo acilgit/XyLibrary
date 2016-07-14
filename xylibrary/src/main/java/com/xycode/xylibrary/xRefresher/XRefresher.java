@@ -65,7 +65,6 @@ public class XRefresher<T> extends RelativeLayout {
     private TextView textView;
 
     private RefreshRequest refreshRequest;
-    private RecyclerView.OnScrollListener onScrollListener;
 
     private int lastVisibleItem = 0;
     private boolean loadMore;
@@ -85,7 +84,6 @@ public class XRefresher<T> extends RelativeLayout {
         LayoutInflater.from(context).inflate(R.layout.layout_refresher, this, true);
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.XRefresher);
 
-        //获取里面属性用 "名字_ 属性" 连接起来
         hint = typedArray.getString(R.styleable.XRefresher_hint);
         hintSize = typedArray.getDimension(R.styleable.XRefresher_hintSize, 1);
         hintColor = typedArray.getColor(R.styleable.XRefresher_hintColor, 1);
@@ -154,7 +152,6 @@ public class XRefresher<T> extends RelativeLayout {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                L.e("x: " + dx + "  y: " + dy);
                 swipeMore = dy > 0;
                 lastVisibleItem = ((LinearLayoutManager) recyclerView.getLayoutManager()).findLastVisibleItemPosition();
             }
