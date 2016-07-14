@@ -2,8 +2,11 @@ package com.xycode.xylibrary.adapter;
 
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.Uri;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.LayoutRes;
+import android.support.annotation.StringRes;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -13,6 +16,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.facebook.drawee.view.SimpleDraweeView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -324,6 +329,12 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
             return itemView;
         }
 
+
+        public CustomHolder setText(int viewId, @StringRes int textRes) {
+            setText(viewId, itemView.getContext().getString(textRes));
+            return this;
+        }
+
         public CustomHolder setText(int viewId, String text) {
             View view = getView(viewId);
             if (view != null) {
@@ -338,20 +349,46 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
             return this;
         }
 
-        public CustomHolder setImageURI(int viewId, String uri) {
+        public CustomHolder setImageUrl(int viewId, String url) {
             View view = getView(viewId);
             if (view != null) {
-                if (view instanceof ImageView) {
-                    ((ImageView) view).setImageURI(Uri.parse(uri));
+                if (view instanceof SimpleDraweeView) {
+                    ((SimpleDraweeView) view).setImageURI(Uri.parse(url));
+                }else  if (view instanceof ImageView) {
+                    ((ImageView) view).setImageURI(Uri.parse(url));
                 }
             }
             return this;
         }
 
-        public CustomHolder setImageURI(int viewId, int visibility) {
+        public CustomHolder setImageURI(int viewId, Uri uri) {
             View view = getView(viewId);
             if (view != null) {
-                view.setVisibility(View.VISIBLE);
+                if (view instanceof SimpleDraweeView) {
+                    ((SimpleDraweeView) view).setImageURI(uri);
+                }else  if (view instanceof ImageView) {
+                    ((ImageView) view).setImageURI(uri);
+                }
+            }
+            return this;
+        }
+
+        public CustomHolder setImageBitmap(int viewId, Bitmap bitmap) {
+            View view = getView(viewId);
+            if (view != null) {
+                if (view instanceof ImageView) {
+                    ((ImageView) view).setImageBitmap(bitmap);
+                }
+            }
+            return this;
+        }
+
+        public CustomHolder setImageRes(int viewId, @DrawableRes int drawableRes) {
+            View view = getView(viewId);
+            if (view != null) {
+                if (view instanceof ImageView) {
+                    ((ImageView) view).setImageResource(drawableRes);
+                }
             }
             return this;
         }

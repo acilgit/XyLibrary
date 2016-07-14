@@ -124,13 +124,14 @@ public class OkHttp {
                 builder.addHeader(key, header.get(key));
             }
         }
-        if (header == null) {
+        if (header != null) {
             for (String key : header.keySet()) {
                 builder.addHeader(key, header.get(key));
             }
         }
         final Request request = builder.build();
         final Call call = getClient().newCall(request);
+
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -143,10 +144,12 @@ public class OkHttp {
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
+                    responseResultFailure(call, okResponseListener);
                 }
             }
         }).start();
         return call;
+
         /**
          * 普通请求通过Execute()调用线程执行
          * execute也会通过okHttp的connectionPool来做请求，文件传输则使用线程池做enqueue请求可以限制文件同时上传的数量
@@ -242,7 +245,6 @@ public class OkHttp {
         } else {
             okInit.networkError(call, response);
         }
-
     }
 
     private static void responseResultFailure(Call call, OkResponseListener okResponseListener) {

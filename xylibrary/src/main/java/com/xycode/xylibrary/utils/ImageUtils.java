@@ -12,6 +12,25 @@ import android.media.ExifInterface;
 import android.net.Uri;
 import android.widget.ImageView;
 
+import com.facebook.binaryresource.BinaryResource;
+import com.facebook.binaryresource.FileBinaryResource;
+import com.facebook.cache.common.CacheKey;
+import com.facebook.common.executors.CallerThreadExecutor;
+import com.facebook.common.references.CloseableReference;
+import com.facebook.datasource.DataSource;
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.drawee.controller.ControllerListener;
+import com.facebook.drawee.interfaces.DraweeController;
+import com.facebook.drawee.view.DraweeView;
+import com.facebook.imagepipeline.cache.DefaultCacheKeyFactory;
+import com.facebook.imagepipeline.core.ImagePipeline;
+import com.facebook.imagepipeline.core.ImagePipelineFactory;
+import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
+import com.facebook.imagepipeline.image.CloseableImage;
+import com.facebook.imagepipeline.image.ImageInfo;
+import com.facebook.imagepipeline.request.ImageRequest;
+import com.facebook.imagepipeline.request.ImageRequestBuilder;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,7 +38,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import static com.xycode.xylibrary.utils.Tools.checkFile;
-import static com.xycode.xylibrary.utils.Tools.getScreenSize;
 
 /**
  * Created by XY on 2016/7/12.
@@ -78,7 +96,7 @@ public class ImageUtils {
         return degree;
     }
 
-    public static ByteArrayOutputStream getBytesOutputStreamForFile(File file) {
+    public static ByteArrayOutputStream getByteArrayOutputStreamFromFile(File file) {
         try {
             byte[] bytes = new byte[1024];
             int length;
@@ -97,34 +115,24 @@ public class ImageUtils {
         return null;
     }
 
-    /*public static ByteArrayOutputStream getBytesOutputStreamFromPhotoFile(File file ) {
+    public static Bitmap getBitmapFromFile(File file) {
         try {
-            BitmapFactory.Options info = new BitmapFactory.Options();
-            //这里设置true的时候，decode时候Bitmap返回的为空，
-            //将图片宽高读取放在Options里.
-            info.inJustDecodeBounds = true;
-//            info.inPreferredConfig = Bitmap.Config.RGB_565;
-            BitmapFactory.decodeFile(file.getPath(), info);
-            int maxSide = Math.max(info.outWidth, info.outHeight);
-            int ssize = photoSide > maxSide ? 1 : (int) (Math.floor(1.0 * maxSide) / photoSide);
-            info = new BitmapFactory.Options();
-//            info.inPreferredConfig = Bitmap.Config.RGB_565;
-            info.inSampleSize = ssize;
-            info.inJustDecodeBounds = false;
-            Bitmap bitmap = BitmapFactory.decodeFile(file.getPath(), info);
-//            byte[] bytes = new byte[1024];
+            byte[] bytes = new byte[1024];
+            int length;
             ByteArrayOutputStream os = new ByteArrayOutputStream();
-
-            int quality = Def.JPEG_QUALITY;
-            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, os);
-            L.e("------质量-- after " + "  ------" + os.toByteArray().length / 1024f);
-            bitmap.recycle();
-            return os;
+            FileInputStream fileInputStream = new FileInputStream(file);
+            while ((length = fileInputStream.read(bytes)) > 0) {
+                os.write(bytes, 0, length);
+            }
+            os.flush();
+            os.close();
+            fileInputStream.close();
+            return getBitmapFromBytes(os.toByteArray());
         } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
-    }*/
+    }
 
     public static Bitmap getBitmapFromBytes(byte[] bytes) {
         try {
@@ -283,16 +291,19 @@ public class ImageUtils {
         }
         return localFile;
 
-
-getBitmapFromFrescoUri(context, null, new IGetFrescoBitmap() {
-    @Override
-    public void afterGotBitmap(Bitmap bitmap) {
-        ivPhoto.setBitmap(bitmap);
-    }
-});
     }
 
-    public static void getBitmapFromFrescoUri(Context context, Uri uri, final IGetFrescoBitmap iGetFrescoBitmap) {
+    public static void loadBitmapFromFresco(Context context, Uri uri, final IGetFrescoBitmap iGetFrescoBitmap) {
+        File localFile = getCachedImageOnFresco(uri);
+        if (localFile != null) {
+            iGetFrescoBitmap.afterGotBitmap(getBitmapFromFile(localFile));
+        } else {
+            loadBitmapFromFrescoNet(context, uri, iGetFrescoBitmap);
+        }
+    }
+
+
+    public static void loadBitmapFromFrescoNet(Context context, Uri uri, final IGetFrescoBitmap iGetFrescoBitmap) {
         ImageRequest imageRequest = ImageRequestBuilder.newBuilderWithSource(uri)
                 .setAutoRotateEnabled(true)
                 .build();
@@ -308,11 +319,12 @@ getBitmapFromFrescoUri(context, null, new IGetFrescoBitmap() {
             @Override
             protected void onFailureImpl(DataSource<CloseableReference<CloseableImage>> dataSource) {
                 iGetFrescoBitmap.afterGotBitmap(null);
-            }
+        }
         }, CallerThreadExecutor.getInstance());
     }
+/*
 
-    public static void setLocalBitmapFromFrescoUriInUI(final Activity context, Uri uri, final IGetFrescoBitmap iGetFrescoBitmap) {
+    public static void loadBitmapFromFrescoUri(final Activity context, Uri uri, final IGetFrescoBitmap iGetFrescoBitmap) {
         int side = getScreenSize(context).y;
         ImageRequest imageRequest = ImageRequestBuilder.newBuilderWithSource(uri)
                 .setAutoRotateEnabled(true)
@@ -334,10 +346,10 @@ getBitmapFromFrescoUri(context, null, new IGetFrescoBitmap() {
             @Override
             protected void onFailureImpl(DataSource<CloseableReference<CloseableImage>> dataSource) {
                 L.e("onFailureImpl" + "(" + ")");
-//                iGetFrescoBitmap.afterGotBitmap(null);
             }
         }, CallerThreadExecutor.getInstance());
     }
+*/
 
     public static void setNetFrescoToImageView(final Activity context, String cacheFolder, final ImageView imageView, String netUri) {
         setNetFrescoToImageView(context, cacheFolder, imageView, netUri, ImageRequest.ImageType.DEFAULT, null, null);
@@ -410,7 +422,7 @@ getBitmapFromFrescoUri(context, null, new IGetFrescoBitmap() {
 //                L.e("imageView.setImageURI" + "(" + "Local)");
                 return;
             } else if (imageView != null) {
-                ByteArrayOutputStream os = getBytesOutputStreamForFile(localFile);
+                ByteArrayOutputStream os = getByteArrayOutputStreamFromFile(localFile);
                 Bitmap bmp = getBitmapFromBytes(os.toByteArray());
                 imageView.setImageBitmap(bmp);
                 if (iGetFrescoBitmap != null) {
@@ -418,7 +430,7 @@ getBitmapFromFrescoUri(context, null, new IGetFrescoBitmap() {
                 }
 //                getNetBmpFromFresco(context, imageView, localFile, uri, iGetFrescoBitmap);
             } else {
-                ByteArrayOutputStream os = getBytesOutputStreamForFile(localFile);
+                ByteArrayOutputStream os = getByteArrayOutputStreamFromFile(localFile);
                 Bitmap bmp = getBitmapFromBytes(os.toByteArray());
                 if (iGetFrescoBitmap != null) {
                     iGetFrescoBitmap.afterGotBitmap(bmp);

@@ -19,8 +19,7 @@ public class L {
 	private static final String TAG = " Debug "; // App.TAG;
 
     public static boolean isDebug(){
-//        return true;
-        return false;
+        return true;
     }
 
     public static String getTag(){

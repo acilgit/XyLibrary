@@ -4,10 +4,10 @@ import android.app.Application;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONObject;
+import com.facebook.drawee.backends.pipeline.Fresco;
 import com.xycode.xylibrary.okHttp.Header;
 import com.xycode.xylibrary.okHttp.OkHttp;
 import com.xycode.xylibrary.okHttp.Param;
-import com.xycode.xylibrary.xRefresher.XRefresher;
 
 import okhttp3.Call;
 import okhttp3.Response;
@@ -33,6 +33,8 @@ public class App extends Application {
             instance = this;
         }
 
+
+        Fresco.initialize(this);
         OkHttp.init(new OkHttp.IOkInit() {
             @Override
             public int judgeResponse(Call call, Response response, JSONObject json) {
@@ -80,11 +82,23 @@ public class App extends Application {
 
             @Override
             public Header setDefaultHeader(Header defaultHeader) {
-                return new Header();
+                return defaultHeader;
             }
 
         });
         OkHttp.setMaxTransFileCount(2);
-        XRefresher.setLoadingDialog();
+  /*      XRefresher.setCustomerFooterView(R.layout.layout_load_more, new XAdapter.ICustomerFooter() {
+            @Override
+            public void bindFooter(XAdapter.CustomHolder holder, int footerState) {
+                switch (footerState) {
+                    case XAdapter.FOOTER_LOADING:
+                        holder.setText(R.id.tvLoading, R.string.app_name);
+                        holder.getView(R.id.pbLoadMore).setVisibility();
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });*/
     }
 }
