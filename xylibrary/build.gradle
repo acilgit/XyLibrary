@@ -1,12 +1,13 @@
 apply plugin: 'com.android.library'
 
+
 android {
     compileSdkVersion 23
     buildToolsVersion '23.0.3'
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 21
+        targetSdkVersion 17
         versionCode 1
         versionName "0.1.0"
     }
@@ -27,3 +28,31 @@ dependencies {
     compile 'com.facebook.fresco:fresco:0.9.0'
     compile 'com.squareup.okhttp3:okhttp:3.4.0'
 }
+
+ext {
+    bintrayRepo = 'maven'
+    bintrayName = 'XyLibrary'
+
+    publishedGroupId = 'com.xycode.xylibrary'
+
+    libraryName = 'XyLibrary'
+    artifact = 'XyLibrary'
+
+    libraryDescription = 'XuHai library for Android'
+
+    siteUrl = 'https://github.com/acilgit/XyLibrary'
+    gitUrl = 'https://github.com/acilgit/XyLibrary.git'
+
+    libraryVersion = '0.1.0'
+
+    developerId = 'acil'
+    developerName = 'acil-fong'
+    developerEmail = 'acil@163.com'
+
+    licenseName = 'The Apache Software License, Version 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
+}
+
+apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
+apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'

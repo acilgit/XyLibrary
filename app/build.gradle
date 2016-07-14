@@ -7,7 +7,7 @@ android {
     defaultConfig {
         applicationId "com.test.baserefreshview"
         minSdkVersion 16
-        targetSdkVersion 21
+        targetSdkVersion 17
         versionCode 1
         versionName "1.0"
     }
