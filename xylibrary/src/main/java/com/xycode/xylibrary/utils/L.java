@@ -1,12 +1,6 @@
 package com.xycode.xylibrary.utils;
 
-import android.os.Environment;
 import android.util.Log;
-
-import java.io.File;
-import java.io.RandomAccessFile;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * Log统一管理类
@@ -15,18 +9,21 @@ import java.util.Date;
  * 
  */
 public class L {
-//	public static boolean isDebug = App.isDebug;// 是否需要输出Log，可以在application的onCreate函数里面初始化
-	private static final String TAG = " Debug "; // App.TAG;
+	private static boolean isDebug = true;
+	private static String TAG = " Debug ";
 
-    public static boolean isDebug(){
-        return true;
+    public static void setDebugMode(boolean isDebug){
+        L.isDebug = isDebug ;
     }
 
-    public static String getTag(){
-        return TAG;
-    };
+	public static boolean isDebug() {
+		return isDebug;
+	}
 
-    // 下面四个是默认tag的函数
+	public static void setTag(String tag){
+        TAG = tag;
+    }
+
 	public static void i(String msg) {
 		if (isDebug())
 			Log.i(TAG, msg);
@@ -52,7 +49,6 @@ public class L {
 			Log.v(TAG, msg);
 	}
 
-	// 下面是传入自定义tag的函数
 	public static void i(String tag, String msg) {
 		if (isDebug())
 			Log.i(tag, msg);
@@ -71,41 +67,5 @@ public class L {
 	public static void v(String tag, String msg) {
 		if (isDebug())
 			Log.i(tag, msg);
-	}
-
-
-	private static final String LOG_PATH = Environment.getExternalStorageDirectory()+"/MiQin/";
-	private static final String LOG_FILE ="logcat.txt";
-	/**
-	 * 写入Exception到logcat文件
-	 * @param e  Catch的错误
-	 */
-	public static void c(Exception e) {
-		StringBuffer stringBuffer = new StringBuffer();
-		for (int i = 0; i < e.getStackTrace().length; i++) {
-			StackTraceElement s = e.getStackTrace()[i];
-			stringBuffer.append("\n").append(s.toString());
-		}
-		SimpleDateFormat format = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss");
-		final String time = format.format(new Date(System.currentTimeMillis()));
-		final String err = time + " ------>\n" + e.getMessage() + "\n--------" + stringBuffer.toString() + "\n";
-		//生成文件夹之后，再生成文件，不然会出错
-		File dir, file;
-		try {
-			dir = new File(LOG_PATH);
-			if (!dir.exists()) {
-				dir.mkdir();
-			}
-			file = new File(LOG_PATH + LOG_FILE);
-			if (!file.exists()) {
-				file.createNewFile();
-			}
-			RandomAccessFile accessFile = new RandomAccessFile(file, "rwd");
-			accessFile.seek(0);
-			accessFile.write(err.getBytes());
-			accessFile.close();
-		} catch (Exception exception) {
-			exception.printStackTrace();
-		}
 	}
 }

@@ -149,30 +149,10 @@ public class OkHttp {
             }
         }).start();
         return call;
-
-        /**
-         * 普通请求通过Execute()调用线程执行
-         * execute也会通过okHttp的connectionPool来做请求，文件传输则使用线程池做enqueue请求可以限制文件同时上传的数量
-         * 下面注释的使用线程池来做请求
-         */
-        /*try {
-            call.enqueue(new Callback() {
-                @Override
-                public void onResponse(Call call, Response response) {
-                }
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    okInit.noNetwork(call);
-                    okResponseListener.handleNoNetwork(call);
-                }
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
     }
 
     /**
-     * 文件上传，通过修改setMaxTransFileCount()来设置同时上传文件的数量
+     * upload file，you can setMaxTransFileCount() to set max files upload thread pool size
      *
      * @param url
      * @param file
@@ -205,7 +185,7 @@ public class OkHttp {
     }
 
     /**
-     * 响应处理返回请求的结果
+     * when response success
      *
      * @param response
      * @param call
@@ -243,12 +223,17 @@ public class OkHttp {
                 if (okResponseListener != null) okResponseListener.handleParseError(call, response);
             }
         } else {
-            okInit.networkError(call, response);
+            okInit.receivedNetworkErrorCode(call, response);
         }
     }
 
+    /**
+     *  when response failure or call cancel
+     * @param call
+     * @param okResponseListener
+     */
     private static void responseResultFailure(Call call, OkResponseListener okResponseListener) {
-        okInit.noNetwork(call);
+        okInit.networkError(call);
         if (okResponseListener != null) okResponseListener.handleNoNetwork(call);
     }
 
@@ -279,11 +264,12 @@ public class OkHttp {
 
     public interface IOkInit {
         /**
-         * 对返回的结果进行判断
-         * 0：结果错误
-         * 1：正确
-         * 2：其它
-         * 在IOkResponse接口中处理上面的情况
+         * the first time the response got from internet
+         * 0：RESULT_ERROR ;
+         * 1：RESULT_SUCCESS ;
+         * -1：RESULT_VERIFY_ERROR;
+         * 2: RESULT_OTHER ;
+         * at IOkResponse interface callback
          *
          * @param call
          * @param response
@@ -293,24 +279,27 @@ public class OkHttp {
         int judgeResponse(Call call, Response response, JSONObject json);
 
         /**
-         * 没有网络
+         * no network or  or call back cancel
          *
          * @param call
          */
-        void noNetwork(Call call);
+        void networkError(Call call);
 
         /**
-         * 返回结果不为 200
+         * after judgeResponse
+         * result code not in  [200...300)
          *
          * @param call
          * @param response
          */
-        void networkError(Call call, Response response);
+        void receivedNetworkErrorCode(Call call, Response response);
 
         /**
-         * 结果成功后的操作，
-         * false：断续执行下面的操作
-         * true：中断操作
+         * after judgeResponse
+         * result is SUCCESS，
+         * returns --->
+         * false：go on callbacks
+         * true：interrupt callbacks
          *
          * @param call
          * @param response
@@ -321,7 +310,8 @@ public class OkHttp {
         boolean responseSuccess(Call call, Response response, JSONObject json, int resultCode);
 
         /**
-         * 解释JSON时失败，如果不为JSON
+         * after judgeResponse
+         * when parse JSON failed
          *
          * @param call
          * @param response
@@ -329,8 +319,8 @@ public class OkHttp {
         void parseResponseFailed(Call call, Response response);
 
         /**
-         * 设置默认参数
-         * 当使用setFormBody等方法设置requestBody时，可选是否加入默认参数
+         * add defaultParams in param
+         * when setFormBody requestBody
          *
          * @param defaultParams
          * @return
@@ -338,8 +328,8 @@ public class OkHttp {
         Param setDefaultParams(Param defaultParams);
 
         /**
-         * 设置默认Header
-         * 当使用setFormBody等方法设置requestBody时，可选是否加入默认请求头
+         * add defaultHeader in header
+         * when new a request
          *
          * @param defaultHeader
          * @return

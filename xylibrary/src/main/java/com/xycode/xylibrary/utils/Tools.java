@@ -56,8 +56,6 @@ public class Tools {
         return (int) (Math.random() * max) + min;
     }
 
-
-    //判断手机格式是否正确
     public static boolean isMobileNO(String mobiles) {
 
         Pattern p = Pattern.compile("^((13[0-9])|(15[^4,\\D])|(18[0,5-9]))\\d{8}$");
@@ -67,8 +65,6 @@ public class Tools {
         return m.matches();
 
     }
-
-    //判断email格式是否正确
 
     public static boolean isEmail(String email) {
 
@@ -82,8 +78,6 @@ public class Tools {
 
     }
 
-    //判断是否全是数字
-
     public static boolean isNumeric(String str) {
 
         Pattern pattern = Pattern.compile("[0-9]*");
@@ -95,7 +89,6 @@ public class Tools {
         return true;
     }
 
-    //截取数字
     public static List<String> getNumbers(String content) {
         List<String> list = new ArrayList<>();
         Pattern pattern = Pattern.compile("\\d+");
@@ -119,13 +112,12 @@ public class Tools {
     }
 
     /**
-     * 实现文本复制功能
+     * copy to Clipboard
      * add by wangqianzhou
      *
      * @param content
      */
     public static void copyToClipboard(String content, Context context) {
-// 得到剪贴板管理器
         ClipboardManager cmb = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
         cmb.setText(content);
     }
@@ -198,7 +190,7 @@ public class Tools {
         }
 
         /**
-         * 将字符串转成MD5值
+         * translate to MD5
          *
          * @param string
          * @return string
@@ -225,9 +217,9 @@ public class Tools {
     }
 
     /**
-     * 判断网络状态
+     * judge network
      *
-     * @return true 有网络，false 没有网络
+     * @return true，false
      */
     public static boolean isAvailableNetWork(Context context) {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -245,7 +237,7 @@ public class Tools {
     }
 
     /**
-     * 程序是否在前台运行
+     * weather App is on Foreground
      *
      * @return
      */
@@ -303,19 +295,19 @@ public class Tools {
             int bytesum = 0;
             int byteread = 0;
             File oldFile = new File(oldPath);
-            if (oldFile.exists()) { //文件存在时
-                InputStream inStream = new FileInputStream(oldPath); //读入原文件
+            if (oldFile.exists()) {
+                InputStream inStream = new FileInputStream(oldPath);
                 FileOutputStream fs = new FileOutputStream(newPath);
                 byte[] buffer = new byte[1024];
                 int length;
                 while ((byteread = inStream.read(buffer)) != -1) {
-                    bytesum += byteread; //字节数 文件大小
+                    bytesum += byteread;
                     fs.write(buffer, 0, byteread);
                 }
                 inStream.close();
             }
         } catch (Exception e) {
-            System.out.println("复制单个文件操作出错");
+            System.out.println("copy single file error");
             e.printStackTrace();
         }
     }
@@ -324,19 +316,18 @@ public class Tools {
 
         File dir = new File(file.getParent());
         if (!dir.exists())
-            dir.mkdirs();// 创建照片的存储目录
+            dir.mkdirs();
 //        if (file.exists()) {
 //            return file;
 //        }
         try {
             FileOutputStream fos = new FileOutputStream(file);
-            // 文件写入
+
             byte[] buffer = new byte[1024];
             int length;
             while ((length = inputStream.read(buffer)) > 0) {
                 fos.write(buffer, 0, length);
             }
-            // 关闭文件流
             fos.flush();
             fos.close();
             inputStream.close();
@@ -372,7 +363,7 @@ public class Tools {
     }
 
     /**
-     * 根据手机的分辨率从 dp 的单位 转成为 px(像素)
+     * dp to px(pixel)
      */
     public static int dp2px(Context context, float dpValue) {
         final float scale = context.getResources().getDisplayMetrics().density;
@@ -380,13 +371,18 @@ public class Tools {
     }
 
     /**
-     * 根据手机的分辨率从 px(像素) 的单位 转成为 dp
+     *  px(pixel) to dp
      */
     public static int px2dp(Context context, float pxValue) {
         final float scale = context.getResources().getDisplayMetrics().density;
         return (int) (pxValue / scale + 0.5f);
     }
 
+    /**
+     * scroll to the view in a scrollview
+     * @param scrollView
+     * @param view
+     */
     public static void scrollToView(final ScrollView scrollView, final View view) {
         scrollView.post(new Runnable() {
             @Override

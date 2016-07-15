@@ -50,12 +50,12 @@ public class App extends Application {
             }
 
             @Override
-            public void noNetwork(Call call) {
+            public void networkError(Call call) {
 
             }
 
             @Override
-            public void networkError(Call call, Response response) {
+            public void receivedNetworkErrorCode(Call call, Response response) {
                 Toast.makeText(App.getInstance(), R.string.ts_no_network, Toast.LENGTH_SHORT).show();
             }
 

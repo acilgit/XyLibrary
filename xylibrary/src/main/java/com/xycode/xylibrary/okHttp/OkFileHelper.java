@@ -18,20 +18,19 @@ public class OkFileHelper {
 
     private File tempFile;
 
-    //自定义的RequestBody，能够显示进度
+    //customer RequestBody，can show progress
     public static class ProgressRequestBody extends RequestBody {
-        //实际的待包装请求体
+        // body
         private final RequestBody requestBody;
-        //进度回调接口
+        //the progress callback interface
         private final FileProgressListener fileProgressListener;
-        //包装完成的BufferedSink
+        // upload BufferedSink
         private BufferedSink bufferedSink;
 
         /**
-         * 构造函数，赋值
          *
-         * @param requestBody      待包装的请求体
-         * @param fileProgressListener 回调接口
+         * @param requestBody
+         * @param fileProgressListener
          */
         public ProgressRequestBody(RequestBody requestBody, FileProgressListener fileProgressListener) {
             this.requestBody = requestBody;
@@ -39,7 +38,7 @@ public class OkFileHelper {
         }
 
         /**
-         * 重写调用实际的响应体的contentType
+         * contentType
          *
          * @return MediaType
          */
@@ -49,10 +48,10 @@ public class OkFileHelper {
         }
 
         /**
-         * 重写调用实际的响应体的contentLength
+         * contentLength
          *
          * @return contentLength
-         * @throws IOException 异常
+         * @throws IOException
          */
         @Override
         public long contentLength() throws IOException {
@@ -60,10 +59,10 @@ public class OkFileHelper {
         }
 
         /**
-         * 重写进行写入
+         * write
          *
          * @param sink BufferedSink
-         * @throws IOException 异常
+         * @throws IOException
          */
         @Override
         public void writeTo(BufferedSink sink) throws IOException {
@@ -78,28 +77,27 @@ public class OkFileHelper {
         }
 
         /**
-         * 写入，回调进度接口
+         *
          *
          * @param sink Sink
          * @return Sink
          */
         private Sink sink(Sink sink) {
             return new ForwardingSink(sink) {
-                //当前写入字节数
+                // now bytes count
                 long bytesWritten = 0L;
-                //总字节长度，避免多次调用contentLength()方法
+                //total length,contentLength()
                 long contentLength = 0L;
 
                 @Override
                 public void write(Buffer source, long byteCount) throws IOException {
                     super.write(source, byteCount);
                     if (contentLength == 0) {
-                        //获得contentLength的值，后续不再调用
+                        // do it only once
                         contentLength = contentLength();
                     }
-                    //增加当前写入的字节数
                     bytesWritten += byteCount;
-                    //回调
+                    // callback
                     if (fileProgressListener != null) {
                         fileProgressListener.update(bytesWritten, contentLength, bytesWritten == contentLength);
                     }
@@ -108,7 +106,7 @@ public class OkFileHelper {
         }
     }
 
-    //进度回调接口
+    // progress listener callback
     public interface FileProgressListener {
         void update(long bytesRead, long contentLength, boolean done);
     }

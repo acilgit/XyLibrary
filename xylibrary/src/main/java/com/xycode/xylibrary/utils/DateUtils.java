@@ -94,7 +94,6 @@ public class DateUtils {
     }
 
     /**
-     * 取得自定义的日期
      *
      * @return date
      */
@@ -105,7 +104,6 @@ public class DateUtils {
     }
 
     /**
-     * 日期间的年差
      * @param dateNow
      * @param datePassed
      * @return
@@ -128,7 +126,6 @@ public class DateUtils {
     }
 
     /**
-     * 日期值间的年差
      * @param dateNow
      * @param datePassed
      * @return
@@ -151,13 +148,12 @@ public class DateUtils {
     }
 
     /**
-     * 日期值间的月差
      * @param dateNow
      * @param datePassed
      * @return
      */
     public static int monthsBetweenDates(long dateNow, long datePassed) {
-        // 必定小于1年 1个月内用负数表示天
+        // must less than 1 year in 1 month, use -X
         int months, days;
         Calendar c1 = Calendar.getInstance();
         Calendar c2 = Calendar.getInstance();

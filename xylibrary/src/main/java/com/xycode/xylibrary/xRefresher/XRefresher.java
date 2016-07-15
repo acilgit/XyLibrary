@@ -26,7 +26,6 @@ import com.xycode.xylibrary.adapter.XAdapter;
 import com.xycode.xylibrary.okHttp.OkHttp;
 import com.xycode.xylibrary.okHttp.Param;
 import com.xycode.xylibrary.uiKit.recyclerview.HorizontalDividerItemDecoration;
-import com.xycode.xylibrary.utils.L;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -159,9 +158,8 @@ public class XRefresher<T> extends RelativeLayout {
     }
 
     /**
-     * 获取小区
      *
-     * @param pageSize 页面大小
+     * @param pageSize page size shown in one time
      */
     private void getDataByRefresh(int pageSize) {
         getDataByRefresh(1, pageSize, REFRESH);
@@ -267,7 +265,7 @@ public class XRefresher<T> extends RelativeLayout {
     }
 
     /**
-     * 刷新列表
+     * refresh list
      */
     public void refreshList() {
         refreshList(false);
@@ -318,8 +316,8 @@ public class XRefresher<T> extends RelativeLayout {
     public static abstract class RefreshRequest<T> implements IRefreshRequest<T> {
 
         /**
-         * 去重，可以通过 return newItem.getId().equals(listItem.getId()); 返回结果，
-         * 如果不去重就直接返回false;
+         * ignore the same item in the list，use return newItem.getId().equals(listItem.getId());
+         * if not,  don't override it;
          *
          * @param newItem
          * @param listItem
@@ -330,12 +328,12 @@ public class XRefresher<T> extends RelativeLayout {
         }
 
         /**
-         * 排列表中的数据，返回值：
-         * -1 从大到小
-         * 1 从小到大
-         * 0 相同
-         * 也可以通过： 如 long 的实例   Long.compareTo()来比较，item0:item1的话，默认从小到大
-         * 若不进行比较可以直接返回 0
+         * reorder the list，returns:
+         * -1 large to small
+         * 1 small to large
+         * 0 same
+         * eg： long -> Long.compareTo()，item0:item1，default result is 1;
+         * if no use, don't override if.
          *
          * @param item0
          * @param item1
@@ -345,21 +343,12 @@ public class XRefresher<T> extends RelativeLayout {
             return 0;
         }
 
-        /**
-         * 处理Json 把JSON中的lastPage通过state.setLastPage() 传进去，
-         *
-         * @param json
-         * @return
-         */
-        /*protected boolean setIsLastPageWhenGotJson(JSONObject json) {
-            return false;
-        }*/
     }
 
 
     private interface IRefreshRequest<T> {
         /**
-         * 把对应要返回的url要设置的params设置好，Return url;
+         * return the url you need to post, and set the params in the method;
          *
          * @param params
          * @return
@@ -367,7 +356,7 @@ public class XRefresher<T> extends RelativeLayout {
         String setRequestParamsReturnUrl(Param params);
 
         /**
-         * 最后把JSON中的List return
+         * handle the JSON and get the List from the json, then return it.
          *
          * @param json
          * @return

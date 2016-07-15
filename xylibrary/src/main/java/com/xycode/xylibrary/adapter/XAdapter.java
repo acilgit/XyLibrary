@@ -37,7 +37,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
     private List<T> dataList;
     private Context context;
     private SparseArray<Integer> layoutIdList;
-    // 点击及长按Listener
+    // item long click on long click Listener
     private OnItemClickListener onItemClickListener;
     private OnItemLongClickListener onItemLongClickListener;
 
@@ -48,7 +48,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
     private int footerState = FOOTER_NO_MORE;
 
     /**
-     * 使用单一Layout
+     * use single Layout
      *
      * @param context
      * @param dataList
@@ -63,7 +63,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
     }
 
     /**
-     * 使用Holder分类列表Layout
+     * use layout list to show different holders
      *
      * @param context
      * @param dataList
@@ -131,7 +131,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
     }
 
     /**
-     * 创建Holder时绑定控件
+     * when create Holder
      *
      * @param holder
      * @param dataList
@@ -140,7 +140,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
     public abstract void creatingHolder(CustomHolder holder, List<T> dataList, int viewType);
 
     /**
-     * 在适配器中显示数据集
+     * bind holder
      *
      * @param holder
      * @param dataList
@@ -158,8 +158,8 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
     }
 
     /**
-     * 复写此方法可以在不同的layout中显示
-     * 请不要返回 LAYOUT_FOOTER = -20331
+     * override this method can show different holder for layout
+     * don't return LAYOUT_FOOTER = -20331
      *
      * @param item
      * @return
@@ -168,6 +168,11 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
         return SINGLE_LAYOUT;
     }
 
+    /**
+     * when you use layout list, you can override this method when binding holder views
+     * @param position
+     * @return
+     */
     @Override
     public int getItemViewType(int position) {
         if (position == dataList.size()) {
@@ -182,7 +187,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
     }
 
     /**
-     * 请使用getDataList().size()取得列表元素个数，这方法会加上Footer
+     * Please use getDataList().size() to get items count，this method would add header and Footer if they exist
      *
      * @return
      */
@@ -261,8 +266,8 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
     }
 
     /**
-     * 重写此事件，用于处理holder rootView点击事件，处理完毕后再处理onItemClickListener()
-     * 如果根组件已重写Touch等触摸方法，可能会使该方法失效，如：RippleView
+     * override this method to add holder rootView onclick event，when handle over continue to on ClickListener in creating holder set.
+     * some view if it override Touch method and did't return，can let it no use,  eg：RippleView
      *
      * @param holder
      * @param item
@@ -272,7 +277,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
     }
 
     /**
-     * 过滤数据
+     * filter local main data list, it can use any time, it won't change the main data list.
      *
      * @param mainList
      * @return
@@ -288,14 +293,14 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
     }
 
     /**
-     * 点击接口
+     *
      */
     public interface OnItemClickListener<T> {
         void onItemClick(CustomHolder holder, T item);
     }
 
     /**
-     * 长按接口
+     *
      */
     public interface OnItemLongClickListener<T> {
         void onItemLongClick(CustomHolder holder, T item);

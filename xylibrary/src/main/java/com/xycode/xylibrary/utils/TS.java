@@ -4,7 +4,7 @@ import android.content.Context;
 import android.widget.Toast;
 
 /**
- * Toast统一管理类
+ * Toast
  * 
  * @author way
  * 
@@ -14,7 +14,7 @@ public class TS {
 	private static Toast toast;
 
 	/**
-	 * 短时间显示Toast
+	 * Toast short
 	 * 
 	 * @param context
 	 * @param message
@@ -30,7 +30,7 @@ public class TS {
 	}
 
 	/**
-	 * 短时间显示Toast
+	 * Toast short
 	 * 
 	 * @param context
 	 * @param message
@@ -46,7 +46,7 @@ public class TS {
 	}
 
 	/**
-	 * 长时间显示Toast
+	 * Toast long
 	 * 
 	 * @param context
 	 * @param message
@@ -62,7 +62,7 @@ public class TS {
 	}
 
 	/**
-	 * 长时间显示Toast
+	 * Toast long
 	 * 
 	 * @param context
 	 * @param message
@@ -78,7 +78,7 @@ public class TS {
 	}
 
 	/**
-	 * 自定义显示Toast时间
+	 * Toast customer
 	 * 
 	 * @param context
 	 * @param message
@@ -95,7 +95,7 @@ public class TS {
 	}
 
 	/**
-	 * 自定义显示Toast时间
+	 * Toast customer
 	 * 
 	 * @param context
 	 * @param message

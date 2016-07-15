@@ -1,16 +1,12 @@
 package com.xycode.xylibrary.utils;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.graphics.drawable.Animatable;
-import android.graphics.drawable.BitmapDrawable;
 import android.media.ExifInterface;
 import android.net.Uri;
-import android.widget.ImageView;
 
 import com.facebook.binaryresource.BinaryResource;
 import com.facebook.binaryresource.FileBinaryResource;
@@ -19,9 +15,6 @@ import com.facebook.common.executors.CallerThreadExecutor;
 import com.facebook.common.references.CloseableReference;
 import com.facebook.datasource.DataSource;
 import com.facebook.drawee.backends.pipeline.Fresco;
-import com.facebook.drawee.controller.ControllerListener;
-import com.facebook.drawee.interfaces.DraweeController;
-import com.facebook.drawee.view.DraweeView;
 import com.facebook.imagepipeline.cache.DefaultCacheKeyFactory;
 import com.facebook.imagepipeline.core.ImagePipeline;
 import com.facebook.imagepipeline.core.ImagePipelineFactory;
@@ -37,8 +30,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import static com.xycode.xylibrary.utils.Tools.checkFile;
-
 /**
  * Created by XY on 2016/7/12.
  */
@@ -52,10 +43,9 @@ public class ImageUtils {
     }
 
     /**
-     * 把图片格式转换为流格式，可以存到BLOB类型中
      *
-     * @param bitmap       图片
-     * @param imageQuality 压缩质量 <100
+     * @param bitmap
+     * @param imageQuality <100
      * @return 流
      */
     public static byte[] bitmapToBytes(Bitmap bitmap, int imageQuality) {
@@ -72,7 +62,7 @@ public class ImageUtils {
     }
 
     /**
-     * 获取图片的旋转角度
+     * get rotate angle
      */
     public static int readPictureDegree(String path) {
         int degree = 0;
@@ -147,16 +137,15 @@ public class ImageUtils {
     public static ByteArrayOutputStream compressBitmapToStream(Bitmap bitmap, int jpegQuality) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, jpegQuality, baos);
-        L.e("------质量-- after " + "  ------" + baos.toByteArray().length / 1024f);
+        L.e("------quality-- after " + "  ------" + baos.toByteArray().length / 1024f);
         return baos;
     }
 
     /**
-     * 获取合适的Bitmap平时获取Bitmap就用这个方法吧.
+     * get ordinary Bitmap .
      *
-     * @param data      byte[]数组.
-     * @param targetPix 模板宽或者高的大小.
-     *                  //     * @param width   是否是宽度
+     * @param data      byte[].
+     * @param targetPix
      * @return
      */
     public static Bitmap resizeToBitmap(byte[] data, int targetPix) {
@@ -164,8 +153,8 @@ public class ImageUtils {
 
         if (targetPix > 0) {
             BitmapFactory.Options info = new BitmapFactory.Options();
-            //这里设置true的时候，decode时候Bitmap返回的为空，
-            //将图片宽高读取放在Options里.
+            //when set true，decode Bitmap return null，
+            //read bitmap Options
             info.inJustDecodeBounds = true;
 //            info.inPreferredConfig = Bitmap.Config.RGB_565;
 //            info.inSampleSize = 16;
@@ -196,8 +185,6 @@ public class ImageUtils {
     public static Bitmap resizeToBitmap(int minSide, byte[] data) {
         BitmapFactory.Options options = null;
         BitmapFactory.Options info = new BitmapFactory.Options();
-        //这里设置true的时候，decode时候Bitmap返回的为空，
-        //将图片宽高读取放在Options里.
         info.inJustDecodeBounds = true;
 //        info.inPreferredConfig = Bitmap.Config.RGB_565;
 //            info.inSampleSize = 16;
@@ -226,8 +213,6 @@ public class ImageUtils {
     public static Bitmap resizeToBitmap(String filePath, int photoSide, int miniSide) {
 
         BitmapFactory.Options info = new BitmapFactory.Options();
-        //这里设置true的时候，decode时候Bitmap返回的为空，
-        //将图片宽高读取放在Options里.
         info.inJustDecodeBounds = true;
 //        info.inPreferredConfig = Bitmap.Config.RGB_565;
         BitmapFactory.decodeFile(filePath, info);
@@ -323,7 +308,7 @@ public class ImageUtils {
     public static boolean saveBitmapToFile(Context context, File file, Bitmap bitmap) {
         File dir = new File(file.getParent());
         if (!dir.exists()) {
-            dir.mkdirs();// 创建照片的存储目录
+            dir.mkdirs();//
         }
         try {
             FileOutputStream outputStream = new FileOutputStream(file);

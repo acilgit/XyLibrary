@@ -146,8 +146,6 @@ public class BaseActivity extends AppCompatActivity {
     }
 
 
-    // 注册广播接收器
-    // 当接收到广播时，退出Activity
     protected void registerFinishReceiver() {
         mFinishReceiver = new BroadcastReceiver() {
             @Override
@@ -157,7 +155,6 @@ public class BaseActivity extends AppCompatActivity {
         };
         IntentFilter filter = new IntentFilter();
         filter.addAction(ACTION_FINISH_ACTIVITY);
-        // 注册广播监听器
         LocalBroadcastManager.getInstance(this).registerReceiver(mFinishReceiver, filter);
     }
 
@@ -214,9 +211,9 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     /**
-     * 判断某个界面是否在前台
+     * judge a activity is on foreground
      *
-     * @param activity 某个界面
+     * @param activity
      */
     public static boolean isForeground(Activity activity) {
         if (TextUtils.isEmpty(activity.getClass().getName())) {
