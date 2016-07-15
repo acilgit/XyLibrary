@@ -46,7 +46,7 @@ public class ImageUtils {
      *
      * @param bitmap
      * @param imageQuality <100
-     * @return 流
+     * @return
      */
     public static byte[] bitmapToBytes(Bitmap bitmap, int imageQuality) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -153,7 +153,7 @@ public class ImageUtils {
 
         if (targetPix > 0) {
             BitmapFactory.Options info = new BitmapFactory.Options();
-            //when set true，decode Bitmap return null，
+            //when set true decode Bitmap return null
             //read bitmap Options
             info.inJustDecodeBounds = true;
 //            info.inPreferredConfig = Bitmap.Config.RGB_565;

@@ -332,7 +332,7 @@ public class XRefresher<T> extends RelativeLayout {
          * -1 large to small
          * 1 small to large
          * 0 same
-         * eg： long -> Long.compareTo()，item0:item1，default result is 1;
+         * eg: long -> Long.compareTo(), item0:item1,default result is 1;
          * if no use, don't override if.
          *
          * @param item0

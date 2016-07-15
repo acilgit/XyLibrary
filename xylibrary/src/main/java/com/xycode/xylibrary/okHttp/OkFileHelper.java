@@ -67,12 +67,12 @@ public class OkFileHelper {
         @Override
         public void writeTo(BufferedSink sink) throws IOException {
             if (bufferedSink == null) {
-                //包装
+                // package
                 bufferedSink = Okio.buffer(sink(sink));
             }
-            //写入
+
             requestBody.writeTo(bufferedSink);
-            //必须调用flush，否则最后一部分数据可能不会被写入
+
             bufferedSink.flush();
         }
 

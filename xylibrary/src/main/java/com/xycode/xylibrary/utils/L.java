@@ -3,7 +3,7 @@ package com.xycode.xylibrary.utils;
 import android.util.Log;
 
 /**
- * Log统一管理类
+ * Log
  * 
  * @author way
  * 

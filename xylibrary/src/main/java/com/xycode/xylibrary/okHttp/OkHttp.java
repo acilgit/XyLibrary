@@ -50,7 +50,7 @@ public class OkHttp {
     }
 
     /**
-     * 初始化
+     * init
      */
     public static void init(IOkInit iOkInit) {
         if (okInit == null) {
@@ -296,9 +296,9 @@ public class OkHttp {
 
         /**
          * after judgeResponse
-         * result is SUCCESS，
+         * result is SUCCESS
          * returns --->
-         * false：go on callbacks
+         * false: go on callbacks
          * true：interrupt callbacks
          *
          * @param call
