@@ -45,7 +45,7 @@ public class ImageUtils {
     /**
      *
      * @param bitmap
-     * @param imageQuality <100
+     * @param imageQuality less than 100
      * @return
      */
     public static byte[] bitmapToBytes(Bitmap bitmap, int imageQuality) {

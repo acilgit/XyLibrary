@@ -297,7 +297,7 @@ public class OkHttp {
         /**
          * after judgeResponse
          * result is SUCCESS
-         * returns --->
+         * returns ---
          * false: go on callbacks
          * true：interrupt callbacks
          *
