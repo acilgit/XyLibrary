@@ -25,6 +25,8 @@ android {
 }
 tasks.withType(JavaCompile) {
     options.encoding = "UTF-8"
+    source = android.sourceSets.main.java.srcDirs
+//    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
 }
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
