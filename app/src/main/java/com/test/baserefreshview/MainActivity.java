@@ -26,18 +26,28 @@ public class MainActivity extends BaseActivity {
         XAdapter<ContentBean> adapter = new XAdapter<ContentBean>(this, new ArrayList<ContentBean>(), R.layout.item_house) {
 
             @Override
-            public void creatingHolder(CustomHolder holder, List<ContentBean> dataList, int viewType) {
-
-            }
-
-            @Override
             public void bindingHolder(CustomHolder holder, List<ContentBean> dataList, int pos) {
                 ContentBean item = dataList.get(pos);
                 holder.setText(R.id.tvName, item.getTitle())
                         .setImageUrl(R.id.sdvItem, item.getCoverPicture())
                 .setText(R.id.tvText, pos + "");
             }
+
+            @Override
+            protected void bindingHeader(CustomHolder holder, int pos) {
+                switch (getItemViewType(pos)) {
+                    case 1:
+                        holder.setText(R.id.tvName, "我是Header1");
+                        break;
+                    case 2:
+                        holder.setText(R.id.tvLoading, "我是Header2");
+                        break;
+                }
+            }
         };
+
+        adapter.addHeader(1, R.layout.item_house);
+        adapter.addHeader(2, R.layout.layout_load_more);
 
         xRefresher.setup(this, adapter, true, new XRefresher.RefreshRequest<ContentBean>() {
             @Override

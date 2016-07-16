@@ -31,8 +31,9 @@ public class App extends Application {
         super.onCreate();
         if (instance == null) {
             instance = this;
+        } else {
+            return;
         }
-
 
         Fresco.initialize(this);
         OkHttp.init(new OkHttp.IOkInit() {

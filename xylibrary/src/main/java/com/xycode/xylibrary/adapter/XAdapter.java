@@ -32,11 +32,13 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
     public static final int FOOTER_LOADING = 1;
     public static final int FOOTER_NO_MORE = 2;
 
+    private static final int LAYOUT_HEADER = -20330;
     private static final int LAYOUT_FOOTER = -20331;
     private List<T> mainList;
     private List<T> dataList;
     private Context context;
     private SparseArray<Integer> layoutIdList;
+    private SparseArray<Integer> headerLayoutIdList;
     // item long click on long click Listener
     private OnItemClickListener onItemClickListener;
     private OnItemLongClickListener onItemLongClickListener;
@@ -59,6 +61,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
         this.dataList = new ArrayList<>();
         this.mainList = dataList;
         this.layoutIdList = new SparseArray<>();
+        this.headerLayoutIdList = new SparseArray<>();
         layoutIdList.put(SINGLE_LAYOUT, layoutId);
     }
 
@@ -74,6 +77,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
         this.dataList = new ArrayList<>();
         this.mainList = dataList;
         this.layoutIdList = layoutIdList;
+        this.headerLayoutIdList = new SparseArray<>();
     }
 
     @Override
@@ -88,6 +92,19 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
             };
             return holder;
         } else {
+            for (int i = 0; i < headerLayoutIdList.size(); i++) {
+                final int headerKey = headerLayoutIdList.keyAt(i);
+                if (viewType == headerKey) {
+                    View itemView = LayoutInflater.from(context).inflate(headerLayoutIdList.get(headerKey), parent, false);
+                    final CustomHolder holder = new CustomHolder(itemView) {
+                        @Override
+                        protected void createHolder(final CustomHolder holder) {
+                            creatingHeader(holder, headerKey);
+                        }
+                    };
+                    return holder;
+                }
+            }
             @LayoutRes int layoutId = (layoutIdList.size() == 1 ? layoutIdList.get(SINGLE_LAYOUT) : layoutIdList.get(viewType));
             View itemView = LayoutInflater.from(context).inflate(layoutId, parent, false);
             final CustomHolder holder = new CustomHolder(itemView) {
@@ -116,6 +133,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
                 }
             };
             return holder;
+
         }
     }
 
@@ -126,8 +144,11 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
                 iCustomerFooter.bindFooter((CustomHolder) holder, footerState);
             }
             return;
+        } else if (position < headerLayoutIdList.size()) {
+            bindingHeader(((CustomHolder) holder), position);
+            return;
         }
-        bindingHolder(((CustomHolder) holder), dataList, position);
+        bindingHolder(((CustomHolder) holder), dataList, position - headerLayoutIdList.size());
     }
 
     /**
@@ -137,7 +158,9 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
      * @param dataList
      * @param viewType
      */
-    public abstract void creatingHolder(CustomHolder holder, List<T> dataList, int viewType);
+    public void creatingHolder(CustomHolder holder, List<T> dataList, int viewType){
+
+    };
 
     /**
      * bind holder
@@ -159,6 +182,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
 
     /**
      * override this method can show different holder for layout
+     * don't return LAYOUT_HEADER = -20330
      * don't return LAYOUT_FOOTER = -20331
      *
      * @param item
@@ -170,17 +194,22 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
 
     /**
      * when you use layout list, you can override this method when binding holder views
+     *
      * @param position
      * @return
      */
     @Override
     public int getItemViewType(int position) {
-        if (position == dataList.size()) {
+        int headerCount = headerLayoutIdList.size();
+        if (position < headerCount) {
+            return headerLayoutIdList.keyAt(position);
+        }
+        if (position == dataList.size()+headerCount) {
             return LAYOUT_FOOTER;
         }
-        int type = getItemType(dataList.get(position));
+        int type = getItemType(dataList.get(position - headerCount));
         if (type == SINGLE_LAYOUT) {
-            return super.getItemViewType(position);
+            return super.getItemViewType(position - headerCount);
         } else {
             return type;
         }
@@ -194,10 +223,11 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
     @Override
     public int getItemCount() {
         int footerCount = footerLayout == noFooterLayout ? 0 : 1;
+        int headerCount = headerLayoutIdList.size();
         if (dataList != null) {
-            return dataList.size() + footerCount;
+            return dataList.size() + footerCount +headerCount;
         }
-        return footerCount;
+        return footerCount + headerCount;
     }
 
     public T getItem(int pos) {
@@ -263,6 +293,19 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
         this.footerLayout = footerLayout;
         if (this.iCustomerFooter != null) this.iCustomerFooter = null;
         this.iCustomerFooter = iCustomerFooter;
+    }
+
+    public void addHeader(int headerKey, @LayoutRes int headerLayoutId) {
+        headerLayoutIdList.put(headerKey, headerLayoutId);
+    }
+
+
+    protected void creatingHeader(CustomHolder holder, int headerKey) {
+
+    }
+
+    protected void bindingHeader(CustomHolder holder, int pos) {
+
     }
 
     /**
@@ -358,7 +401,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
             if (view != null) {
                 if (view instanceof SimpleDraweeView) {
                     ((SimpleDraweeView) view).setImageURI(Uri.parse(url));
-                }else  if (view instanceof ImageView) {
+                } else if (view instanceof ImageView) {
                     ((ImageView) view).setImageURI(Uri.parse(url));
                 }
             }
@@ -370,7 +413,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
             if (view != null) {
                 if (view instanceof SimpleDraweeView) {
                     ((SimpleDraweeView) view).setImageURI(uri);
-                }else  if (view instanceof ImageView) {
+                } else if (view instanceof ImageView) {
                     ((ImageView) view).setImageURI(uri);
                 }
             }

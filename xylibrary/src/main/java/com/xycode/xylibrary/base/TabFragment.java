@@ -38,41 +38,41 @@ public abstract class TabFragment extends Fragment {
     }
 
     /**
-     * 当Fragment变为对用户可见时，该方法得到调用
+     *
      */
     protected void onVisible() {
 
     }
 
     /**
-     * 当Fragment由对用户可见变为不可见时，该方法得到调用
+     *
      */
     protected void onInvisible() {
 
     }
 
     /**
-     * 尝试加载懒内容
+     *
      */
     private void tryLoad() {
-        if (mLoaded || !this.isAdded()) {// 已经加载过 || 尚未被添加到Activity
+        if (mLoaded || !this.isAdded()) {
             return;
         }
 
         ImageView imageLoading = (ImageView)getView().findViewById(R.id.imageLoading);
 
-        // 移除Loading标识
+        //
         ViewGroup group = (ViewGroup)getView();
         group.removeView(imageLoading);
 
-        // 开始加载内容
+        //
         onLazyLoad();
 
         mLoaded = true;
     }
 
     /**
-     * 在这里实现Fragment的懒加载
+     *
      */
     protected void onLazyLoad() {
 

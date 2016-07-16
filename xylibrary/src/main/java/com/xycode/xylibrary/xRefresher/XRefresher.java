@@ -107,11 +107,21 @@ public class XRefresher<T> extends RelativeLayout {
 
     }
 
+    public void setup(Activity activity, XAdapter<T> adapter, boolean loadMore, OnSwipeListener swipeListener, RefreshRequest refreshRequest) {
+        init(activity, adapter, loadMore, swipeListener, refreshRequest, 10);
+    }
+
+    public void setup(Activity activity, XAdapter<T> adapter, boolean loadMore, OnSwipeListener swipeListener, RefreshRequest refreshRequest, int refreshPageSize) {
+        init(activity, adapter, loadMore, swipeListener, refreshRequest, refreshPageSize);
+    }
     public void setup(Activity activity, XAdapter<T> adapter, boolean loadMore, @NonNull RefreshRequest refreshRequest) {
-        setup(activity, adapter, loadMore, refreshRequest, 10);
+        init(activity, adapter, loadMore, null, refreshRequest, 10);
     }
 
     public void setup(Activity activity, XAdapter<T> adapter, boolean loadMore, @NonNull RefreshRequest refreshRequest, int refreshPageSize) {
+        init(activity, adapter, loadMore, null, refreshRequest, refreshPageSize);
+    }
+    private void init(Activity activity, XAdapter<T> adapter, boolean loadMore, final OnSwipeListener swipeListener, final RefreshRequest refreshRequest, int refreshPageSize) {
         recyclerView.setLayoutManager(new LinearLayoutManager(activity));
         this.loadMore = loadMore;
         this.activity = activity;
@@ -122,14 +132,15 @@ public class XRefresher<T> extends RelativeLayout {
         ((SwipeRefreshLayout) findViewById(R.id.swipe)).setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                refreshList();
+               if(swipeListener != null) swipeListener.onRefresh();
+                if (refreshRequest != null) refreshList();
             }
         });
         if (loadMore) {
             if (iCustomerFooter != null && footerLayout != -1) {
                 this.adapter.setCustomerFooter(footerLayout, iCustomerFooter);
             }
-            setLoadMoreListener();
+            if (refreshRequest != null) setLoadMoreListener();
         }
     }
 
@@ -362,6 +373,13 @@ public class XRefresher<T> extends RelativeLayout {
          * @return
          */
         List<T> setListData(JSONObject json);
+    }
+
+    private interface OnSwipeListener {
+        /**
+         * Refresh
+         */
+        void onRefresh();
     }
 
     public static class RefreshState implements Serializable {
