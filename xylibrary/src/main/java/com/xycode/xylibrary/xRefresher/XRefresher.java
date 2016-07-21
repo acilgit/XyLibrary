@@ -84,9 +84,9 @@ public class XRefresher<T> extends RelativeLayout {
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.XRefresher);
 
         hint = typedArray.getString(R.styleable.XRefresher_hint);
-        hintSize = typedArray.getDimension(R.styleable.XRefresher_hintSize, 1);
+        hintSize = typedArray.getDimensionPixelSize(R.styleable.XRefresher_hintSize, 1);
         hintColor = typedArray.getColor(R.styleable.XRefresher_hintColor, 1);
-        background = typedArray.getColor(R.styleable.XRefresher_bg, 1);
+        background = typedArray.getResourceId(R.styleable.XRefresher_bg, 1);
 
         typedArray.recycle();
     }
@@ -102,8 +102,8 @@ public class XRefresher<T> extends RelativeLayout {
         textView.setText(hint);
         if (hintSize != 1) textView.setTextSize(hintSize);
         if (hintColor != 1) textView.setTextColor(hintColor);
-        if (background != 1) textView.setBackgroundColor(background);
-        if (background != 1) rlMain.setBackgroundColor(background);
+        if (background != 1) textView.setBackgroundResource(background);
+        if (background != 1) rlMain.setBackgroundResource(background);
 
     }
 

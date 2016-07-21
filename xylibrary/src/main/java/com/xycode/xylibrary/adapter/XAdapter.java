@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.LayoutRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseArray;
@@ -56,12 +57,9 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
      * @param dataList
      * @param layoutId
      */
-    public XAdapter(Context context, List<T> dataList, @LayoutRes int layoutId) {
-        this.context = context;
-        this.dataList = new ArrayList<>();
-        this.mainList = dataList;
+    public XAdapter(Context context, @NonNull List<T> dataList, @LayoutRes int layoutId) {
+        init(context, dataList);
         this.layoutIdList = new SparseArray<>();
-        this.headerLayoutIdList = new SparseArray<>();
         layoutIdList.put(SINGLE_LAYOUT, layoutId);
     }
 
@@ -72,11 +70,16 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
      * @param dataList
      * @param layoutIdList key: viewType  value: layoutId
      */
-    public XAdapter(Context context, List<T> dataList, SparseArray layoutIdList) {
+    public XAdapter(Context context, @NonNull List<T> dataList, SparseArray layoutIdList) {
+        init(context, dataList);
+        this.layoutIdList = layoutIdList;
+    }
+
+    private void init(Context context, List<T> dataList) {
         this.context = context;
         this.dataList = new ArrayList<>();
         this.mainList = dataList;
-        this.layoutIdList = layoutIdList;
+        this.dataList.addAll(setFilterForAdapter(mainList));
         this.headerLayoutIdList = new SparseArray<>();
     }
 
@@ -260,22 +263,34 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
     }
 
     public void removeItem(int pos) {
+        T item = dataList.get(pos);
+        mainList.remove(item);
         dataList.remove(pos);
         notifyItemRemoved(pos);
     }
 
-    public void addItem(int pos, T item) {
+    /**
+     * this method can only use in no filter mode
+     * @param pos
+     * @param item
+     */
+    public void addItemNoFilter(int pos, T item) {
         dataList.add(pos, item);
+        mainList.add(pos, item);
         notifyItemInserted(pos);
     }
 
     public void updateItem(int pos, T item) {
+        T itemOld = dataList.get(pos);
+        int mainPos = mainList.indexOf(itemOld);
+        mainList.set(mainPos, item);
         dataList.set(pos, item);
         notifyItemChanged(pos);
     }
 
     public void addItem(T item) {
         dataList.add(item);
+        mainList.add(item);
         notifyItemInserted(getItemCount() - 1);
     }
 

@@ -15,6 +15,10 @@ import com.facebook.common.executors.CallerThreadExecutor;
 import com.facebook.common.references.CloseableReference;
 import com.facebook.datasource.DataSource;
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder;
+import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
+import com.facebook.drawee.interfaces.DraweeController;
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.facebook.imagepipeline.cache.DefaultCacheKeyFactory;
 import com.facebook.imagepipeline.core.ImagePipeline;
 import com.facebook.imagepipeline.core.ImagePipelineFactory;
@@ -35,6 +39,11 @@ import java.io.IOException;
  */
 public class ImageUtils {
 
+  /*  private static boolean isGif(String url) {
+        String s = url.toLowerCase();
+        return s.endsWith(".gif");
+    }*/
+
     public static void scanPhotoPath(Context context, String filePath) {
         Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         Uri uri = Uri.fromFile(new File(filePath));
@@ -43,7 +52,6 @@ public class ImageUtils {
     }
 
     /**
-     *
      * @param bitmap
      * @param imageQuality less than 100
      * @return
@@ -301,8 +309,26 @@ public class ImageUtils {
             @Override
             protected void onFailureImpl(DataSource<CloseableReference<CloseableImage>> dataSource) {
                 iGetFrescoBitmap.afterGotBitmap(null);
-        }
+            }
         }, CallerThreadExecutor.getInstance());
+    }
+
+    public static void setImageUriWithGif(SimpleDraweeView simpleDraweeView, String uri) {
+        setImageUriWithPreview(simpleDraweeView, Uri.parse(uri), null);
+    }
+
+    public static void setImageUriWithPreview(SimpleDraweeView simpleDraweeView, String uri, String previewUri) {
+        setImageUriWithPreview(simpleDraweeView, Uri.parse(uri), Uri.parse(previewUri));
+    }
+
+    public static void setImageUriWithPreview(SimpleDraweeView simpleDraweeView, Uri uri, Uri previewUri) {
+        PipelineDraweeControllerBuilder builder = Fresco.newDraweeControllerBuilder()
+                .setImageRequest(ImageRequest.fromUri(uri))
+                .setOldController(simpleDraweeView.getController())
+                .setAutoPlayAnimations(true);
+        if (previewUri != null) builder.setLowResImageRequest(ImageRequest.fromUri(previewUri));
+        DraweeController controller = builder.build();
+        simpleDraweeView.setController(controller);
     }
 
     public static boolean saveBitmapToFile(Context context, File file, Bitmap bitmap) {
@@ -324,13 +350,23 @@ public class ImageUtils {
         return true;
     }
 
+    public static void setSimpleDraweeParams(SimpleDraweeView simpleDraweeView, ISetDraweeHierarchy setDraweeHierarchy) {
+        GenericDraweeHierarchyBuilder builder = new GenericDraweeHierarchyBuilder(simpleDraweeView.getResources());
+//        GenericDraweeHierarchy hierarchy = simpleDraweeView.getHierarchy();
+        setDraweeHierarchy.setHierarchyBuilder(builder);
+        simpleDraweeView.setHierarchy(builder.build());
+    }
+
+    public interface ISetDraweeHierarchy {
+        void setHierarchyBuilder(GenericDraweeHierarchyBuilder hierarchyBuilder);
+    }
+
     public interface IGetFrescoBitmap {
         void afterGotBitmap(Bitmap bitmap);
     }
 
     public interface IGetFrescoImageInfo {
         void afterGotImageInfo(ImageInfo imageInfo);
-
     }
 
 

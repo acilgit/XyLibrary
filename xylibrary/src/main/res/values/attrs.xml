@@ -1,9 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources >
+
     <declare-styleable name="XRefresher">
         <attr name="hint" format="string" />
         <attr name="hintSize" format="dimension" />
         <attr name="hintColor" format="color" />
-        <attr name="bg" format="color" />
+        <attr name="bg" format="reference|color"/>
+    </declare-styleable>
+
+<!--    <declare-styleable name="MultiImageView">
+        <attr name="placeHolder" />
+        <attr name="failureImage"/>
+        <attr name="pressedStateOverlayImage"/>
+        <attr name="actualImageScaleType"/>
+        <attr name="failureImageScaleType"/>
+        <attr name="imagePadding"/>
+        <attr name="roundedCornerRadius"/>
+    </declare-styleable>-->
+
+    <declare-styleable name="MultiImageView">
+        <attr name="holderImage" format="reference" />
+        <attr name="onFailureImage" format="reference" />
+        <attr name="pressedOverlayImage" format="reference" />
+        <attr name="imageScaleType">
+            <enum name="fit_xy" value="0"/>
+            <enum name="fit_start" value="1"/>
+            <enum name="fit_center" value="2"/>
+            <enum name="fit_end" value="3"/>
+            <enum name="center" value="4"/>
+            <enum name="center_inside" value="5"/>
+            <enum name="center_crop" value="6"/>
+            <enum name="focus_crop" value="7"/>
+        </attr>
+        <attr name="onFailureImageScaleType">
+            <enum name="fit_xy" value="0"/>
+            <enum name="fit_start" value="1"/>
+            <enum name="fit_center" value="2"/>
+            <enum name="fit_end" value="3"/>
+            <enum name="center" value="4"/>
+            <enum name="center_inside" value="5"/>
+            <enum name="center_crop" value="6"/>
+            <enum name="focus_crop" value="7"/>
+        </attr>
+        <attr name="imagePadding" format="dimension" />
+        <attr name="cornerRadius" format="dimension" />
     </declare-styleable>
 </resources>

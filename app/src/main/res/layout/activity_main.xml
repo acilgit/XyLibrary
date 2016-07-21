@@ -9,9 +9,16 @@
 
     <com.xycode.xylibrary.xRefresher.XRefresher
         android:id="@+id/xRefresher"
-        app:bg="#9F9"
+        app:bg="#4Fd"
         app:hint="非常好，没数据"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+
+    <com.facebook.drawee.view.SimpleDraweeView
+        app:placeholderImage="@color/colorAccent"
+        app:failureImage="@color/colorAccent"
+        app:actualImageScaleType="centerCrop"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </LinearLayout>
