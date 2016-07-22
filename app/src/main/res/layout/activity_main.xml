@@ -9,7 +9,7 @@
 
     <com.xycode.xylibrary.xRefresher.XRefresher
         android:id="@+id/xRefresher"
-        app:bg="#fda"
+        app:bgNoData="#fda"
         app:hint="非常好，没数据"
         app:hintColor="#f33"
         app:hintSize="14dp"

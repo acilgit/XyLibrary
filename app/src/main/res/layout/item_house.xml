@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:fresco="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/llItem"
     android:layout_width="match_parent"
@@ -9,15 +8,11 @@
 
         <com.xycode.xylibrary.uiKit.views.MultiImageView
             android:id="@+id/mvItem"
-            app:holderImage="@mipmap/lx"
-            app:cornerRadius="20dp"
+            android:layout_marginLeft="60dp"
+            app:holderImage="@mipmap/chuzu"
+            app:cornerRadius="8dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
-        <!--<com.facebook.drawee.view.SimpleDraweeView-->
-            <!--android:id="@+id/sdvItem"-->
-            <!--app:placeholderImage="@color/colorAccent"-->
-            <!--android:layout_width="62dp"-->
-            <!--android:layout_height="62dp"/>-->
 
         <TextView
             android:id="@+id/tvName"

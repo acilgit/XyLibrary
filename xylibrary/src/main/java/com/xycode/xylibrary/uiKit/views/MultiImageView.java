@@ -2,9 +2,9 @@ package com.xycode.xylibrary.uiKit.views;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -29,9 +29,11 @@ public class MultiImageView extends LinearLayout {
      **/
     private int pxOneMaxWandHeight;  // single max width
     private int pxMoreWandHeight = 0;// multi max width
-    private int pxImagePadding = (int) Tools.dp2px(getContext(), 3.0f);// image padding
+    private int pxImagePadding = (int) Tools.dp2px(getContext(), 2.0f);// image padding
 
     private int MAX_PER_ROW_COUNT = 3;// max count in one row
+
+    private int att_maxRow = 3;
 
     private LayoutParams onePicPara;
     private LayoutParams morePara, moreParaColumnFirst;
@@ -48,10 +50,13 @@ public class MultiImageView extends LinearLayout {
     private int att_pressedOverlayHolder = -1;
 
     private int att_imagePadding = -1;
+    private boolean att_itemSameSize = false;
+
     private int att_roundedCornerRadius = -1;
 
     private OnItemClickListener onItemClickListener;
     private OnImageLoadListener imageLoadListener = null;
+    private OnImageOverlayListener imageOverlayListener = null;
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
@@ -63,10 +68,11 @@ public class MultiImageView extends LinearLayout {
 
     public MultiImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        LayoutInflater.from(context).inflate(R.layout.layout_refresher, this, true);
-        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.XRefresher);
+        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.MultiImageView);
 
-        att_actualScale =  typedArray.getInt(R.styleable.MultiImageView_imageScaleType, -1);
+        att_itemSameSize = typedArray.getBoolean(R.styleable.MultiImageView_itemSameSize, false);
+        att_maxRow = typedArray.getInt(R.styleable.MultiImageView_maxRow, 3);
+        att_actualScale = typedArray.getInt(R.styleable.MultiImageView_imageScaleType, -1);
         att_failureScale = typedArray.getInt(R.styleable.MultiImageView_onFailureImageScaleType, -1);
         att_placeHolder = typedArray.getResourceId(R.styleable.MultiImageView_holderImage, -1);
         att_failureHolder = typedArray.getResourceId(R.styleable.MultiImageView_onFailureImage, -1);
@@ -82,6 +88,7 @@ public class MultiImageView extends LinearLayout {
         super.onFinishInflate();
         actualScale = checkScaleType(att_actualScale);
         failureScale = checkScaleType(att_failureScale);
+        if (att_imagePadding != -1) pxImagePadding = att_imagePadding;
     }
 
     private ScalingUtils.ScaleType checkScaleType(int att_scaleType) {
@@ -107,7 +114,6 @@ public class MultiImageView extends LinearLayout {
     }
 
 
-
     public void setList(List<String> lists) throws IllegalArgumentException {
         if (lists == null) {
             throw new IllegalArgumentException("imageList is null...");
@@ -115,7 +121,12 @@ public class MultiImageView extends LinearLayout {
         imagesList = lists;
 
         if (MAX_WIDTH > 0) {
-            pxMoreWandHeight = (MAX_WIDTH - pxImagePadding * 2) / 3; // solve right image align problem
+            if (!att_itemSameSize && (lists.size() == 2 || lists.size() == 4)) {
+                pxMoreWandHeight = (MAX_WIDTH - pxImagePadding) / 2; // solve right image align problem
+            } else {
+                pxMoreWandHeight = (MAX_WIDTH - pxImagePadding * 2) / 3; // solve right image align problem
+
+            }
             pxOneMaxWandHeight = MAX_WIDTH * 2 / 3;
             initImageLayoutParams();
         }
@@ -196,7 +207,8 @@ public class MultiImageView extends LinearLayout {
             return;
         }
         int allCount = imagesList.size();
-        if (allCount == 4) {
+        if (att_maxRow != -1 && allCount > (att_maxRow * 3)) allCount = att_maxRow * 3;
+        if (allCount == 2 || allCount == 4) {
             MAX_PER_ROW_COUNT = 2;
         } else {
             MAX_PER_ROW_COUNT = 3;
@@ -210,7 +222,6 @@ public class MultiImageView extends LinearLayout {
             if (rowCursor != 0) {
                 rowLayout.setPadding(0, pxImagePadding, 0, 0);
             }
-
             int columnCount = allCount % MAX_PER_ROW_COUNT == 0 ? MAX_PER_ROW_COUNT : allCount % MAX_PER_ROW_COUNT;
             if (rowCursor != rowCount - 1) {
                 columnCount = MAX_PER_ROW_COUNT;
@@ -247,20 +258,27 @@ public class MultiImageView extends LinearLayout {
             @Override
             public void setHierarchyBuilder(GenericDraweeHierarchyBuilder hierarchyBuilder) {
                 if (att_actualScale != -1) hierarchyBuilder.setActualImageScaleType(actualScale);
-                if (att_placeHolder != -1) hierarchyBuilder.setPlaceholderImage(getResources().getDrawable(att_placeHolder) );
+                if (att_placeHolder != -1)
+                    hierarchyBuilder.setPlaceholderImage(getResources().getDrawable(att_placeHolder));
                 if (att_failureHolder != -1) {
                     if (att_failureScale != -1) {
-                        hierarchyBuilder.setFailureImage(getResources().getDrawable(att_failureHolder) ,failureScale);
+                        hierarchyBuilder.setFailureImage(getResources().getDrawable(att_failureHolder), failureScale);
                     } else {
                         hierarchyBuilder.setFailureImage(getResources().getDrawable(att_failureHolder));
                     }
                 }
-                if (att_pressedOverlayHolder != -1) hierarchyBuilder.setPressedStateOverlay(getResources().getDrawable(att_pressedOverlayHolder) );
-                if (att_roundedCornerRadius != -1) hierarchyBuilder.setRoundingParams(new RoundingParams().setCornersRadius(att_roundedCornerRadius));
+                if (att_pressedOverlayHolder != -1)
+                    hierarchyBuilder.setPressedStateOverlay(getResources().getDrawable(att_pressedOverlayHolder));
+                if (att_roundedCornerRadius != -1)
+                    hierarchyBuilder.setRoundingParams(new RoundingParams().setCornersRadius(att_roundedCornerRadius));
+                if (imageOverlayListener != null) {
+                    Drawable drawable = imageOverlayListener.setOverlayDrawable(position);
+                    if (drawable != null) hierarchyBuilder.setOverlay(drawable);
+                }
+
             }
         });
 
-        if (att_imagePadding != -1) imageView.setPadding(att_imagePadding, att_imagePadding,att_imagePadding,att_imagePadding);
         ImageUtils.setImageUriWithPreview(imageView, Uri.parse(url), previewUri);
         imageView.setId(url.hashCode());
         if (onItemClickListener != null) {
@@ -274,12 +292,20 @@ public class MultiImageView extends LinearLayout {
         return imageView;
     }
 
+    public void setLoadImageListener(OnImageLoadListener imageLoadListener) {
+        this.imageLoadListener = imageLoadListener;
+    }
+
+    public void setOverlayDrawableListener(OnImageOverlayListener imageOverlayListener) {
+        this.imageOverlayListener = imageOverlayListener;
+    }
+
     public interface OnImageLoadListener {
         Uri setPreviewUri(int position);
     }
 
-    public void setLoadImageListener(OnImageLoadListener imageLoadListener) {
-        this.imageLoadListener = imageLoadListener;
+    public interface OnImageOverlayListener {
+        Drawable setOverlayDrawable(int position);
     }
 
     public interface OnItemClickListener {

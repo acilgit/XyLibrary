@@ -9,16 +9,6 @@
         <attr name="bgNoData" format="reference|color"/>
     </declare-styleable>
 
-<!--    <declare-styleable name="MultiImageView">
-        <attr name="placeHolder" />
-        <attr name="failureImage"/>
-        <attr name="pressedStateOverlayImage"/>
-        <attr name="actualImageScaleType"/>
-        <attr name="failureImageScaleType"/>
-        <attr name="imagePadding"/>
-        <attr name="roundedCornerRadius"/>
-    </declare-styleable>-->
-
     <declare-styleable name="MultiImageView">
         <attr name="holderImage" format="reference" />
         <attr name="onFailureImage" format="reference" />
@@ -45,5 +35,9 @@
         </attr>
         <attr name="imagePadding" format="dimension" />
         <attr name="cornerRadius" format="dimension" />
+        <attr name="itemSameSize" format="boolean" />
+        <attr name="maxRow" format="integer|enum" >
+            <enum name="unlimited" value="-1" />
+            </attr>
     </declare-styleable>
 </resources>

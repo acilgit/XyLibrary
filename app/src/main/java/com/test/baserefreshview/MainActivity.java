@@ -34,9 +34,9 @@ public class MainActivity extends BaseActivity {
 //                        .setImageUrl(R.id.sdvItem, item.getCoverPicture())
                         .setText(R.id.tvText, pos + "");
                 List<String> list = new ArrayList<>();
-//                for (int i = 0; i <= pos; i++) {
+                for (int i = 0; i <= pos; i++) {
                     list.add(item.getCoverPicture());
-//                }
+                }
                 MultiImageView mvItem = holder.getView(R.id.mvItem);
                 mvItem.setList(list);
             }
@@ -54,8 +54,8 @@ public class MainActivity extends BaseActivity {
             }
         };
 
-        adapter.addHeader(1, R.layout.item_house);
-        adapter.addHeader(2, R.layout.layout_load_more);
+//        adapter.addHeader(1, R.layout.item_house);
+//        adapter.addHeader(2, R.layout.layout_load_more);
 
         xRefresher.setup(this, adapter, true, new XRefresher.RefreshRequest<ContentBean>() {
             @Override
