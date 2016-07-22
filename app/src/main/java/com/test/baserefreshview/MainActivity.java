@@ -2,6 +2,7 @@ package com.test.baserefreshview;
 
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.view.View;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -10,6 +11,7 @@ import com.xycode.xylibrary.adapter.XAdapter;
 import com.xycode.xylibrary.base.BaseActivity;
 import com.xycode.xylibrary.okHttp.Param;
 import com.xycode.xylibrary.uiKit.views.MultiImageView;
+import com.xycode.xylibrary.utils.TS;
 import com.xycode.xylibrary.xRefresher.XRefresher;
 
 import java.util.ArrayList;
@@ -43,18 +45,18 @@ public class MainActivity extends BaseActivity {
                 mvItem.setOverlayDrawableListener(new MultiImageView.OnImageOverlayListener() {
                     @Override
                     public Drawable setOverlayDrawable(int position) {
-                        if (position == 6) {
+                        if (position == 8) {
                            return getResources().getDrawable(R.drawable.more_images);
                         }
                         return null;
                     }
                 });
-               /* mvItem.setOnItemClickListener(new MultiImageView.OnItemClickListener() {
+                mvItem.setOnItemClickListener(new MultiImageView.OnItemClickListener() {
                     @Override
                     public void onItemClick(View view, int position) {
                         TS.showShort(getThis(), "ok");
                     }
-                });*/
+                });
             }
 
             @Override

@@ -20,9 +20,9 @@
             android:id="@+id/mvItem"
             android:layout_marginLeft="60dp"
             app:holderImage="@mipmap/chuzu"
-            app:cornerRadius="2dp"
-            app:maxRow="4"
-            app:largeSingleImage="true"
+            app:cornerRadius="8dp"
+            app:maxRow="3"
+            app:itemSameSize="true"
             app:pressedOverlayImage="@drawable/more_images"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
