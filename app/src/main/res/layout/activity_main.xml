@@ -11,6 +11,8 @@
         android:id="@+id/xRefresher"
         app:bg="#4Fd"
         app:hint="非常好，没数据"
+        app:hintColor="#999"
+        app:hintSize="20dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 

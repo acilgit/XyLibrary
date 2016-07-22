@@ -6,6 +6,7 @@
         <attr name="hintSize" format="dimension" />
         <attr name="hintColor" format="color" />
         <attr name="bg" format="reference|color"/>
+        <attr name="bgNoData" format="reference|color"/>
     </declare-styleable>
 
 <!--    <declare-styleable name="MultiImageView">

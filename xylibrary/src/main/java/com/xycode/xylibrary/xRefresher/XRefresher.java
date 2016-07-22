@@ -16,6 +16,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -49,7 +50,12 @@ public class XRefresher<T> extends RelativeLayout {
     private static XAdapter.ICustomerFooter iCustomerFooter;
     private static int footerLayout = -1;
     private static Dialog loadingDialog;
+
     private int background;
+    private boolean backgroundIsRes = false;
+    private int backgroundNoData;
+    private boolean backgroundNoDataIsRes = false;
+
     private int hintColor;
     private float hintSize;
     private String hint;
@@ -86,7 +92,17 @@ public class XRefresher<T> extends RelativeLayout {
         hint = typedArray.getString(R.styleable.XRefresher_hint);
         hintSize = typedArray.getDimensionPixelSize(R.styleable.XRefresher_hintSize, 1);
         hintColor = typedArray.getColor(R.styleable.XRefresher_hintColor, 1);
-        background = typedArray.getResourceId(R.styleable.XRefresher_bg, 1);
+        background = typedArray.getColor(R.styleable.XRefresher_bg, 1);
+        if (background == 1) {
+            backgroundIsRes = true;
+            background = typedArray.getResourceId(R.styleable.XRefresher_bg, 1);
+        }
+        backgroundNoData = typedArray.getColor(R.styleable.XRefresher_bgNoData, 1);
+        if (backgroundNoData == 1) {
+            backgroundNoDataIsRes = true;
+            backgroundNoData = typedArray.getResourceId(R.styleable.XRefresher_bgNoData, 1);
+        }
+
 
         typedArray.recycle();
     }
@@ -100,10 +116,18 @@ public class XRefresher<T> extends RelativeLayout {
         textView = (TextView) findViewById(R.id.tvMain);
 
         textView.setText(hint);
-        if (hintSize != 1) textView.setTextSize(hintSize);
+        if (hintSize != 1) textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, hintSize);
         if (hintColor != 1) textView.setTextColor(hintColor);
-        if (background != 1) textView.setBackgroundResource(background);
-        if (background != 1) rlMain.setBackgroundResource(background);
+        if (backgroundIsRes) {
+            rlMain.setBackgroundResource(background);
+        } else if (background != 1) {
+            rlMain.setBackgroundColor(background);
+        }
+        if (backgroundNoDataIsRes) {
+            textView.setBackgroundResource(backgroundNoData);
+        } else if (backgroundNoData != 1) {
+            textView.setBackgroundColor(backgroundNoData);
+        }
 
     }
 
@@ -114,6 +138,7 @@ public class XRefresher<T> extends RelativeLayout {
     public void setup(Activity activity, XAdapter<T> adapter, boolean loadMore, OnSwipeListener swipeListener, RefreshRequest refreshRequest, int refreshPageSize) {
         init(activity, adapter, loadMore, swipeListener, refreshRequest, refreshPageSize);
     }
+
     public void setup(Activity activity, XAdapter<T> adapter, boolean loadMore, @NonNull RefreshRequest refreshRequest) {
         init(activity, adapter, loadMore, null, refreshRequest, 10);
     }
@@ -121,6 +146,7 @@ public class XRefresher<T> extends RelativeLayout {
     public void setup(Activity activity, XAdapter<T> adapter, boolean loadMore, @NonNull RefreshRequest refreshRequest, int refreshPageSize) {
         init(activity, adapter, loadMore, null, refreshRequest, refreshPageSize);
     }
+
     private void init(Activity activity, XAdapter<T> adapter, boolean loadMore, final OnSwipeListener swipeListener, final RefreshRequest refreshRequest, int refreshPageSize) {
         recyclerView.setLayoutManager(new LinearLayoutManager(activity));
         this.loadMore = loadMore;
@@ -132,7 +158,7 @@ public class XRefresher<T> extends RelativeLayout {
         ((SwipeRefreshLayout) findViewById(R.id.swipe)).setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-               if(swipeListener != null) swipeListener.onRefresh();
+                if (swipeListener != null) swipeListener.onRefresh();
                 if (refreshRequest != null) refreshList();
             }
         });
@@ -169,7 +195,6 @@ public class XRefresher<T> extends RelativeLayout {
     }
 
     /**
-     *
      * @param pageSize page size shown in one time
      */
     private void getDataByRefresh(int pageSize) {

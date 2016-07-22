@@ -19,20 +19,13 @@ import com.xycode.xylibrary.utils.Tools;
 
 import java.util.List;
 
-/**
- * @author shoyu
- * @ClassName MultiImageView.java
- * @Description: show 1~N image View
- */
-
 public class MultiImageView extends LinearLayout {
     public static int MAX_WIDTH = 0;
 
-    // 照片的Url列表
     private List<String> imagesList;
 
     /**
-     * 长度 单位为Pixel
+     * unit Pixel
      **/
     private int pxOneMaxWandHeight;  // single max width
     private int pxMoreWandHeight = 0;// multi max width
@@ -73,8 +66,8 @@ public class MultiImageView extends LinearLayout {
         LayoutInflater.from(context).inflate(R.layout.layout_refresher, this, true);
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.XRefresher);
 
-        att_actualScale =  typedArray.getInteger(R.styleable.MultiImageView_imageScaleType, -1);
-        att_failureScale = typedArray.getInteger(R.styleable.MultiImageView_onFailureImageScaleType, -1);
+        att_actualScale =  typedArray.getInt(R.styleable.MultiImageView_imageScaleType, -1);
+        att_failureScale = typedArray.getInt(R.styleable.MultiImageView_onFailureImageScaleType, -1);
         att_placeHolder = typedArray.getResourceId(R.styleable.MultiImageView_holderImage, -1);
         att_failureHolder = typedArray.getResourceId(R.styleable.MultiImageView_onFailureImage, -1);
         att_pressedOverlayHolder = typedArray.getResourceId(R.styleable.MultiImageView_pressedOverlayImage, -1);
