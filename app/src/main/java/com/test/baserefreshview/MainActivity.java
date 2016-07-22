@@ -8,6 +8,7 @@ import com.test.baserefreshview.ListBean.Content.ContentBean;
 import com.xycode.xylibrary.adapter.XAdapter;
 import com.xycode.xylibrary.base.BaseActivity;
 import com.xycode.xylibrary.okHttp.Param;
+import com.xycode.xylibrary.uiKit.views.MultiImageView;
 import com.xycode.xylibrary.xRefresher.XRefresher;
 
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ public class MainActivity extends BaseActivity {
 
     private XRefresher xRefresher;
     private int type = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,8 +31,14 @@ public class MainActivity extends BaseActivity {
             public void bindingHolder(CustomHolder holder, List<ContentBean> dataList, int pos) {
                 ContentBean item = dataList.get(pos);
                 holder.setText(R.id.tvName, item.getTitle())
-                        .setImageUrl(R.id.sdvItem, item.getCoverPicture())
-                .setText(R.id.tvText, pos + "");
+//                        .setImageUrl(R.id.sdvItem, item.getCoverPicture())
+                        .setText(R.id.tvText, pos + "");
+                List<String> list = new ArrayList<>();
+//                for (int i = 0; i <= pos; i++) {
+                    list.add(item.getCoverPicture());
+//                }
+                MultiImageView mvItem = holder.getView(R.id.mvItem);
+                mvItem.setList(list);
             }
 
             @Override

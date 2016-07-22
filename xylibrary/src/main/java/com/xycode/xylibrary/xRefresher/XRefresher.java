@@ -94,13 +94,13 @@ public class XRefresher<T> extends RelativeLayout {
         hintColor = typedArray.getColor(R.styleable.XRefresher_hintColor, 1);
         background = typedArray.getColor(R.styleable.XRefresher_bg, 1);
         if (background == 1) {
-            backgroundIsRes = true;
             background = typedArray.getResourceId(R.styleable.XRefresher_bg, 1);
+            backgroundIsRes = background != 1;
         }
         backgroundNoData = typedArray.getColor(R.styleable.XRefresher_bgNoData, 1);
         if (backgroundNoData == 1) {
-            backgroundNoDataIsRes = true;
             backgroundNoData = typedArray.getResourceId(R.styleable.XRefresher_bgNoData, 1);
+            backgroundNoDataIsRes = backgroundNoData != 1;
         }
 
 

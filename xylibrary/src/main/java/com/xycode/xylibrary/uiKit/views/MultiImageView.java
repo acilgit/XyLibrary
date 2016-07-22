@@ -196,7 +196,7 @@ public class MultiImageView extends LinearLayout {
             return;
         }
         int allCount = imagesList.size();
-        if (allCount == 2 || allCount == 4) {
+        if (allCount == 4) {
             MAX_PER_ROW_COUNT = 2;
         } else {
             MAX_PER_ROW_COUNT = 3;
@@ -259,15 +259,18 @@ public class MultiImageView extends LinearLayout {
                 if (att_roundedCornerRadius != -1) hierarchyBuilder.setRoundingParams(new RoundingParams().setCornersRadius(att_roundedCornerRadius));
             }
         });
+
         if (att_imagePadding != -1) imageView.setPadding(att_imagePadding, att_imagePadding,att_imagePadding,att_imagePadding);
         ImageUtils.setImageUriWithPreview(imageView, Uri.parse(url), previewUri);
         imageView.setId(url.hashCode());
-        imageView.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onItemClickListener.onItemClick(v, position);
-            }
-        });
+        if (onItemClickListener != null) {
+            imageView.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onItemClickListener.onItemClick(v, position);
+                }
+            });
+        }
         return imageView;
     }
 
