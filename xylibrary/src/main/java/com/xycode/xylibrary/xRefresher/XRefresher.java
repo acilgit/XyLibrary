@@ -12,13 +12,13 @@ import android.support.annotation.ColorRes;
 import android.support.annotation.DimenRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.alibaba.fastjson.JSONObject;
@@ -40,7 +40,7 @@ import okhttp3.Response;
 /**
  * Created by XY on 2016/6/17.
  */
-public class XRefresher<T> extends RelativeLayout {
+public class XRefresher<T> extends CoordinatorLayout {
 
     private static final int REFRESH = 1;
     private static final int LOAD = 2;
@@ -73,7 +73,7 @@ public class XRefresher<T> extends RelativeLayout {
 
     private int lastVisibleItem = 0;
     private boolean loadMore;
-    private RelativeLayout rlMain;
+    private CoordinatorLayout rlMain;
 
     public static void setCustomerFooterView(@LayoutRes int footerLayout, XAdapter.ICustomerFooter iCustomerFooter) {
         XRefresher.footerLayout = footerLayout;
@@ -103,14 +103,13 @@ public class XRefresher<T> extends RelativeLayout {
             backgroundNoDataIsRes = backgroundNoData != 1;
         }
 
-
         typedArray.recycle();
     }
 
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        rlMain = (RelativeLayout) findViewById(R.id.rlMain);
+        rlMain = (CoordinatorLayout) findViewById(R.id.rlMain);
         swipe = (SwipeRefreshLayout) findViewById(R.id.swipe);
         recyclerView = (RecyclerView) findViewById(R.id.rvMain);
         textView = (TextView) findViewById(R.id.tvMain);

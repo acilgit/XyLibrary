@@ -1,5 +1,6 @@
 package com.test.baserefreshview;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import com.alibaba.fastjson.JSON;
@@ -39,6 +40,21 @@ public class MainActivity extends BaseActivity {
                 }
                 MultiImageView mvItem = holder.getView(R.id.mvItem);
                 mvItem.setList(list);
+                mvItem.setOverlayDrawableListener(new MultiImageView.OnImageOverlayListener() {
+                    @Override
+                    public Drawable setOverlayDrawable(int position) {
+                        if (position == 6) {
+                           return getResources().getDrawable(R.drawable.more_images);
+                        }
+                        return null;
+                    }
+                });
+               /* mvItem.setOnItemClickListener(new MultiImageView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(View view, int position) {
+                        TS.showShort(getThis(), "ok");
+                    }
+                });*/
             }
 
             @Override

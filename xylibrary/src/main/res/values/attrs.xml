@@ -36,6 +36,7 @@
         <attr name="imagePadding" format="dimension" />
         <attr name="cornerRadius" format="dimension" />
         <attr name="itemSameSize" format="boolean" />
+        <attr name="largeSingleImage" format="boolean" />
         <attr name="maxRow" format="integer|enum" >
             <enum name="unlimited" value="-1" />
             </attr>

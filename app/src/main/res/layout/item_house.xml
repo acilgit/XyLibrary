@@ -4,15 +4,8 @@
     android:id="@+id/llItem"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_weight="1"
     android:orientation="vertical">
-
-        <com.xycode.xylibrary.uiKit.views.MultiImageView
-            android:id="@+id/mvItem"
-            android:layout_marginLeft="60dp"
-            app:holderImage="@mipmap/chuzu"
-            app:cornerRadius="8dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
 
         <TextView
             android:id="@+id/tvName"
@@ -22,6 +15,17 @@
             android:paddingLeft="2dp"
             android:text=""
             android:textSize="25dp" />
+
+        <com.xycode.xylibrary.uiKit.views.MultiImageView
+            android:id="@+id/mvItem"
+            android:layout_marginLeft="60dp"
+            app:holderImage="@mipmap/chuzu"
+            app:cornerRadius="2dp"
+            app:maxRow="4"
+            app:largeSingleImage="true"
+            app:pressedOverlayImage="@drawable/more_images"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
         <TextView
             android:id="@+id/tvText"

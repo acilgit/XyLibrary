@@ -28,8 +28,9 @@ public class MultiImageView extends LinearLayout {
      * unit Pixel
      **/
     private int pxOneMaxWandHeight;  // single max width
-    private int pxMoreWandHeight = 0;// multi max width
-    private int pxImagePadding = (int) Tools.dp2px(getContext(), 2.0f);// image padding
+    private int pxOneMaxWandWidth;  // single max width
+    private int pxMoreWandSide = 0;// multi max width
+    private int pxImagePadding = (int) Math.ceil(Tools.dp2px(getContext(), 3.0f));// image padding
 
     private int MAX_PER_ROW_COUNT = 3;// max count in one row
 
@@ -51,6 +52,7 @@ public class MultiImageView extends LinearLayout {
 
     private int att_imagePadding = -1;
     private boolean att_itemSameSize = false;
+    private boolean att_largeSingleImage = false;
 
     private int att_roundedCornerRadius = -1;
 
@@ -71,6 +73,7 @@ public class MultiImageView extends LinearLayout {
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.MultiImageView);
 
         att_itemSameSize = typedArray.getBoolean(R.styleable.MultiImageView_itemSameSize, false);
+        att_largeSingleImage = typedArray.getBoolean(R.styleable.MultiImageView_largeSingleImage, false);
         att_maxRow = typedArray.getInt(R.styleable.MultiImageView_maxRow, 3);
         att_actualScale = typedArray.getInt(R.styleable.MultiImageView_imageScaleType, -1);
         att_failureScale = typedArray.getInt(R.styleable.MultiImageView_onFailureImageScaleType, -1);
@@ -122,12 +125,12 @@ public class MultiImageView extends LinearLayout {
 
         if (MAX_WIDTH > 0) {
             if (!att_itemSameSize && (lists.size() == 2 || lists.size() == 4)) {
-                pxMoreWandHeight = (MAX_WIDTH - pxImagePadding) / 2; // solve right image align problem
+                pxMoreWandSide = (MAX_WIDTH - pxImagePadding) / 2; // solve right image align problem
             } else {
-                pxMoreWandHeight = (MAX_WIDTH - pxImagePadding * 2) / 3; // solve right image align problem
+                pxMoreWandSide = (MAX_WIDTH - pxImagePadding * 2) / 3; // solve right image align problem
 
             }
-            pxOneMaxWandHeight = MAX_WIDTH * 2 / 3;
+            pxOneMaxWandWidth = att_largeSingleImage ? MAX_WIDTH : MAX_WIDTH * 2 / 3;
             initImageLayoutParams();
         }
 
@@ -179,10 +182,10 @@ public class MultiImageView extends LinearLayout {
         int wrap = LayoutParams.WRAP_CONTENT;
         int match = LayoutParams.MATCH_PARENT;
 
-        onePicPara = new LayoutParams(pxOneMaxWandHeight, wrap);
+        onePicPara = new LayoutParams(pxOneMaxWandWidth, pxOneMaxWandHeight > 0 ? pxOneMaxWandHeight : pxOneMaxWandWidth);
 
-        moreParaColumnFirst = new LayoutParams(pxMoreWandHeight, pxMoreWandHeight);
-        morePara = new LayoutParams(pxMoreWandHeight, pxMoreWandHeight);
+        moreParaColumnFirst = new LayoutParams(pxMoreWandSide, pxMoreWandSide);
+        morePara = new LayoutParams(pxMoreWandSide, pxMoreWandSide);
         morePara.setMargins(pxImagePadding, 0, 0, 0);
 
         rowPara = new LayoutParams(match, wrap);
@@ -246,7 +249,7 @@ public class MultiImageView extends LinearLayout {
             imageView.setLayoutParams(position % MAX_PER_ROW_COUNT == 0 ? moreParaColumnFirst : morePara);
         } else {
             imageView.setAdjustViewBounds(true);
-            imageView.setMaxHeight(pxOneMaxWandHeight);
+            imageView.setMaxHeight(pxOneMaxWandWidth);
             imageView.setLayoutParams(onePicPara);
         }
         Uri previewUri = null;
@@ -275,21 +278,24 @@ public class MultiImageView extends LinearLayout {
                     Drawable drawable = imageOverlayListener.setOverlayDrawable(position);
                     if (drawable != null) hierarchyBuilder.setOverlay(drawable);
                 }
-
             }
         });
 
         ImageUtils.setImageUriWithPreview(imageView, Uri.parse(url), previewUri);
         imageView.setId(url.hashCode());
-        if (onItemClickListener != null) {
-            imageView.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
+        imageView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (onItemClickListener != null) {
                     onItemClickListener.onItemClick(v, position);
                 }
-            });
-        }
+            }
+        });
         return imageView;
+    }
+
+    public void setSingleImageHeight(int height) {
+        pxOneMaxWandHeight = height;
     }
 
     public void setLoadImageListener(OnImageLoadListener imageLoadListener) {
