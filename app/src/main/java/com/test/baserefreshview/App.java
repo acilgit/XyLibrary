@@ -35,6 +35,12 @@ public class App extends Application {
             return;
         }
 
+      /*  TS.init(this, new TS.IToastLayoutSetter() {
+            @Override
+            public void onToastLayout(View root, Toast toast) {
+
+            }
+        });*/
         Fresco.initialize(this);
         OkHttp.init(new OkHttp.IOkInit() {
             @Override
@@ -42,9 +48,9 @@ public class App extends Application {
                 String resultCode = json.getString("resultCode");
                 if ("1".equals(resultCode)) {
                     return OkHttp.RESULT_SUCCESS;
-                } else  if ("0".equals(resultCode)) {
+                } else if ("0".equals(resultCode)) {
                     return OkHttp.RESULT_ERROR;
-                }else  if ("-1".equals(resultCode)) {
+                } else if ("-1".equals(resultCode)) {
                     return OkHttp.RESULT_VERIFY_ERROR;
                 }
                 return OkHttp.RESULT_OTHER;

@@ -16,6 +16,8 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ScrollView;
 
+import com.xycode.xylibrary.unit.WH;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -109,6 +111,38 @@ public class Tools {
 //            L.e("matcher.find" + "(" + matcher.group() + ")");
         }
         return list;
+    }
+
+    /**
+     * get file name without ext
+     */
+    public static String getFileNameNoExt(String filename) {
+        if ((filename != null) && (filename.length() > 0)) {
+            int dot = filename.lastIndexOf('.');
+            if ((dot > -1) && (dot < (filename.length()))) {
+                return filename.substring(0, dot);
+            }
+        }
+        return filename;
+    }
+
+    public static WH getWidthHeightFromFilename(String filename, String mark, String splitter) {
+        int h = 0, w = 0;
+        try {
+            String name = getFileNameNoExt(filename);
+            int pos = name.lastIndexOf(mark);
+            if ((pos > -1) && (pos < (name.length()))) {
+                String wAndH = name.substring(pos+mark.length(), name.length());
+                String[] strings = wAndH.split(splitter);
+                w = Integer.parseInt(strings[0]);
+                h = Integer.parseInt(strings[1]);
+            }
+        } catch (Exception e) {
+            w = 500;
+            h = 500;
+        }
+        WH wh = new WH(w, h);
+        return wh;
     }
 
     /**
@@ -283,7 +317,6 @@ public class Tools {
     }
 
 
-
     public static File checkFile(String path, String aFileNameWithAnyPath) {
         final String fileName = new File(aFileNameWithAnyPath).getName();
         File file = new File(path, fileName);
@@ -371,7 +404,7 @@ public class Tools {
     }
 
     /**
-     *  px(pixel) to dp
+     * px(pixel) to dp
      */
     public static int px2dp(Context context, float pxValue) {
         final float scale = context.getResources().getDisplayMetrics().density;
@@ -380,6 +413,7 @@ public class Tools {
 
     /**
      * scroll to the view in a scrollview
+     *
      * @param scrollView
      * @param view
      */
@@ -429,7 +463,6 @@ public class Tools {
             return -1;
         }
     }
-
 
 
 }

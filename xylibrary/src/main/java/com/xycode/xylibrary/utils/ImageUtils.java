@@ -350,6 +350,11 @@ public class ImageUtils {
         return true;
     }
 
+    /**
+     * this method can only use once when view is created
+     * @param simpleDraweeView
+     * @param setDraweeHierarchy
+     */
     public static void setSimpleDraweeParams(SimpleDraweeView simpleDraweeView, ISetDraweeHierarchy setDraweeHierarchy) {
         GenericDraweeHierarchyBuilder builder = new GenericDraweeHierarchyBuilder(simpleDraweeView.getResources());
 //        GenericDraweeHierarchy hierarchy = simpleDraweeView.getHierarchy();

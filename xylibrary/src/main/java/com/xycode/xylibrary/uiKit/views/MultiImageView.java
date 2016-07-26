@@ -17,6 +17,7 @@ import com.xycode.xylibrary.R;
 import com.xycode.xylibrary.utils.ImageUtils;
 import com.xycode.xylibrary.utils.Tools;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MultiImageView extends LinearLayout {
@@ -24,9 +25,13 @@ public class MultiImageView extends LinearLayout {
 
     private List<String> imagesList;
 
+    private List<SimpleDraweeView> imageViewList;
+
     /**
      * unit Pixel
      **/
+
+    private float pxOneMaxAspectRatio = 1f;
     private int pxOneMaxWandHeight;  // single max width
     private int pxOneMaxWandWidth;  // single max width
     private int pxMoreWandSide = 0;// multi max width
@@ -70,6 +75,7 @@ public class MultiImageView extends LinearLayout {
 
     public MultiImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        imageViewList = new ArrayList<>();
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.MultiImageView);
 
         att_itemSameSize = typedArray.getBoolean(R.styleable.MultiImageView_itemSameSize, false);
@@ -184,7 +190,8 @@ public class MultiImageView extends LinearLayout {
 
         onePicPara = new LayoutParams(pxOneMaxWandWidth, pxOneMaxWandHeight > 0 ? pxOneMaxWandHeight : pxOneMaxWandWidth);
 
-        moreParaColumnFirst = new LayoutParams(pxMoreWandSide, pxMoreWandSide);
+        moreParaColumnFirst = new LayoutParams(pxMoreWandSide, wrap);
+
         morePara = new LayoutParams(pxMoreWandSide, pxMoreWandSide);
         morePara.setMargins(pxImagePadding, 0, 0, 0);
 
@@ -245,6 +252,8 @@ public class MultiImageView extends LinearLayout {
         SimpleDraweeView imageView;
 
         imageView = new SimpleDraweeView(getContext());
+        imageView.setAspectRatio(pxOneMaxAspectRatio);
+        imageViewList.add(imageView);
         if (isMultiImage) {
             imageView.setLayoutParams(position % MAX_PER_ROW_COUNT == 0 ? moreParaColumnFirst : morePara);
         } else {
@@ -294,8 +303,8 @@ public class MultiImageView extends LinearLayout {
         return imageView;
     }
 
-    public void setSingleImageHeight(int height) {
-        pxOneMaxWandHeight = height;
+    public void setSingleImageRatio(float aspectRatio) {
+        pxOneMaxAspectRatio = aspectRatio;
     }
 
     public void setLoadImageListener(OnImageLoadListener imageLoadListener) {
@@ -304,6 +313,10 @@ public class MultiImageView extends LinearLayout {
 
     public void setOverlayDrawableListener(OnImageOverlayListener imageOverlayListener) {
         this.imageOverlayListener = imageOverlayListener;
+    }
+
+    public List<String> getDraweeViewList() {
+        return imagesList;
     }
 
     public interface OnImageLoadListener {

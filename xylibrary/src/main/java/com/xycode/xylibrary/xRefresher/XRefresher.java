@@ -377,9 +377,7 @@ public class XRefresher<T> extends CoordinatorLayout {
         protected int compareTo(T item0, T item1) {
             return 0;
         }
-
     }
-
 
     private interface IRefreshRequest<T> {
         /**
