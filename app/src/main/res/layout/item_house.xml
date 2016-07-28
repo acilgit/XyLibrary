@@ -10,19 +10,21 @@
         <TextView
             android:id="@+id/tvName"
             android:layout_width="wrap_content"
-            android:layout_height="62dp"
+            android:layout_height="wrap_content"
             android:maxLines="1"
-            android:paddingLeft="2dp"
-            android:text=""
+            android:padding="8dp"
+            android:text="右蚵在中"
+            android:textColor="#999"
             android:textSize="25dp" />
 
         <com.xycode.xylibrary.uiKit.views.MultiImageView
             android:id="@+id/mvItem"
             android:layout_marginLeft="60dp"
             app:holderImage="@mipmap/chuzu"
-            app:cornerRadius="8dp"
+            app:cornerRadius="0dp"
             app:maxRow="3"
-            app:itemSameSize="true"
+            app:itemSameSize="false"
+            app:largeSingleImage="false"
             app:pressedOverlayImage="@drawable/more_images"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>

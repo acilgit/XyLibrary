@@ -1,7 +1,6 @@
 package com.test.baserefreshview;
 
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 
@@ -13,6 +12,7 @@ import com.xycode.xylibrary.base.BaseActivity;
 import com.xycode.xylibrary.okHttp.Param;
 import com.xycode.xylibrary.uiKit.views.MultiImageView;
 import com.xycode.xylibrary.unit.WH;
+import com.xycode.xylibrary.utils.L;
 import com.xycode.xylibrary.utils.TS;
 import com.xycode.xylibrary.utils.Tools;
 import com.xycode.xylibrary.xRefresher.XRefresher;
@@ -40,21 +40,25 @@ public class MainActivity extends BaseActivity {
 //                        .setImageUrl(R.id.sdvItem, item.getCoverPicture())
                         .setText(R.id.tvText, pos + "");
                 final List<String> list = new ArrayList<>();
-                for (int i = 0; i <= pos; i++) {
-                    list.add(item.getCoverPicture());
-                }
+                int ri = Tools.randomInt(1, 6);
                 MultiImageView mvItem = holder.getView(R.id.mvItem);
-                mvItem.setList(list);
-                if (list.size()==1) {
-                    mvItem.setSingleImageRatio(Tools.getWidthHeightFromFilename(list.get(0), "_wh", "x").getAspectRatio());
+//                if (dataList.get(pos).getCoverPicture() != null) {
+                    WH wh = Tools.getWidthHeightFromFilename(dataList.get(pos).getCoverPicture(), "_wh", "x");
+                float ratio = wh.getAspectRatio();
+                    mvItem.setSingleImageRatio(ratio<1 ? 1 : ratio);
+                    L.e("wh.getAspectRatio: "+ ratio);
+//                }
+                for (int i = 0; i <= pos; i++) {
+                    list.add(item.getCoverPicture() /*+"!"+ (int)(60*ratio)+ "!60"*/);
                 }
-                mvItem.setLoadImageListener(new MultiImageView.OnImageLoadListener() {
+                mvItem.setList(list);
+             /*   mvItem.setLoadImageListener(new MultiImageView.OnImageLoadListener() {
                     @Override
                     public Uri setPreviewUri(int position) {
                         WH wh = Tools.getWidthHeightFromFilename(list.get(position), "_wh", "x");
-                        return Uri.parse(list.get(position)+"!"+(wh.getAspectRatio()*50)+"!50");
+                        return Uri.parse(list.get(position)+"!"+(wh.getAspectRatio()*20)+"!20");
                     }
-                });
+                });*/
                 mvItem.setOverlayDrawableListener(new MultiImageView.OnImageOverlayListener() {
                     @Override
                     public Drawable setOverlayDrawable(int position) {

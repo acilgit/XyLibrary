@@ -50,6 +50,7 @@ public class XRefresher<T> extends CoordinatorLayout {
     private static XAdapter.ICustomerFooter iCustomerFooter;
     private static int footerLayout = -1;
     private static Dialog loadingDialog;
+    private static int[] loadingColorRes = null;
 
     private int background;
     private boolean backgroundIsRes = false;
@@ -166,6 +167,9 @@ public class XRefresher<T> extends CoordinatorLayout {
                 this.adapter.setCustomerFooter(footerLayout, iCustomerFooter);
             }
             if (refreshRequest != null) setLoadMoreListener();
+        }
+        if (loadingColorRes != null) {
+            swipe.setColorSchemeResources(loadingColorRes);
         }
     }
 
@@ -341,6 +345,13 @@ public class XRefresher<T> extends CoordinatorLayout {
 
     public static void setLoadingDialog(Dialog loadingDialog) {
         XRefresher.loadingDialog = loadingDialog;
+    }
+
+    public static void setLoadingArrowColor(@ColorRes int... loadingColorRes) {
+        XRefresher.loadingColorRes = new int[loadingColorRes.length];
+        for (int i = 0; i < loadingColorRes.length; i++) {
+            XRefresher.loadingColorRes[i] =loadingColorRes[i];
+        }
     }
 
     public static void resetPageParamsNames(String page, String pageSize) {

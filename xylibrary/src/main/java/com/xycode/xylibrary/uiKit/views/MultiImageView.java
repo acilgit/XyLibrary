@@ -188,9 +188,9 @@ public class MultiImageView extends LinearLayout {
         int wrap = LayoutParams.WRAP_CONTENT;
         int match = LayoutParams.MATCH_PARENT;
 
-        onePicPara = new LayoutParams(pxOneMaxWandWidth, pxOneMaxWandHeight > 0 ? pxOneMaxWandHeight : pxOneMaxWandWidth);
+        onePicPara = new LayoutParams(pxOneMaxWandWidth, /*pxOneMaxWandHeight > 0 ? pxOneMaxWandHeight : pxOneMaxWandWidth*/ wrap);
 
-        moreParaColumnFirst = new LayoutParams(pxMoreWandSide, wrap);
+        moreParaColumnFirst = new LayoutParams(pxMoreWandSide, pxMoreWandSide);
 
         morePara = new LayoutParams(pxMoreWandSide, pxMoreWandSide);
         morePara.setMargins(pxImagePadding, 0, 0, 0);
@@ -244,7 +244,6 @@ public class MultiImageView extends LinearLayout {
                 rowLayout.addView(createImageView(position, true));
             }
         }
-
     }
 
     private ImageView createImageView(final int position, final boolean isMultiImage) {
@@ -252,7 +251,9 @@ public class MultiImageView extends LinearLayout {
         SimpleDraweeView imageView;
 
         imageView = new SimpleDraweeView(getContext());
-        imageView.setAspectRatio(pxOneMaxAspectRatio);
+        if (imagesList.size() == 1) {
+            imageView.setAspectRatio(pxOneMaxAspectRatio);
+        }
         imageViewList.add(imageView);
         if (isMultiImage) {
             imageView.setLayoutParams(position % MAX_PER_ROW_COUNT == 0 ? moreParaColumnFirst : morePara);

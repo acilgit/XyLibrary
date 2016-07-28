@@ -26,6 +26,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
@@ -47,12 +48,48 @@ public class Tools {
 
     private static AtomicInteger atomicCounter = new AtomicInteger(0);
 
+    /**
+     * check application can only be invoked once
+     * @param context
+     * @return
+     */
+    public static boolean isProcessRunning(Context context) {
+        int pid = android.os.Process.myPid();
+        String processAppName = getAppName(context, pid);
+        if (processAppName == null || !processAppName.equalsIgnoreCase(context.getPackageName())) {
+            return false;
+        }
+        return true;
+    }
+
+    private static String getAppName(Context context, int pid) {
+        String processName = null;
+        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List list = activityManager.getRunningAppProcesses();
+        Iterator i = list.iterator();
+        while (i.hasNext()) {
+            ActivityManager.RunningAppProcessInfo info = (ActivityManager.RunningAppProcessInfo) (i.next());
+            try {
+                if (info.pid == pid) {
+                    processName = info.processName;
+                    return processName;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+
     public static Tools getInstance() {
         if (instance == null) {
             instance = new Tools();
         }
         return instance;
     }
+
+
 
     public static int randomInt(int min, int max) {
         return (int) (Math.random() * max) + min;
@@ -127,15 +164,17 @@ public class Tools {
     }
 
     public static WH getWidthHeightFromFilename(String filename, String mark, String splitter) {
-        int h = 0, w = 0;
+        int h = 500, w = 500;
         try {
             String name = getFileNameNoExt(filename);
             int pos = name.lastIndexOf(mark);
             if ((pos > -1) && (pos < (name.length()))) {
-                String wAndH = name.substring(pos+mark.length(), name.length());
+                String wAndH = name.substring(pos + mark.length(), name.length());
                 String[] strings = wAndH.split(splitter);
-                w = Integer.parseInt(strings[0]);
-                h = Integer.parseInt(strings[1]);
+                if (strings.length == 2) {
+                    w = Integer.parseInt(strings[0]);
+                    h = Integer.parseInt(strings[1]);
+                }
             }
         } catch (Exception e) {
             w = 500;

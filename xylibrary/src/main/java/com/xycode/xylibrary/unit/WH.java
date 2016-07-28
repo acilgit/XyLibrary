@@ -13,6 +13,9 @@ public class WH {
     }
 
     public float getAspectRatio() {
+        if (height == 0) {
+            return 0;
+        }
         return width * 1.0f / height;
     }
 
