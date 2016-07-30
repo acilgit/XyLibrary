@@ -1,6 +1,7 @@
 package com.xycode.xylibrary.base;
 
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -15,6 +16,10 @@ import com.xycode.xylibrary.R;
 public abstract class TabFragment extends Fragment {
 
     boolean mLoaded = false;
+
+    protected Activity getThis() {
+        return getActivity();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -76,7 +81,7 @@ public abstract class TabFragment extends Fragment {
      */
     protected void onLazyLoad() {
 
-    };
+    }
 
     protected ViewStub getViewStub() {
         return (ViewStub)getView().findViewById(R.id.viewStub);

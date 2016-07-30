@@ -5,8 +5,8 @@
 
     <ImageView
         android:id="@+id/imageLoading"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
         android:src="@mipmap/loading"
         android:scaleType="fitXY"
         android:layout_gravity="center" />

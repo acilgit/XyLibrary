@@ -11,6 +11,9 @@ import com.xycode.xylibrary.adapter.XAdapter;
 import com.xycode.xylibrary.base.BaseActivity;
 import com.xycode.xylibrary.okHttp.Param;
 import com.xycode.xylibrary.uiKit.views.MultiImageView;
+import com.xycode.xylibrary.uiKit.views.banner.BannerBehavior;
+import com.xycode.xylibrary.uiKit.views.banner.OnBannerClickListener;
+import com.xycode.xylibrary.uiKit.views.banner.XBannerView;
 import com.xycode.xylibrary.unit.WH;
 import com.xycode.xylibrary.utils.L;
 import com.xycode.xylibrary.utils.TS;
@@ -23,13 +26,17 @@ import java.util.List;
 public class MainActivity extends BaseActivity {
 
     private XRefresher xRefresher;
+    private XBannerView bannerView;
     private int type = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
         xRefresher = (XRefresher) findViewById(R.id.xRefresher);
+        bannerView = (XBannerView) findViewById(R.id.banner);
 
         XAdapter<ContentBean> adapter = new XAdapter<ContentBean>(this, new ArrayList<ContentBean>(), R.layout.item_house) {
 
@@ -110,9 +117,19 @@ public class MainActivity extends BaseActivity {
             protected boolean ignoreSameItem(ContentBean newItem, ContentBean listItem) {
                 return newItem.getId().equals(listItem.getId());
             }
-
         }, 4);
 //        xRefresher.refreshList();
+
+        List<String> bannerList = new ArrayList<>();
+        bannerList.add("http://mxycsku.qiniucdn.com/group5/M00/5B/0C/wKgBfVXdYkqAEzl0AAL6ZFMAdKk401.jpg");
+        bannerList.add("http://mxycsku.qiniucdn.com/group6/M00/98/E9/wKgBjVXdGPiAUmMHAALfY_C7_7U637.jpg");
+        bannerList.add("http://mxycsku.qiniucdn.com/group6/M00/96/F7/wKgBjVXbxnCABW_iAAKLH0qKKXo870.jpg");
+        bannerView.setup(bannerList, new BannerBehavior(new OnBannerClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+                TS.show("Hi + " + position);
+            }
+        }));
     }
 
 

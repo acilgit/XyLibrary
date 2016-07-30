@@ -15,6 +15,7 @@ import android.text.Html;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ScrollView;
+import android.widget.TextView;
 
 import com.xycode.xylibrary.unit.WH;
 
@@ -148,6 +149,16 @@ public class Tools {
 //            L.e("matcher.find" + "(" + matcher.group() + ")");
         }
         return list;
+    }
+
+    /**
+     * goto see Paint.UNDERLINE_TEXT_FLAG...
+     * @param textView
+     * @param paintEffect
+     */
+    public static void textEffect(TextView textView, int paintEffect) {
+        textView.getPaint().setFlags(paintEffect); // Paint.UNDERLINE_TEXT_FLAG
+        textView.getPaint().setAntiAlias(true);
     }
 
     /**

@@ -7,11 +7,11 @@ import android.support.annotation.NonNull;
 /**
  * Created by XY on 2016-07-27.
  */
-public class SpStorage {
+public class ShareStorage {
 
     private SharedPreferences storage;
 
-    public SpStorage(@NonNull Context context, @NonNull String preferenceName) {
+    public ShareStorage(@NonNull Context context, @NonNull String preferenceName) {
         storage = context.getSharedPreferences(preferenceName, Context.MODE_PRIVATE);
     }
 

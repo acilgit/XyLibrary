@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources >
 
+    <attr name="holderImage" format="reference" />
+
     <declare-styleable name="XRefresher">
         <attr name="hint" format="string" />
         <attr name="hintSize" format="dimension" />
@@ -9,8 +11,14 @@
         <attr name="bgNoData" format="reference|color"/>
     </declare-styleable>
 
+    <declare-styleable name="XBannerView">
+        <attr name="aspectRatio" format="float" />
+        <attr name="cutTime" format="integer" />
+        <attr name="holderImage" />
+    </declare-styleable>
+
     <declare-styleable name="MultiImageView">
-        <attr name="holderImage" format="reference" />
+        <attr name="holderImage" />
         <attr name="onFailureImage" format="reference" />
         <attr name="pressedOverlayImage" format="reference" />
         <attr name="imageScaleType">

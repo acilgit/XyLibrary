@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="white" >#FFF</color>
+    <color name="black" >#000</color>
+    <color name="grayLite" >#999</color>
+    <color name="gray" >#666</color>
+    <color name="grayDark" >#333</color>
+    <color name="grayBgLiteE" >#EEEEEE</color>
+    <color name="grayBgLiteD" >#DDDDDD</color>
+    <color name="grayBgLiteC" >#CCCCCC</color>
+    <color name="grayBgLiteB" >#BBBBBB</color>
+    <color name="grayBgPress" >#DDD</color>
+    <color name="transparentLite" >#33FFFFFF</color>
+    <color name="transparentDarkLite" >#33000000</color>
+</resources>

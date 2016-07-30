@@ -122,7 +122,6 @@ public class MultiImageView extends LinearLayout {
         return ScalingUtils.ScaleType.FIT_CENTER;
     }
 
-
     public void setList(List<String> lists) throws IllegalArgumentException {
         if (lists == null) {
             throw new IllegalArgumentException("imageList is null...");

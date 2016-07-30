@@ -7,6 +7,11 @@
     android:orientation="vertical"
     tools:context="com.test.baserefreshview.MainActivity">
 
+    <com.xycode.xylibrary.uiKit.views.banner.XBannerView
+        android:id="@+id/banner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
     <com.xycode.xylibrary.xRefresher.XRefresher
         android:id="@+id/xRefresher"
         app:bgNoData="#fda"
