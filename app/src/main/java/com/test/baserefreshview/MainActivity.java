@@ -26,7 +26,6 @@ import java.util.List;
 public class MainActivity extends BaseActivity {
 
     private XRefresher xRefresher;
-    private XBannerView bannerView;
     private int type = 0;
 
     @Override
@@ -36,7 +35,6 @@ public class MainActivity extends BaseActivity {
 
 
         xRefresher = (XRefresher) findViewById(R.id.xRefresher);
-        bannerView = (XBannerView) findViewById(R.id.banner);
 
         XAdapter<ContentBean> adapter = new XAdapter<ContentBean>(this, new ArrayList<ContentBean>(), R.layout.item_house) {
 
@@ -86,10 +84,30 @@ public class MainActivity extends BaseActivity {
             }
 
             @Override
+            protected void creatingHeader(CustomHolder holder, int headerKey) {
+                switch (headerKey) {
+                    case 1:
+                        XBannerView bannerView = holder.getView(R.id.banner);
+                        List<String> bannerList = new ArrayList<>();
+                        bannerList.add("http://mxycsku.qiniucdn.com/group5/M00/5B/0C/wKgBfVXdYkqAEzl0AAL6ZFMAdKk401.jpg");
+                        bannerList.add("http://mxycsku.qiniucdn.com/group6/M00/98/E9/wKgBjVXdGPiAUmMHAALfY_C7_7U637.jpg");
+                        bannerList.add("http://mxycsku.qiniucdn.com/group6/M00/96/F7/wKgBjVXbxnCABW_iAAKLH0qKKXo870.jpg");
+                        bannerView.setup(bannerList, new BannerBehavior(new OnBannerClickListener() {
+                            @Override
+                            public void onClick(View view, int position) {
+                                TS.show(getThis(), "Hi + " + position);
+                            }
+                        }));
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            @Override
             protected void bindingHeader(CustomHolder holder, int pos) {
                 switch (getItemViewType(pos)) {
                     case 1:
-                        holder.setText(R.id.tvName, "我是Header1");
                         break;
                     case 2:
                         holder.setText(R.id.tvLoading, "我是Header2");
@@ -98,7 +116,7 @@ public class MainActivity extends BaseActivity {
             }
         };
 
-//        adapter.addHeader(1, R.layout.item_house);
+        adapter.addHeader(1, R.layout.layout_banner);
 //        adapter.addHeader(2, R.layout.layout_load_more);
 
         xRefresher.setup(this, adapter, true, new XRefresher.RefreshRequest<ContentBean>() {
@@ -120,16 +138,6 @@ public class MainActivity extends BaseActivity {
         }, 4);
 //        xRefresher.refreshList();
 
-        List<String> bannerList = new ArrayList<>();
-        bannerList.add("http://mxycsku.qiniucdn.com/group5/M00/5B/0C/wKgBfVXdYkqAEzl0AAL6ZFMAdKk401.jpg");
-        bannerList.add("http://mxycsku.qiniucdn.com/group6/M00/98/E9/wKgBjVXdGPiAUmMHAALfY_C7_7U637.jpg");
-        bannerList.add("http://mxycsku.qiniucdn.com/group6/M00/96/F7/wKgBjVXbxnCABW_iAAKLH0qKKXo870.jpg");
-        bannerView.setup(bannerList, new BannerBehavior(new OnBannerClickListener() {
-            @Override
-            public void onClick(View view, int position) {
-                TS.show("Hi + " + position);
-            }
-        }));
     }
 
 

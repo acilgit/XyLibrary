@@ -25,6 +25,8 @@ public class XBannerView extends RelativeLayout {
 
     private BannerBehavior bannerBehavior;
 
+    private int MAX_WIDTH = 0;
+
     private int att_placeHolder;
     private float att_aspectRatio = 2f;
     private long att_cutTime = 3000;
@@ -55,16 +57,15 @@ public class XBannerView extends RelativeLayout {
         this.context= context;
         imageViewList = new ArrayList<>();
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.XBannerView);
-        att_aspectRatio = typedArray.getFloat(R.styleable.XBannerView_aspectRatio, 16f / 9);
-        att_cutTime = typedArray.getInt(R.styleable.XBannerView_aspectRatio, 3000);
+        att_aspectRatio = typedArray.getFloat(R.styleable.XBannerView_aspectRatio, att_aspectRatio);
+        att_cutTime = typedArray.getInt(R.styleable.XBannerView_cutTime, (int) att_cutTime);
         att_placeHolder = typedArray.getResourceId(R.styleable.XBannerView_holderImage, -1);
+        typedArray.recycle();
 	}
 
     public void setup(List<String> urlList, BannerBehavior bannerBehavior) {
-//        this.bannerUrls = urlList;
+        this.bannerUrls = urlList;
         this.bannerBehavior = bannerBehavior;
-		createView();
-		update(urlList);
     }
 
 	public void update(@NonNull List urlList) {
@@ -74,22 +75,59 @@ public class XBannerView extends RelativeLayout {
 		initCutHandler();
 		return;
 	}
-	private int getScreenWidth(){
-		return context.getApplicationContext().getResources().getDisplayMetrics().widthPixels;
-	}
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        if (MAX_WIDTH == 0) {
+            int width = measureWidth(widthMeasureSpec);
+            if (width > 0) {
+                MAX_WIDTH = width;
+                createView();
+                update(bannerUrls);
+            }
+        }
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
+
+    /**
+     * Determines the width of this view
+     *
+     * @param measureSpec A measureSpec packed into an int
+     * @return The width of the view, honoring constraints from measureSpec
+     */
+    private int measureWidth(int measureSpec) {
+        int result = 0;
+        int specMode = MeasureSpec.getMode(measureSpec);
+        int specSize = MeasureSpec.getSize(measureSpec);
+
+        if (specMode == MeasureSpec.EXACTLY) {
+            // We were told how big to be
+            result = specSize;
+        } else {
+            // Measure the text
+            // result = (int) mTextPaint.measureText(mText) + getPaddingLeft()
+            // + getPaddingRight();
+            if (specMode == MeasureSpec.AT_MOST) {
+                // Respect AT_MOST value if that was what is called for by
+                // measureSpec
+                result = Math.min(result, specSize);
+            }
+        }
+        return result;
+    }
 
 	private void createView() {
 		this.setBackgroundColor(0xFFFFFFFF);
 //		int bannerHeight = (int)((getScreenWidth()* att_aspectRatio));
 		ViewGroup.LayoutParams params = getLayoutParams();
-		params.height = LayoutParams.WRAP_CONTENT;
+		params.height = (int) ((1f*MAX_WIDTH) / att_aspectRatio);
 		params.width = LayoutParams.MATCH_PARENT;
 //		LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, );
 		this.setLayoutParams(params);
 		viewPager = new LoopViewPager(getContext());
 		viewPager.setBoundaryCaching(true);
 		this.addView(viewPager, LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-		int indicatorHeight = (int)(getScreenWidth() * INDICATOR_RATIO);
+		int indicatorHeight = (int)(MAX_WIDTH * INDICATOR_RATIO);
 		indicator = new CirclePageIndicator(getContext());
 		setIndicatorParams(indicator, indicatorHeight);
 		indicator.setOnPageChangeListener(new BannerCutListener());
