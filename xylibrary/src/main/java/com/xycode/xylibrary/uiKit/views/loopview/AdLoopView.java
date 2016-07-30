@@ -18,9 +18,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.kevin.loopview.AdLoopAdapter;
-import com.kevin.loopview.internal.BaseLoopAdapter;
-import com.kevin.loopview.internal.BaseLoopView;
+import com.xycode.xylibrary.uiKit.views.loopview.internal.BaseLoopAdapter;
+import com.xycode.xylibrary.uiKit.views.loopview.internal.BaseLoopView;
 
 /**
  * 版权所有：XXX有限公司

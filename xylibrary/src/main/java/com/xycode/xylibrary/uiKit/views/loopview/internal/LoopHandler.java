@@ -4,8 +4,6 @@ import android.app.Activity;
 import android.os.Handler;
 import android.os.Message;
 
-import com.kevin.loopview.internal.BaseLoopView;
-
 import java.lang.ref.WeakReference;
 
 /**

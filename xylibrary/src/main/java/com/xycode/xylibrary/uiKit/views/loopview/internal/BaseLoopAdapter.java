@@ -7,9 +7,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
-import com.kevin.loopview.internal.*;
-import com.kevin.loopview.utils.RecycleBitmap;
-
 import java.lang.ref.SoftReference;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -31,7 +28,7 @@ public abstract class BaseLoopAdapter extends PagerAdapter {
     /** 上下文 */
     protected Context	mContext;
     /** ViewPager填充数据 */
-    protected com.kevin.loopview.internal.LoopData mLoopData;
+    protected LoopData mLoopData;
     /** 条目点击的监听回调 */
     protected OnItemClickListener mOnItemClickListener;
     protected ViewPager mViewPager;
@@ -40,7 +37,7 @@ public abstract class BaseLoopAdapter extends PagerAdapter {
     /** 轮转缓存集合 */
     Map<Integer, SoftReference<View>> instantiateViewMap = new HashMap();
 
-    public BaseLoopAdapter(Context context, com.kevin.loopview.internal.LoopData loopData, ViewPager viewPager) {
+    public BaseLoopAdapter(Context context, LoopData loopData, ViewPager viewPager) {
         super();
         this.mContext = context;
         this.mLoopData = loopData;
@@ -54,7 +51,7 @@ public abstract class BaseLoopAdapter extends PagerAdapter {
     protected void init() {
     }
 
-    public void setLoopData(com.kevin.loopview.internal.LoopData loopData) {
+    public void setLoopData(LoopData loopData) {
         this.mLoopData = loopData;
     }
 

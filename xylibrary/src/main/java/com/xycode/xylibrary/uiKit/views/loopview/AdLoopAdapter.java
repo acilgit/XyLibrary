@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.xycode.xylibrary.uiKit.views.loopview.internal.BaseLoopAdapter;
 import com.xycode.xylibrary.uiKit.views.loopview.internal.LoopData;
 
@@ -34,7 +35,7 @@ public class AdLoopAdapter extends BaseLoopAdapter {
      * @param imageUrl
      */
     public View instantiateItemView(String imageUrl, int position) {
-        LoopImageView mImageView = new LoopImageView(mContext);
+        SimpleDraweeView mImageView = new SimpleDraweeView(mContext);
         mImageView.setScaleType(ImageView.ScaleType.FIT_XY);
         int width = ViewGroup.LayoutParams.MATCH_PARENT;
         int height = ViewGroup.LayoutParams.MATCH_PARENT;
@@ -68,11 +69,10 @@ public class AdLoopAdapter extends BaseLoopAdapter {
                     Method into = obj.getClass().getMethod("into", ImageView.class);
                     into.invoke(obj, mImageView);
                 } catch (Exception e1) {
-                    mImageView.setImageUrl(imageUrl, defaultImgId, defaultImgId);
+                    mImageView.setImageURI(imageUrl, defaultImgId, defaultImgId);
                 }
             }
         }
         return mImageView;
     }
-
 }
