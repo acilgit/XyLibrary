@@ -2,14 +2,12 @@ package com.xycode.xylibrary.uiKit.views.loopview;
 
 import android.content.Context;
 import android.support.v4.view.ViewPager;
-import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.kevin.loopview.internal.BaseLoopAdapter;
-import com.kevin.loopview.internal.LoopData;
-import com.kevin.loopview.internal.loopimage.LoopImageView;
+import com.xycode.xylibrary.uiKit.views.loopview.internal.BaseLoopAdapter;
+import com.xycode.xylibrary.uiKit.views.loopview.internal.LoopData;
 
 import java.lang.reflect.Method;
 
@@ -41,7 +39,7 @@ public class AdLoopAdapter extends BaseLoopAdapter {
         int width = ViewGroup.LayoutParams.MATCH_PARENT;
         int height = ViewGroup.LayoutParams.MATCH_PARENT;
         mImageView.setLayoutParams(new ViewGroup.LayoutParams(width, height));
-        if(!TextUtils.isEmpty(imageUrl)) {
+        if(!imageUrl.isEmpty()) {
             // 优先选用Picasso加载图片
             try {
                 Class clazz = Class.forName("com.squareup.picasso.Picasso");

@@ -20,10 +20,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.kevin.loopview.R;
-import com.kevin.loopview.internal.*;
-import com.kevin.loopview.internal.LoopData;
-import com.kevin.loopview.internal.LoopHandler;
-import com.kevin.loopview.utils.JsonTool;
 
 /**
  * 版权所有：XXX有限公司
@@ -36,7 +32,7 @@ import com.kevin.loopview.utils.JsonTool;
  *
  * 注:如果您修改了本类请填写以下内容作为记录，如非本人操作劳烦通知，谢谢！！！
  */
-public abstract class BaseLoopView extends RelativeLayout implements com.kevin.loopview.internal.ILoopView {
+public abstract class BaseLoopView extends RelativeLayout implements ILoopView {
 
     /** ViewPager */
     protected ViewPager mViewPager;
@@ -78,7 +74,7 @@ public abstract class BaseLoopView extends RelativeLayout implements com.kevin.l
     protected int direction = RIGHT;
 
     /** 数据实体对象 */
-    protected com.kevin.loopview.internal.LoopData mLoopData;
+    protected LoopData mLoopData;
 
     private Handler mHandler;
     /** 条目点击的接口回调 */
@@ -186,7 +182,7 @@ public abstract class BaseLoopView extends RelativeLayout implements com.kevin.l
      *
      */
     @Override
-    public com.kevin.loopview.internal.LoopData getLoopData() {
+    public LoopData getLoopData() {
         return mLoopData;
     }
 
@@ -207,11 +203,11 @@ public abstract class BaseLoopView extends RelativeLayout implements com.kevin.l
     public void setLoopViewPager(List<Map<String, String>> data) {
         if (null == data || data.size() == 0) return;
         if (mLoopData == null) {
-            mLoopData = new com.kevin.loopview.internal.LoopData();
+            mLoopData = new LoopData();
             mLoopData.items = new ArrayList(data.size());
         }
         for (Map<String, String> map : data) {
-            com.kevin.loopview.internal.LoopData.ItemData itemDatas =
+            LoopData.ItemData itemDatas =
                     mLoopData.new ItemData(map.get("id"), map.get("imageURL"),
                             map.get("link"), map.get("descText"), map.get("type"));
             mLoopData.items.add(itemDatas);
@@ -226,7 +222,7 @@ public abstract class BaseLoopView extends RelativeLayout implements com.kevin.l
      * @param loopData
      */
     @Override
-    public void setLoopViewPager(com.kevin.loopview.internal.LoopData loopData) {
+    public void setLoopViewPager(LoopData loopData) {
         if (null == loopData) return;
         mLoopData = loopData;
 
@@ -241,7 +237,7 @@ public abstract class BaseLoopView extends RelativeLayout implements com.kevin.l
     @Override
     public void setLoopViewPager(String jsonData) {
         if (null == jsonData) return;
-        mLoopData = JsonTool.toBean(jsonData, com.kevin.loopview.internal.LoopData.class);
+        mLoopData = JsonTool.toBean(jsonData, LoopData.class);
         initLoopViewPager();
     }
 
@@ -257,7 +253,7 @@ public abstract class BaseLoopView extends RelativeLayout implements com.kevin.l
         initRealView();
         mLoopData.items.clear();
         for (Map<String, String> map : data) {
-            com.kevin.loopview.internal.LoopData.ItemData itemData =
+            LoopData.ItemData itemData =
                     mLoopData.new ItemData(map.get("id"), map.get("imageURL"),
                             map.get("link"), map.get("descText"), map.get("type"));
             mLoopData.items.add(itemData);
@@ -271,7 +267,7 @@ public abstract class BaseLoopView extends RelativeLayout implements com.kevin.l
      *
      * @param loopData
      */
-    public void refreshData(com.kevin.loopview.internal.LoopData loopData) {
+    public void refreshData(LoopData loopData) {
         if (null == loopData) return;
         stopAutoLoop();
         removeAllViews();
