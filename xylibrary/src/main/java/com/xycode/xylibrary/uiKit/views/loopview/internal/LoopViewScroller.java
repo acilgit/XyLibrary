@@ -1,31 +1,23 @@
 package com.xycode.xylibrary.uiKit.views.loopview.internal;
 
-import java.lang.reflect.Field;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.v4.view.ViewPager;
 import android.view.animation.Interpolator;
 import android.widget.Scroller;
 
+import java.lang.reflect.Field;
+
 /**
- * 版权所有：XXX有限公司
  *
  * LoopViewScroller
- *
- * @author zhou.wenkai ,Created on 2015-1-18 16:02:17
- * Major Function：<b>viewPager跳转控制器</b>
- *
- * 注:如果您修改了本类请填写以下内容作为记录，如非本人操作劳烦通知，谢谢！！！
- * @author mender，Modified Date Modify Content:
  */
 public class LoopViewScroller extends Scroller{
 
-    /** 滑动速度 */
+    /** scroll speed */
     private long mScrollDuration = 1500;
 
     /**
-     * 设置滑动速度
      * @param duration
      */
     public void setScrollDuration(long duration){

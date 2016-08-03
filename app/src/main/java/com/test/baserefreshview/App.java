@@ -1,13 +1,13 @@
 package com.test.baserefreshview;
 
 import android.app.Application;
-import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONObject;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.xycode.xylibrary.okHttp.Header;
 import com.xycode.xylibrary.okHttp.OkHttp;
 import com.xycode.xylibrary.okHttp.Param;
+import com.xycode.xylibrary.utils.TS;
 
 import okhttp3.Call;
 import okhttp3.Response;
@@ -41,10 +41,11 @@ public class App extends Application {
 
             }
         });*/
+        TS.init(this);
         Fresco.initialize(this);
         OkHttp.init(new OkHttp.IOkInit() {
             @Override
-            public int judgeResponse(Call call, Response response, JSONObject json) {
+            public int judgeResultWhenFirstReceivedResponse(Call call, Response response, JSONObject json) {
                 String resultCode = json.getString("resultCode");
                 if ("1".equals(resultCode)) {
                     return OkHttp.RESULT_SUCCESS;
@@ -57,17 +58,17 @@ public class App extends Application {
             }
 
             @Override
-            public void networkError(Call call) {
+            public void networkError(Call call, boolean isCanceled) {
 
             }
 
             @Override
             public void receivedNetworkErrorCode(Call call, Response response) {
-                Toast.makeText(App.getInstance(), R.string.ts_no_network, Toast.LENGTH_SHORT).show();
+                TS.show(R.string.ts_no_network);
             }
 
             @Override
-            public boolean responseSuccess(Call call, Response response, JSONObject json, int resultCode) {
+            public boolean resultSuccessByJudge(Call call, Response response, JSONObject json, int resultCode) {
                 switch (resultCode) {
                     case OkHttp.RESULT_VERIFY_ERROR:
 
@@ -77,7 +78,7 @@ public class App extends Application {
             }
 
             @Override
-            public void parseResponseFailed(Call call, Response response) {
+            public void judgeResultParseResponseFailed(Call call, Response response) {
 
             }
 

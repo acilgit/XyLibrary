@@ -6,9 +6,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
-import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,21 +14,16 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
+import com.xycode.xylibrary.R;
 import com.xycode.xylibrary.uiKit.views.loopview.internal.BaseLoopAdapter;
 import com.xycode.xylibrary.uiKit.views.loopview.internal.BaseLoopView;
+import com.xycode.xylibrary.utils.Tools;
 
 /**
- * 版权所有：XXX有限公司
  *
  * AdLoopView
  *
- * @author zhou.wenkai ,Created on 2015-1-14 19:30:18
- * Major Function：<b>自定义控件可以自动跳动的ViewPager</b>
- *
- * 注:如果您修改了本类请填写以下内容作为记录，如非本人操作劳烦通知，谢谢！！！
- * @author mender，Modified Date Modify Content:
  */
 public class AdLoopView extends BaseLoopView {
 
@@ -52,60 +45,60 @@ public class AdLoopView extends BaseLoopView {
      * @param layoutResId Layout id to be inflated
      */
     public void setLoopLayout(int layoutResId) {
-        mLoopLayoutId = layoutResId;
+        loopLayoutId = layoutResId;
     }
 
     @Override
     @SuppressWarnings("deprecation")
     protected void initRealView() {
         View view = null;
-
-        if (mLoopLayoutId != 0) {
+        if (loopLayoutId != 0) {
             // If there is a custom loop view layout id set, try and inflate it
-            view = LayoutInflater.from(getContext()).inflate(mLoopLayoutId, null);
+            view = LayoutInflater.from(getContext()).inflate(loopLayoutId, null);
+            setCustomerLayout(view);
             // ViewPager
-            mViewPager = (ViewPager) view.findViewById(com.kevin.loopview.R.id.loop_view_pager);
-            // 指示点父控件
-            dotsView = (LinearLayout) view.findViewById(com.kevin.loopview.R.id.loop_view_dots);
-            // 描述文字
-            descText = (TextView) view.findViewById(com.kevin.loopview.R.id.loop_view_desc);
+            viewPager = (ViewPager) view.findViewById(R.id.viewPager);
+            // indicator view
+            dotsView = (LinearLayout) view.findViewById(R.id.dots);
+//            descText = (TextView) view.findViewById(com.kevin.loopview.R.id.loop_view_desc);
         }
 
         if(view == null) {
             view = createDefaultView();
         }
-
-        setScrollDuration(1000);	// 设置页面切换时间
+        setScrollDuration(1000);
         this.addView(view);
     }
 
     private View createDefaultView() {
         RelativeLayout contentView = new RelativeLayout(getContext());
         int viewWidth = ViewGroup.LayoutParams.MATCH_PARENT;
-        int viewHeight = ViewGroup.LayoutParams.WRAP_CONTENT;
+//        int viewHeight = ViewGroup.LayoutParams.WRAP_CONTENT;
+        int viewHeight = (int) (1.0f *Tools.getScreenSize(getContext()).x / aspectRatio);
         ViewGroup.LayoutParams viewParams = new ViewGroup.LayoutParams(viewWidth, viewHeight);
         contentView.setLayoutParams(viewParams);
         // 初始化ViewPager
-        mViewPager = new ViewPager(getContext());
-        mViewPager.setId(com.kevin.loopview.R.id.loop_view_pager);
+        viewPager = new ViewPager(getContext());
+        viewPager.setId(R.id.viewPager);
         int viewPagerWidth = LayoutParams.MATCH_PARENT;
-        int viewPagerHeight = LayoutParams.WRAP_CONTENT;
+//        int viewPagerHeight = LayoutParams.MATCH_PARENT;
+        int viewPagerHeight = viewHeight;
         LayoutParams viewPagerParams = new LayoutParams(viewPagerWidth, viewPagerHeight);
-        this.addView(mViewPager, viewPagerParams);
-        // 初始化下方指示条
+        this.addView(viewPager, viewPagerParams);
+        // init Layout
         RelativeLayout bottomLayout = new RelativeLayout(getContext());
         int bottomLayoutWidth =  LayoutParams.MATCH_PARENT;
         int bottomLayoutHeight =  LayoutParams.WRAP_CONTENT;
         LayoutParams bottomLayoutParams = new LayoutParams(bottomLayoutWidth, bottomLayoutHeight);
-        bottomLayoutParams.addRule(RelativeLayout.ALIGN_BOTTOM, mViewPager.getId());
+        bottomLayoutParams.addRule(RelativeLayout.ALIGN_BOTTOM, viewPager.getId());
         Drawable mBackground = new ColorDrawable(Color.DKGRAY);
         mBackground.setAlpha((int) (0.3 * 255));
-        bottomLayout.setBackgroundDrawable(mBackground);
-        bottomLayout.setGravity(Gravity.CENTER_VERTICAL);
+//        bottomLayout.setBackgroundDrawable(mBackground);
+        bottomLayout.setGravity(Gravity.CENTER);
         this.addView(bottomLayout, bottomLayoutParams);
-        // 初始化指示点父控件
+        // init indicator
         dotsView = new LinearLayout(getContext());
-        dotsView.setId(com.kevin.loopview.R.id.loop_view_dots);
+        dotsView.setId(R.id.dots);
         int dotsViewWidth = LayoutParams.WRAP_CONTENT;
         int dotsViewHeight = LayoutParams.WRAP_CONTENT;
         LayoutParams dotsViewParams = new LayoutParams(dotsViewWidth, dotsViewHeight);
@@ -113,8 +106,7 @@ public class AdLoopView extends BaseLoopView {
         dotsViewParams.addRule(RelativeLayout.CENTER_VERTICAL, RelativeLayout.TRUE);
         dotsViewParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
         bottomLayout.addView(dotsView, dotsViewParams);
-        // 初始描述文字
-        descText = new TextView(getContext());
+     /*   descText = new TextView(getContext());
         int descTextWidth = LayoutParams.MATCH_PARENT;
         int descTextHeight = LayoutParams.WRAP_CONTENT;
         LayoutParams descTextParams = new LayoutParams(descTextWidth, descTextHeight);
@@ -127,28 +119,30 @@ public class AdLoopView extends BaseLoopView {
         int padding = (int) TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP, 5, getResources().getDisplayMetrics());
         descText.setPadding(padding, padding, padding, padding);
-        bottomLayout.addView(descText, descTextParams);
+        bottomLayout.addView(descText, descTextParams);*/
 
         return contentView;
     }
 
-    @Override
-    protected BaseLoopAdapter initAdapter() {
-        return new AdLoopAdapter(getContext(), mLoopData, mViewPager);
+    protected void setCustomerLayout(View view) {
     }
 
-    /** 初始化指示点 */
+    @Override
+    protected BaseLoopAdapter initAdapter() {
+        return new AdLoopAdapter(getContext(), loopData, viewPager);
+    }
+
     @Override
     protected void initDots(int size) {
         if(null != dotsView) {
             dotsView.removeAllViews();
             for(int i=0; i<size; i++){
                 ImageView dot = new ImageView(getContext());
-                dot.setBackgroundResource(mDotSelector);
+                dot.setBackgroundResource(dotSelector);
                 int dotWidth = LinearLayout.LayoutParams.WRAP_CONTENT;
                 int dotHeight = LinearLayout.LayoutParams.WRAP_CONTENT;
                 LinearLayout.LayoutParams dotParams = new LinearLayout.LayoutParams(dotWidth, dotHeight);
-                dotParams.setMargins(0, (int)mDotMargin, (int)mDotMargin, (int)mDotMargin);
+                dotParams.setMargins(0, (int) dotMargin, (int) dotMargin, (int) dotMargin);
                 if(i == 0){
                     dot.setEnabled(true);
                 }else{
@@ -161,12 +155,11 @@ public class AdLoopView extends BaseLoopView {
 
     @Override
     protected void setOnPageChangeListener() {
-        // 数据适配器滑动监听
-        mViewPager.addOnPageChangeListener(new OnPageChangeListener() {
+        viewPager.addOnPageChangeListener(new OnPageChangeListener() {
 
             @Override
             public void onPageSelected(int position) {
-                int i = position % mLoopData.items.size();
+                int i = position % loopData.size();
                 if(null != dotsView) {
                     dotsView.getChildAt(i).setEnabled(true);
                 }
@@ -174,24 +167,23 @@ public class AdLoopView extends BaseLoopView {
                     dotsView.getChildAt(currentPosition).setEnabled(false);
                 }
                 currentPosition = i;
-                if(null != descText) {
-                    if(!TextUtils.isEmpty(mLoopData.items.get(i).descText)) {
+               /* if(null != descText) {
+                    if(!TextUtils.isEmpty(loopData.items.get(i).descText)) {
                         if(descText.getVisibility() != View.VISIBLE)
                             descText.setVisibility(View.VISIBLE);
-                        String imageDesc = mLoopData.items.get(i).descText;
+                        String imageDesc = loopData.items.get(i).descText;
                         descText.setText(imageDesc);
                     } else {
                         if(descText.getVisibility() == View.VISIBLE)
                             descText.setVisibility(View.GONE);
                     }
-                }
+                }*/
 
-                // 跳转到头部尾部的监听回调
-                if(mOnLoopListener != null) {
+                if(onLoopListener != null) {
                     if(i == 0) {
-                        mOnLoopListener.onLoopToStart(position);
-                    } else if(i == mLoopData.items.size() -1) {
-                        mOnLoopListener.onLoopToEnd(position);
+                        onLoopListener.onLoopToStart(position);
+                    } else if(i == loopData.size() -1) {
+                        onLoopListener.onLoopToEnd(position);
                     }
                 }
 

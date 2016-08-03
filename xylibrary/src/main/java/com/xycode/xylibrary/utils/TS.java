@@ -27,9 +27,9 @@ public class TS {
         TS.toastSetter = toastSetter;
     }
 
-    /*public static void init(Context defaultContext, IToastLayoutSetter toastSetter) {
-        init(-1, defaultContext, toastSetter);
-    }*/
+    public static void init(Context defaultContext) {
+        init(-1, defaultContext, null);
+    }
 
     public static void show(int resText) {
         String text = TS.context.getString(resText);

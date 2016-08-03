@@ -278,7 +278,7 @@ public class XRefresher<T> extends CoordinatorLayout {
             }
 
             @Override
-            protected void handleNoNetwork(Call call) {
+            protected void handleNoServerNetwork(Call call, boolean isCanceled) {
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

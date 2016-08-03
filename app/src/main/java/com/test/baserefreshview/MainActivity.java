@@ -2,6 +2,7 @@ package com.test.baserefreshview;
 
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v4.view.PagerAdapter;
 import android.view.View;
 
 import com.alibaba.fastjson.JSON;
@@ -11,9 +12,8 @@ import com.xycode.xylibrary.adapter.XAdapter;
 import com.xycode.xylibrary.base.BaseActivity;
 import com.xycode.xylibrary.okHttp.Param;
 import com.xycode.xylibrary.uiKit.views.MultiImageView;
-import com.xycode.xylibrary.uiKit.views.banner.BannerBehavior;
-import com.xycode.xylibrary.uiKit.views.banner.OnBannerClickListener;
-import com.xycode.xylibrary.uiKit.views.banner.XBannerView;
+import com.xycode.xylibrary.uiKit.views.loopview.AdLoopView;
+import com.xycode.xylibrary.uiKit.views.loopview.internal.BaseLoopAdapter;
 import com.xycode.xylibrary.unit.WH;
 import com.xycode.xylibrary.utils.L;
 import com.xycode.xylibrary.utils.TS;
@@ -87,17 +87,19 @@ public class MainActivity extends BaseActivity {
             protected void creatingHeader(CustomHolder holder, int headerKey) {
                 switch (headerKey) {
                     case 1:
-                        XBannerView bannerView = holder.getView(R.id.banner);
+                        AdLoopView bannerView = holder.getView(R.id.banner);
                         List<String> bannerList = new ArrayList<>();
                         bannerList.add("http://mxycsku.qiniucdn.com/group5/M00/5B/0C/wKgBfVXdYkqAEzl0AAL6ZFMAdKk401.jpg");
                         bannerList.add("http://mxycsku.qiniucdn.com/group6/M00/98/E9/wKgBjVXdGPiAUmMHAALfY_C7_7U637.jpg");
                         bannerList.add("http://mxycsku.qiniucdn.com/group6/M00/96/F7/wKgBjVXbxnCABW_iAAKLH0qKKXo870.jpg");
-                        bannerView.setup(bannerList, new BannerBehavior(new OnBannerClickListener() {
+
+                        bannerView.setOnImageClickListener(new BaseLoopAdapter.OnItemClickListener() {
                             @Override
-                            public void onClick(View view, int position) {
-                                TS.show(getThis(), "Hi + " + position);
+                            public void onItemClick(PagerAdapter parent, View view, int position, int realPosition) {
+                                TS.show(getThis(), "Hi + " + position + " real:" + realPosition);
                             }
-                        }));
+                        });
+                        bannerView.initData(bannerList);
                         break;
                     default:
                         break;

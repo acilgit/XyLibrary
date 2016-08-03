@@ -1,52 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources >
-
-    <attr name="holderImage" format="reference" />
+<resources>
 
     <declare-styleable name="XRefresher">
         <attr name="hint" format="string" />
         <attr name="hintSize" format="dimension" />
         <attr name="hintColor" format="color" />
-        <attr name="bg" format="reference|color"/>
-        <attr name="bgNoData" format="reference|color"/>
+        <attr name="bg" format="reference|color" />
+        <attr name="bgNoData" format="reference|color" />
     </declare-styleable>
 
-    <declare-styleable name="XBannerView">
+    <declare-styleable name="LoopView">
+        <attr name="loopCutTime" format="integer" />
+        <attr name="loopAutoLoop" format="boolean" />
+        <attr name="loopDotMargin" format="dimension" />
+        <attr name="loopDotSelector" format="reference" />
+        <attr name="loopLayout" format="reference" />
         <attr name="aspectRatio" format="float" />
-        <attr name="cutTime" format="integer" />
         <attr name="holderImage" />
+        <attr name="imageScaleType"/>
     </declare-styleable>
 
     <declare-styleable name="MultiImageView">
         <attr name="holderImage" />
         <attr name="onFailureImage" format="reference" />
         <attr name="pressedOverlayImage" format="reference" />
-        <attr name="imageScaleType">
-            <enum name="fit_xy" value="0"/>
-            <enum name="fit_start" value="1"/>
-            <enum name="fit_center" value="2"/>
-            <enum name="fit_end" value="3"/>
-            <enum name="center" value="4"/>
-            <enum name="center_inside" value="5"/>
-            <enum name="center_crop" value="6"/>
-            <enum name="focus_crop" value="7"/>
-        </attr>
-        <attr name="onFailureImageScaleType">
-            <enum name="fit_xy" value="0"/>
-            <enum name="fit_start" value="1"/>
-            <enum name="fit_center" value="2"/>
-            <enum name="fit_end" value="3"/>
-            <enum name="center" value="4"/>
-            <enum name="center_inside" value="5"/>
-            <enum name="center_crop" value="6"/>
-            <enum name="focus_crop" value="7"/>
-        </attr>
+        <attr name="imageScaleType"/>
+        <attr name="holderImageScaleType"/>
+        <attr name="onFailureImageScaleType"/>
         <attr name="imagePadding" format="dimension" />
         <attr name="cornerRadius" format="dimension" />
         <attr name="itemSameSize" format="boolean" />
         <attr name="largeSingleImage" format="boolean" />
-        <attr name="maxRow" format="integer|enum" >
+        <attr name="maxColumn" format="integer"/>
+        <attr name="fadeDurationTime" format="integer"/>
+        <attr name="maxRow" format="integer|enum">
             <enum name="unlimited" value="-1" />
-            </attr>
+        </attr>
     </declare-styleable>
+
+    <attr name="holderImage" format="reference" />
+    <attr name="imageScaleType">
+        <enum name="fit_xy" value="0" />
+        <enum name="fit_start" value="1" />
+        <enum name="fit_center" value="2" />
+        <enum name="fit_end" value="3" />
+        <enum name="center" value="4" />
+        <enum name="center_inside" value="5" />
+        <enum name="center_crop" value="6" />
+        <enum name="focus_crop" value="7" />
+    </attr>
+    <attr name="onFailureImageScaleType">
+        <enum name="fit_xy" value="0" />
+        <enum name="fit_start" value="1" />
+        <enum name="fit_center" value="2" />
+        <enum name="fit_end" value="3" />
+        <enum name="center" value="4" />
+        <enum name="center_inside" value="5" />
+        <enum name="center_crop" value="6" />
+        <enum name="focus_crop" value="7" />
+    </attr>
+    <attr name="holderImageScaleType">
+        <enum name="fit_xy" value="0" />
+        <enum name="fit_start" value="1" />
+        <enum name="fit_center" value="2" />
+        <enum name="fit_end" value="3" />
+        <enum name="center" value="4" />
+        <enum name="center_inside" value="5" />
+        <enum name="center_crop" value="6" />
+        <enum name="focus_crop" value="7" />
+    </attr>
+
 </resources>

@@ -5,10 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <com.kevin.loopview.AdLoopView
+    <View
+        android:background="#9df"
+        android:layout_width="match_parent"
+        android:layout_height="8dp"/>
+    <com.xycode.xylibrary.uiKit.views.loopview.AdLoopView
         android:id="@+id/banner"
-        app:aspectRatio="2.15"
-        android:layout_marginTop="16dp"
+        app:aspectRatio="3"
+        android:layout_marginTop="0dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 

@@ -16,6 +16,7 @@ import com.facebook.common.references.CloseableReference;
 import com.facebook.datasource.DataSource;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder;
+import com.facebook.drawee.drawable.ScalingUtils;
 import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -49,6 +50,28 @@ public class ImageUtils {
         Uri uri = Uri.fromFile(new File(filePath));
         intent.setData(uri);
         context.sendBroadcast(intent);
+    }
+
+    public static ScalingUtils.ScaleType checkFrescoScaleType(int scaleType) {
+        switch (scaleType) {
+            case 0:
+                return ScalingUtils.ScaleType.FIT_XY;
+            case 1:
+                return ScalingUtils.ScaleType.FIT_START;
+            case 2:
+                return ScalingUtils.ScaleType.FIT_CENTER;
+            case 3:
+                return ScalingUtils.ScaleType.FIT_END;
+            case 4:
+                return ScalingUtils.ScaleType.CENTER;
+            case 5:
+                return ScalingUtils.ScaleType.CENTER_INSIDE;
+            case 6:
+                return ScalingUtils.ScaleType.CENTER_CROP;
+            case 7:
+                return ScalingUtils.ScaleType.FOCUS_CROP;
+        }
+        return ScalingUtils.ScaleType.FIT_CENTER;
     }
 
     /**

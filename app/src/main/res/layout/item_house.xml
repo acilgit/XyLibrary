@@ -21,10 +21,12 @@
             android:id="@+id/mvItem"
             android:layout_marginLeft="60dp"
             app:holderImage="@mipmap/chuzu"
+            app:fadeDurationTime="200"
             app:cornerRadius="0dp"
-            app:maxRow="3"
+            app:maxColumn="3"
             app:itemSameSize="false"
             app:largeSingleImage="false"
+            app:holderImageScaleType="fit_xy"
             app:pressedOverlayImage="@drawable/more_images"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>

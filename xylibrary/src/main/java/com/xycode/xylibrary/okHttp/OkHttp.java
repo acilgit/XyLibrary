@@ -192,12 +192,14 @@ public class OkHttp {
      * @param okResponseListener
      */
     private static void responseResult(Response response, Call call, OkResponseListener okResponseListener) {
-        if (response.isSuccessful()) {
+        if (response == null) {
+            okInit.networkError(call, call.isCanceled());
+        }else if (response.isSuccessful()) {
             try {
                 String strResult = response.body().string();
                 JSONObject jsonObject = JSON.parseObject(strResult);
-                int resultCode = okInit.judgeResponse(call, response, jsonObject);
-                if (okInit.responseSuccess(call, response, jsonObject, resultCode))
+                int resultCode = okInit.judgeResultWhenFirstReceivedResponse(call, response, jsonObject);
+                if (okInit.resultSuccessByJudge(call, response, jsonObject, resultCode))
                     return;
                 switch (resultCode) {
                     case RESULT_SUCCESS:
@@ -219,7 +221,7 @@ public class OkHttp {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                okInit.parseResponseFailed(call, response);
+                okInit.judgeResultParseResponseFailed(call, response);
                 if (okResponseListener != null) okResponseListener.handleParseError(call, response);
             }
         } else {
@@ -233,8 +235,8 @@ public class OkHttp {
      * @param okResponseListener
      */
     private static void responseResultFailure(Call call, OkResponseListener okResponseListener) {
-        okInit.networkError(call);
-        if (okResponseListener != null) okResponseListener.handleNoNetwork(call);
+        okInit.networkError(call, call.isCanceled());
+        if (okResponseListener != null) okResponseListener.handleNoServerNetwork(call, call.isCanceled());
     }
 
     public static abstract class OkResponseListener implements IOkResponseListener {
@@ -251,7 +253,7 @@ public class OkHttp {
 
         }
 
-        protected void handleNoNetwork(Call call) {
+        protected void handleNoServerNetwork(Call call, boolean isCaneled) {
 
         }
     }
@@ -276,17 +278,18 @@ public class OkHttp {
          * @param json
          * @return
          */
-        int judgeResponse(Call call, Response response, JSONObject json);
+        int judgeResultWhenFirstReceivedResponse(Call call, Response response, JSONObject json);
 
         /**
          * no network or  or call back cancel
          *
          * @param call
+         * @param isCanceled
          */
-        void networkError(Call call);
+        void networkError(Call call, boolean isCanceled);
 
         /**
-         * after judgeResponse
+         * after judgeResultWhenFirstReceivedResponse
          * result code not in  [200...300)
          *
          * @param call
@@ -295,7 +298,7 @@ public class OkHttp {
         void receivedNetworkErrorCode(Call call, Response response);
 
         /**
-         * after judgeResponse
+         * after judgeResultWhenFirstReceivedResponse
          * result is SUCCESS
          * returns ---
          * false: go on callbacks
@@ -307,16 +310,16 @@ public class OkHttp {
          * @param resultCode
          * @return
          */
-        boolean responseSuccess(Call call, Response response, JSONObject json, int resultCode);
+        boolean resultSuccessByJudge(Call call, Response response, JSONObject json, int resultCode);
 
         /**
-         * after judgeResponse
+         * after judgeResultWhenFirstReceivedResponse
          * when parse JSON failed
          *
          * @param call
          * @param response
          */
-        void parseResponseFailed(Call call, Response response);
+        void judgeResultParseResponseFailed(Call call, Response response);
 
         /**
          * add defaultParams in param

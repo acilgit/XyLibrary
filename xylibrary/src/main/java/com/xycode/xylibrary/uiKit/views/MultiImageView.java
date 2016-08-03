@@ -40,6 +40,7 @@ public class MultiImageView extends LinearLayout {
     private int MAX_PER_ROW_COUNT = 3;// max count in one row
 
     private int att_maxRow = 3;
+    private int att_maxColumn = 3;
 
     private LayoutParams onePicPara;
     private LayoutParams morePara, moreParaColumnFirst;
@@ -47,9 +48,13 @@ public class MultiImageView extends LinearLayout {
 
     private ScalingUtils.ScaleType actualScale;
     private ScalingUtils.ScaleType failureScale;
+    private ScalingUtils.ScaleType holderScale;
+
+    private int att_fadeDurationTime = 0;
 
     private int att_actualScale = -1;
     private int att_failureScale = -1;
+    private int att_holderScale = -1;
 
     private int att_placeHolder = -1;
     private int att_failureHolder = -1;
@@ -64,6 +69,8 @@ public class MultiImageView extends LinearLayout {
     private OnItemClickListener onItemClickListener;
     private OnImageLoadListener imageLoadListener = null;
     private OnImageOverlayListener imageOverlayListener = null;
+    private int allCount = 0;
+    private int rowCount = 3;
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
@@ -81,8 +88,11 @@ public class MultiImageView extends LinearLayout {
         att_itemSameSize = typedArray.getBoolean(R.styleable.MultiImageView_itemSameSize, false);
         att_largeSingleImage = typedArray.getBoolean(R.styleable.MultiImageView_largeSingleImage, false);
         att_maxRow = typedArray.getInt(R.styleable.MultiImageView_maxRow, 3);
+        att_maxColumn = typedArray.getInt(R.styleable.MultiImageView_maxColumn, 3);
+        att_fadeDurationTime = typedArray.getInt(R.styleable.MultiImageView_fadeDurationTime, 0);
         att_actualScale = typedArray.getInt(R.styleable.MultiImageView_imageScaleType, -1);
         att_failureScale = typedArray.getInt(R.styleable.MultiImageView_onFailureImageScaleType, -1);
+        att_holderScale = typedArray.getInt(R.styleable.MultiImageView_holderImageScaleType, -1);
         att_placeHolder = typedArray.getResourceId(R.styleable.MultiImageView_holderImage, -1);
         att_failureHolder = typedArray.getResourceId(R.styleable.MultiImageView_onFailureImage, -1);
         att_pressedOverlayHolder = typedArray.getResourceId(R.styleable.MultiImageView_pressedOverlayImage, -1);
@@ -95,31 +105,10 @@ public class MultiImageView extends LinearLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        actualScale = checkScaleType(att_actualScale);
-        failureScale = checkScaleType(att_failureScale);
+        actualScale = ImageUtils.checkFrescoScaleType(att_actualScale);
+        failureScale = ImageUtils.checkFrescoScaleType(att_failureScale);
+        holderScale = ImageUtils.checkFrescoScaleType(att_holderScale);
         if (att_imagePadding != -1) pxImagePadding = att_imagePadding;
-    }
-
-    private ScalingUtils.ScaleType checkScaleType(int att_scaleType) {
-        switch (att_scaleType) {
-            case 0:
-                return ScalingUtils.ScaleType.FIT_XY;
-            case 1:
-                return ScalingUtils.ScaleType.FIT_START;
-            case 2:
-                return ScalingUtils.ScaleType.FIT_CENTER;
-            case 3:
-                return ScalingUtils.ScaleType.FIT_END;
-            case 4:
-                return ScalingUtils.ScaleType.CENTER;
-            case 5:
-                return ScalingUtils.ScaleType.CENTER_INSIDE;
-            case 6:
-                return ScalingUtils.ScaleType.CENTER_CROP;
-            case 7:
-                return ScalingUtils.ScaleType.FOCUS_CROP;
-        }
-        return ScalingUtils.ScaleType.FIT_CENTER;
     }
 
     public void setList(List<String> lists) throws IllegalArgumentException {
@@ -127,12 +116,26 @@ public class MultiImageView extends LinearLayout {
             throw new IllegalArgumentException("imageList is null...");
         }
         imagesList = lists;
-
+        allCount = imagesList.size();
+        if (att_maxRow != -1 && allCount > (att_maxRow * att_maxColumn)) allCount = att_maxRow * att_maxColumn;
+        if (att_maxColumn == 3 && (allCount == 2 || allCount == 4)) {
+            MAX_PER_ROW_COUNT = 2;
+        } else {
+            MAX_PER_ROW_COUNT = att_maxColumn;
+        }
+       /* if (MAX_PER_ROW_COUNT == 3) {
+            if (allCount == 2 || allCount == 4) {
+                MAX_PER_ROW_COUNT = 2;
+            } else {
+                MAX_PER_ROW_COUNT = 3;
+            }
+        }*/
+        rowCount = allCount / MAX_PER_ROW_COUNT + (allCount % MAX_PER_ROW_COUNT > 0 ? 1 : 0);
         if (MAX_WIDTH > 0) {
-            if (!att_itemSameSize && (lists.size() == 2 || lists.size() == 4)) {
+            if (!att_itemSameSize && (lists.size() == 2 || lists.size() == 4) && MAX_PER_ROW_COUNT == 3) {
                 pxMoreWandSide = (MAX_WIDTH - pxImagePadding) / 2; // solve right image align problem
             } else {
-                pxMoreWandSide = (MAX_WIDTH - pxImagePadding * 2) / 3; // solve right image align problem
+                pxMoreWandSide = (MAX_WIDTH - pxImagePadding * (MAX_PER_ROW_COUNT-1)) / MAX_PER_ROW_COUNT; // solve right image align problem
 
             }
             pxOneMaxWandWidth = att_largeSingleImage ? MAX_WIDTH : MAX_WIDTH * 2 / 3;
@@ -215,14 +218,7 @@ public class MultiImageView extends LinearLayout {
             addView(createImageView(0, false));
             return;
         }
-        int allCount = imagesList.size();
-        if (att_maxRow != -1 && allCount > (att_maxRow * 3)) allCount = att_maxRow * 3;
-        if (allCount == 2 || allCount == 4) {
-            MAX_PER_ROW_COUNT = 2;
-        } else {
-            MAX_PER_ROW_COUNT = 3;
-        }
-        int rowCount = allCount / MAX_PER_ROW_COUNT + (allCount % MAX_PER_ROW_COUNT > 0 ? 1 : 0);
+
         for (int rowCursor = 0; rowCursor < rowCount; rowCursor++) {
             LinearLayout rowLayout = new LinearLayout(getContext());
             rowLayout.setOrientation(LinearLayout.HORIZONTAL);
@@ -269,9 +265,10 @@ public class MultiImageView extends LinearLayout {
         ImageUtils.setSimpleDraweeParams(imageView, new ImageUtils.ISetDraweeHierarchy() {
             @Override
             public void setHierarchyBuilder(GenericDraweeHierarchyBuilder hierarchyBuilder) {
+                if(att_fadeDurationTime>0) hierarchyBuilder.setFadeDuration(    att_fadeDurationTime);
                 if (att_actualScale != -1) hierarchyBuilder.setActualImageScaleType(actualScale);
                 if (att_placeHolder != -1)
-                    hierarchyBuilder.setPlaceholderImage(getResources().getDrawable(att_placeHolder));
+                    hierarchyBuilder.setPlaceholderImage(getResources().getDrawable(att_placeHolder), holderScale);
                 if (att_failureHolder != -1) {
                     if (att_failureScale != -1) {
                         hierarchyBuilder.setFailureImage(getResources().getDrawable(att_failureHolder), failureScale);
