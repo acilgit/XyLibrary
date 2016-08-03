@@ -299,6 +299,10 @@ public class XRefresher<T> extends CoordinatorLayout {
         });
     }
 
+    public void setRefreshing(boolean refreshing) {
+        swipe.setRefreshing(refreshing);
+    }
+
     public void setNoDataHint(String hint) {
         textView.setText(hint);
     }
@@ -408,7 +412,7 @@ public class XRefresher<T> extends CoordinatorLayout {
         List<T> setListData(JSONObject json);
     }
 
-    private interface OnSwipeListener {
+    public interface OnSwipeListener {
         /**
          * Refresh
          */

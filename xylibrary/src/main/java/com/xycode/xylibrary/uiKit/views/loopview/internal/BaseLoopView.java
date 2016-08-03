@@ -186,14 +186,16 @@ public abstract class BaseLoopView extends RelativeLayout implements ILoopView {
         initDots(loopData.size());
 
         setViewListener();
-        int startPosition = Integer.MAX_VALUE / 2 - Integer.MAX_VALUE / 2 % loopData.size();
-        viewPager.setCurrentItem(startPosition, false);
-        if (handler == null) {
-            handler = new LoopHandler(this, (Activity)getContext());
-        }
+        if (loopData.size() > 0) {
+            int startPosition = Integer.MAX_VALUE / 2 - Integer.MAX_VALUE / 2 % loopData.size();
+            viewPager.setCurrentItem(startPosition, false);
+            if (handler == null) {
+                handler = new LoopHandler(this, (Activity)getContext());
+            }
 
-        if (autoLoop) {
-            startAutoLoop();
+            if (autoLoop) {
+                startAutoLoop();
+            }
         }
     }
 

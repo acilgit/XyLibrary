@@ -7,6 +7,14 @@
     android:orientation="vertical"
     tools:context="com.test.baserefreshview.MainActivity">
 
+    <com.xycode.xylibrary.uiKit.views.loopview.AdLoopView
+        android:id="@+id/banner"
+        app:aspectRatio="3"
+        app:holderImageScaleType="center_crop"
+        android:layout_marginTop="0dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
     <com.xycode.xylibrary.xRefresher.XRefresher
         android:id="@+id/xRefresher"
         app:bgNoData="#fda"

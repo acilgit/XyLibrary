@@ -24,7 +24,7 @@ public abstract class BaseLoopAdapter extends PagerAdapter {
     protected ViewPager viewPager;
     /** holder */
     protected int defaultImgId;
-    protected ScalingUtils.ScaleType imageScaleType;
+    protected ScalingUtils.ScaleType imageScaleType = ScalingUtils.ScaleType.FIT_XY;
     protected float aspectRatio;
     protected BaseLoopView.OnPreviewUrlListener onPreviewUrlListener;
 

@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseArray;
@@ -57,7 +56,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
      * @param dataList
      * @param layoutId
      */
-    public XAdapter(Context context, @NonNull List<T> dataList, @LayoutRes int layoutId) {
+    public XAdapter(Context context, List<T> dataList, @LayoutRes int layoutId) {
         init(context, dataList);
         this.layoutIdList = new SparseArray<>();
         layoutIdList.put(SINGLE_LAYOUT, layoutId);
@@ -70,13 +69,16 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
      * @param dataList
      * @param layoutIdList key: viewType  value: layoutId
      */
-    public XAdapter(Context context, @NonNull List<T> dataList, SparseArray layoutIdList) {
+    public XAdapter(Context context, List<T> dataList, SparseArray layoutIdList) {
         init(context, dataList);
         this.layoutIdList = layoutIdList;
     }
 
     private void init(Context context, List<T> dataList) {
         this.context = context;
+        if (dataList == null) {
+            dataList = new ArrayList<>();
+        }
         this.dataList = new ArrayList<>();
         this.mainList = dataList;
         this.dataList.addAll(setFilterForAdapter(mainList));

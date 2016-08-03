@@ -96,7 +96,7 @@ public class OkHttp {
     }
 
     public Call get(String url, Header header, boolean addDefaultHeader, final OkResponseListener okResponseListener) {
-        return postOrGet(url, null, header, addDefaultHeader, okResponseListener);
+        return postOrGet(url, null, header, addDefaultHeader, okResponseListener, false);
     }
 
     public Call postForm(String url, @NonNull RequestBody body, OkResponseListener okResponseListener) {
@@ -108,10 +108,14 @@ public class OkHttp {
     }
 
     public Call postForm(String url, @NonNull RequestBody body, Header header, boolean addDefaultHeader,  OkResponseListener okResponseListener) {
-        return postOrGet(url, body, header, addDefaultHeader, okResponseListener);
+        return postOrGet(url, body, header, addDefaultHeader, okResponseListener, false);
     }
 
-    private Call postOrGet(String url, RequestBody body, Header header, boolean addDefaultHeader, final OkResponseListener okResponseListener) {
+    public Call postForm(String url, RequestBody body, Header header, boolean addDefaultHeader, final OkResponseListener okResponseListener, boolean doInCurrentThread) {
+        return postOrGet(url, body, header, addDefaultHeader, okResponseListener, doInCurrentThread);
+    }
+
+    private Call postOrGet(String url, RequestBody body, Header header, boolean addDefaultHeader, final OkResponseListener okResponseListener, boolean doInCurrentThread) {
         final Request.Builder builder = new Request.Builder().url(url);
         if (body != null) {
             builder.post(body);
@@ -132,9 +136,7 @@ public class OkHttp {
         final Request request = builder.build();
         final Call call = getClient().newCall(request);
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
+        if (doInCurrentThread) {
                 try {
                     Response response = call.execute();
                     if (response != null) {
@@ -146,8 +148,25 @@ public class OkHttp {
                     e.printStackTrace();
                     responseResultFailure(call, okResponseListener);
                 }
-            }
-        }).start();
+        } else {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Response response = call.execute();
+                        if (response != null) {
+                            responseResult(response, call, okResponseListener);
+                        } else {
+                            responseResultFailure(call, okResponseListener);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        responseResultFailure(call, okResponseListener);
+                    }
+                }
+            }).start();
+        }
+
         return call;
     }
 
@@ -253,7 +272,7 @@ public class OkHttp {
 
         }
 
-        protected void handleNoServerNetwork(Call call, boolean isCaneled) {
+        protected void handleNoServerNetwork(Call call, boolean isCanceled) {
 
         }
     }

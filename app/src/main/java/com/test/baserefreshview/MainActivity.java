@@ -35,6 +35,12 @@ public class MainActivity extends BaseActivity {
 
 
         xRefresher = (XRefresher) findViewById(R.id.xRefresher);
+        XAdapter a = new XAdapter(this, new ArrayList(), -1) {
+            @Override
+            public void bindingHolder(CustomHolder holder, List dataList, int pos) {
+
+            }
+        };
 
         XAdapter<ContentBean> adapter = new XAdapter<ContentBean>(this, new ArrayList<ContentBean>(), R.layout.item_house) {
 
@@ -78,7 +84,6 @@ public class MainActivity extends BaseActivity {
                     public void onItemClick(View view, int position) {
                         WH wh = Tools.getWidthHeightFromFilename(dataList.get(pos).getCoverPicture(), "_wh", "x");
                         TS.show(getThis(), "wh:"+ wh.width + " h:" + wh.height+ " r:"+wh.getAspectRatio());
-
                     }
                 });
             }
@@ -88,18 +93,7 @@ public class MainActivity extends BaseActivity {
                 switch (headerKey) {
                     case 1:
                         AdLoopView bannerView = holder.getView(R.id.banner);
-                        List<String> bannerList = new ArrayList<>();
-                        bannerList.add("http://mxycsku.qiniucdn.com/group5/M00/5B/0C/wKgBfVXdYkqAEzl0AAL6ZFMAdKk401.jpg");
-                        bannerList.add("http://mxycsku.qiniucdn.com/group6/M00/98/E9/wKgBjVXdGPiAUmMHAALfY_C7_7U637.jpg");
-                        bannerList.add("http://mxycsku.qiniucdn.com/group6/M00/96/F7/wKgBjVXbxnCABW_iAAKLH0qKKXo870.jpg");
-
-                        bannerView.setOnImageClickListener(new BaseLoopAdapter.OnItemClickListener() {
-                            @Override
-                            public void onItemClick(PagerAdapter parent, View view, int position, int realPosition) {
-                                TS.show(getThis(), "Hi + " + position + " real:" + realPosition);
-                            }
-                        });
-                        bannerView.initData(bannerList);
+                        setBanner(bannerView);
                         break;
                     default:
                         break;
@@ -118,10 +112,15 @@ public class MainActivity extends BaseActivity {
             }
         };
 
-        adapter.addHeader(1, R.layout.layout_banner);
+//        adapter.addHeader(1, R.layout.layout_banner);
 //        adapter.addHeader(2, R.layout.layout_load_more);
 
-        xRefresher.setup(this, adapter, true, new XRefresher.RefreshRequest<ContentBean>() {
+        xRefresher.setup(this, adapter, true, new XRefresher.OnSwipeListener() {
+            @Override
+            public void onRefresh() {
+
+            }
+        }, new XRefresher.RefreshRequest<ContentBean>() {
             @Override
             public String setRequestParamsReturnUrl(Param params) {
 //                params.add("a", "b");
@@ -140,6 +139,22 @@ public class MainActivity extends BaseActivity {
         }, 4);
 //        xRefresher.refreshList();
 
+        setBanner(((AdLoopView) findViewById(R.id.banner)));
+    }
+
+    private void setBanner(AdLoopView bannerView) {
+        List<String> bannerList = new ArrayList<>();
+//        bannerList.add("http://mxycsku.qiniucdn.com/group5/M00/5B/0C/wKgBfVXdYkqAEzl0AAL6ZFMAdKk401.jpg");
+//        bannerList.add("http://mxycsku.qiniucdn.com/group6/M00/98/E9/wKgBjVXdGPiAUmMHAALfY_C7_7U637.jpg");
+//        bannerList.add("http://mxycsku.qiniucdn.com/group6/M00/96/F7/wKgBjVXbxnCABW_iAAKLH0qKKXo870.jpg");
+
+        bannerView.setOnImageClickListener(new BaseLoopAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(PagerAdapter parent, View view, int position, int realPosition) {
+                TS.show(getThis(), "Hi + " + position + " real:" + realPosition);
+            }
+        });
+        bannerView.initData(bannerList);
     }
 
 
