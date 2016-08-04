@@ -456,5 +456,29 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
             }
             return this;
         }
+
+        public CustomHolder setClick(int viewId, View.OnClickListener listener) {
+            View view = getView(viewId);
+            if (view != null) {
+              view.setOnClickListener(listener);
+            }
+            return this;
+        }
+
+        public CustomHolder setLongClick(int viewId, View.OnLongClickListener listener) {
+            View view = getView(viewId);
+            if (view != null) {
+              view.setOnLongClickListener(listener);
+            }
+            return this;
+        }
+
+        public CustomHolder setEnable(int viewId, boolean enable) {
+            View view = getView(viewId);
+            if (view != null) {
+              view.setEnabled(enable);
+            }
+            return this;
+        }
     }
 }
