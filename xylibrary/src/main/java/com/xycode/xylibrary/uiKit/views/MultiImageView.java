@@ -5,6 +5,7 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.util.AttributeSet;
+import android.util.SparseArray;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -17,21 +18,21 @@ import com.xycode.xylibrary.R;
 import com.xycode.xylibrary.utils.ImageUtils;
 import com.xycode.xylibrary.utils.Tools;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MultiImageView extends LinearLayout {
-    public static int MAX_WIDTH = 0;
+    public int MAX_WIDTH = 0;
 
     private List<String> imagesList;
 
-    private List<SimpleDraweeView> imageViewList;
+    private SparseArray<SimpleDraweeView> imageViewList;
 
     /**
      * unit Pixel
      **/
 
     private float pxOneMaxAspectRatio = 1f;
+    private float pxOneMiniAspectRatio = 1f;
     private int pxOneMaxWandHeight;  // single max width
     private int pxOneMaxWandWidth;  // single max width
     private int pxMoreWandSide = 0;// multi max width
@@ -63,6 +64,7 @@ public class MultiImageView extends LinearLayout {
     private int att_imagePadding = -1;
     private boolean att_itemSameSize = false;
     private boolean att_largeSingleImage = false;
+    private boolean hasSetMiniRatio = false;
 
     private int att_roundedCornerRadius = -1;
 
@@ -82,7 +84,7 @@ public class MultiImageView extends LinearLayout {
 
     public MultiImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        imageViewList = new ArrayList<>();
+        imageViewList = new SparseArray<>();
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.MultiImageView);
 
         att_itemSameSize = typedArray.getBoolean(R.styleable.MultiImageView_itemSameSize, false);
@@ -111,7 +113,24 @@ public class MultiImageView extends LinearLayout {
         if (att_imagePadding != -1) pxImagePadding = att_imagePadding;
     }
 
-    public void setList(List<String> lists) throws IllegalArgumentException {
+  /*  public void resetList(List<String> lists) {
+        if (imagesList != null && imagesList.size() == lists.size()) {
+            imagesList = lists;
+            resetImages();
+        } else {
+            initList(lists);
+        }
+    }*/
+
+    public void setList(List<String> lists) {
+        if (imagesList == null || imagesList.size() == lists.size()) {
+            imagesList = lists;
+        } else {
+            initList(lists);
+        }
+    }
+
+    private void initList(List<String> lists) throws IllegalArgumentException {
         if (lists == null) {
             throw new IllegalArgumentException("imageList is null...");
         }
@@ -123,13 +142,6 @@ public class MultiImageView extends LinearLayout {
         } else {
             MAX_PER_ROW_COUNT = att_maxColumn;
         }
-       /* if (MAX_PER_ROW_COUNT == 3) {
-            if (allCount == 2 || allCount == 4) {
-                MAX_PER_ROW_COUNT = 2;
-            } else {
-                MAX_PER_ROW_COUNT = 3;
-            }
-        }*/
         rowCount = allCount / MAX_PER_ROW_COUNT + (allCount % MAX_PER_ROW_COUNT > 0 ? 1 : 0);
         if (MAX_WIDTH > 0) {
             if (!att_itemSameSize && (lists.size() == 2 || lists.size() == 4) && MAX_PER_ROW_COUNT == 3) {
@@ -147,12 +159,13 @@ public class MultiImageView extends LinearLayout {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+//        L.e("measure MAX_WIDTH "+ MAX_WIDTH);
         if (MAX_WIDTH == 0) {
             int width = measureWidth(widthMeasureSpec);
             if (width > 0) {
                 MAX_WIDTH = width;
                 if (imagesList != null && imagesList.size() > 0) {
-                    setList(imagesList);
+                    initList(imagesList);
                 }
             }
         }
@@ -219,6 +232,11 @@ public class MultiImageView extends LinearLayout {
             return;
         }
 
+        for (int i = 0; i < imageViewList.size(); i++) {
+            if (i>=allCount) {
+                imageViewList.remove(i);
+            }
+        }
         for (int rowCursor = 0; rowCursor < rowCount; rowCursor++) {
             LinearLayout rowLayout = new LinearLayout(getContext());
             rowLayout.setOrientation(LinearLayout.HORIZONTAL);
@@ -239,6 +257,7 @@ public class MultiImageView extends LinearLayout {
                 rowLayout.addView(createImageView(position, true));
             }
         }
+//        L.e("------------ images created: "+ imagesList.size());
     }
 
     private ImageView createImageView(final int position, final boolean isMultiImage) {
@@ -247,9 +266,13 @@ public class MultiImageView extends LinearLayout {
 
         imageView = new SimpleDraweeView(getContext());
         if (imagesList.size() == 1) {
-            imageView.setAspectRatio(pxOneMaxAspectRatio);
+            if (hasSetMiniRatio) {
+                imageView.setAspectRatio(pxOneMaxAspectRatio<pxOneMiniAspectRatio ? pxOneMiniAspectRatio : pxOneMaxAspectRatio);
+            } else {
+                imageView.setAspectRatio(pxOneMaxAspectRatio);
+            }
         }
-        imageViewList.add(imageView);
+        imageViewList.put(position, imageView);
         if (isMultiImage) {
             imageView.setLayoutParams(position % MAX_PER_ROW_COUNT == 0 ? moreParaColumnFirst : morePara);
         } else {
@@ -288,7 +311,7 @@ public class MultiImageView extends LinearLayout {
         });
 
         ImageUtils.setImageUriWithPreview(imageView, Uri.parse(url), previewUri);
-        imageView.setId(url.hashCode());
+        imageView.setTag(url);
         imageView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -300,8 +323,29 @@ public class MultiImageView extends LinearLayout {
         return imageView;
     }
 
+    private void resetImages() {
+        for (int i = 0; i < imageViewList.size(); i++) {
+            SimpleDraweeView imageView = imageViewList.get(i);
+            String url = imagesList.get(i);
+            if (imageView.getTag()!=null && url.equals(imageView.getTag())) {
+                continue;
+            }
+            Uri previewUri = null;
+            if (imageLoadListener != null) {
+                previewUri = imageLoadListener.setPreviewUri(i);
+            }
+            ImageUtils.setImageUriWithPreview(imageView, Uri.parse(url), previewUri);
+            imageView.setTag(url);
+        }
+    }
+
     public void setSingleImageRatio(float aspectRatio) {
         pxOneMaxAspectRatio = aspectRatio;
+    }
+
+    public void setSingleImageMiniRatio(float aspectRatio) {
+        hasSetMiniRatio = true;
+        pxOneMiniAspectRatio = aspectRatio;
     }
 
     public void setLoadImageListener(OnImageLoadListener imageLoadListener) {

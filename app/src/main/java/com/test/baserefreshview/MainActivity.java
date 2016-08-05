@@ -15,7 +15,6 @@ import com.xycode.xylibrary.uiKit.views.MultiImageView;
 import com.xycode.xylibrary.uiKit.views.loopview.AdLoopView;
 import com.xycode.xylibrary.uiKit.views.loopview.internal.BaseLoopAdapter;
 import com.xycode.xylibrary.unit.WH;
-import com.xycode.xylibrary.utils.L;
 import com.xycode.xylibrary.utils.TS;
 import com.xycode.xylibrary.utils.Tools;
 import com.xycode.xylibrary.xRefresher.XRefresher;
@@ -33,14 +32,7 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         xRefresher = (XRefresher) findViewById(R.id.xRefresher);
-        XAdapter a = new XAdapter(this, new ArrayList(), -1) {
-            @Override
-            public void bindingHolder(CustomHolder holder, List dataList, int pos) {
-
-            }
-        };
 
         XAdapter<ContentBean> adapter = new XAdapter<ContentBean>(this, new ArrayList<ContentBean>(), R.layout.item_house) {
 
@@ -50,31 +42,24 @@ public class MainActivity extends BaseActivity {
                 holder.setText(R.id.tvName, item.getTitle())
 //                        .setImageUrl(R.id.sdvItem, item.getCoverPicture())
                         .setText(R.id.tvText, pos + "");
-                final List<String> list = new ArrayList<>();
-                int ri = Tools.randomInt(1, 6);
                 MultiImageView mvItem = holder.getView(R.id.mvItem);
 //                if (dataList.get(pos).getCoverPicture() != null) {
-                    WH wh = Tools.getWidthHeightFromFilename(dataList.get(pos).getCoverPicture(), "_wh", "x");
-                float ratio = wh.getAspectRatio();
-                    mvItem.setSingleImageRatio(ratio<1 ? 1 : ratio);
-                    L.e("wh.getAspectRatio: "+ ratio);
+//                WH wh = Tools.getWidthHeightFromFilename(dataList.get(holder.getAdapterPosition()).getCoverPicture(), "_wh", "x");
+//                float ratio = wh.getAspectRatio();
+//                mvItem.setSingleImageRatio(ratio<1 ? 1 : ratio);
+//                L.e("wh.getAspectRatio: "+ ratio);
 //                }
+                final List<String> list = new ArrayList<>();
                 for (int i = 0; i <= pos; i++) {
                     list.add(item.getCoverPicture() /*+"!"+ (int)(60*ratio)+ "!60"*/);
                 }
                 mvItem.setList(list);
-             /*   mvItem.setLoadImageListener(new MultiImageView.OnImageLoadListener() {
-                    @Override
-                    public Uri setPreviewUri(int position) {
-                        WH wh = Tools.getWidthHeightFromFilename(list.get(position), "_wh", "x");
-                        return Uri.parse(list.get(position)+"!"+(wh.getAspectRatio()*20)+"!20");
-                    }
-                });*/
+
                 mvItem.setOverlayDrawableListener(new MultiImageView.OnImageOverlayListener() {
                     @Override
                     public Drawable setOverlayDrawable(int position) {
                         if (position == 8) {
-                           return getResources().getDrawable(R.drawable.more_images);
+                            return getResources().getDrawable(R.drawable.more_images);
                         }
                         return null;
                     }
@@ -82,7 +67,7 @@ public class MainActivity extends BaseActivity {
                 mvItem.setOnItemClickListener(new MultiImageView.OnItemClickListener() {
                     @Override
                     public void onItemClick(View view, int position) {
-                        WH wh = Tools.getWidthHeightFromFilename(dataList.get(pos).getCoverPicture(), "_wh", "x");
+                        WH wh = Tools.getWidthHeightFromFilename(dataList.get(position).getCoverPicture(), "_wh", "x");
                         TS.show(getThis(), "wh:"+ wh.width + " h:" + wh.height+ " r:"+wh.getAspectRatio());
                     }
                 });
@@ -110,6 +95,52 @@ public class MainActivity extends BaseActivity {
                         break;
                 }
             }
+
+            @Override
+            public void creatingHolder(final CustomHolder holder, final List<ContentBean> dataList, int viewType) {
+                MultiImageView mvItem = holder.getView(R.id.mvItem);
+
+             /*   mvItem.setLoadImageListener(new MultiImageView.OnImageLoadListener() {
+                    @Override
+                    public Uri setPreviewUri(int position) {
+                        WH wh = Tools.getWidthHeightFromFilename(list.get(position), "_wh", "x");
+                        return Uri.parse(list.get(position)+"!"+(wh.getAspectRatio()*20)+"!20");
+                    }
+                });*//*
+                mvItem.setOverlayDrawableListener(new MultiImageView.OnImageOverlayListener() {
+                    @Override
+                    public Drawable setOverlayDrawable(int position) {
+                        if (position == 8) {
+                            return getResources().getDrawable(R.drawable.more_images);
+                        }
+                        return null;
+                    }
+                });
+                mvItem.setOnItemClickListener(new MultiImageView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(View view, int position) {
+                        WH wh = Tools.getWidthHeightFromFilename(dataList.get(holder.getAdapterPosition()).getCoverPicture(), "_wh", "x");
+                        TS.show(getThis(), "wh:"+ wh.width + " h:" + wh.height+ " r:"+wh.getAspectRatio());
+                    }
+                });*/
+            }
+
+        /*    @Override
+            protected int setViewLayoutWhenLayoutListNull(int viewType) {
+                return R.layout.item_house;
+            }
+
+            @Override
+            protected int getItemTypeForMultiLayout(ContentBean item) {
+                for (int i = 0; i < multiLayoutList.size(); i++) {
+                    if (multiLayoutList.get(i).equals(item.getId())) {
+                        return i;
+                    }
+                }
+                int key = multiLayoutList.size();
+                multiLayoutList.add(item.getId());
+                return key;
+            }*/
         };
 
 //        adapter.addHeader(1, R.layout.layout_banner);
@@ -136,7 +167,7 @@ public class MainActivity extends BaseActivity {
             protected boolean ignoreSameItem(ContentBean newItem, ContentBean listItem) {
                 return newItem.getId().equals(listItem.getId());
             }
-        }, 4);
+        });
 //        xRefresher.refreshList();
 
         setBanner(((AdLoopView) findViewById(R.id.banner)));
@@ -144,9 +175,9 @@ public class MainActivity extends BaseActivity {
 
     private void setBanner(AdLoopView bannerView) {
         List<String> bannerList = new ArrayList<>();
-//        bannerList.add("http://mxycsku.qiniucdn.com/group5/M00/5B/0C/wKgBfVXdYkqAEzl0AAL6ZFMAdKk401.jpg");
-//        bannerList.add("http://mxycsku.qiniucdn.com/group6/M00/98/E9/wKgBjVXdGPiAUmMHAALfY_C7_7U637.jpg");
-//        bannerList.add("http://mxycsku.qiniucdn.com/group6/M00/96/F7/wKgBjVXbxnCABW_iAAKLH0qKKXo870.jpg");
+        bannerList.add("http://mxycsku.qiniucdn.com/group5/M00/5B/0C/wKgBfVXdYkqAEzl0AAL6ZFMAdKk401.jpg");
+        bannerList.add("http://mxycsku.qiniucdn.com/group6/M00/98/E9/wKgBjVXdGPiAUmMHAALfY_C7_7U637.jpg");
+        bannerList.add("http://mxycsku.qiniucdn.com/group6/M00/96/F7/wKgBjVXbxnCABW_iAAKLH0qKKXo870.jpg");
 
         bannerView.setOnImageClickListener(new BaseLoopAdapter.OnItemClickListener() {
             @Override

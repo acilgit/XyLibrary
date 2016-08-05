@@ -1,0 +1,18 @@
+<resources>
+    <!-- items -->
+    <style name="divider">
+        <item name="android:background">@color/bgDivider</item>
+        <item name="android:layout_height">@dimen/divider_height</item>
+        <item name="android:layout_width">match_parent</item>
+    </style>
+
+    <!--buttons-->
+    <style name="btn" parent="Widget.AppCompat.Button.Colored">
+    </style>
+
+    <style name="buttonBase" parent="ThemeOverlay.AppCompat.Light">
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
+    </style>
+
+</resources>

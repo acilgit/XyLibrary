@@ -12,4 +12,6 @@
     <color name="grayBgPress" >#DDD</color>
     <color name="transparentLite" >#33FFFFFF</color>
     <color name="transparentDarkLite" >#33000000</color>
+    <!-- background color -->
+    <color name="bgDivider">#CCC</color>
 </resources>
