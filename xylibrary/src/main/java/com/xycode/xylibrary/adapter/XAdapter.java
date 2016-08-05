@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.xycode.xylibrary.unit.ViewTypeUnit;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +27,7 @@ import java.util.List;
  */
 public abstract class XAdapter<T> extends RecyclerView.Adapter {
 
-    public static final int SINGLE_LAYOUT = -1;
+    public static final int SINGLE_LAYOUT = 0;
 
     public static final int FOOTER_MORE = 0;
     public static final int FOOTER_LOADING = 1;
@@ -37,9 +38,8 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
     private List<T> mainList;
     private List<T> dataList;
     private Context context;
-    private SparseArray<Integer> layoutIdList;
     private SparseArray<Integer> headerLayoutIdList;
-    protected List<String> multiLayoutList;
+    protected List<ViewTypeUnit> multiLayoutList;
     // item long click on long click Listener
     private OnItemClickListener onItemClickListener;
     private OnItemLongClickListener onItemLongClickListener;
@@ -57,24 +57,14 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
      *
      * @param context
      * @param dataList
-     * @param layoutId
      */
-    public XAdapter(Context context, List<T> dataList, @LayoutRes int layoutId) {
+    public XAdapter(Context context, List<T> dataList) {
         init(context, dataList);
-        this.layoutIdList = new SparseArray<>();
-        layoutIdList.put(SINGLE_LAYOUT, layoutId);
     }
 
-    /**
-     * use layout list to show different holders
-     *
-     * @param context
-     * @param dataList
-     * @param layoutIdList key: viewType  value: layoutId
-     */
-    public XAdapter(Context context, List<T> dataList, SparseArray layoutIdList) {
+    public XAdapter(Context context, List<T> dataList, INoRepeatLayoutSetter<T> noRepeatLayoutSetter) {
+        this.noRepeatLayoutSetter = noRepeatLayoutSetter;
         init(context, dataList);
-        this.layoutIdList = layoutIdList;
     }
 
     private void init(Context context, List<T> dataList) {
@@ -114,14 +104,8 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
                     return holder;
                 }
             }
-            int layoutId;
-            if (layoutIdList == null || layoutIdList.size() == 0) {
-                layoutId = setViewLayoutWhenLayoutListNull(viewType);
-            } else {
-                layoutId = (layoutIdList.size() == 1 ? layoutIdList.get(SINGLE_LAYOUT) : layoutIdList.get(viewType));
-            }
-            @LayoutRes int l = layoutId;
-            View itemView = LayoutInflater.from(context).inflate(l, parent, false);
+            @LayoutRes  int layoutId = returnLayoutByViewType(viewType);
+            View itemView = LayoutInflater.from(context).inflate(layoutId, parent, false);
             final CustomHolder holder = new CustomHolder(itemView) {
                 @Override
                 protected void createHolder(final CustomHolder holder) {
@@ -175,7 +159,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
      */
     public void creatingHolder(CustomHolder holder, List<T> dataList, int viewType){
 
-    };
+    }
 
     /**
      * bind holder
@@ -185,6 +169,8 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
      * @param pos
      */
     public abstract void bindingHolder(CustomHolder holder, List<T> dataList, int pos);
+
+    protected abstract int returnLayoutByViewType(int viewType);
 
     public int getFooterState() {
         return footerState;
@@ -203,7 +189,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
      * @param item
      * @return
      */
-    protected int getItemTypeForMultiLayout(T item) {
+    protected int getViewTypeForMultiLayout(T item) {
         return SINGLE_LAYOUT;
     }
 
@@ -223,12 +209,23 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
             return LAYOUT_FOOTER;
         }
 
-        int type = getItemTypeForMultiLayout(dataList.get(position - headerCount));
-
-        if (type == SINGLE_LAYOUT) {
-            return super.getItemViewType(position - headerCount);
+        if (noRepeatLayoutSetter != null) {
+            String mark = noRepeatLayoutSetter.getItemNoRepeatMark(dataList.get(position - headerCount));
+            for (int i = 0; i < multiLayoutList.size(); i++) {
+                if (multiLayoutList.get(i).mark.equals(mark)) {
+                    return i;
+                }
+            }
+            int key = multiLayoutList.size();
+            multiLayoutList.add(new ViewTypeUnit(mark));
+            return key;
         } else {
-            return type;
+            int type = returnLayoutByViewType(dataList.get(position - headerCount));
+            if (type == SINGLE_LAYOUT) {
+                return super.getItemViewType(position - headerCount);
+            } else {
+                return type;
+            }
         }
     }
 
@@ -337,10 +334,6 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
 
     }
 
-    protected int setViewLayoutWhenLayoutListNull(int viewType) {
-        return 0;
-    }
-
     /**
      * override this method to add holder rootView onclick event，when handle over continue to on ClickListener in creating holder set.
      * some view if it override Touch method and did't return，can let it no use,  eg：RippleView
@@ -364,6 +357,10 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
         return list;
     }
 
+    public interface INoRepeatLayoutSetter<T> {
+        String getItemNoRepeatMark(T item);
+    }
+
     public interface ICustomerFooter {
         void bindFooter(CustomHolder holder, int footerState);
     }
@@ -380,10 +377,6 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
      */
     public interface OnItemLongClickListener<T> {
         void onItemLongClick(CustomHolder holder, T item);
-    }
-
-    public interface INoRepeatLayoutSetter<T> {
-        String setItemNoRepeatMark(T item);
     }
 
     public static abstract class CustomHolder extends RecyclerView.ViewHolder {

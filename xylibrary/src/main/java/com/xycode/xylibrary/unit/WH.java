@@ -1,6 +1,7 @@
 package com.xycode.xylibrary.unit;
 
 /**
+ * use for Height and Width
  * Created by XY on 2016-07-26.
  */
 public class WH {

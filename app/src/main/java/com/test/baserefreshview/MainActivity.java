@@ -34,66 +34,15 @@ public class MainActivity extends BaseActivity {
 
         xRefresher = (XRefresher) findViewById(R.id.xRefresher);
 
-        XAdapter<ContentBean> adapter = new XAdapter<ContentBean>(this, new ArrayList<ContentBean>(), R.layout.item_house) {
-
+        XAdapter<ContentBean> adapter = new XAdapter<ContentBean>(this, new ArrayList<ContentBean>(), new XAdapter.INoRepeatLayoutSetter<ContentBean>() {
             @Override
-            public void bindingHolder(CustomHolder holder, final List<ContentBean> dataList, final int pos) {
-                ContentBean item = dataList.get(pos);
-                holder.setText(R.id.tvName, item.getTitle())
-//                        .setImageUrl(R.id.sdvItem, item.getCoverPicture())
-                        .setText(R.id.tvText, pos + "");
-                MultiImageView mvItem = holder.getView(R.id.mvItem);
-//                if (dataList.get(pos).getCoverPicture() != null) {
-//                WH wh = Tools.getWidthHeightFromFilename(dataList.get(holder.getAdapterPosition()).getCoverPicture(), "_wh", "x");
-//                float ratio = wh.getAspectRatio();
-//                mvItem.setSingleImageRatio(ratio<1 ? 1 : ratio);
-//                L.e("wh.getAspectRatio: "+ ratio);
-//                }
-                final List<String> list = new ArrayList<>();
-                for (int i = 0; i <= pos; i++) {
-                    list.add(item.getCoverPicture() /*+"!"+ (int)(60*ratio)+ "!60"*/);
-                }
-                mvItem.setList(list);
-
-                mvItem.setOverlayDrawableListener(new MultiImageView.OnImageOverlayListener() {
-                    @Override
-                    public Drawable setOverlayDrawable(int position) {
-                        if (position == 8) {
-                            return getResources().getDrawable(R.drawable.more_images);
-                        }
-                        return null;
-                    }
-                });
-                mvItem.setOnItemClickListener(new MultiImageView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(View view, int position) {
-                        WH wh = Tools.getWidthHeightFromFilename(dataList.get(position).getCoverPicture(), "_wh", "x");
-                        TS.show(getThis(), "wh:"+ wh.width + " h:" + wh.height+ " r:"+wh.getAspectRatio());
-                    }
-                });
+            public String getItemNoRepeatMark(ContentBean item) {
+                return item.getId();
             }
-
+        }) {
             @Override
-            protected void creatingHeader(CustomHolder holder, int headerKey) {
-                switch (headerKey) {
-                    case 1:
-                        AdLoopView bannerView = holder.getView(R.id.banner);
-                        setBanner(bannerView);
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            @Override
-            protected void bindingHeader(CustomHolder holder, int pos) {
-                switch (getItemViewType(pos)) {
-                    case 1:
-                        break;
-                    case 2:
-                        holder.setText(R.id.tvLoading, "我是Header2");
-                        break;
-                }
+            protected int returnLayoutByViewType(int  viewType) {
+                return R.layout.item_house ;
             }
 
             @Override
@@ -106,7 +55,7 @@ public class MainActivity extends BaseActivity {
                         WH wh = Tools.getWidthHeightFromFilename(list.get(position), "_wh", "x");
                         return Uri.parse(list.get(position)+"!"+(wh.getAspectRatio()*20)+"!20");
                     }
-                });*//*
+                });*/
                 mvItem.setOverlayDrawableListener(new MultiImageView.OnImageOverlayListener() {
                     @Override
                     public Drawable setOverlayDrawable(int position) {
@@ -122,29 +71,38 @@ public class MainActivity extends BaseActivity {
                         WH wh = Tools.getWidthHeightFromFilename(dataList.get(holder.getAdapterPosition()).getCoverPicture(), "_wh", "x");
                         TS.show(getThis(), "wh:"+ wh.width + " h:" + wh.height+ " r:"+wh.getAspectRatio());
                     }
-                });*/
-            }
-
-        /*    @Override
-            protected int setViewLayoutWhenLayoutListNull(int viewType) {
-                return R.layout.item_house;
+                });
             }
 
             @Override
-            protected int getItemTypeForMultiLayout(ContentBean item) {
-                for (int i = 0; i < multiLayoutList.size(); i++) {
-                    if (multiLayoutList.get(i).equals(item.getId())) {
-                        return i;
-                    }
+            public void bindingHolder(CustomHolder holder, final List<ContentBean> dataList, final int pos) {
+                ContentBean item = dataList.get(pos);
+                holder.setText(R.id.tvName, item.getTitle())
+//                        .setImageUrl(R.id.sdvItem, item.getCoverPicture())
+                        .setText(R.id.tvText, pos + "");
+                MultiImageView mvItem = holder.getView(R.id.mvItem);
+
+                final List<String> list = new ArrayList<>();
+                for (int i = 0; i <= pos; i++) {
+                    list.add(item.getCoverPicture() /*+"!"+ (int)(60*ratio)+ "!60"*/);
                 }
-                int key = multiLayoutList.size();
-                multiLayoutList.add(item.getId());
-                return key;
-            }*/
+                mvItem.setList(list);
+            }
+
+            @Override
+            protected void creatingHeader(CustomHolder holder, int headerKey) {
+                switch (headerKey) {
+                    case 1:
+                        AdLoopView bannerView = holder.getView(R.id.banner);
+                        setBanner(bannerView);
+                        break;
+                    default:
+                        break;
+                }
+            }
         };
 
-//        adapter.addHeader(1, R.layout.layout_banner);
-//        adapter.addHeader(2, R.layout.layout_load_more);
+        adapter.addHeader(1, R.layout.layout_banner);
 
         xRefresher.setup(this, adapter, true, new XRefresher.OnSwipeListener() {
             @Override
@@ -169,8 +127,6 @@ public class MainActivity extends BaseActivity {
             }
         });
 //        xRefresher.refreshList();
-
-        setBanner(((AdLoopView) findViewById(R.id.banner)));
     }
 
     private void setBanner(AdLoopView bannerView) {
