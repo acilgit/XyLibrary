@@ -5,6 +5,7 @@ import android.support.v7.app.AlertDialog;
 
 import com.alibaba.fastjson.JSONObject;
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.xycode.xylibrary.base.BaseActivity;
 import com.xycode.xylibrary.okHttp.Header;
 import com.xycode.xylibrary.okHttp.OkHttp;
 import com.xycode.xylibrary.okHttp.Param;
@@ -101,7 +102,7 @@ public class App extends Application {
         DownloadHelper.init(this, "更新啊", "取消啊", "下载中...", new DownloadHelper.OnDownloadListener() {
             @Override
             public AlertDialog.Builder getConfirmDialogBuilder(String title, String content) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(instance, R.style.AppDialog);
+                AlertDialog.Builder builder = new AlertDialog.Builder(BaseActivity.getForegroundActivity(instance));
                 return builder;
             }
 
