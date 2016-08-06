@@ -42,8 +42,9 @@ public class MainActivity extends BaseActivity {
 
             @Override
             public void creatingHolder(final CustomHolder holder, final List<ContentBean> dataList, ViewTypeUnit viewType) {
-                MultiImageView mvItem = holder.getView(R.id.mvItem);
-
+                switch (viewType.getLayoutId()) {
+                    case R.layout.item_house:
+                        MultiImageView mvItem = holder.getView(R.id.mvItem);
              /*   mvItem.setLoadImageListener(new MultiImageView.OnImageLoadListener() {
                     @Override
                     public Uri setPreviewUri(int position) {
@@ -51,37 +52,48 @@ public class MainActivity extends BaseActivity {
                         return Uri.parse(list.get(position)+"!"+(wh.getAspectRatio()*20)+"!20");
                     }
                 });*/
-                mvItem.setOverlayDrawableListener(new MultiImageView.OnImageOverlayListener() {
-                    @Override
-                    public Drawable setOverlayDrawable(int position) {
-                        if (position == 8) {
-                            return getResources().getDrawable(R.drawable.more_images);
-                        }
-                        return null;
-                    }
-                });
-                mvItem.setOnItemClickListener(new MultiImageView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(View view, int position) {
-                        WH wh = Tools.getWidthHeightFromFilename(dataList.get(holder.getAdapterPosition()).getCoverPicture(), "_wh", "x");
-                        TS.show(getThis(), "wh:"+ wh.width + " h:" + wh.height+ " r:"+wh.getAspectRatio());
-                    }
-                });
+                        mvItem.setOverlayDrawableListener(new MultiImageView.OnImageOverlayListener() {
+                            @Override
+                            public Drawable setOverlayDrawable(int position) {
+                                if (position == 8) {
+                                    return getResources().getDrawable(R.drawable.more_images);
+                                }
+                                return null;
+                            }
+                        });
+                        mvItem.setOnItemClickListener(new MultiImageView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(View view, int position) {
+                                WH wh = Tools.getWidthHeightFromFilename(dataList.get(holder.getAdapterPosition()).getCoverPicture(), "_wh", "x");
+                                TS.show(getThis(), "wh:"+ wh.width + " h:" + wh.height+ " r:"+wh.getAspectRatio());
+                            }
+                        });
+                        break;
+                    default:
+                        break;
+                }
+
             }
 
             @Override
             public void bindingHolder(CustomHolder holder, final List<ContentBean> dataList, final int pos) {
                 ContentBean item = dataList.get(pos);
-                holder.setText(R.id.tvName, item.getTitle())
+                switch (getLayoutId(item.getId())) {
+                    case R.layout.item_house:
+                        holder.setText(R.id.tvName, item.getTitle())
 //                        .setImageUrl(R.id.sdvItem, item.getCoverPicture())
-                        .setText(R.id.tvText, pos + "");
-                MultiImageView mvItem = holder.getView(R.id.mvItem);
+                                .setText(R.id.tvText, pos + "");
+                        MultiImageView mvItem = holder.getView(R.id.mvItem);
 
-                final List<String> list = new ArrayList<>();
-                for (int i = 0; i <= pos; i++) {
-                    list.add(item.getCoverPicture() /*+"!"+ (int)(60*ratio)+ "!60"*/);
+                        final List<String> list = new ArrayList<>();
+                        for (int i = 0; i <= pos; i++) {
+                            list.add(item.getCoverPicture() /*+"!"+ (int)(60*ratio)+ "!60"*/);
+                        }
+                        mvItem.setList(list);
+                        break;
+                    default:
+                        break;
                 }
-                mvItem.setList(list);
             }
 
             @Override

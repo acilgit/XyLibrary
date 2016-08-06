@@ -154,9 +154,9 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
      *
      * @param holder
      * @param dataList
-     * @param viewType
+     * @param viewTypeUnit
      */
-    public void creatingHolder(CustomHolder holder, List<T> dataList, ViewTypeUnit viewType) {
+    public void creatingHolder(CustomHolder holder, List<T> dataList, ViewTypeUnit viewTypeUnit) {
 
     }
 
@@ -234,6 +234,15 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
             return dataList.get(pos);
         }
         return null;
+    }
+
+    public int getLayoutId(String mark) {
+        for (ViewTypeUnit vt : multiLayoutMap.values()) {
+            if (vt.getMark().equals(mark)) {
+                return vt.getLayoutId();
+            }
+        }
+        return 0;
     }
 
     public List<T> getDataList() {

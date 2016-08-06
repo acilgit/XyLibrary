@@ -38,6 +38,10 @@
         </attr>
     </declare-styleable>
 
+    <declare-styleable name="NoScrollViewPager">
+        <attr name="enableScroll" format="boolean" />
+    </declare-styleable>
+
     <attr name="holderImage" format="reference" />
     <attr name="imageScaleType">
         <enum name="fit_xy" value="0" />
