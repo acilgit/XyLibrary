@@ -18,6 +18,7 @@ import com.xycode.xylibrary.unit.ViewTypeUnit;
 import com.xycode.xylibrary.unit.WH;
 import com.xycode.xylibrary.utils.TS;
 import com.xycode.xylibrary.utils.Tools;
+import com.xycode.xylibrary.utils.downloadHelper.DownloadHelper;
 import com.xycode.xylibrary.xRefresher.XRefresher;
 
 import java.util.ArrayList;
@@ -145,7 +146,8 @@ public class MainActivity extends BaseActivity {
         bannerView.setOnImageClickListener(new BaseLoopAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(PagerAdapter parent, View view, int position, int realPosition) {
-                TS.show(getThis(), "Hi + " + position + " real:" + realPosition);
+                DownloadHelper.getInstance().update(getThis(), "http://www.zhijia51.com/download/app.apk", "哈哈哈哈", "来来High！");
+//                TS.show(getThis(), "Hi + " + position + " real:" + realPosition);
             }
         });
         bannerView.initData(bannerList);

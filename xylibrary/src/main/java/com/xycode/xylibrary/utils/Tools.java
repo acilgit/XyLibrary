@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.Html;
 import android.view.View;
@@ -39,6 +40,8 @@ import java.util.regex.Pattern;
  * Created by Administrator on 2014/7/27.
  */
 public class Tools {
+
+    public static final String STORAEGE_DIR = Environment.getExternalStorageDirectory()+"";
 
     private static File currentPhotoFile;
 

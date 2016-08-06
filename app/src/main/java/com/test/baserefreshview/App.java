@@ -1,6 +1,7 @@
 package com.test.baserefreshview;
 
 import android.app.Application;
+import android.support.v7.app.AlertDialog;
 
 import com.alibaba.fastjson.JSONObject;
 import com.facebook.drawee.backends.pipeline.Fresco;
@@ -8,6 +9,7 @@ import com.xycode.xylibrary.okHttp.Header;
 import com.xycode.xylibrary.okHttp.OkHttp;
 import com.xycode.xylibrary.okHttp.Param;
 import com.xycode.xylibrary.utils.TS;
+import com.xycode.xylibrary.utils.downloadHelper.DownloadHelper;
 
 import okhttp3.Call;
 import okhttp3.Response;
@@ -95,6 +97,20 @@ public class App extends Application {
 
         });
         OkHttp.setMaxTransFileCount(2);
+
+        DownloadHelper.init(this, "更新啊", "取消啊", "下载中...", new DownloadHelper.OnDownloadListener() {
+            @Override
+            public AlertDialog.Builder getConfirmDialogBuilder(String title, String content) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(instance, R.style.AppDialog);
+                return builder;
+            }
+
+            @Override
+            public void onDownloadFailure() {
+                TS.show("下载失败");
+            }
+        });
+
   /*      XRefresher.setCustomerFooterView(R.layout.layout_load_more, new XAdapter.ICustomerFooter() {
             @Override
             public void bindFooter(XAdapter.CustomHolder holder, int footerState) {
