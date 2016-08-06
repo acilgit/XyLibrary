@@ -17,36 +17,34 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.xycode.xylibrary.R;
 import com.xycode.xylibrary.unit.ViewTypeUnit;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by xiu on 2016/4/3.
  */
 public abstract class XAdapter<T> extends RecyclerView.Adapter {
 
-    public static final int SINGLE_LAYOUT = 0;
-
     public static final int FOOTER_MORE = 0;
     public static final int FOOTER_LOADING = 1;
     public static final int FOOTER_NO_MORE = 2;
 
-    private static final int LAYOUT_HEADER = -20330;
     private static final int LAYOUT_FOOTER = -20331;
     private List<T> mainList;
     private List<T> dataList;
     private Context context;
     private SparseArray<Integer> headerLayoutIdList;
-    protected List<ViewTypeUnit> multiLayoutList;
+    private Map<Integer, ViewTypeUnit> multiLayoutMap;
     // item long click on long click Listener
     private OnItemClickListener onItemClickListener;
     private OnItemLongClickListener onItemLongClickListener;
 
     private ICustomerFooter iCustomerFooter;
-
-    private INoRepeatLayoutSetter noRepeatLayoutSetter;
 
     private final int noFooterLayout = -1;
     private int footerLayout = noFooterLayout;
@@ -62,11 +60,6 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
         init(context, dataList);
     }
 
-    public XAdapter(Context context, List<T> dataList, INoRepeatLayoutSetter<T> noRepeatLayoutSetter) {
-        this.noRepeatLayoutSetter = noRepeatLayoutSetter;
-        init(context, dataList);
-    }
-
     private void init(Context context, List<T> dataList) {
         this.context = context;
         if (dataList == null) {
@@ -76,7 +69,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
         this.mainList = dataList;
         this.dataList.addAll(setFilterForAdapter(mainList));
         this.headerLayoutIdList = new SparseArray<>();
-        this.multiLayoutList = new ArrayList<>();
+        this.multiLayoutMap = new HashMap<>();
     }
 
     @Override
@@ -104,7 +97,13 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
                     return holder;
                 }
             }
-            @LayoutRes  int layoutId = returnLayoutByViewType(viewType);
+            int l = R.layout.layout_blank;
+            final ViewTypeUnit viewTypeUnit = multiLayoutMap.get(viewType);
+            if (viewTypeUnit != null) {
+                l = viewTypeUnit.getLayoutId();
+            }
+
+            @LayoutRes int layoutId = l;
             View itemView = LayoutInflater.from(context).inflate(layoutId, parent, false);
             final CustomHolder holder = new CustomHolder(itemView) {
                 @Override
@@ -128,7 +127,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
                             }
                         });
                     }
-                    creatingHolder(holder, dataList, viewType);
+                    creatingHolder(holder, dataList, viewTypeUnit);
                 }
             };
             return holder;
@@ -157,7 +156,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
      * @param dataList
      * @param viewType
      */
-    public void creatingHolder(CustomHolder holder, List<T> dataList, int viewType){
+    public void creatingHolder(CustomHolder holder, List<T> dataList, ViewTypeUnit viewType) {
 
     }
 
@@ -170,8 +169,6 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
      */
     public abstract void bindingHolder(CustomHolder holder, List<T> dataList, int pos);
 
-    protected abstract int returnLayoutByViewType(int viewType);
-
     public int getFooterState() {
         return footerState;
     }
@@ -183,15 +180,12 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
 
     /**
      * override this method can show different holder for layout
-     * don't return LAYOUT_HEADER = -20330
      * don't return LAYOUT_FOOTER = -20331
      *
      * @param item
      * @return
      */
-    protected int getViewTypeForMultiLayout(T item) {
-        return SINGLE_LAYOUT;
-    }
+    protected abstract ViewTypeUnit getViewTypeUnitForLayout(T item);
 
     /**
      * when you use layout list, you can override this method when binding holder views
@@ -205,28 +199,19 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
         if (position < headerCount) {
             return headerLayoutIdList.keyAt(position);
         }
-        if (position == dataList.size()+headerCount) {
+        if (position == dataList.size() + headerCount) {
             return LAYOUT_FOOTER;
         }
 
-        if (noRepeatLayoutSetter != null) {
-            String mark = noRepeatLayoutSetter.getItemNoRepeatMark(dataList.get(position - headerCount));
-            for (int i = 0; i < multiLayoutList.size(); i++) {
-                if (multiLayoutList.get(i).mark.equals(mark)) {
-                    return i;
-                }
-            }
-            int key = multiLayoutList.size();
-            multiLayoutList.add(new ViewTypeUnit(mark));
-            return key;
-        } else {
-            int type = returnLayoutByViewType(dataList.get(position - headerCount));
-            if (type == SINGLE_LAYOUT) {
-                return super.getItemViewType(position - headerCount);
-            } else {
-                return type;
+        ViewTypeUnit viewTypeUnit = getViewTypeUnitForLayout(dataList.get(position - headerCount));
+        for (Integer key : multiLayoutMap.keySet()) {
+            if (multiLayoutMap.get(key).getMark().equals(viewTypeUnit.getMark())) {
+                return key;
             }
         }
+        int viewType = multiLayoutMap.size() + 10000;
+        multiLayoutMap.put(viewType, viewTypeUnit);
+        return viewType;
     }
 
     /**
@@ -239,7 +224,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
         int footerCount = footerLayout == noFooterLayout ? 0 : 1;
         int headerCount = headerLayoutIdList.size();
         if (dataList != null) {
-            return dataList.size() + footerCount +headerCount;
+            return dataList.size() + footerCount + headerCount;
         }
         return footerCount + headerCount;
     }
@@ -282,6 +267,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
 
     /**
      * this method can only use in no filter mode
+     *
      * @param pos
      * @param item
      */
@@ -357,9 +343,9 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
         return list;
     }
 
-    public interface INoRepeatLayoutSetter<T> {
+ /*   public interface INoRepeatLayoutSetter<T> {
         String getItemNoRepeatMark(T item);
-    }
+    }*/
 
     public interface ICustomerFooter {
         void bindFooter(CustomHolder holder, int footerState);
@@ -473,7 +459,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
         public CustomHolder setClick(int viewId, View.OnClickListener listener) {
             View view = getView(viewId);
             if (view != null) {
-              view.setOnClickListener(listener);
+                view.setOnClickListener(listener);
             }
             return this;
         }
@@ -481,7 +467,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
         public CustomHolder setLongClick(int viewId, View.OnLongClickListener listener) {
             View view = getView(viewId);
             if (view != null) {
-              view.setOnLongClickListener(listener);
+                view.setOnLongClickListener(listener);
             }
             return this;
         }
@@ -489,7 +475,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
         public CustomHolder setEnable(int viewId, boolean enable) {
             View view = getView(viewId);
             if (view != null) {
-              view.setEnabled(enable);
+                view.setEnabled(enable);
             }
             return this;
         }

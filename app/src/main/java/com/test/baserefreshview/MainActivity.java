@@ -14,6 +14,7 @@ import com.xycode.xylibrary.okHttp.Param;
 import com.xycode.xylibrary.uiKit.views.MultiImageView;
 import com.xycode.xylibrary.uiKit.views.loopview.AdLoopView;
 import com.xycode.xylibrary.uiKit.views.loopview.internal.BaseLoopAdapter;
+import com.xycode.xylibrary.unit.ViewTypeUnit;
 import com.xycode.xylibrary.unit.WH;
 import com.xycode.xylibrary.utils.TS;
 import com.xycode.xylibrary.utils.Tools;
@@ -25,7 +26,6 @@ import java.util.List;
 public class MainActivity extends BaseActivity {
 
     private XRefresher xRefresher;
-    private int type = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,19 +34,14 @@ public class MainActivity extends BaseActivity {
 
         xRefresher = (XRefresher) findViewById(R.id.xRefresher);
 
-        XAdapter<ContentBean> adapter = new XAdapter<ContentBean>(this, new ArrayList<ContentBean>(), new XAdapter.INoRepeatLayoutSetter<ContentBean>() {
+        XAdapter<ContentBean> adapter = new XAdapter<ContentBean>(this, new ArrayList<ContentBean>()) {
             @Override
-            public String getItemNoRepeatMark(ContentBean item) {
-                return item.getId();
-            }
-        }) {
-            @Override
-            protected int returnLayoutByViewType(int  viewType) {
-                return R.layout.item_house ;
+            protected ViewTypeUnit getViewTypeUnitForLayout(ContentBean item) {
+                return new ViewTypeUnit(item.getId(), R.layout.item_house);
             }
 
             @Override
-            public void creatingHolder(final CustomHolder holder, final List<ContentBean> dataList, int viewType) {
+            public void creatingHolder(final CustomHolder holder, final List<ContentBean> dataList, ViewTypeUnit viewType) {
                 MultiImageView mvItem = holder.getView(R.id.mvItem);
 
              /*   mvItem.setLoadImageListener(new MultiImageView.OnImageLoadListener() {
