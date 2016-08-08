@@ -42,6 +42,16 @@
         <attr name="enableScroll" format="boolean" />
     </declare-styleable>
 
+    <declare-styleable name="BaseItemView">
+        <attr name="itemType" format="integer" />
+        <attr name="itemNum" format="integer" />
+        <attr name="itemName" format="string" />
+        <attr name="itemContent" format="string" />
+        <attr name="itemDetail" format="string" />
+        <attr name="itemIcon" format="reference" />
+        <attr name="itemColor" format="reference" />
+    </declare-styleable>
+
     <attr name="holderImage" format="reference" />
     <attr name="imageScaleType">
         <enum name="fit_xy" value="0" />

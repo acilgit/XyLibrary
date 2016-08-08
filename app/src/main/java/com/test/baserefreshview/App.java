@@ -1,16 +1,19 @@
 package com.test.baserefreshview;
 
+import android.app.Activity;
 import android.app.Application;
 import android.support.v7.app.AlertDialog;
 
 import com.alibaba.fastjson.JSONObject;
 import com.facebook.drawee.backends.pipeline.Fresco;
-import com.xycode.xylibrary.base.BaseActivity;
 import com.xycode.xylibrary.okHttp.Header;
 import com.xycode.xylibrary.okHttp.OkHttp;
 import com.xycode.xylibrary.okHttp.Param;
+import com.xycode.xylibrary.utils.L;
 import com.xycode.xylibrary.utils.TS;
 import com.xycode.xylibrary.utils.downloadHelper.DownloadHelper;
+
+import java.io.File;
 
 import okhttp3.Call;
 import okhttp3.Response;
@@ -99,16 +102,16 @@ public class App extends Application {
         });
         OkHttp.setMaxTransFileCount(2);
 
-        DownloadHelper.init(this, "现在更新", "暂不更新", "正在下载中","取消", new DownloadHelper.OnShowDownloadDialog() {
+        DownloadHelper.init("现在更新", "暂不更新", "正在下载中", "取消", new DownloadHelper.OnShowDownloadDialog() {
             @Override
-            public AlertDialog.Builder getConfirmDialogBuilder() {
-                AlertDialog.Builder builder = new AlertDialog.Builder(BaseActivity.getForegroundActivity(instance));
-                builder.setTitle( "哈哈哈哈").setMessage("来来High！");
+            public AlertDialog.Builder getConfirmDialogBuilder(Activity activity, String updateMessage) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+                builder.setTitle("哈哈哈哈").setMessage(updateMessage);
                 return builder;
             }
 
             @Override
-            public AlertDialog.Builder getProgressDialogBuilder() {
+            public AlertDialog.Builder getProgressDialogBuilder(Activity activity) {
                 return null;
             }
         });
@@ -126,6 +129,14 @@ public class App extends Application {
             @Override
             public void onFinish() {
 
+                String savePathString = DownloadHelper.getInstance().getDownloadTempFileName();
+                File file = new File(savePathString);
+                if (file.exists()) {
+
+                } else {
+
+                }
+                L.e(file.exists()+ " " + file.getAbsolutePath());
             }
 
             @Override

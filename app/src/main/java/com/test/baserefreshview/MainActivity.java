@@ -46,7 +46,7 @@ public class MainActivity extends BaseActivity {
                 switch (viewType.getLayoutId()) {
                     case R.layout.item_house:
                         MultiImageView mvItem = holder.getView(R.id.mvItem);
-             /*   mvItem.setLoadImageListener(new MultiImageView.OnImageLoadListener() {
+               /* mvItem.setLoadImageListener(new MultiImageView.OnImageLoadListener() {
                     @Override
                     public Uri setPreviewUri(int position) {
                         WH wh = Tools.getWidthHeightFromFilename(list.get(position), "_wh", "x");
@@ -146,7 +146,7 @@ public class MainActivity extends BaseActivity {
         bannerView.setOnImageClickListener(new BaseLoopAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(PagerAdapter parent, View view, int position, int realPosition) {
-                DownloadHelper.getInstance().update(getThis(), "http://www.zhijia51.com/download/app.apk");
+                DownloadHelper.getInstance().update(getThis(), "http://www.zhijia51.com/download/app.apk", "有新版本了啊！！");
 //                TS.show(getThis(), "Hi + " + position + " real:" + realPosition);
             }
         });
