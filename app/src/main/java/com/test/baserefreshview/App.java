@@ -99,15 +99,37 @@ public class App extends Application {
         });
         OkHttp.setMaxTransFileCount(2);
 
-        DownloadHelper.init(this, "更新啊", "取消啊", "下载中...", new DownloadHelper.OnDownloadListener() {
+        DownloadHelper.init(this, "现在更新", "暂不更新", "正在下载中","取消", new DownloadHelper.OnShowDownloadDialog() {
             @Override
-            public AlertDialog.Builder getConfirmDialogBuilder(String title, String content) {
+            public AlertDialog.Builder getConfirmDialogBuilder() {
                 AlertDialog.Builder builder = new AlertDialog.Builder(BaseActivity.getForegroundActivity(instance));
+                builder.setTitle( "哈哈哈哈").setMessage("来来High！");
                 return builder;
             }
 
             @Override
-            public void onDownloadFailure() {
+            public AlertDialog.Builder getProgressDialogBuilder() {
+                return null;
+            }
+        });
+        DownloadHelper.getInstance().setOnProgressListener(new DownloadHelper.OnProgressListener() {
+            @Override
+            public void onFileLength(long length) {
+
+            }
+
+            @Override
+            public void onStep(long downloadedLength) {
+
+            }
+
+            @Override
+            public void onFinish() {
+
+            }
+
+            @Override
+            public void onFailure() {
                 TS.show("下载失败");
             }
         });

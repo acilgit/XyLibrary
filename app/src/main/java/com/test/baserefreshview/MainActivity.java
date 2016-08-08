@@ -146,7 +146,7 @@ public class MainActivity extends BaseActivity {
         bannerView.setOnImageClickListener(new BaseLoopAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(PagerAdapter parent, View view, int position, int realPosition) {
-                DownloadHelper.getInstance().update(getThis(), "http://www.zhijia51.com/download/app.apk", "哈哈哈哈", "来来High！");
+                DownloadHelper.getInstance().update(getThis(), "http://www.zhijia51.com/download/app.apk");
 //                TS.show(getThis(), "Hi + " + position + " real:" + realPosition);
             }
         });
