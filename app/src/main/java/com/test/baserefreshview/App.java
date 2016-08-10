@@ -9,11 +9,8 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 import com.xycode.xylibrary.okHttp.Header;
 import com.xycode.xylibrary.okHttp.OkHttp;
 import com.xycode.xylibrary.okHttp.Param;
-import com.xycode.xylibrary.utils.L;
 import com.xycode.xylibrary.utils.TS;
 import com.xycode.xylibrary.utils.downloadHelper.DownloadHelper;
-
-import java.io.File;
 
 import okhttp3.Call;
 import okhttp3.Response;
@@ -129,14 +126,6 @@ public class App extends Application {
             @Override
             public void onFinish() {
 
-                String savePathString = DownloadHelper.getInstance().getDownloadTempFileName();
-                File file = new File(savePathString);
-                if (file.exists()) {
-
-                } else {
-
-                }
-                L.e(file.exists()+ " " + file.getAbsolutePath());
             }
 
             @Override

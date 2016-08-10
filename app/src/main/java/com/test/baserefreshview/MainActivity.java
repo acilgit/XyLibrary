@@ -38,6 +38,14 @@ public class MainActivity extends BaseActivity {
         XAdapter<ContentBean> adapter = new XAdapter<ContentBean>(this, new ArrayList<ContentBean>()) {
             @Override
             protected ViewTypeUnit getViewTypeUnitForLayout(ContentBean item) {
+                switch (item.getId()) {
+                    case "1":
+
+                        break;
+                    default:
+                        break;
+                }
+
                 return new ViewTypeUnit(item.getId(), R.layout.item_house);
             }
 
@@ -46,7 +54,7 @@ public class MainActivity extends BaseActivity {
                 switch (viewType.getLayoutId()) {
                     case R.layout.item_house:
                         MultiImageView mvItem = holder.getView(R.id.mvItem);
-               /* mvItem.setLoadImageListener(new MultiImageView.OnImageLoadListener() {
+            /*    mvItem.setLoadImageListener(new MultiImageView.OnImageLoadListener() {
                     @Override
                     public Uri setPreviewUri(int position) {
                         WH wh = Tools.getWidthHeightFromFilename(list.get(position), "_wh", "x");
@@ -112,12 +120,7 @@ public class MainActivity extends BaseActivity {
 
         adapter.addHeader(1, R.layout.layout_banner);
 
-        xRefresher.setup(this, adapter, true, new XRefresher.OnSwipeListener() {
-            @Override
-            public void onRefresh() {
-
-            }
-        }, new XRefresher.RefreshRequest<ContentBean>() {
+        xRefresher.setup(this, adapter, true, new XRefresher.RefreshRequest<ContentBean>() {
             @Override
             public String setRequestParamsReturnUrl(Param params) {
 //                params.add("a", "b");

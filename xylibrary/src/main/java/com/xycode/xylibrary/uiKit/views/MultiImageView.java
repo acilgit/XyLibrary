@@ -62,8 +62,8 @@ public class MultiImageView extends LinearLayout {
     private int att_pressedOverlayHolder = -1;
 
     private int att_imagePadding = -1;
-    private boolean att_itemSameSize = false;
-    private boolean att_largeSingleImage = false;
+    private int att_singleImageSize = 1;
+    private boolean att_itemSameSize = true;
     private boolean hasSetMiniRatio = false;
 
     private int att_roundedCornerRadius = -1;
@@ -87,8 +87,8 @@ public class MultiImageView extends LinearLayout {
         imageViewList = new SparseArray<>();
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.MultiImageView);
 
-        att_itemSameSize = typedArray.getBoolean(R.styleable.MultiImageView_itemSameSize, false);
-        att_largeSingleImage = typedArray.getBoolean(R.styleable.MultiImageView_largeSingleImage, false);
+        att_itemSameSize = typedArray.getBoolean(R.styleable.MultiImageView_itemSameSize, true);
+        att_singleImageSize = typedArray.getInt(R.styleable.MultiImageView_singleImageSize, 1);
         att_maxRow = typedArray.getInt(R.styleable.MultiImageView_maxRow, 3);
         att_maxColumn = typedArray.getInt(R.styleable.MultiImageView_maxColumn, 3);
         att_fadeDurationTime = typedArray.getInt(R.styleable.MultiImageView_fadeDurationTime, 0);
@@ -150,7 +150,17 @@ public class MultiImageView extends LinearLayout {
                 pxMoreWandSide = (MAX_WIDTH - pxImagePadding * (MAX_PER_ROW_COUNT-1)) / MAX_PER_ROW_COUNT; // solve right image align problem
 
             }
-            pxOneMaxWandWidth = att_largeSingleImage ? MAX_WIDTH : MAX_WIDTH * 2 / 3;
+            switch (att_singleImageSize) {
+                case 0:
+                    pxOneMaxWandWidth = pxMoreWandSide;
+                    break;
+                case 1:
+                    pxOneMaxWandWidth =  MAX_WIDTH * 2 / 3;
+                    break;
+                case 2:
+                    pxOneMaxWandWidth =MAX_WIDTH ;
+                    break;
+            }
             initImageLayoutParams();
         }
 

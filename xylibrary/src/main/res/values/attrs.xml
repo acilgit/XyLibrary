@@ -30,7 +30,11 @@
         <attr name="imagePadding" format="dimension" />
         <attr name="cornerRadius" format="dimension" />
         <attr name="itemSameSize" format="boolean" />
-        <attr name="largeSingleImage" format="boolean" />
+        <attr name="singleImageSize"  format="enum">
+            <enum name="normal" value="0" />
+            <enum name="large" value="1" />
+            <enum name="full" value="2" />
+        </attr>
         <attr name="maxColumn" format="integer"/>
         <attr name="fadeDurationTime" format="integer"/>
         <attr name="maxRow" format="integer|enum">
