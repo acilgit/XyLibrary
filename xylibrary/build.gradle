@@ -8,8 +8,8 @@ android {
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 15
-        versionCode 26
-        versionName "0.2.6"
+        versionCode 211
+        versionName "0.2.11"
     }
     buildTypes {
         release {
@@ -31,8 +31,11 @@ dependencies {
     compile 'com.android.support:appcompat-v7:24.1.1'
     compile 'com.android.support:design:24.1.1'
     compile 'com.alibaba:fastjson:1.2.14'
-    compile 'com.facebook.fresco:fresco:0.10.0'
     compile 'com.squareup.okhttp3:okhttp:3.4.0'
+    compile 'com.facebook.fresco:fresco:0.10.0'
+//    compile 'com.facebook.fresco:animated-gif:0.12.0'
+//    compile 'com.facebook.fresco:animated-webp:0.12.0'
+//    compile 'com.facebook.fresco:webpsupport:0.12.0'
 }
 
 ext {
@@ -49,7 +52,7 @@ ext {
     siteUrl = 'https://github.com/acilgit/XyLibrary'
     gitUrl = 'https://github.com/acilgit/XyLibrary.git'
 
-    libraryVersion = '0.2.6'
+    libraryVersion = '0.2.11'
 
     developerId = 'acil'
     developerName = 'acil-fong'

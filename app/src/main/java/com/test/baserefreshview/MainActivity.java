@@ -149,7 +149,7 @@ public class MainActivity extends BaseActivity {
         bannerView.setOnImageClickListener(new BaseLoopAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(PagerAdapter parent, View view, int position, int realPosition) {
-                DownloadHelper.getInstance().update(getThis(), "http://www.zhijia51.com/download/app.apk", "有新版本了啊！！");
+                DownloadHelper.getInstance().update(getThis(), "http://m.bg114.cn/scene/api/public/down_apk/1/driver1.0.20.apk", "有新版本了啊！！");
 //                TS.show(getThis(), "Hi + " + position + " real:" + realPosition);
             }
         });

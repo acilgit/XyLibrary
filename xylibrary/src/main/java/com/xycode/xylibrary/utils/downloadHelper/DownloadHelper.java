@@ -33,6 +33,8 @@ public class DownloadHelper {
     private OnShowDownloadDialog onShowDownloadDialog;
     private OnProgressListener onProgressListener;
 
+    public static int defaultDownloadFileSize = 1024*1024*20;
+
     public static String downloadingTitle = "";
     public static String downloadingCancelButtonName = "";
     public static String updateButtonName = "update";
@@ -92,6 +94,9 @@ public class DownloadHelper {
                     switch (msg.what) {
                         case 0: // fileLength
                             fileLength = msg.arg1;
+                            if (fileLength <= 0) {
+                                fileLength = defaultDownloadFileSize;
+                            }
                             if (onProgressListener != null) {
                                 onProgressListener.onFileLength(msg.arg1);
                             } else {
@@ -99,6 +104,10 @@ public class DownloadHelper {
                             if (downloadDialog != null) downloadDialog.getDialog().setMax(fileLength/1024);
                             break;
                         case 1: // fileDownloadLength
+                            if (msg.arg1*1.05f>=fileLength) {
+                                fileLength = (int) (fileLength*1.2f);
+                                if (downloadDialog != null) downloadDialog.getDialog().setMax(fileLength/1024);
+                            }
                             if (onProgressListener != null) {
                                 onProgressListener.onStep(msg.arg1);
                             }
@@ -228,12 +237,12 @@ public class DownloadHelper {
 
         try {
             HttpURLConnection conn = getHttpConnection(downloadFileUrl);
+            fileLength = conn.getContentLength();
             inputStream = conn.getInputStream();
             if (conn.getResponseCode() != 200) {
                 inputStream.close();
                 throw new IOException("Image request failed with response code " + conn.getResponseCode());
             }
-            fileLength = conn.getContentLength();
             outputStream = new FileOutputStream(file);
 
             message.arg1 = fileLength;
@@ -278,6 +287,7 @@ public class DownloadHelper {
     public static HttpURLConnection getHttpConnection(String url) {
         try {
             HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
+            conn.setRequestProperty("Accept-Encoding", "identity");
             conn.setConnectTimeout(30000);
             conn.setReadTimeout(30000);
             return conn;

@@ -36,7 +36,7 @@ public class MultiImageView extends LinearLayout {
     private int pxOneMaxWandHeight;  // single max width
     private int pxOneMaxWandWidth;  // single max width
     private int pxMoreWandSide = 0;// multi max width
-    private int pxImagePadding = (int) Math.ceil(Tools.dp2px(getContext(), 3.0f));// image padding
+    private int pxImagePadding;// image padding
 
     private int MAX_PER_ROW_COUNT = 3;// max count in one row
 
@@ -84,6 +84,7 @@ public class MultiImageView extends LinearLayout {
 
     public MultiImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        pxImagePadding = (int) Math.ceil(Tools.dp2px(getContext(), 3.0f));
         imageViewList = new SparseArray<>();
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.MultiImageView);
 
@@ -137,7 +138,7 @@ public class MultiImageView extends LinearLayout {
         imagesList = lists;
         allCount = imagesList.size();
         if (att_maxRow != -1 && allCount > (att_maxRow * att_maxColumn)) allCount = att_maxRow * att_maxColumn;
-        if (att_maxColumn == 3 && (allCount == 2 || allCount == 4)) {
+        if (!att_itemSameSize && att_maxColumn == 3 && (allCount == 2 || allCount == 4)) {
             MAX_PER_ROW_COUNT = 2;
         } else {
             MAX_PER_ROW_COUNT = att_maxColumn;

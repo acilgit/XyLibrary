@@ -30,10 +30,15 @@ public abstract class BaseItemView extends RelativeLayout {
     protected int itemType;
     protected int itemIcon;
     protected int itemColor;
+    protected int itemRes;
     protected int itemNum;
+    protected int itemCount;
+    protected int itemVisible;
+    protected float itemFloat;
     protected String itemName;
     protected String itemContent;
     protected String itemDetail;
+    protected String itemDescription;
 
     protected int layoutId = R.layout.layout_blank;
 
@@ -47,14 +52,20 @@ public abstract class BaseItemView extends RelativeLayout {
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.BaseItemView);
         itemType = a.getInt(R.styleable.BaseItemView_itemType, 0);
         itemNum = a.getInt(R.styleable.BaseItemView_itemNum, 0);
+        itemCount = a.getInt(R.styleable.BaseItemView_itemCount, 0);
+        itemVisible = a.getInt(R.styleable.BaseItemView_itemVisible, VISIBLE);
+        itemFloat = a.getFloat(R.styleable.BaseItemView_itemFloat, 0);
         itemIcon = a.getResourceId(R.styleable.BaseItemView_itemIcon, 0);
         itemColor = a.getResourceId(R.styleable.BaseItemView_itemColor, 0);
+        itemRes = a.getResourceId(R.styleable.BaseItemView_itemRes, 0);
         itemName = a.getString(R.styleable.BaseItemView_itemName);
         itemContent = a.getString(R.styleable.BaseItemView_itemContent);
         itemDetail = a.getString(R.styleable.BaseItemView_itemDetail);
+        itemDescription = a.getString(R.styleable.BaseItemView_itemDescription);
         itemName = itemName == null ? "" : itemName;
         itemContent = itemContent == null ? "" : itemContent;
         itemDetail = itemDetail == null ? "" : itemDetail;
+        itemDescription = itemDescription == null ? "" : itemDescription;
 
         a.recycle();
     }
@@ -158,6 +169,14 @@ public abstract class BaseItemView extends RelativeLayout {
         View view = getView(viewId);
         if (view != null) {
             view.setEnabled(enable);
+        }
+        return this;
+    }
+
+    public BaseItemView setVisibilility(int viewId, int visibilility) {
+        View view = getView(viewId);
+        if (view != null) {
+            view.setVisibility(visibilility);
         }
         return this;
     }

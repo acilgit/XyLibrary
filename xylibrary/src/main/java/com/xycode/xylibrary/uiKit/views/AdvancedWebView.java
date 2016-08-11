@@ -254,11 +254,11 @@ public class AdvancedWebView extends WebView {
 
     /**
      * Adds an additional HTTP header that will be sent along with every HTTP `GET` request
-     * <p/>
+     * 
      * This does only affect the main requests, not the requests to included resources (e.g. images)
-     * <p/>
+     * 
      * If you later want to delete an HTTP header that was previously added this way, call `removeHttpHeader()`
-     * <p/>
+     * 
      * The `WebView` implementation may in some cases overwrite headers that you set or unset
      *
      * @param name  the name of the HTTP header to add
@@ -270,9 +270,9 @@ public class AdvancedWebView extends WebView {
 
     /**
      * Removes one of the HTTP headers that have previously been added via `addHttpHeader()`
-     * <p/>
+     * 
      * If you want to unset a pre-defined header, set it to an empty string with `addHttpHeader()` instead
-     * <p/>
+     * 
      * The `WebView` implementation may in some cases overwrite headers that you set or unset
      *
      * @param name the name of the HTTP header to remove
@@ -1069,7 +1069,7 @@ public class AdvancedWebView extends WebView {
 
     /**
      * Returns whether file uploads can be used on the current device (generally all platform versions except for 4.4)
-     * <p/>
+     * 
      * On Android 4.4.3/4.4.4, file uploads may be possible but will come with a wrong MIME type
      *
      * @param needsCorrectMimeType whether a correct MIME type is required for file uploads or `application/octet-stream` is acceptable
@@ -1087,9 +1087,9 @@ public class AdvancedWebView extends WebView {
 
     /**
      * Handles a download by loading the file from `fromUrl` and saving it to `toFilename` on the external storage
-     * <p/>
+     * 
      * This requires the two permissions `android.permission.INTERNET` and `android.permission.WRITE_EXTERNAL_STORAGE`
-     * <p/>
+     * 
      * Only supported on API level 9 (Android 2.3) and above
      *
      * @param context    a valid `Context` reference

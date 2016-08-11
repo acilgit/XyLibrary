@@ -49,11 +49,16 @@
     <declare-styleable name="BaseItemView">
         <attr name="itemType" format="integer" />
         <attr name="itemNum" format="integer" />
+        <attr name="itemCount" format="integer" />
+        <attr name="itemFloat" format="float" />
         <attr name="itemName" format="string" />
         <attr name="itemContent" format="string" />
         <attr name="itemDetail" format="string" />
+        <attr name="itemDescription" format="string" />
         <attr name="itemIcon" format="reference" />
         <attr name="itemColor" format="reference" />
+        <attr name="itemRes" format="reference" />
+        <attr name="itemVisible" />
     </declare-styleable>
 
     <attr name="holderImage" format="reference" />
@@ -86,6 +91,11 @@
         <enum name="center_inside" value="5" />
         <enum name="center_crop" value="6" />
         <enum name="focus_crop" value="7" />
+    </attr>
+    <attr name="itemVisible">
+        <enum name="visible" value="0" />
+        <enum name="invisible" value="4" />
+        <enum name="gone" value="8" />
     </attr>
 
 </resources>
