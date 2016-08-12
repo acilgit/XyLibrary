@@ -245,6 +245,8 @@ public class OkHttp {
             }
         } else {
             okInit.receivedNetworkErrorCode(call, response);
+            if (okResponseListener != null)
+                okResponseListener.handleResponseFailure(call, response);
         }
     }
 
@@ -273,6 +275,10 @@ public class OkHttp {
         }
 
         protected void handleNoServerNetwork(Call call, boolean isCanceled) {
+
+        }
+
+        protected void handleResponseFailure(Call call, Response response) {
 
         }
     }

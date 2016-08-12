@@ -27,4 +27,10 @@
 
     </android.support.v4.widget.SwipeRefreshLayout>
 
+    <com.xycode.xylibrary.xRefresher.LoadMoreView
+        android:id="@+id/loadMoreView"
+        android:layout_gravity="bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
 </android.support.design.widget.CoordinatorLayout>

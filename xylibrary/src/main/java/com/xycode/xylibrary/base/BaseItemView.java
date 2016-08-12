@@ -5,7 +5,6 @@ import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.support.annotation.DrawableRes;
-import android.support.annotation.LayoutRes;
 import android.support.annotation.StringRes;
 import android.util.AttributeSet;
 import android.util.SparseArray;
@@ -181,5 +180,5 @@ public abstract class BaseItemView extends RelativeLayout {
         return this;
     }
 
-    protected @LayoutRes abstract int getLayoutId();
+    protected abstract int getLayoutId();
 }

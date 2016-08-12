@@ -30,11 +30,8 @@ import java.util.Map;
  */
 public abstract class XAdapter<T> extends RecyclerView.Adapter {
 
-    public static final int FOOTER_MORE = 0;
-    public static final int FOOTER_LOADING = 1;
-    public static final int FOOTER_NO_MORE = 2;
+    public static final int  LAYOUT_FOOTER = -20331;
 
-    private static final int LAYOUT_FOOTER = -20331;
     private List<T> mainList;
     private List<T> dataList;
     private Context context;
@@ -44,11 +41,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
     private OnItemClickListener onItemClickListener;
     private OnItemLongClickListener onItemLongClickListener;
 
-    private ICustomerFooter iCustomerFooter;
-
-    private final int noFooterLayout = -1;
-    private int footerLayout = noFooterLayout;
-    private int footerState = FOOTER_NO_MORE;
+    private int footerLayout = R.layout.layout_blank;
 
     /**
      * use single Layout
@@ -79,7 +72,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
             final CustomHolder holder = new CustomHolder(itemView) {
                 @Override
                 protected void createHolder(final CustomHolder holder) {
-
+                    creatingFooter(holder);
                 }
             };
             return holder;
@@ -137,10 +130,8 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        if (position == dataList.size()) {
-            if (iCustomerFooter != null) {
-                iCustomerFooter.bindFooter((CustomHolder) holder, footerState);
-            }
+        if (position == dataList.size() + headerLayoutIdList.size()) {
+            bindingFooter(((CustomHolder) holder));
             return;
         } else if (position < headerLayoutIdList.size()) {
             bindingHeader(((CustomHolder) holder), position);
@@ -169,14 +160,14 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
      */
     public abstract void bindingHolder(CustomHolder holder, List<T> dataList, int pos);
 
-    public int getFooterState() {
-        return footerState;
+ /*   public int getLoadMoreState() {
+        return loadMoreState;
     }
 
-    public void setFooterState(int footerState) {
-        this.footerState = footerState;
+    public void setLoadMoreState(int loadMoreState) {
+        this.loadMoreState = loadMoreState;
         notifyDataSetChanged();
-    }
+    }*/
 
     /**
      * override this method can show different holder for layout
@@ -221,7 +212,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
      */
     @Override
     public int getItemCount() {
-        int footerCount = footerLayout == noFooterLayout ? 0 : 1;
+        int footerCount = 1;
         int headerCount = headerLayoutIdList.size();
         if (dataList != null) {
             return dataList.size() + footerCount + headerCount;
@@ -310,10 +301,8 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
         this.onItemLongClickListener = onItemLongClickListener;
     }
 
-    public void setCustomerFooter(@LayoutRes int footerLayout, ICustomerFooter iCustomerFooter) {
+    public void setFooter(@LayoutRes int footerLayout) {
         this.footerLayout = footerLayout;
-        if (this.iCustomerFooter != null) this.iCustomerFooter = null;
-        this.iCustomerFooter = iCustomerFooter;
     }
 
     public void addHeader(int headerKey, @LayoutRes int headerLayoutId) {
@@ -326,6 +315,14 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
     }
 
     protected void bindingHeader(CustomHolder holder, int pos) {
+
+    }
+
+    protected void creatingFooter(CustomHolder holder) {
+
+    }
+
+    protected void bindingFooter(CustomHolder holder) {
 
     }
 
@@ -350,14 +347,6 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
         List<T> list = new ArrayList<>();
         list.addAll(mainList);
         return list;
-    }
-
- /*   public interface INoRepeatLayoutSetter<T> {
-        String getItemNoRepeatMark(T item);
-    }*/
-
-    public interface ICustomerFooter {
-        void bindFooter(CustomHolder holder, int footerState);
     }
 
     /**

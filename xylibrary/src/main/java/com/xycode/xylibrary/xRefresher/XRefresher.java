@@ -42,16 +42,23 @@ import okhttp3.Response;
  */
 public class XRefresher<T> extends CoordinatorLayout {
 
+    public static final int LOADER_MORE = 0;
+    public static final int LOADER_LOADING = 1;
+    public static final int LOADER_NO_MORE = 2;
+
+    private int loadMoreState = LOADER_NO_MORE;
+
     private static final int REFRESH = 1;
     private static final int LOAD = 2;
     private static String PAGE = "page";
     private static String PAGE_SIZE = "pageSize";
 
-    private static XAdapter.ICustomerFooter iCustomerFooter;
-    private static int footerLayout = -1;
+//    private static XAdapter.ICustomerLoadMore iCustomerLoadMore;
+    private static int loaderLayout = R.layout.layout_blank;
     private static Dialog loadingDialog;
     private static int[] loadingColorRes = null;
 
+    private LoadMoreView loadMoreView;
     private int background;
     private boolean backgroundIsRes = false;
     private int backgroundNoData;
@@ -76,13 +83,12 @@ public class XRefresher<T> extends CoordinatorLayout {
     private boolean loadMore;
     private CoordinatorLayout rlMain;
 
-    public static void setCustomerFooterView(@LayoutRes int footerLayout, XAdapter.ICustomerFooter iCustomerFooter) {
-        XRefresher.footerLayout = footerLayout;
-        XRefresher.iCustomerFooter = iCustomerFooter;
+    public static void setCustomerLoadMoreView(@LayoutRes int footerLayout) {
+        XRefresher.loaderLayout = footerLayout;
     }
 
     public XRefresher(Context context) {
-        super(context);
+        super(context, null);
     }
 
     public XRefresher(Context context, AttributeSet attrs) {
@@ -113,6 +119,7 @@ public class XRefresher<T> extends CoordinatorLayout {
         rlMain = (CoordinatorLayout) findViewById(R.id.rlMain);
         swipe = (SwipeRefreshLayout) findViewById(R.id.swipe);
         recyclerView = (RecyclerView) findViewById(R.id.rvMain);
+        loadMoreView = (LoadMoreView) findViewById(R.id.loadMoreView);
         textView = (TextView) findViewById(R.id.tvMain);
 
         textView.setText(hint);
@@ -163,10 +170,7 @@ public class XRefresher<T> extends CoordinatorLayout {
             }
         });
         if (loadMore) {
-            if (iCustomerFooter != null && footerLayout != -1) {
-                this.adapter.setCustomerFooter(footerLayout, iCustomerFooter);
-            }
-            if (refreshRequest != null) setLoadMoreListener();
+            setLoadMoreListener();
         }
         if (loadingColorRes != null) {
             swipe.setColorSchemeResources(loadingColorRes);
@@ -180,9 +184,9 @@ public class XRefresher<T> extends CoordinatorLayout {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                if (newState == RecyclerView.SCROLL_STATE_IDLE && swipeMore && lastVisibleItem + 1 == getAdapter().getItemCount()) {
-                    if (!state.lastPage && getAdapter().getFooterState() == XAdapter.FOOTER_MORE) {
-                        getAdapter().setFooterState(XAdapter.FOOTER_LOADING);
+                if (newState == RecyclerView.SCROLL_STATE_IDLE && swipeMore && lastVisibleItem + 1  == getAdapter().getItemCount()) {
+                    if (!state.lastPage && loadMoreState == LOADER_MORE) {
+                        setLoadMoreState(LOADER_LOADING);
                         getDataByRefresh(state.pageIndex + 1, state.pageDefaultSize);
                     }
                 }
@@ -234,7 +238,7 @@ public class XRefresher<T> extends CoordinatorLayout {
                                 state.pageIndex++;
                                 break;
                         }
-                        getAdapter().setFooterState(state.lastPage ? XAdapter.FOOTER_NO_MORE : XAdapter.FOOTER_MORE);
+                        setLoadMoreState(state.lastPage ? LOADER_NO_MORE : LOADER_MORE);
                         if (newList.size() > 0) {
                             for (T newItem : newList) {
                                 boolean hasSameItem = false;
@@ -270,7 +274,7 @@ public class XRefresher<T> extends CoordinatorLayout {
                                 swipe.setRefreshing(false);
                                 break;
                             case LOAD:
-                                getAdapter().setFooterState(state.lastPage ? XAdapter.FOOTER_NO_MORE : XAdapter.FOOTER_MORE);
+                                setLoadMoreState(state.lastPage ? LOADER_NO_MORE : LOADER_MORE);
                                 break;
                         }
                     }
@@ -289,7 +293,7 @@ public class XRefresher<T> extends CoordinatorLayout {
                                 swipe.setRefreshing(false);
                                 break;
                             case LOAD:
-                                getAdapter().setFooterState(state.lastPage ? XAdapter.FOOTER_NO_MORE : XAdapter.FOOTER_MORE);
+                                setLoadMoreState(state.lastPage ? LOADER_NO_MORE : LOADER_MORE);
                                 break;
                         }
                     }
@@ -361,6 +365,18 @@ public class XRefresher<T> extends CoordinatorLayout {
     public static void resetPageParamsNames(String page, String pageSize) {
         XRefresher.PAGE = page;
         XRefresher.PAGE_SIZE = pageSize;
+    }
+
+    private void setLoadMoreState(int loadMoreState) {
+        this.loadMoreState = loadMoreState;
+        switch (loadMoreState) {
+            case LOADER_LOADING:
+                loadMoreView.show();
+                break;
+            default:
+                loadMoreView.hide();
+                break;
+        }
     }
 
     public static abstract class RefreshRequest<T> implements IRefreshRequest<T> {

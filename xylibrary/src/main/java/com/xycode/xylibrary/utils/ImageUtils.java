@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.provider.MediaStore;
 
 import com.facebook.binaryresource.BinaryResource;
 import com.facebook.binaryresource.FileBinaryResource;
@@ -50,6 +51,30 @@ public class ImageUtils {
         Uri uri = Uri.fromFile(new File(filePath));
         intent.setData(uri);
         context.sendBroadcast(intent);
+    }
+
+    public Intent cropImage(Uri cropUri, Uri outputUri) {
+        return cropImage(cropUri, outputUri, 1, 1, 300, 300);
+    }
+
+    public Intent cropImage(Uri cropUri, Uri outputUri, int aspectX, int aspectY, int outputX, int outputY) {
+        if (null == cropUri) return null;
+        Intent intent = new Intent();
+        intent.setAction("com.android.camera.action.CROP");
+        intent.setDataAndType(cropUri, "image/*");
+        intent.putExtra("crop", "true");
+        intent.putExtra("aspectX", aspectX);
+        intent.putExtra("aspectY", aspectY);
+        intent.putExtra("outputX", outputX);
+        intent.putExtra("outputY", outputY);
+        intent.putExtra("scale", false);
+        intent.putExtra("scaleUpIfNeeded", false);
+        intent.putExtra("return-data", outputUri == null);
+        if (outputUri != null) {
+            intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, outputUri);
+        }
+        return intent;
     }
 
     public static ScalingUtils.ScaleType checkFrescoScaleType(int scaleType) {
@@ -289,7 +314,7 @@ public class ImageUtils {
             return false;
         }
         CacheKey cacheKey = DefaultCacheKeyFactory.getInstance().getEncodedCacheKey(ImageRequest.fromUri(loadUri));
-        return ImagePipelineFactory.getInstance().getMainDiskStorageCache().hasKey(cacheKey) || ImagePipelineFactory.getInstance().getSmallImageDiskStorageCache().hasKey(cacheKey);
+        return ImagePipelineFactory.getInstance().getMainFileCache().hasKey(cacheKey) || ImagePipelineFactory.getInstance().getSmallImageFileCache().hasKey(cacheKey);
     }
 
     //return file or null
@@ -297,11 +322,11 @@ public class ImageUtils {
         File localFile = null;
         if (loadUri != null) {
             CacheKey cacheKey = DefaultCacheKeyFactory.getInstance().getEncodedCacheKey(ImageRequest.fromUri(loadUri));
-            if (ImagePipelineFactory.getInstance().getMainDiskStorageCache().hasKey(cacheKey)) {
-                BinaryResource resource = ImagePipelineFactory.getInstance().getMainDiskStorageCache().getResource(cacheKey);
+            if (ImagePipelineFactory.getInstance().getMainFileCache().hasKey(cacheKey)) {
+                BinaryResource resource = ImagePipelineFactory.getInstance().getMainFileCache().getResource(cacheKey);
                 localFile = ((FileBinaryResource) resource).getFile();
-            } else if (ImagePipelineFactory.getInstance().getSmallImageDiskStorageCache().hasKey(cacheKey)) {
-                BinaryResource resource = ImagePipelineFactory.getInstance().getSmallImageDiskStorageCache().getResource(cacheKey);
+            } else if (ImagePipelineFactory.getInstance().getSmallImageFileCache().hasKey(cacheKey)) {
+                BinaryResource resource = ImagePipelineFactory.getInstance().getSmallImageFileCache().getResource(cacheKey);
                 localFile = ((FileBinaryResource) resource).getFile();
             }
         }
@@ -357,7 +382,7 @@ public class ImageUtils {
     public static boolean saveBitmapToFile(Context context, File file, Bitmap bitmap) {
         File dir = new File(file.getParent());
         if (!dir.exists()) {
-            dir.mkdirs();//
+            dir.mkdirs();
         }
         try {
             FileOutputStream outputStream = new FileOutputStream(file);
@@ -373,6 +398,19 @@ public class ImageUtils {
         return true;
     }
 
+    public static void removeFromFrescoCache(Uri uri) {
+        Fresco.getImagePipeline().evictFromCache(uri);
+    }
+
+    public static void reloadFromFrescoCache(SimpleDraweeView simpleDraweeView, Uri uri) {
+        simpleDraweeView.setImageURI(null);
+        Fresco.getImagePipeline().evictFromCache(uri);
+        simpleDraweeView.setImageURI(uri);
+    }
+
+
+
+
     /**
      * this method can only use once when view is created
      * @param simpleDraweeView
@@ -380,7 +418,6 @@ public class ImageUtils {
      */
     public static void setSimpleDraweeParams(SimpleDraweeView simpleDraweeView, ISetDraweeHierarchy setDraweeHierarchy) {
         GenericDraweeHierarchyBuilder builder = new GenericDraweeHierarchyBuilder(simpleDraweeView.getResources());
-//        GenericDraweeHierarchy hierarchy = simpleDraweeView.getHierarchy();
         setDraweeHierarchy.setHierarchyBuilder(builder);
         simpleDraweeView.setHierarchy(builder.build());
     }

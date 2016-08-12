@@ -81,7 +81,6 @@ public class MainActivity extends BaseActivity {
                     default:
                         break;
                 }
-
             }
 
             @Override
@@ -119,6 +118,7 @@ public class MainActivity extends BaseActivity {
         };
 
         adapter.addHeader(1, R.layout.layout_banner);
+//        adapter.setFooter(R.layout.footer);
 
         xRefresher.setup(this, adapter, true, new XRefresher.RefreshRequest<ContentBean>() {
             @Override

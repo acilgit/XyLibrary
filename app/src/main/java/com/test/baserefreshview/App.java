@@ -11,6 +11,7 @@ import com.xycode.xylibrary.okHttp.OkHttp;
 import com.xycode.xylibrary.okHttp.Param;
 import com.xycode.xylibrary.utils.TS;
 import com.xycode.xylibrary.utils.downloadHelper.DownloadHelper;
+import com.xycode.xylibrary.xRefresher.XRefresher;
 
 import okhttp3.Call;
 import okhttp3.Response;
@@ -134,11 +135,13 @@ public class App extends Application {
             }
         });
 
-  /*      XRefresher.setCustomerFooterView(R.layout.layout_load_more, new XAdapter.ICustomerFooter() {
+        XRefresher.setCustomerLoadMoreView(R.layout.layout_load_more);
+
+  /*      XRefresher.setCustomerFooterView(R.layout.layout_load_more, new XAdapter.ICustomerLoadMore() {
             @Override
             public void bindFooter(XAdapter.CustomHolder holder, int footerState) {
                 switch (footerState) {
-                    case XAdapter.FOOTER_LOADING:
+                    case XAdapter.LOADER_LOADING:
                         holder.setText(R.id.tvLoading, R.string.app_name);
                         holder.getView(R.id.pbLoadMore).setVisibility();
                         break;
