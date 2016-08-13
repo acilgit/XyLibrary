@@ -118,12 +118,13 @@ public class MainActivity extends BaseActivity {
                         break;
                 }
             }
+
         };
 
         adapter.addHeader(1, R.layout.layout_banner);
         adapter.setFooter(R.layout.footer);
 
-        xRefresher.setup(this, adapter, false, new XRefresher.RefreshRequest<ContentBean>() {
+        xRefresher.setup(this, adapter, true, new XRefresher.RefreshRequest<ContentBean>() {
             @Override
             public String setRequestParamsReturnUrl(Param params) {
 //                params.add("a", "b");

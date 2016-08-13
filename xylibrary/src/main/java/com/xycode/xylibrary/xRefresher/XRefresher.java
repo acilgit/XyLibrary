@@ -27,7 +27,6 @@ import com.xycode.xylibrary.adapter.XAdapter;
 import com.xycode.xylibrary.okHttp.OkHttp;
 import com.xycode.xylibrary.okHttp.Param;
 import com.xycode.xylibrary.uiKit.recyclerview.HorizontalDividerItemDecoration;
-import com.xycode.xylibrary.utils.L;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -186,7 +185,6 @@ public class XRefresher<T> extends CoordinatorLayout {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                L.e("lastVisibleItem--- "+lastVisibleItem);
                 if (newState == RecyclerView.SCROLL_STATE_IDLE && swipeMore && lastVisibleItem + 2  >= getAdapter().getItemCount()) {
                     if (!state.lastPage && loadMoreState == LOADER_MORE) {
                         setLoadMoreState(LOADER_LOADING);
