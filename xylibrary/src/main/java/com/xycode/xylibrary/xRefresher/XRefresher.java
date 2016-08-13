@@ -27,6 +27,7 @@ import com.xycode.xylibrary.adapter.XAdapter;
 import com.xycode.xylibrary.okHttp.OkHttp;
 import com.xycode.xylibrary.okHttp.Param;
 import com.xycode.xylibrary.uiKit.recyclerview.HorizontalDividerItemDecoration;
+import com.xycode.xylibrary.utils.L;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -54,7 +55,7 @@ public class XRefresher<T> extends CoordinatorLayout {
     private static String PAGE_SIZE = "pageSize";
 
 //    private static XAdapter.ICustomerLoadMore iCustomerLoadMore;
-    private static int loaderLayout = R.layout.layout_blank;
+//    private static int loaderLayout = R.layout.layout_blank;
     private static Dialog loadingDialog;
     private static int[] loadingColorRes = null;
 
@@ -84,7 +85,8 @@ public class XRefresher<T> extends CoordinatorLayout {
     private CoordinatorLayout rlMain;
 
     public static void setCustomerLoadMoreView(@LayoutRes int footerLayout) {
-        XRefresher.loaderLayout = footerLayout;
+//        XRefresher.loaderLayout = footerLayout;
+        LoadMoreView.setlayoutId(footerLayout);
     }
 
     public XRefresher(Context context) {
@@ -184,7 +186,8 @@ public class XRefresher<T> extends CoordinatorLayout {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                if (newState == RecyclerView.SCROLL_STATE_IDLE && swipeMore && lastVisibleItem + 1  == getAdapter().getItemCount()) {
+                L.e("lastVisibleItem--- "+lastVisibleItem);
+                if (newState == RecyclerView.SCROLL_STATE_IDLE && swipeMore && lastVisibleItem + 2  >= getAdapter().getItemCount()) {
                     if (!state.lastPage && loadMoreState == LOADER_MORE) {
                         setLoadMoreState(LOADER_LOADING);
                         getDataByRefresh(state.pageIndex + 1, state.pageDefaultSize);

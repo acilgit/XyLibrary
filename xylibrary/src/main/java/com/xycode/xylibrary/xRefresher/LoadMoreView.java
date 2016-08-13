@@ -26,6 +26,7 @@ public class LoadMoreView extends RelativeLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
         LayoutInflater.from(getContext()).inflate(layoutId, this, true);
+        hide();
     }
 
     public void show() {
