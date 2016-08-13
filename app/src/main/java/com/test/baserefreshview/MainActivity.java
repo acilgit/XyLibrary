@@ -24,6 +24,9 @@ import com.xycode.xylibrary.xRefresher.XRefresher;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * new
+ */
 public class MainActivity extends BaseActivity {
 
     private XRefresher xRefresher;
