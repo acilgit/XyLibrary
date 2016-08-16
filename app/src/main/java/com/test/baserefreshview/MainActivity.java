@@ -25,6 +25,8 @@ import com.xycode.xylibrary.utils.Tools;
 import com.xycode.xylibrary.utils.downloadHelper.DownloadHelper;
 import com.xycode.xylibrary.xRefresher.XRefresher;
 
+import org.greenrobot.greendao.internal.DaoConfig;
+
 import java.util.ArrayList;
 import java.util.List;
 
