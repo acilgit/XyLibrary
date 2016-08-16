@@ -11,6 +11,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.widget.ImageView;
 
 import com.facebook.binaryresource.BinaryResource;
@@ -610,147 +611,66 @@ public class ImageUtils {
         }, CallerThreadExecutor.getInstance());
     }
 
-
-    public static void setNetFrescoToImageView(final Activity context, final ImageView imageView, String netUri) {
-        Tools.setNetFrescoToImageView(context, imageView, netUri, ImageRequest.ImageType.DEFAULT, null, null);
+    public static void setFrescoViewUri(final SimpleDraweeView imageView, Uri uri, Uri previewUri) {
+        setFrescoViewUri(imageView, uri, previewUri, new IGetFrescoImageInfo() {
+            @Override
+            public void afterGotImageInfo(ImageInfo imageInfo, float ratio) {
+                imageView.setAspectRatio(ratio);
+            }
+        });
     }
 
-    public static void setNetFrescoToImageView(final Activity context, final ImageView imageView, String netUri, final IGetFrescoImageInfo iGetFrescoImageInfo, final IGetFrescoBitmap iGetFrescoBitmap) {
-        Tools.setNetFrescoToImageView(context, imageView, netUri, ImageRequest.ImageType.DEFAULT, iGetFrescoImageInfo, iGetFrescoBitmap);
-    }
-
-    public static void setNetFrescoToImageView(final Activity context, final ImageView imageView, String netUri, final ImageRequest.ImageType imageType, final IGetFrescoImageInfo iGetFrescoImageInfo, final IGetFrescoBitmap iGetFrescoBitmap) {
-        if (netUri.isEmpty()) {
+    public static void setFrescoViewUri(SimpleDraweeView imageView, Uri uri, Uri previewUri, final IGetFrescoImageInfo iGetFrescoImageInfo) {
+        if (uri == null) {
             return;
         }
-        final File localFile = checkFile(Def.CACHE_DIR, netUri);
-        final Uri uri;
+        ImageRequest request = ImageRequestBuilder.newBuilderWithSource(uri)
+                .setProgressiveRenderingEnabled(true)
+                .build();
+        PipelineDraweeControllerBuilder builder = Fresco.newDraweeControllerBuilder()
+                .setControllerListener(new ControllerListener<ImageInfo>() {
+                    boolean showFinalImageInfo = true;
 
-//        L.e("setNetFrescoToImageView "+"("+localFile.getName()+")");
-        // 从本地显示
-        if (localFile.exists()) {
-            uri = Uri.parse("file://" + localFile.getAbsolutePath());
-//            L.e("localFile exists()"+"("+uri.getPath()+")");
-            if (imageView instanceof DraweeView) {
-                ImageRequest request = ImageRequestBuilder.newBuilderWithSource(uri)
-//                        .setLocalThumbnailPreviewsEnabled(true)
-                        .setProgressiveRenderingEnabled(true)
-//                        .setImageType(ImageRequest.ImageType.DEFAULT)
-                        .build();
-                DraweeController controller = Fresco.newDraweeControllerBuilder()
-                        .setImageRequest(request)
-                        .setControllerListener(new ControllerListener<ImageInfo>() {
-                            boolean showFinalImageInfo = true;
+                    @Override
+                    public void onSubmit(String id, Object callerContext) {
+                    }
 
-                            @Override
-                            public void onSubmit(String id, Object callerContext) {
-//                                L.e("onSubmit 1");
-                            }
+                    @Override
+                    public void onFinalImageSet(String id, ImageInfo imageInfo, Animatable animatable) {
+                        if (showFinalImageInfo && iGetFrescoImageInfo != null) {
+                            iGetFrescoImageInfo.afterGotImageInfo(imageInfo, (1.0f * imageInfo.getWidth()) / imageInfo.getHeight());
+                        }
+                    }
 
-                            @Override
-                            public void onFinalImageSet(String id, ImageInfo imageInfo, Animatable animatable) {
-                                if (showFinalImageInfo && iGetFrescoImageInfo != null) {
-                                    iGetFrescoImageInfo.afterGotImageInfo(imageInfo);
-                                }
-//                                L.e("onFinalImageSet 1");
-                            }
+                    @Override
+                    public void onIntermediateImageSet(String id, ImageInfo imageInfo) {
+                        showFinalImageInfo = false;
+                        if (iGetFrescoImageInfo != null) {
+                            iGetFrescoImageInfo.afterGotImageInfo(imageInfo, (1.0f * imageInfo.getWidth()) / imageInfo.getHeight());
+                        }
+                    }
 
-                            @Override
-                            public void onIntermediateImageSet(String id, ImageInfo imageInfo) {
-                                showFinalImageInfo = false;
-                                if (iGetFrescoImageInfo != null) {
-                                    iGetFrescoImageInfo.afterGotImageInfo(imageInfo);
-                                }
-                            }
+                    @Override
+                    public void onIntermediateImageFailed(String id, Throwable throwable) {
 
-                            @Override
-                            public void onIntermediateImageFailed(String id, Throwable throwable) {
+                    }
 
-                            }
+                    @Override
+                    public void onFailure(String id, Throwable throwable) {
 
-                            @Override
-                            public void onFailure(String id, Throwable throwable) {
+                    }
 
-                            }
+                    @Override
+                    public void onRelease(String id) {
 
-                            @Override
-                            public void onRelease(String id) {
-
-                            }
-                        }).setOldController(((DraweeView) imageView).getController()).build();
-                ((DraweeView) imageView).setController(controller);
-//                L.e("imageView.setImageURI" + "(" + "Local)");
-                return;
-            } else if (imageView != null) {
-                ByteArrayOutputStream os = getBytesOutputStreamForFile(localFile);
-                Bitmap bmp = getBitmapFromBytes(os.toByteArray());
-                imageView.setImageBitmap(bmp);
-                if (iGetFrescoBitmap != null) {
-                    iGetFrescoBitmap.afterGotBitmap(((BitmapDrawable) imageView.getDrawable()).getBitmap());
-                }
-//                getNetBmpFromFresco(context, imageView, localFile, uri, iGetFrescoBitmap);
-            } else {
-                ByteArrayOutputStream os = getBytesOutputStreamForFile(localFile);
-                Bitmap bmp = getBitmapFromBytes(os.toByteArray());
-                if (iGetFrescoBitmap != null) {
-                    iGetFrescoBitmap.afterGotBitmap(bmp);
-                }
-            }
-        } else {
-            // 从网络显示并下载
-            uri = Uri.parse(netUri);
-//            L.e("localFile not exists()" + "(" + netUri + ")");
-
-            if (imageView instanceof DraweeView) {
-                DraweeController controller = Fresco.newDraweeControllerBuilder()
-                        .setControllerListener(new ControllerListener<ImageInfo>() {
-                            boolean showFinalImageInfo = true;
-
-                            @Override
-                            public void onSubmit(String id, Object callerContext) {
-                            }
-
-                            @Override
-                            public void onFinalImageSet(String id, ImageInfo imageInfo, Animatable animatable) {
-                                if (showFinalImageInfo && iGetFrescoImageInfo != null) {
-                                    iGetFrescoImageInfo.afterGotImageInfo(imageInfo);
-                                }
-                                getNetBmpFromFresco( localFile, uri);
-                            }
-
-                            @Override
-                            public void onIntermediateImageSet(String id, ImageInfo imageInfo) {
-                                showFinalImageInfo = false;
-                                if (iGetFrescoImageInfo != null) {
-                                    iGetFrescoImageInfo.afterGotImageInfo(imageInfo);
-                                }
-                            }
-
-                            @Override
-                            public void onIntermediateImageFailed(String id, Throwable throwable) {
-
-                            }
-
-                            @Override
-                            public void onFailure(String id, Throwable throwable) {
-
-                            }
-
-                            @Override
-                            public void onRelease(String id) {
-
-                            }
-                        }).setLowResImageRequest(ImageRequest.fromUri(Uri.parse(netUri + "p")))
-                        .setImageRequest(ImageRequest.fromUri(uri))
-                        .setOldController(((DraweeView) imageView).getController())
-                        .build();
-                ((DraweeView) imageView).setController(controller);
-            } else {
-                getNetBmpFromFresco(context, imageView, localFile, uri, iGetFrescoBitmap);
-            }
-        }
+                    }
+                })
+                .setImageRequest(request);
+        if (previewUri != null) builder.setLowResImageRequest(ImageRequest.fromUri(previewUri));
+        builder.setOldController(imageView.getController());
+        DraweeController controller = builder.build();
+        imageView.setController(controller);
     }
-
 
     public static void setImageUriWithGif(SimpleDraweeView simpleDraweeView, String uri) {
         setImageUriWithPreview(simpleDraweeView, Uri.parse(uri), null);
@@ -800,10 +720,9 @@ public class ImageUtils {
     }
 
 
-
-
     /**
      * this method can only use once when view is created
+     *
      * @param simpleDraweeView
      * @param setDraweeHierarchy
      */
@@ -822,7 +741,7 @@ public class ImageUtils {
     }
 
     public interface IGetFrescoImageInfo {
-        void afterGotImageInfo(ImageInfo imageInfo);
+        void afterGotImageInfo(ImageInfo imageInfo, float ratio);
     }
 
 }
