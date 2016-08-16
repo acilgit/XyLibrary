@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
+import android.support.annotation.StyleableRes;
 import android.util.AttributeSet;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -48,8 +49,9 @@ public abstract class BaseItemView extends RelativeLayout {
     public BaseItemView(Context context, AttributeSet attrs) {
         super(context, attrs);
         viewList = new SparseArray<>();
+
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.BaseItemView);
-        itemType = a.getInt(R.styleable.BaseItemView_itemType, 0);
+
         itemNum = a.getInt(R.styleable.BaseItemView_itemNum, 0);
         itemCount = a.getInt(R.styleable.BaseItemView_itemCount, 0);
         itemVisible = a.getInt(R.styleable.BaseItemView_itemVisible, VISIBLE);
@@ -65,7 +67,14 @@ public abstract class BaseItemView extends RelativeLayout {
         itemContent = itemContent == null ? "" : itemContent;
         itemDetail = itemDetail == null ? "" : itemDetail;
         itemDescription = itemDescription == null ? "" : itemDescription;
-
+        itemType = a.getInt(R.styleable.BaseItemView_itemType, -1);
+        if (setExtendEnumStyle() != R.styleable.BaseItemView && setItemTypeEnumStyle() != R.styleable.BaseItemView_itemType) {
+            a.recycle();
+            a = context.obtainStyledAttributes(attrs, setExtendEnumStyle());
+            int type = a.getInt(setItemTypeEnumStyle(), -1);
+            if (type != -1) itemType = type;
+        }
+        if (itemType == -1) itemType = 0;
         a.recycle();
     }
 
@@ -172,13 +181,26 @@ public abstract class BaseItemView extends RelativeLayout {
         return this;
     }
 
-    public BaseItemView setVisibilility(int viewId, int visibilility) {
+    public BaseItemView setVisibility(int viewId, int visibility) {
         View view = getView(viewId);
         if (view != null) {
-            view.setVisibility(visibilility);
+            view.setVisibility(visibility);
         }
         return this;
     }
 
     protected abstract int getLayoutId();
+
+    protected
+    @StyleableRes
+    int setItemTypeEnumStyle() {
+        return R.styleable.BaseItemView_itemType;
+    }
+
+    protected
+    @StyleableRes
+    int[] setExtendEnumStyle() {
+        return R.styleable.BaseItemView;
+    }
+
 }

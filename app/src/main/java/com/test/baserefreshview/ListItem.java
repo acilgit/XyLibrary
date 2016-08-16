@@ -25,7 +25,7 @@ public class ListItem extends BaseItemView {
             case 1:
                 return R.layout.list_item_icon_text;
             default:
-                return R.layout.list_item_icon_text;
+            return R.layout.list_item_text;
         }
     }
 
@@ -34,14 +34,22 @@ public class ListItem extends BaseItemView {
         super.onFinishInflate();
         switch (itemType) {
             case 1:
-
+                setImageRes(R.id.ivIcon, itemIcon);
                 break;
             default:
 
                 break;
         }
-        setImageRes(R.id.ivIcon, itemIcon);
         setText(R.id.tvName, itemName);
     }
 
+    @Override
+    protected int setItemTypeEnumStyle() {
+        return R.styleable.ListItem_type;
+    }
+
+    @Override
+    protected int[] setExtendEnumStyle() {
+        return R.styleable.ListItem;
+    }
 }

@@ -1,6 +1,8 @@
 package com.test.baserefreshview;
 
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.view.View;
@@ -10,12 +12,14 @@ import com.alibaba.fastjson.JSONObject;
 import com.test.baserefreshview.ListBean.Content.ContentBean;
 import com.xycode.xylibrary.adapter.XAdapter;
 import com.xycode.xylibrary.base.BaseActivity;
+import com.xycode.xylibrary.okHttp.OkHttp;
 import com.xycode.xylibrary.okHttp.Param;
 import com.xycode.xylibrary.uiKit.views.MultiImageView;
 import com.xycode.xylibrary.uiKit.views.loopview.AdLoopView;
 import com.xycode.xylibrary.uiKit.views.loopview.internal.BaseLoopAdapter;
 import com.xycode.xylibrary.unit.ViewTypeUnit;
 import com.xycode.xylibrary.unit.WH;
+import com.xycode.xylibrary.utils.ImageUtils;
 import com.xycode.xylibrary.utils.TS;
 import com.xycode.xylibrary.utils.Tools;
 import com.xycode.xylibrary.utils.downloadHelper.DownloadHelper;
@@ -23,6 +27,9 @@ import com.xycode.xylibrary.xRefresher.XRefresher;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.Response;
 
 /**
  * new
@@ -108,17 +115,24 @@ public class MainActivity extends BaseActivity {
             }
 
             @Override
-            protected void creatingHeader(CustomHolder holder, int headerKey) {
+            protected void creatingHeader(final CustomHolder holder, int headerKey) {
                 switch (headerKey) {
                     case 1:
                         AdLoopView bannerView = holder.getView(R.id.banner);
                         setBanner(bannerView);
+                        ImageUtils.loadBitmapFromFresco(getThis(), Uri.parse("http://mxycsku.qiniucdn.com/group5/M00/5B/0C/wKgBfVXdYkqAEzl0AAL6ZFMAdKk401.jpg"), new ImageUtils.IGetFrescoBitmap() {
+                            @Override
+                            public void afterGotBitmap(Bitmap bitmap) {
+
+                                Bitmap bmp = ImageUtils.doGaussianBlur(bitmap, 30, false);
+                                holder.setImageBitmap(R.id.iv, bmp);
+                            }
+                        });
                         break;
                     default:
                         break;
                 }
             }
-
         };
 
         adapter.addHeader(1, R.layout.layout_banner);
@@ -127,6 +141,15 @@ public class MainActivity extends BaseActivity {
         xRefresher.setup(this, adapter, true, new XRefresher.RefreshRequest<ContentBean>() {
             @Override
             public String setRequestParamsReturnUrl(Param params) {
+
+              /*  int count = 0;
+                try {
+                    count = Integer.getInteger("666", 1234);
+                    TS.show(count+"");
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                    TS.show("fhfhfhfhf");
+                }*/
 //                params.add("a", "b");
                 return "http://192.168.1.222:9000/append/store_recommend/sell_house_page";
             }
@@ -142,6 +165,29 @@ public class MainActivity extends BaseActivity {
             }
         });
 //        xRefresher.refreshList();
+
+        Param param = new Param("phone", "123").add("pw", "askfja;s");
+        OkHttp.getInstance().postForm("", OkHttp.setFormBody(param, false), false, new OkHttp.OkResponseListener() {
+            @Override
+            public void handleJsonSuccess(Call call, Response response, JSONObject json) {
+
+            }
+
+            @Override
+            public void handleJsonError(Call call, Response response, JSONObject json) {
+
+            }
+
+            @Override
+            protected void handleNoServerNetwork(Call call, boolean isCanceled) {
+
+            }
+
+            @Override
+            protected void handleResponseFailure(Call call, Response response) {
+                super.handleResponseFailure(call, response);
+            }
+        });
     }
 
     private void setBanner(AdLoopView bannerView) {

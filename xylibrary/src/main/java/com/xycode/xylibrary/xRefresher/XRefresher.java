@@ -265,25 +265,25 @@ public class XRefresher<T> extends CoordinatorLayout {
 
             @Override
             public void handleJsonError(Call call, Response response, JSONObject json) {
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (loadingDialog != null && loadingDialog.isShowing())
-                            loadingDialog.dismiss();
-                        switch (refreshType) {
-                            case REFRESH:
-                                swipe.setRefreshing(false);
-                                break;
-                            case LOAD:
-                                setLoadMoreState(state.lastPage ? LOADER_NO_MORE : LOADER_MORE);
-                                break;
-                        }
-                    }
-                });
+                handleError();
             }
 
             @Override
             protected void handleNoServerNetwork(Call call, boolean isCanceled) {
+                handleError();
+            }
+
+            @Override
+            protected void handleParseError(Call call, Response response) {
+                handleError();
+            }
+
+            @Override
+            protected void handleResponseFailure(Call call, Response response) {
+                handleError();
+            }
+
+            private void handleError() {
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -300,7 +300,6 @@ public class XRefresher<T> extends CoordinatorLayout {
                     }
                 });
             }
-
         });
     }
 

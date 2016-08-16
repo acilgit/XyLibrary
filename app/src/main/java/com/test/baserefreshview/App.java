@@ -88,12 +88,12 @@ public class App extends Application {
 
             @Override
             public Param setDefaultParams(Param defaultParams) {
-                defaultParams.put("sectionId", "");
                 return defaultParams;
             }
 
             @Override
             public Header setDefaultHeader(Header defaultHeader) {
+                defaultHeader.put("sectionId", "");
                 return defaultHeader;
             }
 

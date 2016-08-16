@@ -5,10 +5,11 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <View
-        android:background="#9df"
+    <ImageView
+        android:id="@+id/iv"
+        android:scaleType="fitCenter"
         android:layout_width="match_parent"
-        android:layout_height="8dp"/>
+        android:layout_height="120dp"/>
     <com.xycode.xylibrary.uiKit.views.loopview.AdLoopView
         android:id="@+id/banner"
         app:aspectRatio="3"

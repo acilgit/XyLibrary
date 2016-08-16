@@ -8,7 +8,9 @@
     tools:context="com.test.baserefreshview.MainActivity">
 
     <com.test.baserefreshview.ListItem
+        app:itemType="1"
         app:itemIcon="@mipmap/ic_launcher"
+        app:itemName="你"
         app:itemContent="屌你"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
