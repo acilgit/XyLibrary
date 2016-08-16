@@ -15,4 +15,31 @@
         <item name="android:paddingBottom">0dp</item>
     </style>
 
+    <!-- Fresco -->
+    <style name="sivHeadBase">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="placeholderImage">@color/grayLite</item>
+        <item name="placeholderImageScaleType">centerCrop</item>
+        <item name="actualImageScaleType">centerCrop</item>
+        <item name="viewAspectRatio">1</item>
+    </style>
+
+    <style name="sivHeadCircle" parent="sivHeadBase">
+        <item name="roundAsCircle">true</item>
+        <item name="roundingBorderWidth">0dp</item>
+        <item name="roundingBorderColor">@color/white</item>
+    </style>
+
+    <style name="sivPicBase">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="placeholderImage">@color/grayLite</item>
+        <item name="placeholderImageScaleType">fitXY</item>
+        <item name="actualImageScaleType">fitXY</item>
+        <item name="viewAspectRatio">1</item>
+    </style>
+
+    <style name="sivPicNormal" parent="sivPicBase">
+        <item name="viewAspectRatio">1.3333</item>
+    </style>
+
 </resources>
