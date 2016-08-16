@@ -7,6 +7,11 @@
     android:orientation="vertical"
     tools:context="com.test.baserefreshview.MainActivity">
 
+    <com.facebook.drawee.view.SimpleDraweeView
+        android:id="@+id/siv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
     <com.test.baserefreshview.ListItem
         app:itemType="1"
         app:itemIcon="@mipmap/ic_launcher"

@@ -9,10 +9,10 @@ import android.view.View;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.test.baserefreshview.ListBean.Content.ContentBean;
 import com.xycode.xylibrary.adapter.XAdapter;
 import com.xycode.xylibrary.base.BaseActivity;
-import com.xycode.xylibrary.okHttp.OkHttp;
 import com.xycode.xylibrary.okHttp.Param;
 import com.xycode.xylibrary.uiKit.views.MultiImageView;
 import com.xycode.xylibrary.uiKit.views.loopview.AdLoopView;
@@ -28,9 +28,6 @@ import com.xycode.xylibrary.xRefresher.XRefresher;
 import java.util.ArrayList;
 import java.util.List;
 
-import okhttp3.Call;
-import okhttp3.Response;
-
 /**
  * new
  */
@@ -44,6 +41,15 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
 
         xRefresher = (XRefresher) findViewById(R.id.xRefresher);
+        SimpleDraweeView siv = (SimpleDraweeView) findViewById(R.id.siv);
+        Uri uri = Uri.parse("http://mxycsku.qiniucdn.com/group5/M00/5B/0C/wKgBfVXdYkqAEzl0AAL6ZFMAdKk401.jpg");
+//        siv.setImageURI();
+        ImageUtils.loadBitmapFromFrescoNet(getThis(), uri, new ImageUtils.IGetFrescoBitmap() {
+            @Override
+            public void afterGotBitmap(Bitmap bitmap) {
+
+            }
+        });
 
         XAdapter<ContentBean> adapter = new XAdapter<ContentBean>(this, new ArrayList<ContentBean>()) {
             @Override
@@ -165,29 +171,6 @@ public class MainActivity extends BaseActivity {
             }
         });
 //        xRefresher.refreshList();
-
-        Param param = new Param("phone", "123").add("pw", "askfja;s");
-        OkHttp.getInstance().postForm("", OkHttp.setFormBody(param, false), false, new OkHttp.OkResponseListener() {
-            @Override
-            public void handleJsonSuccess(Call call, Response response, JSONObject json) {
-
-            }
-
-            @Override
-            public void handleJsonError(Call call, Response response, JSONObject json) {
-
-            }
-
-            @Override
-            protected void handleNoServerNetwork(Call call, boolean isCanceled) {
-
-            }
-
-            @Override
-            protected void handleResponseFailure(Call call, Response response) {
-                super.handleResponseFailure(call, response);
-            }
-        });
     }
 
     private void setBanner(AdLoopView bannerView) {
