@@ -50,6 +50,7 @@ public class DownloadHelper {
     int downedFileLength = 0;
 
     private boolean cancelDownload;
+    private boolean noFileLength = false;
 
     public static void init(String updateButtonName, String cancelButtonName, String downloadingTitle, String downloadingCancelButtonName, @NonNull OnShowDownloadDialog onShowDownloadDialog) {
         if (helper != null) return;
@@ -94,6 +95,7 @@ public class DownloadHelper {
                     switch (msg.what) {
                         case 0: // fileLength
                             fileLength = msg.arg1;
+                            noFileLength = fileLength <= 0;
                             if (fileLength <= 0) {
                                 fileLength = defaultDownloadFileSize;
                             }
@@ -104,7 +106,7 @@ public class DownloadHelper {
                             if (downloadDialog != null) downloadDialog.getDialog().setMax(fileLength/1024);
                             break;
                         case 1: // fileDownloadLength
-                            if (msg.arg1*1.05f>=fileLength) {
+                            if (noFileLength && msg.arg1*1.05f>=fileLength) {
                                 fileLength = (int) (fileLength*1.2f);
                                 if (downloadDialog != null) downloadDialog.getDialog().setMax(fileLength/1024);
                             }
