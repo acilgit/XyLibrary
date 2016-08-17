@@ -53,7 +53,7 @@ public class XRefresher<T> extends CoordinatorLayout {
     private static String PAGE = "page";
     private static String PAGE_SIZE = "pageSize";
 
-//    private static XAdapter.ICustomerLoadMore iCustomerLoadMore;
+    //    private static XAdapter.ICustomerLoadMore iCustomerLoadMore;
 //    private static int loaderLayout = R.layout.layout_blank;
     private static Dialog loadingDialog;
     private static int[] loadingColorRes = null;
@@ -185,7 +185,7 @@ public class XRefresher<T> extends CoordinatorLayout {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                if (newState == RecyclerView.SCROLL_STATE_IDLE && swipeMore && lastVisibleItem + 2  >= getAdapter().getItemCount()) {
+                if (newState == RecyclerView.SCROLL_STATE_IDLE && swipeMore && lastVisibleItem + 2 >= getAdapter().getItemCount()) {
                     if (!state.lastPage && loadMoreState == LOADER_MORE) {
                         setLoadMoreState(LOADER_LOADING);
                         getDataByRefresh(state.pageIndex + 1, state.pageDefaultSize);
@@ -343,12 +343,23 @@ public class XRefresher<T> extends CoordinatorLayout {
         return swipe;
     }
 
+
+    public void setRecyclerViewDivider(@ColorRes int dividerColor, @DimenRes int dividerHeight) {
+        setRecyclerViewDivider(dividerColor, dividerHeight, 0, 0);
+    }
+
+    /**
+     * use after xRefresher setup
+     * @param dividerColor
+     * @param dividerHeight
+     * @param marginLeft
+     * @param marginRight
+     */
     public void setRecyclerViewDivider(@ColorRes int dividerColor, @DimenRes int dividerHeight, @DimenRes int marginLeft, @DimenRes int marginRight) {
-        recyclerView.addItemDecoration(new HorizontalDividerItemDecoration.Builder(activity)
-                .colorResId(dividerColor).sizeResId(dividerHeight)
-                .marginResId(marginLeft, marginRight)
-                .build()
-        );
+        HorizontalDividerItemDecoration.Builder builder = new HorizontalDividerItemDecoration.Builder(activity)
+                .colorResId(dividerColor).sizeResId(dividerHeight);
+        if (marginLeft == 0 || marginRight == 0) builder.marginResId(marginLeft, marginRight);
+        recyclerView.addItemDecoration(builder.build());
     }
 
     public static void setLoadingDialog(Dialog loadingDialog) {
@@ -358,7 +369,7 @@ public class XRefresher<T> extends CoordinatorLayout {
     public static void setLoadingArrowColor(@ColorRes int... loadingColorRes) {
         XRefresher.loadingColorRes = new int[loadingColorRes.length];
         for (int i = 0; i < loadingColorRes.length; i++) {
-            XRefresher.loadingColorRes[i] =loadingColorRes[i];
+            XRefresher.loadingColorRes[i] = loadingColorRes[i];
         }
     }
 

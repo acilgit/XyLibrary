@@ -41,7 +41,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
     private OnItemClickListener onItemClickListener;
     private OnItemLongClickListener onItemLongClickListener;
 
-    private int footerLayout = R.layout.layout_blank;
+    private int footerLayout = 0;
 
     /**
      * use single Layout
@@ -212,7 +212,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
      */
     @Override
     public int getItemCount() {
-        int footerCount = 1;
+         int footerCount = footerLayout == 0 ? 0 : 1;
         int headerCount = headerLayoutIdList.size();
         if (dataList != null) {
             return dataList.size() + footerCount + headerCount;
@@ -262,7 +262,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
         T item = dataList.get(pos);
         mainList.remove(item);
         dataList.remove(pos);
-        notifyItemRemoved(pos);
+        notifyItemRemoved(headerLayoutIdList.size() + pos);
     }
 
     /**
@@ -274,7 +274,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
     public void addItemNoFilter(int pos, T item) {
         dataList.add(pos, item);
         mainList.add(pos, item);
-        notifyItemInserted(pos);
+        notifyItemInserted(headerLayoutIdList.size() +pos);
     }
 
     public void updateItem(int pos, T item) {
@@ -282,13 +282,13 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
         int mainPos = mainList.indexOf(itemOld);
         mainList.set(mainPos, item);
         dataList.set(pos, item);
-        notifyItemChanged(pos);
+        notifyItemChanged(headerLayoutIdList.size() +pos);
     }
 
     public void addItem(T item) {
         dataList.add(item);
         mainList.add(item);
-        notifyItemInserted(getItemCount() - 1);
+        notifyItemInserted(getItemCount() - (footerLayout == 0 ? 1 : 2));
     }
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {

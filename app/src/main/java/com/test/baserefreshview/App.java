@@ -93,7 +93,7 @@ public class App extends Application {
 
             @Override
             public Header setDefaultHeader(Header defaultHeader) {
-                defaultHeader.put("sectionId", "");
+                defaultHeader.add("sectionId", "");
                 return defaultHeader;
             }
 

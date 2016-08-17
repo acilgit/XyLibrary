@@ -125,7 +125,7 @@ public class OkHttp {
         if (addDefaultHeader) {
             Header defaultHeader = okInit.setDefaultHeader(new Header());
             for (String key : defaultHeader.keySet()) {
-                builder.addHeader(key, header.get(key));
+                builder.addHeader(key, defaultHeader.get(key));
             }
         }
         if (header != null) {

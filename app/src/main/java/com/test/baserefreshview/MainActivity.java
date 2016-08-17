@@ -33,7 +33,7 @@ import java.util.List;
 public class MainActivity extends BaseActivity {
 
     private XRefresher xRefresher;
-
+    TagLayout tags;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,6 +41,13 @@ public class MainActivity extends BaseActivity {
 
         xRefresher = (XRefresher) findViewById(R.id.xRefresher);
         SimpleDraweeView siv = (SimpleDraweeView) findViewById(R.id.siv);
+        tags = (TagLayout) findViewById(R.id.tags);
+
+        List<String> list = new ArrayList<>();
+        list.add("或在在要要在");
+        list.add("在在要要在");
+        tags.setDataList(list);
+        tags.setTagCheckedMode(TagLayout.FLOW_TAG_CHECKED_SINGLE);
         Uri uri = Uri.parse("http://mxycsku.qiniucdn.com/group5/M00/5B/0C/wKgBfVXdYkqAEzl0AAL6ZFMAdKk401.jpg");
 //        siv.setImageURI();
 
@@ -165,6 +172,8 @@ public class MainActivity extends BaseActivity {
                 return newItem.getId().equals(listItem.getId());
             }
         });
+
+        xRefresher.setRecyclerViewDivider(R.color.bgDivider, R.dimen.sideMargin, R.dimen.sideMargin, R.dimen.sideMargin);
 //        xRefresher.refreshList();
     }
 
@@ -177,6 +186,17 @@ public class MainActivity extends BaseActivity {
         bannerView.setOnImageClickListener(new BaseLoopAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(PagerAdapter parent, View view, int position, int realPosition) {
+
+                List<String> list = new ArrayList<>();
+//                list.add("或在在要要在");
+//                list.add("在在要要在");
+//                list.add("或要要在");
+//                list.add("或要要在");
+//                list.add("或要要在");
+//                list.add("或在在要在");
+//                list.add("要");
+//                tags.setDataList(list);
+TS.show("count "+ xRefresher.getAdapter().getItemCount());
 //                DownloadHelper.getInstance().update(getThis(), "http://m.bg114.cn/scene/api/public/down_apk/1/driver1.0.20.apk", "有新版本了啊！！");
 //                Uri destination = Uri.fromFile(getTempHead());  // 保存地址
 //                Crop.of(uri, destination).withSize(150, 150).crop(getThis(), BaseActivity.REQUEST_CODE_GOT_RESULT);
