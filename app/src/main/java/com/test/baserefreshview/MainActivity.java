@@ -22,10 +22,7 @@ import com.xycode.xylibrary.unit.WH;
 import com.xycode.xylibrary.utils.ImageUtils;
 import com.xycode.xylibrary.utils.TS;
 import com.xycode.xylibrary.utils.Tools;
-import com.xycode.xylibrary.utils.downloadHelper.DownloadHelper;
 import com.xycode.xylibrary.xRefresher.XRefresher;
-
-import org.greenrobot.greendao.internal.DaoConfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,12 +43,8 @@ public class MainActivity extends BaseActivity {
         SimpleDraweeView siv = (SimpleDraweeView) findViewById(R.id.siv);
         Uri uri = Uri.parse("http://mxycsku.qiniucdn.com/group5/M00/5B/0C/wKgBfVXdYkqAEzl0AAL6ZFMAdKk401.jpg");
 //        siv.setImageURI();
-        ImageUtils.loadBitmapFromFrescoNet(getThis(), uri, new ImageUtils.IGetFrescoBitmap() {
-            @Override
-            public void afterGotBitmap(Bitmap bitmap) {
 
-            }
-        });
+        ImageUtils.setFrescoViewUri(siv, uri, null);
 
         XAdapter<ContentBean> adapter = new XAdapter<ContentBean>(this, new ArrayList<ContentBean>()) {
             @Override
@@ -184,12 +177,13 @@ public class MainActivity extends BaseActivity {
         bannerView.setOnImageClickListener(new BaseLoopAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(PagerAdapter parent, View view, int position, int realPosition) {
-                DownloadHelper.getInstance().update(getThis(), "http://m.bg114.cn/scene/api/public/down_apk/1/driver1.0.20.apk", "有新版本了啊！！");
+//                DownloadHelper.getInstance().update(getThis(), "http://m.bg114.cn/scene/api/public/down_apk/1/driver1.0.20.apk", "有新版本了啊！！");
+//                Uri destination = Uri.fromFile(getTempHead());  // 保存地址
+//                Crop.of(uri, destination).withSize(150, 150).crop(getThis(), BaseActivity.REQUEST_CODE_GOT_RESULT);
 //                TS.show(getThis(), "Hi + " + position + " real:" + realPosition);
             }
         });
         bannerView.initData(bannerList);
     }
-
 
 }
