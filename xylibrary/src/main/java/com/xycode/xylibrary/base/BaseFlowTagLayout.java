@@ -60,7 +60,7 @@ public abstract class BaseFlowTagLayout extends ViewGroup {
      */
     private int mTagCheckMode = FLOW_TAG_CHECKED_NONE;
 
-    private List<String> dataList;
+    private List dataList;
 
 
     /**
@@ -197,11 +197,11 @@ public abstract class BaseFlowTagLayout extends ViewGroup {
         }
     }*/
 
-    protected abstract View bindChildView(View contentView, List<String> list, int position);
+    protected abstract View bindChildView(View contentView, List list, int position);
 
     protected abstract int getLayoutId();
 
-    public void setDataList(List<String> dataList) {
+    public void setDataList(List dataList) {
         if (dataList != null && (this.dataList == null || !dataList.containsAll(this.dataList) || !this.dataList.containsAll(dataList))) {
             this.dataList = dataList;
             removeAllViews();

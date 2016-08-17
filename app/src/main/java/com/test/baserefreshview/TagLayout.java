@@ -24,9 +24,9 @@ public class TagLayout extends BaseFlowTagLayout {
     }
 
     @Override
-    protected View bindChildView(View contentView, List<String> list, int position) {
+    protected View bindChildView(View contentView, List list, int position) {
         TextView tv = (TextView) contentView.findViewById(R.id.tv);
-        tv.setText(list.get(position));
+        tv.setText(((String) list.get(position)));
         return contentView;
     }
 
