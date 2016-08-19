@@ -18,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.andexert.library.RippleView;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.xycode.xylibrary.R;
 
@@ -167,6 +168,16 @@ public abstract class BaseItemView extends RelativeLayout {
         if (view != null) {
             if (view instanceof ImageView) {
                 ((ImageView) view).setImageResource(drawableRes);
+            }
+        }
+        return this;
+    }
+
+    public BaseItemView setRippleComplete(int viewId, RippleView.OnRippleCompleteListener completeListener) {
+        View view = getView(viewId);
+        if (view != null) {
+            if (view instanceof RippleView) {
+                ((RippleView) view).setOnRippleCompleteListener(completeListener);
             }
         }
         return this;

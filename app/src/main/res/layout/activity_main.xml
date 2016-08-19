@@ -5,13 +5,13 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:fitsSystemWindows="true"
+    android:background="@android:color/holo_green_light"
     tools:context="com.test.baserefreshview.MainActivity">
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
 
     <com.facebook.drawee.view.SimpleDraweeView
         android:id="@+id/siv"
@@ -25,6 +25,7 @@
         android:layout_height="wrap_content" />
 
     <com.test.baserefreshview.ListItem
+        android:id="@+id/li"
         app:itemType="1"
         app:itemIcon="@mipmap/ic_launcher"
         app:itemName="你"

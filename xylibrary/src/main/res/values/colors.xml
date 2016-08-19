@@ -10,7 +10,8 @@
     <color name="grayBgLiteD" >#DDDDDD</color>
     <color name="grayBgLiteC" >#CCCCCC</color>
     <color name="grayBgLiteB" >#BBBBBB</color>
-    <color name="grayBgPress" >#DDD</color>
+    <color name="grayBgPress" >#CCC</color>
+    <color name="transparent" >#00000000</color>
     <color name="transparentWhiteLite" >#33FFFFFF</color>
     <color name="transparentWhiteDark" >#DEFFFFFF</color>
     <color name="transparentBlackLite" >#33000000</color>

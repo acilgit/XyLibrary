@@ -45,6 +45,8 @@ public class MainActivity extends BaseActivity {
         SimpleDraweeView siv = (SimpleDraweeView) findViewById(R.id.siv);
         tags = (TagLayout) findViewById(R.id.tags);
 
+        findViewById(R.id.li).setOnClickListener(null);
+        
         List<String> list = new ArrayList<>();
         list.add("或在在要要在");
         list.add("在在要要在");
