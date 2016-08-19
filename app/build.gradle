@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 23
+    compileSdkVersion 24
     buildToolsVersion '23.0.3'
 
     defaultConfig {
         applicationId "com.test.baserefreshview"
         minSdkVersion 15
-        targetSdkVersion 17
+        targetSdkVersion 19
         versionCode 1
         versionName "1.0"
     }
