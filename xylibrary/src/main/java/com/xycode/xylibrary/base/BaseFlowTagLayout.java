@@ -2,17 +2,21 @@ package com.xycode.xylibrary.base;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.support.annotation.ColorInt;
 import android.util.AttributeSet;
+import android.util.SparseArray;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.xycode.xylibrary.R;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 
@@ -32,7 +36,8 @@ public abstract class BaseFlowTagLayout extends ViewGroup {
      * FlowLayout support multi-select
      */
     public static final int FLOW_TAG_CHECKED_MULTI = 2;
-    
+    private SparseArray<View> viewList;
+
     protected int tagType;
 
     /**
@@ -48,17 +53,17 @@ public abstract class BaseFlowTagLayout extends ViewGroup {
     /**
      * the tag click event callback
      */
-    OnTagClickListener mOnTagClickListener;
+    OnTagClickListener onTagClickListener;
 
     /**
      * the tag select event callback
      */
-    OnTagSelectListener mOnTagSelectListener;
+    OnTagSelectListener onTagSelectListener;
 
     /**
      * default tag check mode
      */
-    private int mTagCheckMode = FLOW_TAG_CHECKED_NONE;
+    private int tagCheckMode = FLOW_TAG_CHECKED_NONE;
 
     private List dataList;
 
@@ -66,7 +71,7 @@ public abstract class BaseFlowTagLayout extends ViewGroup {
     /**
      * save selected tag
      */
-    private SparseBooleanArray mCheckedTagArray = new SparseBooleanArray();
+    private SparseBooleanArray checkedTagArray = new SparseBooleanArray();
 
     public BaseFlowTagLayout(Context context) {
         super(context, null);
@@ -74,6 +79,7 @@ public abstract class BaseFlowTagLayout extends ViewGroup {
 
     public BaseFlowTagLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
+        viewList = new SparseArray<>();
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.BaseFlowTagLayout);
 
@@ -204,6 +210,7 @@ public abstract class BaseFlowTagLayout extends ViewGroup {
     public void setDataList(List dataList) {
         if (dataList != null && (this.dataList == null || !dataList.containsAll(this.dataList) || !this.dataList.containsAll(dataList))) {
             this.dataList = dataList;
+            viewList.clear();
             removeAllViews();
             reloadData();
         }
@@ -212,59 +219,69 @@ public abstract class BaseFlowTagLayout extends ViewGroup {
     /**
      */
     private void reloadData() {
+        viewList.clear();
         removeAllViews();
 
         for (int i = 0; i < dataList.size(); i++) {
             final int j = i;
-            mCheckedTagArray.put(i, false);
+            checkedTagArray.put(i, false);
             View contentView = LayoutInflater.from(getContext()).inflate(getLayoutId(), this, false);
             final View childView = bindChildView(contentView, dataList, i);
             childView.setLayoutParams(new LinearLayout.LayoutParams(0, LayoutParams.WRAP_CONTENT, 1));
             addView(childView, new MarginLayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+            viewList.put(i, childView);
             childView.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (mTagCheckMode == FLOW_TAG_CHECKED_NONE) {
-                        if (mOnTagClickListener != null) {
-                            mOnTagClickListener.onItemClick(BaseFlowTagLayout.this, childView, j);
-                        }
-                    } else if (mTagCheckMode == FLOW_TAG_CHECKED_SINGLE) {
-                        if (mCheckedTagArray.get(j)) {
-                            mCheckedTagArray.put(j, false);
-                            childView.setSelected(false);
-                            if (mOnTagSelectListener != null) {
-                                mOnTagSelectListener.onItemSelect(BaseFlowTagLayout.this, new ArrayList<Integer>());
+                    switch (tagCheckMode) {
+                        case FLOW_TAG_CHECKED_NONE:
+                            if (onTagClickListener != null) {
+                                onTagClickListener.onItemClick(childView, dataList, j);
                             }
-                            return;
-                        }
+                            break;
+                        case FLOW_TAG_CHECKED_SINGLE:
+                            if (checkedTagArray.get(j)) {
+                                checkedTagArray.put(j, false);
+                                childView.setSelected(false);
+                                if (onTagSelectListener != null) {
+                                    for (int i = 0; i < checkedTagArray.size(); i++) {
+                                        onTagSelectListener.onItemSelect(viewList.get(i), dataList, i, checkedTagArray.get(i));
+                                    }
+                                }
+                                return;
+                            }
 
-                        for (int k = 0; k < dataList.size(); k++) {
-                            mCheckedTagArray.put(k, false);
-                            getChildAt(k).setSelected(false);
-                        }
-                        mCheckedTagArray.put(j, true);
-                        childView.setSelected(true);
-
-                        if (mOnTagSelectListener != null) {
-                            mOnTagSelectListener.onItemSelect(BaseFlowTagLayout.this, Arrays.asList(j));
-                        }
-                    } else if (mTagCheckMode == FLOW_TAG_CHECKED_MULTI) {
-                        if (mCheckedTagArray.get(j)) {
-                            mCheckedTagArray.put(j, false);
-                            childView.setSelected(false);
-                        } else {
-                            mCheckedTagArray.put(j, true);
-                            childView.setSelected(true);
-                        }
-                        if (mOnTagSelectListener != null) {
-                            List<Integer> list = new ArrayList<Integer>();
                             for (int k = 0; k < dataList.size(); k++) {
-                                if (mCheckedTagArray.get(k)) {
-                                    list.add(k);
+                                checkedTagArray.put(k, false);
+                                getChildAt(k).setSelected(false);
+                            }
+                            checkedTagArray.put(j, true);
+                            childView.setSelected(true);
+
+                            if (onTagSelectListener != null) {
+                                for (int i = 0; i < checkedTagArray.size(); i++) {
+                                    onTagSelectListener.onItemSelect(viewList.get(i), dataList, i, checkedTagArray.get(i));
                                 }
                             }
-                            mOnTagSelectListener.onItemSelect(BaseFlowTagLayout.this, list);
-                        }
+                            break;
+                        case FLOW_TAG_CHECKED_MULTI:
+                            if (checkedTagArray.get(j)) {
+                                checkedTagArray.put(j, false);
+                                childView.setSelected(false);
+                            } else {
+                                checkedTagArray.put(j, true);
+                                childView.setSelected(true);
+                            }
+                            if (onTagSelectListener != null) {
+                                List<Integer> list = new ArrayList<>();
+                                for (int k = 0; k < dataList.size(); k++) {
+                                    if (checkedTagArray.get(k)) {
+                                        list.add(k);
+                                    }
+                                    onTagSelectListener.onItemSelect(viewList.get(k), dataList, k, checkedTagArray.get(k));
+                                }
+                            }
+                            break;
                     }
                 }
             });
@@ -272,11 +289,11 @@ public abstract class BaseFlowTagLayout extends ViewGroup {
     }
 
     public void setOnTagClickListener(OnTagClickListener onTagClickListener) {
-        this.mOnTagClickListener = onTagClickListener;
+        this.onTagClickListener = onTagClickListener;
     }
 
     public void setOnTagSelectListener(OnTagSelectListener onTagSelectListener) {
-        this.mOnTagSelectListener = onTagSelectListener;
+        this.onTagSelectListener = onTagSelectListener;
     }
 
     /**
@@ -288,6 +305,7 @@ public abstract class BaseFlowTagLayout extends ViewGroup {
             mAdapter.unregisterDataSetObserver(mDataSetObserver);
         }
 
+            viewList.clear();
         removeAllViews();
         mAdapter = adapter;
 
@@ -301,8 +319,8 @@ public abstract class BaseFlowTagLayout extends ViewGroup {
      *
      * @return
      */
-    public int getmTagCheckMode() {
-        return mTagCheckMode;
+    public int getTagCheckMode() {
+        return tagCheckMode;
     }
 
     /**
@@ -310,17 +328,49 @@ public abstract class BaseFlowTagLayout extends ViewGroup {
      * @param tagMode
      */
     public void setTagCheckedMode(int tagMode) {
-        this.mTagCheckMode = tagMode;
+        this.tagCheckMode = tagMode;
     }
 
 
     public interface OnTagClickListener {
-        void onItemClick(BaseFlowTagLayout parent, View view, int position);
+        void onItemClick(View view, List dataList, int position);
     }
 
     public interface OnTagSelectListener {
-        void onItemSelect(BaseFlowTagLayout parent, List<Integer> selectedList);
+        void onItemSelect(View childView, List dataList, int pos, boolean selected);
     }
+
+        public static <T extends View> T getView(View parent, int viewId) {
+            return (T) parent.findViewById(viewId);
+        }
+
+        public static View setText(View parent,int viewId, String text) {
+            View view = getView(parent, viewId);
+            if (view != null) {
+                if (view instanceof EditText) {
+                    ((EditText) view).setText(text);
+                } else if (view instanceof Button) {
+                    ((Button) view).setText(text);
+                } else if (view instanceof TextView) {
+                    ((TextView) view).setText(text);
+                }
+            }
+            return parent;
+        }
+
+        public static View setTextColor(View parent,int viewId, @ColorInt int textColor) {
+            View view = getView(parent,viewId);
+            if (view != null) {
+                if (view instanceof EditText) {
+                    ((EditText) view).setTextColor(textColor);
+                } else if (view instanceof Button) {
+                    ((Button) view).setTextColor(textColor);
+                } else if (view instanceof TextView) {
+                    ((TextView) view).setTextColor(textColor);
+                }
+            }
+            return parent;
+        }
 
 
 }

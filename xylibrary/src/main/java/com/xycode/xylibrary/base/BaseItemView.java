@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
 import android.support.annotation.StyleableRes;
@@ -108,6 +109,20 @@ public abstract class BaseItemView extends RelativeLayout {
                 ((Button) view).setText(text);
             } else if (view instanceof TextView) {
                 ((TextView) view).setText(text);
+            }
+        }
+        return this;
+    }
+
+    public BaseItemView setTextColor(int viewId, @ColorRes int textColor) {
+        View view = getView(viewId);
+        if (view != null) {
+            if (view instanceof EditText) {
+                ((EditText) view).setTextColor(getResources().getColor(textColor));
+            } else if (view instanceof Button) {
+                ((Button) view).setTextColor(getResources().getColor(textColor));
+            } else if (view instanceof TextView) {
+                ((TextView) view).setTextColor(getResources().getColor(textColor));
             }
         }
         return this;

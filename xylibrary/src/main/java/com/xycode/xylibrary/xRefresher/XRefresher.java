@@ -5,7 +5,6 @@ package com.xycode.xylibrary.xRefresher;
  */
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.support.annotation.ColorRes;
@@ -55,7 +54,6 @@ public class XRefresher<T> extends CoordinatorLayout {
 
     //    private static XAdapter.ICustomerLoadMore iCustomerLoadMore;
 //    private static int loaderLayout = R.layout.layout_blank;
-    private static Dialog loadingDialog;
     private static int[] loadingColorRes = null;
 
     private LoadMoreView loadMoreView;
@@ -221,7 +219,7 @@ public class XRefresher<T> extends CoordinatorLayout {
         OkHttp.getInstance().postForm(url, OkHttp.setFormBody(params, false), new OkHttp.OkResponseListener() {
             @Override
             public void handleJsonSuccess(Call call, Response response, JSONObject json) {
-                if (loadingDialog != null && loadingDialog.isShowing()) loadingDialog.dismiss();
+//                if (loadingDialog != null && loadingDialog.isShowing()) loadingDialog.dismiss();
                 final List<T> newList = refreshRequest.setListData(json);
                 if (newList.size() < pageSize) state.setLastPage(true);
                 final List<T> list = new ArrayList<>();
@@ -287,8 +285,8 @@ public class XRefresher<T> extends CoordinatorLayout {
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if (loadingDialog != null && loadingDialog.isShowing())
-                            loadingDialog.dismiss();
+                       /* if (loadingDialog != null && loadingDialog.isShowing())
+                            loadingDialog.dismiss();*/
                         switch (refreshType) {
                             case REFRESH:
                                 swipe.setRefreshing(false);
@@ -318,11 +316,11 @@ public class XRefresher<T> extends CoordinatorLayout {
         refreshList(false);
     }
 
-    public void refreshList(boolean showDialog) {
-        if (showDialog && showDialog) {
+    private void refreshList(boolean showDialog) {
+       /* if (showDialog && showDialog) {
             if (loadingDialog != null)
                 loadingDialog.show();
-        }
+        }*/
         if (getAdapter().getDataList().size() > 0) {
             getDataByRefresh(getAdapter().getDataList().size());
         } else {
@@ -360,10 +358,6 @@ public class XRefresher<T> extends CoordinatorLayout {
                 .colorResId(dividerColor).sizeResId(dividerHeight);
         if (marginLeft == 0 || marginRight == 0) builder.marginResId(marginLeft, marginRight);
         recyclerView.addItemDecoration(builder.build());
-    }
-
-    public static void setLoadingDialog(Dialog loadingDialog) {
-        XRefresher.loadingDialog = loadingDialog;
     }
 
     public static void setLoadingArrowColor(@ColorRes int... loadingColorRes) {

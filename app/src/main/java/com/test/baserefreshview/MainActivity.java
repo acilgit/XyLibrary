@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 
 import com.alibaba.fastjson.JSON;
@@ -13,6 +14,7 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import com.test.baserefreshview.ListBean.Content.ContentBean;
 import com.xycode.xylibrary.adapter.XAdapter;
 import com.xycode.xylibrary.base.BaseActivity;
+import com.xycode.xylibrary.base.BaseFlowTagLayout;
 import com.xycode.xylibrary.okHttp.Param;
 import com.xycode.xylibrary.uiKit.views.MultiImageView;
 import com.xycode.xylibrary.uiKit.views.loopview.AdLoopView;
@@ -46,8 +48,15 @@ public class MainActivity extends BaseActivity {
         List<String> list = new ArrayList<>();
         list.add("或在在要要在");
         list.add("在在要要在");
+        list.add("要要在");
         tags.setDataList(list);
         tags.setTagCheckedMode(TagLayout.FLOW_TAG_CHECKED_SINGLE);
+        tags.setOnTagSelectListener(new BaseFlowTagLayout.OnTagSelectListener() {
+            @Override
+            public void onItemSelect(View childView, List dataList, int pos, boolean selected) {
+                TagLayout.setTextColor(childView, R.id.tv, getResources().getColor(selected ? R.color.white : R.color.black));
+            }
+        });
         Uri uri = Uri.parse("http://mxycsku.qiniucdn.com/group5/M00/5B/0C/wKgBfVXdYkqAEzl0AAL6ZFMAdKk401.jpg");
 //        siv.setImageURI();
 
@@ -175,6 +184,11 @@ public class MainActivity extends BaseActivity {
 
         xRefresher.setRecyclerViewDivider(R.color.bgDivider, R.dimen.sideMargin, R.dimen.sideMargin, R.dimen.sideMargin);
 //        xRefresher.refreshList();
+    }
+
+    @Override
+    protected AlertDialog setLoadingDialog() {
+        return null;
     }
 
     private void setBanner(AdLoopView bannerView) {

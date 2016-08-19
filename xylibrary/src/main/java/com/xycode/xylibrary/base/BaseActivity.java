@@ -2,15 +2,14 @@ package com.xycode.xylibrary.base;
 
 import android.app.Activity;
 import android.app.ActivityManager;
-import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -24,16 +23,19 @@ import java.util.List;
 /**
  * Created by Administrator on 2016/1/11 0011.
  */
-public class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends AppCompatActivity {
 
     public static final int REQUEST_CODE_GOT_RESULT = 100;
 
     private static List<Activity> activities = new LinkedList<>();
 
-    ProgressDialog mProgressDialog;
-    //    RequestQueue mVolleyRequestQueue;
-    BroadcastReceiver mFinishReceiver;
-    BaseActivity thisActivity;
+    private static AlertDialog loadingDialog;
+
+//    private static AlertDialog loadingDialog;
+    private static boolean loadingDialogShowManual = false;
+
+   private BroadcastReceiver finishReceiver;
+   private BaseActivity thisActivity;
 
     public static final String ACTION_FINISH_ACTIVITY = "FinishBaseActivity";
 
@@ -41,31 +43,20 @@ public class BaseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         thisActivity = this;
-//        if (!(thisActivity instanceof LoginActivity)) {
         registerFinishReceiver();
-//        }
         addActivity(this);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        dismissProgressDialog();
-//        cancelVolleyRequestQueue();
+        dismissLoadingDialog();
         removeActivity(this);
     }
 
     protected BaseActivity getThis() {
         return this;
     }
-
-   /* public void start(Activity activity) {
-        if (thisActivity!=null) {
-            Intent intent = new Intent();
-            intent.setClass(thisActivity, activity.getClass());
-            activity.startActivity(intent);
-        }
-    }*/
 
     public void start(Class<? extends Activity> activityClass) {
         Intent intent = new Intent();
@@ -93,22 +84,51 @@ public class BaseActivity extends AppCompatActivity {
         this.startActivityForResult(intent, requestCode);
     }
 
-    public void showProgressDialog(CharSequence text) {
-        showProgressDialog(text, false);
+    public void showLoadingDialog() {
+        showDialog(false);
     }
 
-    public void showProgressDialog(CharSequence text, boolean cancelable) {
-        if (mProgressDialog == null) {
-            mProgressDialog = new ProgressDialog(this);
+    public void showLoadingDialogManualDismiss() {
+        showDialog(true);
+    }
+
+    private void showDialog(boolean manualDismiss) {
+        loadingDialogShowManual = manualDismiss;
+        loadingDialog = setLoadingDialog();
+        if (loadingDialog != null && !loadingDialog.isShowing()) {
+            loadingDialog.show();
+        }
+    }
+
+    public static void dismissLoadingDialog() {
+        loadingDialogShowManual = false;
+        if (loadingDialog != null && loadingDialog.isShowing()) {
+            loadingDialog.dismiss();
+        }
+    }
+
+    public static void dismissLoadingDialogByManualState() {
+        if (!loadingDialogShowManual && loadingDialog != null && loadingDialog.isShowing()) {
+            loadingDialog.dismiss();
+        }
+    }
+
+  /*  public void showLoadingDialog(CharSequence text) {
+        showLoadingDialog(text, false);
+    }
+
+    public void showLoadingDialog(CharSequence text, boolean cancelable) {
+        if (loadingDialog == null) {
+            loadingDialog = new ProgressDialog(this);
         } else {
-            mProgressDialog.dismiss();
+            loadingDialog.dismiss();
         }
 
-        mProgressDialog.setCanceledOnTouchOutside(cancelable);
+        loadingDialog.setCanceledOnTouchOutside(cancelable);
         if (cancelable) {
-            mProgressDialog.setOnCancelListener(null);
+            loadingDialog.setOnCancelListener(null);
         } else {
-            mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            loadingDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
                 @Override
                 public void onCancel(DialogInterface dialog) {
                     finish();
@@ -116,26 +136,9 @@ public class BaseActivity extends AppCompatActivity {
             });
         }
 
-        mProgressDialog.setMessage(text);
-        mProgressDialog.show();
-    }
-
-    public void setProgressDialogMessage(int resId) {
-        setProgressDialogMessage(getString(resId));
-    }
-
-    public void setProgressDialogMessage(CharSequence text) {
-        if (mProgressDialog == null) {
-            mProgressDialog = new ProgressDialog(this);
-        }
-        mProgressDialog.setMessage(text);
-    }
-
-    public void dismissProgressDialog() {
-        if (mProgressDialog != null) {
-            mProgressDialog.dismiss();
-        }
-    }
+        loadingDialog.setMessage(text);
+        loadingDialog.show();
+    }*/
 
     public void hideSoftInput() {
         View view = getWindow().peekDecorView();
@@ -147,7 +150,7 @@ public class BaseActivity extends AppCompatActivity {
 
 
     protected void registerFinishReceiver() {
-        mFinishReceiver = new BroadcastReceiver() {
+        finishReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 finish();
@@ -155,7 +158,7 @@ public class BaseActivity extends AppCompatActivity {
         };
         IntentFilter filter = new IntentFilter();
         filter.addAction(ACTION_FINISH_ACTIVITY);
-        LocalBroadcastManager.getInstance(this).registerReceiver(mFinishReceiver, filter);
+        LocalBroadcastManager.getInstance(this).registerReceiver(finishReceiver, filter);
     }
 
     @Override
@@ -256,5 +259,10 @@ public class BaseActivity extends AppCompatActivity {
         return null;
     }
 
+    protected abstract AlertDialog setLoadingDialog();
+
+    public AlertDialog getLoadingDialog(){
+        return loadingDialog;
+    }
 
 }

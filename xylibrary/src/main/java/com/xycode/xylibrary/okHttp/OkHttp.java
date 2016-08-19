@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.xycode.xylibrary.base.BaseActivity;
 
 import java.io.File;
 import java.io.IOException;
@@ -211,6 +212,7 @@ public class OkHttp {
      * @param okResponseListener
      */
     private static void responseResult(Response response, Call call, OkResponseListener okResponseListener) {
+        BaseActivity.dismissLoadingDialogByManualState();
         if (response == null) {
             okInit.networkError(call, call.isCanceled());
         }else if (response.isSuccessful()) {
@@ -218,8 +220,10 @@ public class OkHttp {
                 String strResult = response.body().string();
                 JSONObject jsonObject = JSON.parseObject(strResult);
                 int resultCode = okInit.judgeResultWhenFirstReceivedResponse(call, response, jsonObject);
-                if (okInit.resultSuccessByJudge(call, response, jsonObject, resultCode))
+                if (okInit.resultSuccessByJudge(call, response, jsonObject, resultCode)){
+                    BaseActivity.dismissLoadingDialogByManualState();
                     return;
+                }
                 switch (resultCode) {
                     case RESULT_SUCCESS:
                         if (okResponseListener != null)
@@ -257,6 +261,7 @@ public class OkHttp {
      */
     private static void responseResultFailure(Call call, OkResponseListener okResponseListener) {
         okInit.networkError(call, call.isCanceled());
+        BaseActivity.dismissLoadingDialogByManualState();
         if (okResponseListener != null) okResponseListener.handleNoServerNetwork(call, call.isCanceled());
     }
 
