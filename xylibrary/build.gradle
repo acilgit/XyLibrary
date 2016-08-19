@@ -8,8 +8,8 @@ android {
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 24
-        versionCode 228
-        versionName "0.2.28"
+        versionCode 229
+        versionName "0.2.29"
     }
     buildTypes {
         release {
@@ -54,7 +54,7 @@ ext {
     siteUrl = 'https://github.com/acilgit/XyLibrary'
     gitUrl = 'https://github.com/acilgit/XyLibrary.git'
 
-    libraryVersion = '0.2.28'
+    libraryVersion = '0.2.29'
 
     developerId = 'acil'
     developerName = 'acil-fong'
