@@ -15,6 +15,7 @@ import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.Html;
+import android.util.Base64;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ScrollView;
@@ -307,6 +308,12 @@ public class Tools {
             }
         }
         return uri;
+    }
+
+    public static String bytesToBase64(byte[] bytes) {
+        String result = null;
+        result = Base64.encodeToString(bytes, Base64.DEFAULT);
+        return result;
     }
 
 
