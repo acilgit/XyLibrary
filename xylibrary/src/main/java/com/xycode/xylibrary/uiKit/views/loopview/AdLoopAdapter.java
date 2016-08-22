@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import com.facebook.drawee.drawable.ScalingUtils;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.xycode.xylibrary.uiKit.views.loopview.internal.BaseLoopAdapter;
+import com.xycode.xylibrary.unit.UrlData;
 import com.xycode.xylibrary.utils.ImageUtils;
 
 import java.util.HashMap;
@@ -22,7 +23,7 @@ class AdLoopAdapter extends BaseLoopAdapter {
 
     Map<Integer, SimpleDraweeView> imageViewList;
 
-    public AdLoopAdapter(Context context, List<String> loopData, ViewPager viewPager) {
+    public AdLoopAdapter(Context context, List<UrlData> loopData, ViewPager viewPager) {
         super(context, loopData, viewPager);
         imageViewList = new HashMap<>();
     }

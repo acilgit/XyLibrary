@@ -1,5 +1,7 @@
 package com.xycode.xylibrary.uiKit.views.loopview.internal;
 
+import com.xycode.xylibrary.unit.UrlData;
+
 import java.util.List;
 
 /**
@@ -30,17 +32,17 @@ public interface ILoopView {
     /**
      * @param rotateData
      */
-    void initData(List<String> rotateData);
+    void initData(List<UrlData> rotateData);
 
     /**
      * @param loopData
      */
-    void refreshData(List<String> loopData);
+    void refreshData(List<UrlData> loopData);
 
     /**
      * @return
      */
-    List<String> getLoopData();
+    List<UrlData> getLoopData();
 
     /**
      */

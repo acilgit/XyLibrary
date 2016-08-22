@@ -8,6 +8,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
 import com.facebook.drawee.drawable.ScalingUtils;
+import com.xycode.xylibrary.unit.UrlData;
 
 import java.util.List;
 
@@ -19,7 +20,7 @@ import java.util.List;
 public abstract class BaseLoopAdapter extends PagerAdapter {
 
     protected Context context;
-    protected List<String> loopData;
+    protected List<UrlData> loopData;
     protected OnItemClickListener onItemClickListener;
     protected ViewPager viewPager;
     /** holder */
@@ -28,7 +29,7 @@ public abstract class BaseLoopAdapter extends PagerAdapter {
     protected float aspectRatio;
     protected BaseLoopView.OnPreviewUrlListener onPreviewUrlListener;
 
-    public BaseLoopAdapter(Context context, List<String> loopData, ViewPager viewPager) {
+    public BaseLoopAdapter(Context context, List<UrlData> loopData, ViewPager viewPager) {
         super();
         this.context = context;
         this.loopData = loopData;
@@ -39,7 +40,7 @@ public abstract class BaseLoopAdapter extends PagerAdapter {
     protected void init() {
     }
 
-    public void setLoopData(List<String> loopData) {
+    public void setLoopData(List<UrlData> loopData) {
         this.loopData = loopData;
     }
 
@@ -76,7 +77,7 @@ public abstract class BaseLoopAdapter extends PagerAdapter {
     public Object instantiateItem(ViewGroup container, final int position) {
         final View view;
         final int index = position % loopData.size();
-        String imageUrl = loopData.get(index);
+        String imageUrl = loopData.get(index).getUrl();
 
         view = instantiateItemView(imageUrl, index);
 
@@ -85,7 +86,7 @@ public abstract class BaseLoopAdapter extends PagerAdapter {
 
                 @Override
                 public void onClick(View v) {
-                    onItemClickListener.onItemClick(BaseLoopAdapter.this, view, index, position);
+                    onItemClickListener.onItemClick(BaseLoopAdapter.this, view, index, position, loopData);
                 }
 
             });
@@ -125,7 +126,7 @@ public abstract class BaseLoopAdapter extends PagerAdapter {
          * @param position
          * @param realPosition
          */
-        void onItemClick(PagerAdapter parent, View view, int position, int realPosition);
+        void onItemClick(PagerAdapter parent, View view, int position, int realPosition, List<UrlData> dataList);
     }
 
 }

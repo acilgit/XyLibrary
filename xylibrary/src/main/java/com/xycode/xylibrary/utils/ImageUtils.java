@@ -587,6 +587,7 @@ public class ImageUtils {
     }
 
     public static void loadBitmapFromFrescoNet(Context context, Uri uri, final IGetFrescoBitmap iGetFrescoBitmap) {
+        if (uri == null) return;
         ImageRequest imageRequest = ImageRequestBuilder.newBuilderWithSource(uri).setAutoRotateEnabled(true).build();
         ImagePipeline pipeline = Fresco.getImagePipeline();
         DataSource<CloseableReference<CloseableImage>> dataSource = pipeline.fetchDecodedImage(imageRequest, context);
@@ -674,6 +675,7 @@ public class ImageUtils {
     }
 
     public static void setImageUriWithPreview(SimpleDraweeView simpleDraweeView, Uri uri, Uri previewUri) {
+        if (uri == null) return;
         PipelineDraweeControllerBuilder builder = Fresco.newDraweeControllerBuilder()
                 .setImageRequest(ImageRequest.fromUri(uri))
                 .setOldController(simpleDraweeView.getController())
@@ -703,6 +705,7 @@ public class ImageUtils {
     }
 
     public static void removeFromFrescoCache(Uri uri) {
+        if (uri == null) return;
         Fresco.getImagePipeline().evictFromCache(uri);
     }
 

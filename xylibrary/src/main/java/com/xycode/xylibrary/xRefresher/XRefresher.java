@@ -51,6 +51,7 @@ public class XRefresher<T> extends CoordinatorLayout {
     private static final int LOAD = 2;
     private static String PAGE = "page";
     private static String PAGE_SIZE = "pageSize";
+    private static int FIRST_PAGE = 1;
 
     //    private static XAdapter.ICustomerLoadMore iCustomerLoadMore;
 //    private static int loaderLayout = R.layout.layout_blank;
@@ -213,7 +214,8 @@ public class XRefresher<T> extends CoordinatorLayout {
 
     private void getDataByRefresh(final int page, final int pageSize, final int refreshType) {
         Param params = new Param();
-        params.put(PAGE, refreshType == REFRESH ? "1" : String.valueOf(page));
+        final int actualPage = refreshType == REFRESH ? FIRST_PAGE : page;
+        params.put(PAGE, String.valueOf(actualPage));
         params.put(PAGE_SIZE, String.valueOf(pageSize));
         String url = refreshRequest.setRequestParamsReturnUrl(params);
         OkHttp.getInstance().postForm(url, OkHttp.setFormBody(params, false), new OkHttp.OkResponseListener() {
@@ -221,44 +223,39 @@ public class XRefresher<T> extends CoordinatorLayout {
             public void handleJsonSuccess(Call call, Response response, JSONObject json) {
 //                if (loadingDialog != null && loadingDialog.isShowing()) loadingDialog.dismiss();
                 final List<T> newList = refreshRequest.setListData(json);
-                if (newList.size() < pageSize) state.setLastPage(true);
+                if (/*pageSize* (actualPage+1-FIRST_PAGE) ||*/ newList.size() < pageSize)
+                    state.setLastPage(true);
                 final List<T> list = new ArrayList<>();
-
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        switch (refreshType) {
-                            case REFRESH:
-                                swipe.setRefreshing(false);
-                                if (state.pageIndex == 0) state.pageIndex++;
+                switch (refreshType) {
+                    case REFRESH:
+                        swipe.setRefreshing(false);
+                        if (state.pageIndex == 0) state.pageIndex++;
+                        break;
+                    default:
+                        list.addAll(getAdapter().getDataList());
+                        state.pageIndex++;
+                        break;
+                }
+                setLoadMoreState(state.lastPage ? LOADER_NO_MORE : LOADER_MORE);
+                if (newList.size() > 0) {
+                    for (T newItem : newList) {
+                        boolean hasSameItem = false;
+                        for (T listItem : list) {
+                            if (refreshRequest.ignoreSameItem(newItem, listItem)) {
+                                hasSameItem = true;
                                 break;
-                            default:
-                                list.addAll(getAdapter().getDataList());
-                                state.pageIndex++;
-                                break;
-                        }
-                        setLoadMoreState(state.lastPage ? LOADER_NO_MORE : LOADER_MORE);
-                        if (newList.size() > 0) {
-                            for (T newItem : newList) {
-                                boolean hasSameItem = false;
-                                for (T listItem : list) {
-                                    if (refreshRequest.ignoreSameItem(newItem, listItem)) {
-                                        hasSameItem = true;
-                                        break;
-                                    }
-                                }
-                                if (!hasSameItem) list.add(newItem);
                             }
-                            Collections.sort(list, new Comparator<T>() {
-                                public int compare(T arg0, T arg1) {
-                                    return refreshRequest.compareTo(arg0, arg1);
-                                }
-                            });
-                            getAdapter().setDataList(list);
                         }
-                        textView.setVisibility(getAdapter().getDataList().size() == 0 ? VISIBLE : GONE);
+                        if (!hasSameItem) list.add(newItem);
                     }
-                });
+                    Collections.sort(list, new Comparator<T>() {
+                        public int compare(T arg0, T arg1) {
+                            return refreshRequest.compareTo(arg0, arg1);
+                        }
+                    });
+                    getAdapter().setDataList(list);
+                }
+                textView.setVisibility(getAdapter().getDataList().size() == 0 ? VISIBLE : GONE);
             }
 
             @Override
@@ -282,21 +279,14 @@ public class XRefresher<T> extends CoordinatorLayout {
             }
 
             private void handleError() {
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                       /* if (loadingDialog != null && loadingDialog.isShowing())
-                            loadingDialog.dismiss();*/
-                        switch (refreshType) {
-                            case REFRESH:
-                                swipe.setRefreshing(false);
-                                break;
-                            case LOAD:
-                                setLoadMoreState(state.lastPage ? LOADER_NO_MORE : LOADER_MORE);
-                                break;
-                        }
-                    }
-                });
+                switch (refreshType) {
+                    case REFRESH:
+                        swipe.setRefreshing(false);
+                        break;
+                    case LOAD:
+                        setLoadMoreState(state.lastPage ? LOADER_NO_MORE : LOADER_MORE);
+                        break;
+                }
             }
         });
     }
@@ -348,6 +338,7 @@ public class XRefresher<T> extends CoordinatorLayout {
 
     /**
      * use after xRefresher setup
+     *
      * @param dividerColor
      * @param dividerHeight
      * @param marginLeft
@@ -367,9 +358,10 @@ public class XRefresher<T> extends CoordinatorLayout {
         }
     }
 
-    public static void resetPageParamsNames(String page, String pageSize) {
+    public static void resetPageParamsNames(String page, String pageSize, int firstPage) {
         XRefresher.PAGE = page;
         XRefresher.PAGE_SIZE = pageSize;
+        XRefresher.FIRST_PAGE = firstPage;
     }
 
     private void setLoadMoreState(int loadMoreState) {
