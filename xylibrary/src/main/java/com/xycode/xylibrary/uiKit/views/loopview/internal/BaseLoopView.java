@@ -15,6 +15,7 @@ import android.widget.RelativeLayout;
 
 import com.facebook.drawee.drawable.ScalingUtils;
 import com.xycode.xylibrary.R;
+import com.xycode.xylibrary.unit.UrlData;
 import com.xycode.xylibrary.utils.ImageUtils;
 
 import java.util.List;
@@ -59,7 +60,7 @@ public abstract class BaseLoopView extends RelativeLayout implements ILoopView {
     /** loop direction */
     protected int direction = RIGHT;
 
-    protected List<String> loopData;
+    protected List<UrlData> loopData;
 
     private Handler handler;
     /** onClick listener */
@@ -111,9 +112,9 @@ public abstract class BaseLoopView extends RelativeLayout implements ILoopView {
         adapter.setOnItemClickListener(new BaseLoopAdapter.OnItemClickListener() {
 
             @Override
-            public void onItemClick(PagerAdapter parent, View view, int position, int realPosition) {
+            public void onItemClick(PagerAdapter parent, View view, int position, int realPosition, List<UrlData> loopData) {
                 if (onItemClickListener != null) {
-                    onItemClickListener.onItemClick(parent, view, position, realPosition);
+                    onItemClickListener.onItemClick(parent, view, position, realPosition, loopData);
                 }
             }
         });
@@ -151,7 +152,7 @@ public abstract class BaseLoopView extends RelativeLayout implements ILoopView {
     }
 
     @Override
-    public List<String> getLoopData() {
+    public List<UrlData> getLoopData() {
         return loopData;
     }
 
@@ -160,14 +161,14 @@ public abstract class BaseLoopView extends RelativeLayout implements ILoopView {
     }
 
     @Override
-    public void initData(List<String> loopData) {
+    public void initData(List<UrlData> loopData) {
         if (null == loopData) return;
         this.loopData = loopData;
 
         initLoopViewPager();
     }
 
-    public void refreshData(List<String> loopData) {
+    public void refreshData(List<UrlData> loopData) {
         if (null == loopData) return;
         stopAutoLoop();
         removeAllViews();

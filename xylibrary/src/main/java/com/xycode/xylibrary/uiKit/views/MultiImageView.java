@@ -15,6 +15,7 @@ import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
 import com.facebook.drawee.generic.RoundingParams;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.xycode.xylibrary.R;
+import com.xycode.xylibrary.unit.UrlData;
 import com.xycode.xylibrary.utils.ImageUtils;
 import com.xycode.xylibrary.utils.Tools;
 
@@ -23,7 +24,7 @@ import java.util.List;
 public class MultiImageView extends LinearLayout {
     public int MAX_WIDTH = 0;
 
-    private List<String> imagesList;
+    private List<UrlData> imagesList;
 
     private SparseArray<SimpleDraweeView> imageViewList;
 
@@ -123,7 +124,7 @@ public class MultiImageView extends LinearLayout {
         }
     }*/
 
-    public void setList(List<String> lists) {
+    public void setList(List<UrlData> lists) {
         if (imagesList == null || imagesList.size() == lists.size()) {
             imagesList = lists;
         } else {
@@ -131,7 +132,7 @@ public class MultiImageView extends LinearLayout {
         }
     }
 
-    private void initList(List<String> lists) throws IllegalArgumentException {
+    private void initList(List<UrlData> lists) throws IllegalArgumentException {
         if (lists == null) {
             throw new IllegalArgumentException("imageList is null...");
         }
@@ -272,7 +273,8 @@ public class MultiImageView extends LinearLayout {
     }
 
     private ImageView createImageView(final int position, final boolean isMultiImage) {
-        String url = imagesList.get(position);
+        String url = imagesList.get(position).getUrl();
+        if (url == null) url = "";
         SimpleDraweeView imageView;
 
         imageView = new SimpleDraweeView(getContext());
@@ -291,6 +293,7 @@ public class MultiImageView extends LinearLayout {
             imageView.setMaxHeight(pxOneMaxWandWidth);
             imageView.setLayoutParams(onePicPara);
         }
+
         Uri previewUri = null;
         if (imageLoadListener != null) {
             previewUri = imageLoadListener.setPreviewUri(position);
@@ -327,7 +330,7 @@ public class MultiImageView extends LinearLayout {
             @Override
             public void onClick(View v) {
                 if (onItemClickListener != null) {
-                    onItemClickListener.onItemClick(v, position);
+                    onItemClickListener.onItemClick(v, position, imagesList);
                 }
             }
         });
@@ -337,7 +340,7 @@ public class MultiImageView extends LinearLayout {
     private void resetImages() {
         for (int i = 0; i < imageViewList.size(); i++) {
             SimpleDraweeView imageView = imageViewList.get(i);
-            String url = imagesList.get(i);
+            String url = imagesList.get(i).getUrl();
             if (imageView.getTag()!=null && url.equals(imageView.getTag())) {
                 continue;
             }
@@ -367,7 +370,7 @@ public class MultiImageView extends LinearLayout {
         this.imageOverlayListener = imageOverlayListener;
     }
 
-    public List<String> getDraweeViewList() {
+    public List<UrlData> getDraweeViewList() {
         return imagesList;
     }
 
@@ -380,6 +383,6 @@ public class MultiImageView extends LinearLayout {
     }
 
     public interface OnItemClickListener {
-        void onItemClick(View view, int position);
+        void onItemClick(View view, int position, List<UrlData> dataList);
     }
 }

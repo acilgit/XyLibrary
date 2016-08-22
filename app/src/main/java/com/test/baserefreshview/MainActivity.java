@@ -19,13 +19,16 @@ import com.xycode.xylibrary.okHttp.Param;
 import com.xycode.xylibrary.uiKit.views.MultiImageView;
 import com.xycode.xylibrary.uiKit.views.loopview.AdLoopView;
 import com.xycode.xylibrary.uiKit.views.loopview.internal.BaseLoopAdapter;
+import com.xycode.xylibrary.unit.UrlData;
 import com.xycode.xylibrary.unit.ViewTypeUnit;
 import com.xycode.xylibrary.unit.WH;
 import com.xycode.xylibrary.utils.ImageUtils;
+import com.xycode.xylibrary.utils.L;
 import com.xycode.xylibrary.utils.TS;
 import com.xycode.xylibrary.utils.Tools;
 import com.xycode.xylibrary.xRefresher.XRefresher;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -101,7 +104,7 @@ public class MainActivity extends BaseActivity {
                         });
                         mvItem.setOnItemClickListener(new MultiImageView.OnItemClickListener() {
                             @Override
-                            public void onItemClick(View view, int position) {
+                            public void onItemClick(View view, int position, List<UrlData> urlDataList) {
                                 WH wh = Tools.getWidthHeightFromFilename(dataList.get(holder.getAdapterPosition()).getCoverPicture(), "_wh", "x");
                                 TS.show(getThis(), "wh:"+ wh.width + " h:" + wh.height+ " r:"+wh.getAspectRatio());
                             }
@@ -122,9 +125,9 @@ public class MainActivity extends BaseActivity {
                                 .setText(R.id.tvText, pos + "");
                         MultiImageView mvItem = holder.getView(R.id.mvItem);
 
-                        final List<String> list = new ArrayList<>();
+                        final List<UrlData> list = new ArrayList<>();
                         for (int i = 0; i <= pos; i++) {
-                            list.add(item.getCoverPicture() /*+"!"+ (int)(60*ratio)+ "!60"*/);
+                            list.add(new UrlData(item.getCoverPicture() /*+"!"+ (int)(60*ratio)+ "!60"*/));
                         }
                         mvItem.setList(list);
                         break;
@@ -136,7 +139,7 @@ public class MainActivity extends BaseActivity {
             @Override
             protected void creatingHeader(final CustomHolder holder, int headerKey) {
                 switch (headerKey) {
-                    case 1:
+                    case 2:
                         AdLoopView bannerView = holder.getView(R.id.banner);
                         setBanner(bannerView);
                         ImageUtils.loadBitmapFromFresco(getThis(), Uri.parse("http://mxycsku.qiniucdn.com/group5/M00/5B/0C/wKgBfVXdYkqAEzl0AAL6ZFMAdKk401.jpg"), new ImageUtils.IGetFrescoBitmap() {
@@ -154,7 +157,7 @@ public class MainActivity extends BaseActivity {
             }
         };
 
-        adapter.addHeader(1, R.layout.layout_banner);
+        adapter.addHeader(2, R.layout.layout_banner);
         adapter.setFooter(R.layout.footer);
 
         xRefresher.setup(this, adapter, true, new XRefresher.RefreshRequest<ContentBean>() {
@@ -170,7 +173,7 @@ public class MainActivity extends BaseActivity {
                     TS.show("fhfhfhfhf");
                 }*/
 //                params.add("a", "b");
-                return "http://192.168.1.222:9000/append/store_recommend/sell_house_page";
+                return "http://zhijia51.com/append/store_recommend/sell_house_page";
             }
 
             @Override
@@ -194,15 +197,17 @@ public class MainActivity extends BaseActivity {
     }
 
     private void setBanner(AdLoopView bannerView) {
-        List<String> bannerList = new ArrayList<>();
-        bannerList.add("http://mxycsku.qiniucdn.com/group5/M00/5B/0C/wKgBfVXdYkqAEzl0AAL6ZFMAdKk401.jpg");
-        bannerList.add("http://mxycsku.qiniucdn.com/group6/M00/98/E9/wKgBjVXdGPiAUmMHAALfY_C7_7U637.jpg");
-        bannerList.add("http://mxycsku.qiniucdn.com/group6/M00/96/F7/wKgBjVXbxnCABW_iAAKLH0qKKXo870.jpg");
+        List<UrlData> bannerList = new ArrayList<>();
+        bannerList.add(new UrlData("http://mxycsku.qiniucdn.com/group5/M00/5B/0C/wKgBfVXdYkqAEzl0AAL6ZFMAdKk401.jpg"));
+        bannerList.add(new UrlData("http://mxycsku.qiniucdn.com/group6/M00/98/E9/wKgBjVXdGPiAUmMHAALfY_C7_7U637.jpg"));
+        bannerList.add(new UrlData("http://mxycsku.qiniucdn.com/group6/M00/96/F7/wKgBjVXbxnCABW_iAAKLH0qKKXo870.jpg"));
 
         bannerView.setOnImageClickListener(new BaseLoopAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(PagerAdapter parent, View view, int position, int realPosition) {
+            public void onItemClick(PagerAdapter parent, View view, int position, int realPosition , List<UrlData> dataList) {
 
+                File externalCacheDir = getThis().getExternalCacheDir();
+                L.e("externalCacheDir  " + externalCacheDir + " " + getThis().getFilesDir());
                 List<String> list = new ArrayList<>();
 //                list.add("或在在要要在");
 //                list.add("在在要要在");
@@ -212,7 +217,7 @@ public class MainActivity extends BaseActivity {
 //                list.add("或在在要在");
 //                list.add("要");
 //                tags.setDataList(list);
-TS.show("count "+ xRefresher.getAdapter().getItemCount());
+                TS.show("count "+ xRefresher.getAdapter().getItemCount());
 //                DownloadHelper.getInstance().update(getThis(), "http://m.bg114.cn/scene/api/public/down_apk/1/driver1.0.20.apk", "有新版本了啊！！");
 //                Uri destination = Uri.fromFile(getTempHead());  // 保存地址
 //                Crop.of(uri, destination).withSize(150, 150).crop(getThis(), BaseActivity.REQUEST_CODE_GOT_RESULT);

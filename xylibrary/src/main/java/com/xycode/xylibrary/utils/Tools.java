@@ -1,18 +1,20 @@
 package com.xycode.xylibrary.utils;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.ClipboardManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.Environment;
+import android.os.Build;
 import android.provider.MediaStore;
 import android.text.Html;
 import android.util.Base64;
@@ -44,7 +46,7 @@ import java.util.regex.Pattern;
  */
 public class Tools {
 
-    public static final String STORAEGE_DIR = Environment.getExternalStorageDirectory()+"";
+//    public static final String CACHE_DIR = Environment.getExternalStorageDirectory()+"";
 
     private static File currentPhotoFile;
 
@@ -54,6 +56,20 @@ public class Tools {
     private static Point screenSize = null;
 
     private static AtomicInteger atomicCounter = new AtomicInteger(0);
+
+
+    /**
+     * no "/" at the end
+     * @param context
+     * @return
+     */
+    public static File getCacheDir(Context context) {
+        return context.getCacheDir();
+    }
+
+    public static File getFileDir(Context context) {
+        return context.getFilesDir();
+    }
 
     /**
      * check application can only be invoked once
@@ -575,5 +591,20 @@ public class Tools {
         }
     }
 
+    public static class Permission {
+
+        public static boolean isGrantExternalRW(Activity activity) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && activity.checkSelfPermission(
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                activity.requestPermissions(new String[]{
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                }, 1);
+                return false;
+            }
+
+            return true;
+        }
+    }
 
 }

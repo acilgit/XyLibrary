@@ -1,5 +1,7 @@
 package com.xycode.xylibrary.okHttp;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 
 import com.alibaba.fastjson.JSON;
@@ -93,30 +95,30 @@ public class OkHttp {
     }
 
     public Call get(String url, boolean addDefaultHeader, OkResponseListener okResponseListener) {
-       return get(url, null, addDefaultHeader, okResponseListener);
+        return get(url, null, addDefaultHeader, okResponseListener);
     }
 
     public Call get(String url, Header header, boolean addDefaultHeader, final OkResponseListener okResponseListener) {
-        return postOrGet(url, null, header, addDefaultHeader, okResponseListener, false);
+        return postOrGet(url, null, header, addDefaultHeader, okResponseListener, true);
     }
 
     public Call postForm(String url, @NonNull RequestBody body, OkResponseListener okResponseListener) {
-      return  postForm(url, body, null, true, okResponseListener);
+        return postForm(url, body, null, true, okResponseListener);
     }
 
     public Call postForm(String url, @NonNull RequestBody body, boolean addDefaultHeader, OkResponseListener okResponseListener) {
         return postForm(url, body, null, addDefaultHeader, okResponseListener);
     }
 
-    public Call postForm(String url, @NonNull RequestBody body, Header header, boolean addDefaultHeader,  OkResponseListener okResponseListener) {
-        return postOrGet(url, body, header, addDefaultHeader, okResponseListener, false);
+    public Call postForm(String url, @NonNull RequestBody body, Header header, boolean addDefaultHeader, OkResponseListener okResponseListener) {
+        return postOrGet(url, body, header, addDefaultHeader, okResponseListener, true);
     }
 
-    public Call postForm(String url, RequestBody body, Header header, boolean addDefaultHeader, final OkResponseListener okResponseListener, boolean doInCurrentThread) {
-        return postOrGet(url, body, header, addDefaultHeader, okResponseListener, doInCurrentThread);
+    public Call postForm(String url, RequestBody body, Header header, boolean addDefaultHeader, final OkResponseListener okResponseListener, boolean callbackInUIThread) {
+        return postOrGet(url, body, header, addDefaultHeader, okResponseListener, callbackInUIThread);
     }
 
-    private Call postOrGet(String url, RequestBody body, Header header, boolean addDefaultHeader, final OkResponseListener okResponseListener, boolean doInCurrentThread) {
+    private Call postOrGet(String url, final RequestBody body, final Header header, boolean addDefaultHeader, final OkResponseListener okResponseListener, boolean callbackInUIThread) {
         final Request.Builder builder = new Request.Builder().url(url);
         if (body != null) {
             builder.post(body);
@@ -137,32 +139,57 @@ public class OkHttp {
         final Request request = builder.build();
         final Call call = getClient().newCall(request);
 
-        if (doInCurrentThread) {
+        if (false) {
+          /*  final Handler handler = new Handler(Looper.myLooper());
+
+            if (Looper.myLooper() == Looper.getMainLooper()) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Response response = call.execute();
+                            if (response != null) {
+                                responseResult(response, call, okResponseListener, handler);
+                            } else {
+                                responseResultFailure(call, okResponseListener, handler);
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            responseResultFailure(call, okResponseListener, handler);
+                        }
+                    }
+                });
+            } else {
                 try {
                     Response response = call.execute();
                     if (response != null) {
-                        responseResult(response, call, okResponseListener);
+                        responseResult(response, call, okResponseListener, handler);
                     } else {
-                        responseResultFailure(call, okResponseListener);
+                        responseResultFailure(call, okResponseListener, handler);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
-                    responseResultFailure(call, okResponseListener);
+                    responseResultFailure(call, okResponseListener, handler);
                 }
+            }*/
         } else {
             new Thread(new Runnable() {
+                final Handler handler = new Handler(Looper.getMainLooper());
+
                 @Override
                 public void run() {
                     try {
-                        Response response = call.execute();
+                        final Response response = call.execute();
                         if (response != null) {
-                            responseResult(response, call, okResponseListener);
+                            responseResult(response, call, okResponseListener, handler);
+                            response.close();
                         } else {
-                            responseResultFailure(call, okResponseListener);
+                            responseResultFailure(call, okResponseListener, handler);
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
-                        responseResultFailure(call, okResponseListener);
+                        responseResultFailure(call, okResponseListener, handler);
+                    }finally {
                     }
                 }
             }).start();
@@ -190,15 +217,21 @@ public class OkHttp {
                 .post(progressRequestBody)
                 .build();
         Call call = OkHttp.getClient().newCall(request);
+        final Handler handler = new Handler(Looper.getMainLooper());
         call.enqueue(new Callback() {
             @Override
             public void onResponse(Call call, Response response) {
-                responseResult(response, call, okResponseListener);
+                if (response != null) {
+                    responseResult(response, call, okResponseListener, handler);
+                    response.close();
+                } else {
+                    responseResultFailure(call, okResponseListener, handler);
+                }
             }
 
             @Override
             public void onFailure(Call call, IOException e) {
-                responseResultFailure(call, okResponseListener);
+                responseResultFailure(call, okResponseListener, handler);
             }
         });
         return call;
@@ -211,58 +244,86 @@ public class OkHttp {
      * @param call
      * @param okResponseListener
      */
-    private static void responseResult(Response response, Call call, OkResponseListener okResponseListener) {
+    private static void responseResult(final Response response, final Call call, final OkResponseListener okResponseListener, Handler handler) {
         BaseActivity.dismissLoadingDialogByManualState();
         if (response == null) {
             okInit.networkError(call, call.isCanceled());
-        }else if (response.isSuccessful()) {
+        } else if (response.isSuccessful()) {
             try {
                 String strResult = response.body().string();
-                JSONObject jsonObject = JSON.parseObject(strResult);
-                int resultCode = okInit.judgeResultWhenFirstReceivedResponse(call, response, jsonObject);
-                if (okInit.resultSuccessByJudge(call, response, jsonObject, resultCode)){
+                final JSONObject jsonObject = JSON.parseObject(strResult);
+                final int resultCode = okInit.judgeResultWhenFirstReceivedResponse(call, response, jsonObject);
+                if (okInit.resultSuccessByJudge(call, response, jsonObject, resultCode)) {
                     BaseActivity.dismissLoadingDialogByManualState();
                     return;
                 }
-                switch (resultCode) {
-                    case RESULT_SUCCESS:
-                        if (okResponseListener != null)
-                            okResponseListener.handleJsonSuccess(call, response, jsonObject);
-                        break;
-                    case RESULT_ERROR:
-                        if (okResponseListener != null)
-                            okResponseListener.handleJsonError(call, response, jsonObject);
-                        break;
-                    case RESULT_VERIFY_ERROR:
-                        if (okResponseListener != null)
-                            okResponseListener.handleJsonVerifyError(call, response, jsonObject);
-                        break;
-                    default:
-                        if (okResponseListener != null)
-                            okResponseListener.handleJsonOther(call, response, jsonObject);
-                        break;
-                }
+
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        switch (resultCode) {
+                            case RESULT_SUCCESS:
+                                if (okResponseListener != null)
+                                    okResponseListener.handleJsonSuccess(call, response, jsonObject);
+                                break;
+                            case RESULT_ERROR:
+                                if (okResponseListener != null)
+                                    okResponseListener.handleJsonError(call, response, jsonObject);
+                                break;
+                            case RESULT_VERIFY_ERROR:
+                                if (okResponseListener != null)
+                                    okResponseListener.handleJsonVerifyError(call, response, jsonObject);
+                                break;
+                            default:
+                                if (okResponseListener != null)
+                                    okResponseListener.handleJsonOther(call, response, jsonObject);
+                                break;
+                        }
+                    }
+                });
             } catch (Exception e) {
                 e.printStackTrace();
                 okInit.judgeResultParseResponseFailed(call, response);
-                if (okResponseListener != null) okResponseListener.handleParseError(call, response);
+                if (okResponseListener != null) {
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            okResponseListener.handleParseError(call, response);
+                        }
+                    });
+                }
             }
         } else {
             okInit.receivedNetworkErrorCode(call, response);
-            if (okResponseListener != null)
-                okResponseListener.handleResponseFailure(call, response);
+            if (okResponseListener != null) {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        okResponseListener.handleResponseFailure(call, response);
+                    }
+                });
+            }
         }
     }
 
     /**
-     *  when response failure or call cancel
+     * when response failure or call cancel
+     *
      * @param call
      * @param okResponseListener
      */
-    private static void responseResultFailure(Call call, OkResponseListener okResponseListener) {
+    private static void responseResultFailure(final Call call, final OkResponseListener okResponseListener, Handler handler) {
         okInit.networkError(call, call.isCanceled());
         BaseActivity.dismissLoadingDialogByManualState();
-        if (okResponseListener != null) okResponseListener.handleNoServerNetwork(call, call.isCanceled());
+        if (okResponseListener != null) {
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    okResponseListener.handleNoServerNetwork(call, call.isCanceled());
+                }
+            });
+
+        }
     }
 
     public static abstract class OkResponseListener implements IOkResponseListener {
