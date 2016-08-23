@@ -19,9 +19,10 @@ import com.xycode.xylibrary.unit.UrlData;
 import com.xycode.xylibrary.utils.ImageUtils;
 import com.xycode.xylibrary.utils.Tools;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class MultiImageView extends LinearLayout {
+public class MultiImageView<T> extends LinearLayout {
     public int MAX_WIDTH = 0;
 
     private List<UrlData> imagesList;
@@ -123,6 +124,14 @@ public class MultiImageView extends LinearLayout {
             initList(lists);
         }
     }*/
+
+    public void setImageList(List<String> images) {
+        List<UrlData> list = new ArrayList<>();
+        for (int i = 0; i < images.size(); i++) {
+            list.add(new UrlData(images.get(i)));
+        }
+        setList(list);
+    }
 
     public void setList(List<UrlData> lists) {
         if (imagesList == null || imagesList.size() == lists.size()) {
@@ -330,7 +339,7 @@ public class MultiImageView extends LinearLayout {
             @Override
             public void onClick(View v) {
                 if (onItemClickListener != null) {
-                    onItemClickListener.onItemClick(v, position, imagesList);
+                    onItemClickListener.onItemClick(v, position, imagesList.get(position));
                 }
             }
         });
@@ -383,6 +392,6 @@ public class MultiImageView extends LinearLayout {
     }
 
     public interface OnItemClickListener {
-        void onItemClick(View view, int position, List<UrlData> dataList);
+        void onItemClick(View view, int position, UrlData urlData);
     }
 }

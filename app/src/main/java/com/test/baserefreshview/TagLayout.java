@@ -14,7 +14,6 @@ import java.util.List;
  */
 public class TagLayout extends BaseFlowTagLayout {
 
-
     public TagLayout(Context context) {
         super(context, null);
     }

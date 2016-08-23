@@ -227,6 +227,10 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
         return null;
     }
 
+    public int getHeaderPos(int headerKey) {
+        return headerLayoutIdList.indexOfKey(headerKey);
+    }
+
     public int getLayoutId(String mark) {
         for (ViewTypeUnit vt : multiLayoutMap.values()) {
             if (vt.getMark().equals(mark)) {
@@ -308,7 +312,6 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
     public void addHeader(int headerKey, @LayoutRes int headerLayoutId) {
         headerLayoutIdList.put(headerKey, headerLayoutId);
     }
-
 
     protected void creatingHeader(CustomHolder holder, int headerKey) {
 

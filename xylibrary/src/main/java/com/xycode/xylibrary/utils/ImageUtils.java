@@ -43,6 +43,35 @@ import java.io.IOException;
  */
 public class ImageUtils {
 
+    private static final String TEMP_IMAGE_FILE_NAME = "tempImage.jpg";
+    private static final String TEMP_CROP_IMAGE_FILE_NAME = "tempCropImage.jpg";
+
+    public static Uri getTempImageUri(Context context) {
+        File file = new File(context.getExternalCacheDir() ,TEMP_IMAGE_FILE_NAME);
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        Uri uri = Uri.fromFile(file);
+        return Uri.parse("file://" + uri.getPath());
+    }
+
+    public static Uri getTempCropImageUri(Context context) {
+        File file = new File(context.getFilesDir() ,TEMP_CROP_IMAGE_FILE_NAME);
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        Uri uri = Uri.fromFile(file);
+        return Uri.parse("file://" + uri.getPath());
+    }
+
   /*  private static boolean isGif(String url) {
         String s = url.toLowerCase();
         return s.endsWith(".gif");

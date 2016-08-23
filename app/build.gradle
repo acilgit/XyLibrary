@@ -29,5 +29,6 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
     compile 'com.androidadvance:topsnackbar:1.0.0'
+    compile 'com.jakewharton:butterknife:7.0.1'
     compile project(path: ':xylibrary')
 }

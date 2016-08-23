@@ -86,7 +86,7 @@ public abstract class BaseLoopAdapter extends PagerAdapter {
 
                 @Override
                 public void onClick(View v) {
-                    onItemClickListener.onItemClick(BaseLoopAdapter.this, view, index, position, loopData);
+                    onItemClickListener.onItemClick(BaseLoopAdapter.this, view, index, position, loopData.get(index));
                 }
 
             });
@@ -126,7 +126,7 @@ public abstract class BaseLoopAdapter extends PagerAdapter {
          * @param position
          * @param realPosition
          */
-        void onItemClick(PagerAdapter parent, View view, int position, int realPosition, List<UrlData> dataList);
+        void onItemClick(PagerAdapter parent, View view, int position, int realPosition, UrlData urlData);
     }
 
 }
