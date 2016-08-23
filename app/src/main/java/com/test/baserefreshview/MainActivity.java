@@ -1,6 +1,5 @@
 package com.test.baserefreshview;
 
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -52,7 +51,7 @@ public class MainActivity extends BaseActivity {
         tags = (TagLayout) findViewById(R.id.tags);
 
         findViewById(R.id.li).setOnClickListener(null);
-        
+
         List<String> list = new ArrayList<>();
         list.add("或在在要要在");
         list.add("在在要要在");
@@ -109,7 +108,7 @@ public class MainActivity extends BaseActivity {
                             @Override
                             public void onItemClick(View view, int position, UrlData urlData) {
                                 WH wh = Tools.getWidthHeightFromFilename(dataList.get(holder.getAdapterPosition()).getCoverPicture(), "_wh", "x");
-                                TS.show(getThis(), "wh:"+ wh.width + " h:" + wh.height+ " r:"+wh.getAspectRatio());
+                                TS.show(getThis(), "wh:" + wh.width + " h:" + wh.height + " r:" + wh.getAspectRatio());
                             }
                         });
                         break;
@@ -176,6 +175,7 @@ public class MainActivity extends BaseActivity {
                     TS.show("fhfhfhfhf");
                 }*/
 //                params.add("a", "b");
+//                return "http://zhijia51.com/append/store_recommend/sell_house_page";
                 return "http://zhijia51.com/append/store_recommend/sell_house_page";
             }
 
@@ -208,7 +208,7 @@ public class MainActivity extends BaseActivity {
 
         bannerView.setOnImageClickListener(new BaseLoopAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(PagerAdapter parent, View view, int position, int realPosition , UrlData urlData) {
+            public void onItemClick(PagerAdapter parent, View view, int position, int realPosition, UrlData urlData) {
 
                 File externalCacheDir = getThis().getExternalCacheDir();
                 L.e("externalCacheDir  " + externalCacheDir + " " + getThis().getFilesDir());
@@ -221,8 +221,8 @@ public class MainActivity extends BaseActivity {
 //                list.add("或在在要在");
 //                list.add("要");
 //                tags.setDataList(list);
-                PhotoSelectActivity.startForResult(getThis(), true);
-                TS.show("count "+ xRefresher.getAdapter().getItemCount());
+                PhotoSelectActivity.startForResult(getThis(), PhotoSelectActivity.class, true);
+                TS.show("count " + xRefresher.getAdapter().getItemCount());
 //                DownloadHelper.getInstance().update(getThis(), "http://m.bg114.cn/scene/api/public/down_apk/1/driver1.0.20.apk", "有新版本了啊！！");
 //                Uri destination = Uri.fromFile(getTempHead());  // 保存地址
 //                Crop.of(uri, destination).withSize(150, 150).crop(getThis(), BaseActivity.REQUEST_CODE_GOT_RESULT);
@@ -231,20 +231,16 @@ public class MainActivity extends BaseActivity {
         });
         bannerView.initData(bannerList);
     }
+
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+    protected void onPhotoSelectResult(int resultCode, Uri uri) {
+        super.onPhotoSelectResult(resultCode, uri);
         if (resultCode == RESULT_OK) {
-            switch (requestCode) {
-                case REQUEST_CODE_PHOTO_SELECT:
-                    Uri photoUri = data.getData();
-                    siv.setImageURI(photoUri);
-                    XAdapter.CustomHolder holder = xRefresher.getHeader(2);
-                    holder.setImageURI(R.id.iv, photoUri);
-                    break;
-                default:
-                    break;
-            }
+            siv.setImageURI(null);
+            siv.setImageURI(uri);
+            XAdapter.CustomHolder holder = xRefresher.getHeader(2);
+            holder.setImageUrl(R.id.iv, "");
+            holder.setImageURI(R.id.iv, uri);
         } else {
 
         }

@@ -97,6 +97,7 @@ public abstract class PhotoSelectBaseActivity extends BaseActivity {
             if (isCrop) {
                 Crop.of(resultUri[0], ImageUtils.getTempCropImageUri(getThis())).crop(getThis(), REQUEST_CODE_CROP);
             } else {
+                ImageUtils.removeFromFrescoCache(resultUri[0]);
                 setResult(RESULT_OK, new Intent().setData(resultUri[0]));
                 finish();
             }

@@ -7,6 +7,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
@@ -258,6 +259,20 @@ public abstract class BaseActivity extends AppCompatActivity {
             }
         }
         return null;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Uri uri = null;
+        if (data != null) {
+            uri = data.getData();
+        }
+        onPhotoSelectResult(resultCode, uri);
+    }
+
+    protected void onPhotoSelectResult(int resultCode, Uri uri){
+
     }
 
     protected abstract AlertDialog setLoadingDialog();
