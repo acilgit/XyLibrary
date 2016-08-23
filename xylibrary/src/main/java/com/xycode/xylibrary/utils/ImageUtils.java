@@ -736,6 +736,7 @@ public class ImageUtils {
     public static void removeFromFrescoCache(Uri uri) {
         if (uri == null) return;
         Fresco.getImagePipeline().evictFromCache(uri);
+        Fresco.getImagePipeline().evictFromDiskCache(uri);
     }
 
     public static void reloadFromFrescoCache(SimpleDraweeView simpleDraweeView, Uri uri) {
