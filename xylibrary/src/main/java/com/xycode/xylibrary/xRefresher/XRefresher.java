@@ -358,6 +358,16 @@ public class XRefresher<T> extends CoordinatorLayout {
         }
     }
 
+    public XAdapter.CustomHolder getHeader(int headerKey) {
+        int headerPos = adapter.getHeaderPos(headerKey);
+        XAdapter.CustomHolder holder = (XAdapter.CustomHolder) getRecyclerView().getChildViewHolder(getRecyclerView().getChildAt(headerPos));
+        return holder;
+    }
+    public XAdapter.CustomHolder getFooter() {
+        XAdapter.CustomHolder holder = (XAdapter.CustomHolder) getRecyclerView().getChildViewHolder(getRecyclerView().getChildAt(adapter.getItemCount()-1));
+        return holder;
+    }
+
     public static void resetPageParamsNames(String page, String pageSize, int firstPage) {
         XRefresher.PAGE = page;
         XRefresher.PAGE_SIZE = pageSize;

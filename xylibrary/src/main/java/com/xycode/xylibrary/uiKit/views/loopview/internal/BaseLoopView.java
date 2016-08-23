@@ -112,9 +112,9 @@ public abstract class BaseLoopView extends RelativeLayout implements ILoopView {
         adapter.setOnItemClickListener(new BaseLoopAdapter.OnItemClickListener() {
 
             @Override
-            public void onItemClick(PagerAdapter parent, View view, int position, int realPosition, List<UrlData> loopData) {
+            public void onItemClick(PagerAdapter parent, View view, int position, int realPosition, UrlData urlData) {
                 if (onItemClickListener != null) {
-                    onItemClickListener.onItemClick(parent, view, position, realPosition, loopData);
+                    onItemClickListener.onItemClick(parent, view, position, realPosition, urlData);
                 }
             }
         });

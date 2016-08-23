@@ -1,6 +1,5 @@
 package com.xycode.xylibrary.utils.cropUtils;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -8,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -16,13 +16,14 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 
 import com.xycode.xylibrary.R;
+import com.xycode.xylibrary.base.BaseActivity;
 import com.xycode.xylibrary.utils.cropUtils.component.BaseImageView;
 import com.xycode.xylibrary.utils.cropUtils.util.BitmapOperator;
 
 import java.io.IOException;
 
 
-public class CropActivity extends Activity {
+public class CropActivity extends BaseActivity {
 
     public final int HARDWARE_ACCELERATED_MAX_SIZE = 2048;
 
@@ -51,6 +52,11 @@ public class CropActivity extends Activity {
         this.findViews();
         this.setListeners();
         this.init();
+    }
+
+    @Override
+    protected AlertDialog setLoadingDialog() {
+        return null;
     }
 
     protected void findViews() {

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/rlMain"
+    android:background="@color/transparent"
+    tools:context=".PhotoSelectActivity">
+
+    <LinearLayout
+        android:layout_alignParentBottom="true"
+        android:background="@color/transparentBlackDark"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/btnCamera"
+            style="@style/btn"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="12dp"
+            android:text="拍照上传"/>
+
+        <Button
+            android:id="@+id/btnAlbum"
+            style="@style/btn"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:text="相册上传"/>
+
+        <Button
+            android:id="@+id/btnCancel"
+            style="@style/btn"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"/>
+
+    </LinearLayout>
+
+
+</RelativeLayout>

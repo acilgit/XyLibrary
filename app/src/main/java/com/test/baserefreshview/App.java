@@ -9,6 +9,7 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 import com.xycode.xylibrary.okHttp.Header;
 import com.xycode.xylibrary.okHttp.OkHttp;
 import com.xycode.xylibrary.okHttp.Param;
+import com.xycode.xylibrary.utils.L;
 import com.xycode.xylibrary.utils.TS;
 import com.xycode.xylibrary.utils.downloadHelper.DownloadHelper;
 import com.xycode.xylibrary.xRefresher.XRefresher;
@@ -82,8 +83,8 @@ public class App extends Application {
             }
 
             @Override
-            public void judgeResultParseResponseFailed(Call call, Response response) {
-
+            public void judgeResultParseResponseFailed(Call call, Response response, Exception e) {
+                    L.e(e.getMessage());
             }
 
             @Override

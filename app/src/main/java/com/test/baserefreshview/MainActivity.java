@@ -1,5 +1,6 @@
 package com.test.baserefreshview;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -39,13 +40,15 @@ public class MainActivity extends BaseActivity {
 
     private XRefresher xRefresher;
     TagLayout tags;
+    private SimpleDraweeView siv;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         xRefresher = (XRefresher) findViewById(R.id.xRefresher);
-        SimpleDraweeView siv = (SimpleDraweeView) findViewById(R.id.siv);
+        siv = (SimpleDraweeView) findViewById(R.id.siv);
         tags = (TagLayout) findViewById(R.id.tags);
 
         findViewById(R.id.li).setOnClickListener(null);
@@ -104,7 +107,7 @@ public class MainActivity extends BaseActivity {
                         });
                         mvItem.setOnItemClickListener(new MultiImageView.OnItemClickListener() {
                             @Override
-                            public void onItemClick(View view, int position, List<UrlData> urlDataList) {
+                            public void onItemClick(View view, int position, UrlData urlData) {
                                 WH wh = Tools.getWidthHeightFromFilename(dataList.get(holder.getAdapterPosition()).getCoverPicture(), "_wh", "x");
                                 TS.show(getThis(), "wh:"+ wh.width + " h:" + wh.height+ " r:"+wh.getAspectRatio());
                             }
@@ -201,10 +204,11 @@ public class MainActivity extends BaseActivity {
         bannerList.add(new UrlData("http://mxycsku.qiniucdn.com/group5/M00/5B/0C/wKgBfVXdYkqAEzl0AAL6ZFMAdKk401.jpg"));
         bannerList.add(new UrlData("http://mxycsku.qiniucdn.com/group6/M00/98/E9/wKgBjVXdGPiAUmMHAALfY_C7_7U637.jpg"));
         bannerList.add(new UrlData("http://mxycsku.qiniucdn.com/group6/M00/96/F7/wKgBjVXbxnCABW_iAAKLH0qKKXo870.jpg"));
+        bannerList.add(new UrlData("http://mxycsku.qiniucdn.com/group6/M00/96/F7/wKgBjVXbxnCABW_iAAKLH0qKKXo870.jpg"));
 
         bannerView.setOnImageClickListener(new BaseLoopAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(PagerAdapter parent, View view, int position, int realPosition , List<UrlData> dataList) {
+            public void onItemClick(PagerAdapter parent, View view, int position, int realPosition , UrlData urlData) {
 
                 File externalCacheDir = getThis().getExternalCacheDir();
                 L.e("externalCacheDir  " + externalCacheDir + " " + getThis().getFilesDir());
@@ -217,6 +221,7 @@ public class MainActivity extends BaseActivity {
 //                list.add("或在在要在");
 //                list.add("要");
 //                tags.setDataList(list);
+                PhotoSelectActivity.startForResult(getThis(), true);
                 TS.show("count "+ xRefresher.getAdapter().getItemCount());
 //                DownloadHelper.getInstance().update(getThis(), "http://m.bg114.cn/scene/api/public/down_apk/1/driver1.0.20.apk", "有新版本了啊！！");
 //                Uri destination = Uri.fromFile(getTempHead());  // 保存地址
@@ -226,5 +231,22 @@ public class MainActivity extends BaseActivity {
         });
         bannerView.initData(bannerList);
     }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case REQUEST_CODE_PHOTO_SELECT:
+                    Uri photoUri = data.getData();
+                    siv.setImageURI(photoUri);
+                    XAdapter.CustomHolder holder = xRefresher.getHeader(2);
+                    holder.setImageURI(R.id.iv, photoUri);
+                    break;
+                default:
+                    break;
+            }
+        } else {
 
+        }
+    }
 }

@@ -25,7 +25,7 @@ public class UrlData {
     }
 
     public Object getData() {
-        return data;
+        return data == null ? "" : data;
     }
 
     public void setData(Object data) {

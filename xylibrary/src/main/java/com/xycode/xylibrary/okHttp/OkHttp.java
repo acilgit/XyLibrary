@@ -283,7 +283,7 @@ public class OkHttp {
                 });
             } catch (Exception e) {
                 e.printStackTrace();
-                okInit.judgeResultParseResponseFailed(call, response);
+                okInit.judgeResultParseResponseFailed(call, response, e);
                 if (okResponseListener != null) {
                     handler.post(new Runnable() {
                         @Override
@@ -410,7 +410,7 @@ public class OkHttp {
          * @param call
          * @param response
          */
-        void judgeResultParseResponseFailed(Call call, Response response);
+        void judgeResultParseResponseFailed(Call call, Response response, Exception e);
 
         /**
          * add defaultParams in param
