@@ -26,6 +26,7 @@ import com.xycode.xylibrary.utils.ImageUtils;
 import com.xycode.xylibrary.utils.L;
 import com.xycode.xylibrary.utils.TS;
 import com.xycode.xylibrary.utils.Tools;
+import com.xycode.xylibrary.utils.cropUtils.Crop;
 import com.xycode.xylibrary.xRefresher.XRefresher;
 
 import java.io.File;
@@ -87,6 +88,8 @@ public class MainActivity extends BaseActivity {
             public void creatingHolder(final CustomHolder holder, final List<ContentBean> dataList, ViewTypeUnit viewType) {
                 switch (viewType.getLayoutId()) {
                     case R.layout.item_house:
+                        holder.setClick(R.id.llItem);
+                        holder.setClick(R.id.tvName);
                         MultiImageView mvItem = holder.getView(R.id.mvItem);
             /*    mvItem.setLoadImageListener(new MultiImageView.OnImageLoadListener() {
                     @Override
@@ -95,6 +98,7 @@ public class MainActivity extends BaseActivity {
                         return Uri.parse(list.get(position)+"!"+(wh.getAspectRatio()*20)+"!20");
                     }
                 });*/
+
                         mvItem.setOverlayDrawableListener(new MultiImageView.OnImageOverlayListener() {
                             @Override
                             public Drawable setOverlayDrawable(int position) {
@@ -113,6 +117,21 @@ public class MainActivity extends BaseActivity {
                         });
                         break;
                     default:
+                        break;
+                }
+            }
+
+            @Override
+            protected void handleItemViewClick(CustomHolder holder, ContentBean item, int viewId) {
+                switch (viewId) {
+                    case R.id.tvName:
+                        TS.show(" YES tvName " + viewId);
+                        break;
+                    case R.id.tvText:
+                        TS.show( " YES text " + viewId);
+                        break;
+                    default:
+                        TS.show(item.getAddress() + " YES " + viewId);
                         break;
                 }
             }
@@ -201,7 +220,7 @@ public class MainActivity extends BaseActivity {
 
     private void setBanner(AdLoopView bannerView) {
         List<UrlData> bannerList = new ArrayList<>();
-        bannerList.add(new UrlData("http://mxycsku.qiniucdn.com/group5/M00/5B/0C/wKgBfVXdYkqAEzl0AAL6ZFMAdKk401.jpg"));
+        bannerList.add(new UrlData("res:///"+ R.mipmap.chuzu));
         bannerList.add(new UrlData("http://mxycsku.qiniucdn.com/group6/M00/98/E9/wKgBjVXdGPiAUmMHAALfY_C7_7U637.jpg"));
         bannerList.add(new UrlData("http://mxycsku.qiniucdn.com/group6/M00/96/F7/wKgBjVXbxnCABW_iAAKLH0qKKXo870.jpg"));
         bannerList.add(new UrlData("http://mxycsku.qiniucdn.com/group6/M00/96/F7/wKgBjVXbxnCABW_iAAKLH0qKKXo870.jpg"));
@@ -221,7 +240,7 @@ public class MainActivity extends BaseActivity {
 //                list.add("或在在要在");
 //                list.add("要");
 //                tags.setDataList(list);
-                PhotoSelectActivity.startForResult(getThis(), PhotoSelectActivity.class, true);
+                PhotoSelectActivity.startForResult(getThis(), PhotoSelectActivity.class, Crop.size(512, 512));
                 TS.show("count " + xRefresher.getAdapter().getItemCount());
 //                DownloadHelper.getInstance().update(getThis(), "http://m.bg114.cn/scene/api/public/down_apk/1/driver1.0.20.apk", "有新版本了啊！！");
 //                Uri destination = Uri.fromFile(getTempHead());  // 保存地址

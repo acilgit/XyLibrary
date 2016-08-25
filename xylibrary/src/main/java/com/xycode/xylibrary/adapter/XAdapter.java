@@ -30,7 +30,7 @@ import java.util.Map;
  */
 public abstract class XAdapter<T> extends RecyclerView.Adapter {
 
-    public static final int  LAYOUT_FOOTER = -20331;
+    public static final int LAYOUT_FOOTER = -20331;
 
     private List<T> mainList;
     private List<T> dataList;
@@ -38,8 +38,8 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
     private SparseArray<Integer> headerLayoutIdList;
     private Map<Integer, ViewTypeUnit> multiLayoutMap;
     // item long click on long click Listener
-    private OnItemClickListener onItemClickListener;
-    private OnItemLongClickListener onItemLongClickListener;
+//    private OnItemClickListener onItemClickListener;
+//    private OnItemLongClickListener onItemLongClickListener;
 
     private int footerLayout = 0;
 
@@ -101,25 +101,19 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
             final CustomHolder holder = new CustomHolder(itemView) {
                 @Override
                 protected void createHolder(final CustomHolder holder) {
-                    holder.getRootView().setOnClickListener(new View.OnClickListener() {
+                    holder.onClickListener = new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            handleItemViewClick(holder, dataList.get(holder.getAdapterPosition()));
-                            if (onItemClickListener != null) {
-                                onItemClickListener.onItemClick(holder, dataList.get(holder.getAdapterPosition()));
-                            }
+                            handleItemViewClick(holder, dataList.get(holder.getAdapterPosition()), v.getId());
                         }
-                    });
+                    };
 
-                    if (onItemLongClickListener != null) {
-                        holder.getRootView().setOnLongClickListener(new View.OnLongClickListener() {
-                            @Override
-                            public boolean onLongClick(View v) {
-                                onItemLongClickListener.onItemLongClick(holder, dataList.get(holder.getAdapterPosition()));
-                                return false;
-                            }
-                        });
-                    }
+                    holder.onLongClickListener = new View.OnLongClickListener() {
+                        @Override
+                        public boolean onLongClick(View v) {
+                            return handleItemViewLongClick(holder, dataList.get(holder.getAdapterPosition()), v.getId());
+                        }
+                    };
                     creatingHolder(holder, dataList, viewTypeUnit);
                 }
             };
@@ -212,7 +206,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
      */
     @Override
     public int getItemCount() {
-         int footerCount = footerLayout == 0 ? 0 : 1;
+        int footerCount = footerLayout == 0 ? 0 : 1;
         int headerCount = headerLayoutIdList.size();
         if (dataList != null) {
             return dataList.size() + footerCount + headerCount;
@@ -278,7 +272,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
     public void addItemNoFilter(int pos, T item) {
         dataList.add(pos, item);
         mainList.add(pos, item);
-        notifyItemInserted(headerLayoutIdList.size() +pos);
+        notifyItemInserted(headerLayoutIdList.size() + pos);
     }
 
     public void updateItem(int pos, T item) {
@@ -286,7 +280,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
         int mainPos = mainList.indexOf(itemOld);
         mainList.set(mainPos, item);
         dataList.set(pos, item);
-        notifyItemChanged(headerLayoutIdList.size() +pos);
+        notifyItemChanged(headerLayoutIdList.size() + pos);
     }
 
     public void addItem(T item) {
@@ -295,7 +289,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
         notifyItemInserted(getItemCount() - (footerLayout == 0 ? 1 : 2));
     }
 
-    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+  /*  public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
         if (this.onItemClickListener != null) this.onItemClickListener = null;
         this.onItemClickListener = onItemClickListener;
     }
@@ -303,7 +297,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
     public void setOnItemLongClickListener(OnItemLongClickListener onItemLongClickListener) {
         if (this.onItemLongClickListener != null) this.onItemLongClickListener = null;
         this.onItemLongClickListener = onItemLongClickListener;
-    }
+    }*/
 
     public void setFooter(@LayoutRes int footerLayout) {
         this.footerLayout = footerLayout;
@@ -336,8 +330,12 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
      * @param holder
      * @param item
      */
-    protected void handleItemViewClick(CustomHolder holder, T item) {
+    protected void handleItemViewClick(CustomHolder holder, T item, int viewId) {
 
+    }
+
+    protected boolean handleItemViewLongClick(CustomHolder holder, T item, int viewId) {
+        return false;
     }
 
     /**
@@ -352,24 +350,28 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
         return list;
     }
 
-    /**
+  /*  *//**
      *
-     */
+     *//*
     public interface OnItemClickListener<T> {
         void onItemClick(CustomHolder holder, T item);
     }
 
+    */
+
     /**
      *
-     */
+     *//*
     public interface OnItemLongClickListener<T> {
         void onItemLongClick(CustomHolder holder, T item);
-    }
+    }*/
 
     public static abstract class CustomHolder extends RecyclerView.ViewHolder {
 
         private SparseArray<View> viewList;
         private View itemView;
+        private View.OnClickListener onClickListener;
+        private View.OnLongClickListener onLongClickListener;
 
         public CustomHolder(View itemView) {
             super(itemView);
@@ -457,18 +459,18 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
             return this;
         }
 
-        public CustomHolder setClick(int viewId, View.OnClickListener listener) {
+        public CustomHolder setClick(int viewId) {
             View view = getView(viewId);
             if (view != null) {
-                view.setOnClickListener(listener);
+                view.setOnClickListener(onClickListener);
             }
             return this;
         }
 
-        public CustomHolder setLongClick(int viewId, View.OnLongClickListener listener) {
+        public CustomHolder setLongClick(int viewId) {
             View view = getView(viewId);
             if (view != null) {
-                view.setOnLongClickListener(listener);
+                view.setOnLongClickListener(onLongClickListener);
             }
             return this;
         }

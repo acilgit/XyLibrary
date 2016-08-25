@@ -35,20 +35,24 @@ class AdLoopAdapter extends BaseLoopAdapter {
         SimpleDraweeView imageView = imageViewList.get(position);
         if (imageView == null) {
             imageView = new SimpleDraweeView(context);
-            if (defaultImgId != 0)  imageView.getHierarchy().setPlaceholderImage(context.getResources().getDrawable(defaultImgId) ,ScalingUtils.ScaleType.FIT_XY);
+            if (defaultImgId != 0)
+                imageView.getHierarchy().setPlaceholderImage(context.getResources().getDrawable(defaultImgId), ScalingUtils.ScaleType.FIT_XY);
             imageView.getHierarchy().setActualImageScaleType(imageScaleType);
             int width = ViewGroup.LayoutParams.MATCH_PARENT;
             int height = ViewGroup.LayoutParams.WRAP_CONTENT;
             imageView.setLayoutParams(new ViewGroup.LayoutParams(width, height));
             imageView.setAspectRatio(aspectRatio);
         }
-        if (imageView.getTag()!=null && imageView.getTag().equals(imageUrl)) {
+        if (imageView.getTag() != null && imageView.getTag().equals(imageUrl)) {
             return imageView;
         }
-        if (onPreviewUrlListener != null) {
-            ImageUtils.setImageUriWithPreview(imageView, imageUrl, onPreviewUrlListener.getPreviewUrl(imageUrl, position));
-        } else {
-            imageView.setImageURI(Uri.parse(imageUrl));
+        Uri uri = Uri.parse(imageUrl);
+        if (uri != null) {
+            if (onPreviewUrlListener != null) {
+                ImageUtils.setImageUriWithPreview(imageView, imageUrl, onPreviewUrlListener.getPreviewUrl(imageUrl, position));
+            } else {
+                imageView.setImageURI(uri);
+            }
         }
         imageView.setTag(imageUrl);
 

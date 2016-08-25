@@ -10,22 +10,22 @@ import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 
 import com.xycode.xylibrary.R;
 import com.xycode.xylibrary.base.BaseActivity;
+import com.xycode.xylibrary.utils.ImageUtils;
 import com.xycode.xylibrary.utils.cropUtils.component.BaseImageView;
-import com.xycode.xylibrary.utils.cropUtils.util.BitmapOperator;
+//import com.xycode.xylibrary.utils.cropUtils.util.BitmapOperator;
 
-import java.io.IOException;
+import java.io.File;
 
 
 public class CropActivity extends BaseActivity {
 
-    public final int HARDWARE_ACCELERATED_MAX_SIZE = 2048;
+//    public final int HARDWARE_ACCELERATED_MAX_SIZE = 2048;
 
     ViewGroup mAppBar;
     Button mBtnCancel;
@@ -43,6 +43,8 @@ public class CropActivity extends BaseActivity {
     boolean mIsSaving = false;
 
     Handler mHandler;
+    private Bitmap bitmap;
+    private BitmapDrawable drawable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,12 +62,12 @@ public class CropActivity extends BaseActivity {
     }
 
     protected void findViews() {
-        mAppBar = (ViewGroup)findViewById(R.id.appBar);
-        mBtnCancel = (Button)findViewById(R.id.btnCancel);
-        mBtnSave = (Button)findViewById(R.id.btnSave);
-        mBtnRotate = (ImageButton)findViewById(R.id.btnRotate);
-        mImageView = (BaseImageView)findViewById(R.id.imageView);
-        mBench = (FrameLayout)findViewById(R.id.bench);
+        mAppBar = (ViewGroup) findViewById(R.id.appBar);
+        mBtnCancel = (Button) findViewById(R.id.btnCancel);
+        mBtnSave = (Button) findViewById(R.id.btnSave);
+        mBtnRotate = (ImageButton) findViewById(R.id.btnRotate);
+        mImageView = (BaseImageView) findViewById(R.id.imageView);
+        mBench = (FrameLayout) findViewById(R.id.bench);
     }
 
     protected void setListeners() {
@@ -106,8 +108,11 @@ public class CropActivity extends BaseActivity {
         mOutWidth = intent.getIntExtra(Crop.Extra.OUT_WIDTH, Crop.Default.OUT_WIDTH);
         mOutHeight = intent.getIntExtra(Crop.Extra.OUT_HEIGHT, Crop.Default.OUT_HEIGHT);
 
-        BitmapDrawable drawable;
-        try {
+//        ByteArrayOutputStream os = ImageUtils.getByteArrayOutputStreamFromFile();
+        bitmap = ImageUtils.resizeToBitmap(source.getPath(), Crop.Default.MAX_SIDE, Crop.Default.MINI_SIDE);
+        drawable = new BitmapDrawable(getResources(), bitmap);
+//        bitmap.recycle();
+       /* try {
             drawable = BitmapOperator.createBitmapDrawable(this, source);
         } catch (IOException e) {
             e.printStackTrace();
@@ -118,15 +123,16 @@ public class CropActivity extends BaseActivity {
             error.printStackTrace();
 //            CropToast.show(this, getString(R.string.out_of_memory));
             return;
-        }
+        }*/
 
-        if (drawable.getIntrinsicWidth() < HARDWARE_ACCELERATED_MAX_SIZE
+       /* if (drawable.getIntrinsicWidth() < HARDWARE_ACCELERATED_MAX_SIZE
                 && drawable.getIntrinsicHeight() < HARDWARE_ACCELERATED_MAX_SIZE) {
             getWindow().setFlags(
                     WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
                     WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED
             );
-        }
+        }*/
+
         mImageView.setDrawable(drawable, mOutWidth, mOutHeight);
     }
 
@@ -134,8 +140,13 @@ public class CropActivity extends BaseActivity {
         if (mIsSaving) {
             return;
         }
-
         this.finish();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        bitmap.recycle();
     }
 
     protected void onSaveClick() {
@@ -155,7 +166,9 @@ public class CropActivity extends BaseActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                final BitmapOperator.SaveResult saveResult = BitmapOperator.saveToDisk(CropActivity.this, mOutUri, bitmap);
+                File file = new File(mOutUri.getPath());
+                final boolean saveResult = ImageUtils.saveBitmapToFile(getThis(), file, bitmap);
+//                final BitmapOperator.SaveResult saveResult = BitmapOperator.saveToDisk(CropActivity.this, mOutUri, bitmap);
 
                 mHandler.post(new Runnable() {
                     @Override
@@ -171,13 +184,13 @@ public class CropActivity extends BaseActivity {
         mImageView.rotate(90.0f);
     }
 
-    protected void onSaveResult(BitmapOperator.SaveResult result) {
+    protected void onSaveResult(boolean result) {
         mIsSaving = false;
 
-        if (!result.isOK) {
+        if (!result) {
 //            CropToast.show(this, getString(R.string.save_image_failed), mAppBar.getHeight());
         } else {
-            setResult(RESULT_OK, new Intent().setData(result.uri));
+            setResult(RESULT_OK, new Intent().setData(mOutUri));
             finish();
         }
     }
