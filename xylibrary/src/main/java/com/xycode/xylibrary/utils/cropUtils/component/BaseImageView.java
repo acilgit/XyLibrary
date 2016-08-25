@@ -369,7 +369,7 @@ public class BaseImageView extends View {
         }
 
         if (isOut) {
-            mAdjustRect.offsetTo(newLeft, newTop);
+//            mAdjustRect.offsetTo(newLeft, newTop);
         }
     }
 

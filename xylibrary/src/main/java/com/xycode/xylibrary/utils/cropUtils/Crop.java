@@ -17,20 +17,30 @@ public class Crop {
     interface Default {
         int OUT_WIDTH = 512;
         int OUT_HEIGHT = 512;
+        int MAX_SIDE = 1600;
+        int MINI_SIDE = 512;
     }
 
-    interface Extra {
+    public interface Extra {
         String OUT_WIDTH = "OutWidth";
         String OUT_HEIGHT = "outHeight";
+        String MAX_SIDE = "maxSide";
+        String MINI_SIDE = "minSide";
     }
 
     Uri source;
     Uri destination;
-    int outWidth = Default.OUT_WIDTH;
-    int outHeight = Default.OUT_HEIGHT;
+   public int outWidth = Default.OUT_WIDTH;
+   public int outHeight = Default.OUT_HEIGHT;
+   public int maxSide = Default.MAX_SIDE;
+   public int minSide = Default.MINI_SIDE;
 
     public static Crop of(Uri sourceUri, Uri targetUri) {
         return new Crop(sourceUri, targetUri);
+    }
+
+    public static Crop size(int outWidth, int outHeight) {
+        return new Crop(null, null).withSize(outWidth, outHeight);
     }
 
     public Crop(Uri source, Uri destination) {
@@ -42,6 +52,12 @@ public class Crop {
         this.outWidth = outWidth;
         this.outHeight = outHeight;
 
+        return this;
+    }
+
+    public Crop safeCrop(int maxSide, int minSide) {
+        this.maxSide = maxSide;
+        this.minSide = minSide;
         return this;
     }
 
@@ -76,7 +92,6 @@ public class Crop {
         intent.putExtra(MediaStore.EXTRA_OUTPUT, destination);
         intent.putExtra(Extra.OUT_WIDTH, outWidth);
         intent.putExtra(Extra.OUT_HEIGHT, outHeight);
-
         return intent;
     }
 
