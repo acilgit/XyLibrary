@@ -459,6 +459,10 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
             return this;
         }
 
+        public CustomHolder setClick() {
+            itemView.setOnClickListener(onClickListener);
+            return this;
+        }
         public CustomHolder setClick(int viewId) {
             View view = getView(viewId);
             if (view != null) {
