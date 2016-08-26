@@ -13,52 +13,46 @@ import com.anthonycr.grant.PermissionsManager;
 import com.anthonycr.grant.PermissionsResultAction;
 import com.xycode.xylibrary.utils.ImageUtils;
 import com.xycode.xylibrary.utils.Tools;
-import com.xycode.xylibrary.utils.cropUtils.Crop;
+import com.yalantis.ucrop.UCrop;
+
+import java.io.Serializable;
 
 public abstract class PhotoSelectBaseActivity extends BaseActivity {
 
-    public static final String IS_CROP = "isCrop";
+    public static final String PARAM = "param";
 
     private static final int REQUEST_CODE_CAMERA = 1;
     private static final int REQUEST_CODE_ALBUM = 2;
     private static final int REQUEST_CODE_CROP = 3;
 
     private boolean isCrop = false;
-    private int outWidth = 0;
-    private int outHeight = 0;
-    private int maxSide = 0;
-    private int minSide = 0;
-    private Crop crop = null;
+
+    private CropParam cropParam;
+    private UCrop.Options options;
 
 /*    public static void startForResult(Activity activity, Class activityClass, boolean isCrop) {
         activity.startActivityForResult(new Intent(activity, activityClass).putExtra(IS_CROP, isCrop), REQUEST_CODE_PHOTO_SELECT);
     }*/
 
     public static void startForResult(Activity activity, Class activityClass) {
-        startForResult( activity, activityClass, Crop.size(-1, -1));
+        startForResult(activity, activityClass, CropParam.out(0, 0));
     }
-    public static void startForResult(Activity activity, Class activityClass, Crop crop) {
 
-        Intent intent = new Intent(activity, activityClass).putExtra(IS_CROP, crop != null);
-        if (crop != null) {
-            intent.putExtra(Crop.Extra.OUT_WIDTH , crop.outWidth);
-            intent.putExtra(Crop.Extra.OUT_HEIGHT , crop.outHeight);
-            intent.putExtra(Crop.Extra.MAX_SIDE , crop.maxSide);
-            intent.putExtra(Crop.Extra.MINI_SIDE , crop.minSide);
+    public static void startForResult(Activity activity, Class activityClass, CropParam param) {
+        Intent intent = new Intent(activity, activityClass);
+        if (param == null) {
+            param = new CropParam();
         }
+        intent.putExtra(PARAM, param);
         activity.startActivityForResult(intent, REQUEST_CODE_PHOTO_SELECT);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        isCrop = getIntent().getBooleanExtra(IS_CROP, false);
-        if (isCrop) {
-            outWidth = getIntent().getIntExtra(Crop.Extra.OUT_WIDTH, 0);
-            outHeight = getIntent().getIntExtra(Crop.Extra.OUT_HEIGHT, 0);
-            maxSide = getIntent().getIntExtra(Crop.Extra.MAX_SIDE, 0);
-            minSide = getIntent().getIntExtra(Crop.Extra.MINI_SIDE, 0);
-        }
+        cropParam = (CropParam) getIntent().getSerializableExtra(PARAM);
+        isCrop = (cropParam.outHeight > 0 && cropParam.outWidth > 0);
+        options = getCropOptions();
     }
 
     protected void onCamera() {
@@ -121,14 +115,13 @@ public abstract class PhotoSelectBaseActivity extends BaseActivity {
                     break;
             }
             if (isCrop) {
-                crop = Crop.of(resultUri[0], ImageUtils.getTempCropImageUri(getThis()));
-                if (outHeight > 0 && outWidth > 0) {
-                    crop.withSize(outWidth, outHeight);
-                }
-                if (maxSide > 0 && minSide > 0) {
-                    crop.safeCrop(maxSide, minSide);
-                }
-                crop.crop(getThis(), REQUEST_CODE_CROP);
+                UCrop uCrop = UCrop.of(resultUri[0], ImageUtils.getTempCropImageUri(getThis()))
+                        .withMaxResultSize(cropParam.outWidth, cropParam.outHeight);
+                if (cropParam.aspectRatioX > 0 && cropParam.aspectRatioX > 0)
+                    uCrop.withAspectRatio(cropParam.aspectRatioX, cropParam.aspectRatioY);
+                if(options != null) uCrop.withOptions(options);
+
+                uCrop.start(getThis(), REQUEST_CODE_CROP);
             } else {
                 ImageUtils.removeFromFrescoCache(resultUri[0]);
                 setResult(RESULT_OK, new Intent().setData(resultUri[0]));
@@ -147,6 +140,8 @@ public abstract class PhotoSelectBaseActivity extends BaseActivity {
 
     protected abstract void permissionOnDenied(String permission);
 
+    protected abstract UCrop.Options getCropOptions();
+
     protected void onResultFailure() {
         finish();
     }
@@ -154,5 +149,31 @@ public abstract class PhotoSelectBaseActivity extends BaseActivity {
     @Override
     protected AlertDialog setLoadingDialog() {
         return null;
+    }
+
+
+    public static class CropParam implements Serializable {
+        public int aspectRatioX = 0;
+        public int aspectRatioY = 0;
+        public int outWidth = 512;
+        public int outHeight = 512;
+
+        public CropParam() {
+
+        }
+
+        public static CropParam out(int outWidth, int outHeight) {
+            CropParam cropParam = new CropParam();
+            cropParam.outWidth = outWidth;
+            cropParam.outHeight = outHeight;
+            return cropParam;
+        }
+
+        public CropParam ratio(int aspectRatioX, int aspectRatioY) {
+            this.aspectRatioX = aspectRatioX;
+            this.aspectRatioY = aspectRatioY;
+            return this;
+        }
+
     }
 }
