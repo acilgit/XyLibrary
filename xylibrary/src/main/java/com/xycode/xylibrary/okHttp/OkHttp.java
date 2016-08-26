@@ -10,6 +10,7 @@ import com.xycode.xylibrary.base.BaseActivity;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
@@ -236,6 +237,40 @@ public class OkHttp {
         });
         return call;
     }
+
+
+    public static Call uploadFileWithParams(String url, Map<String, File> files, Param param, final OkResponseListener okResponseListener, OkFileHelper.FileProgressListener fileProgressListener) {
+        MultipartBody.Builder builder = new MultipartBody.Builder();
+        builder.setType(MultipartBody.FORM);
+        for (String key : param.keySet()) {
+            builder.addFormDataPart(key, param.get(key));
+        }
+        for (String key : files.keySet()) {
+            builder.addFormDataPart(key, files.get(key).getName(), RequestBody.create(MEDIA_TYPE_MULTI_DATA, files.get(key)));
+        }
+
+        RequestBody requestBody = builder.build();
+        OkFileHelper.ProgressRequestBody progressRequestBody = new OkFileHelper.ProgressRequestBody(requestBody, fileProgressListener);
+        Request request = new Request.Builder()
+                .url(url)
+                .post(progressRequestBody)
+                .build();
+        Call call = OkHttp.getClient().newCall(request);
+        final Handler handler = new Handler(Looper.getMainLooper());
+        call.enqueue(new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) {
+                responseResult(response, call, okResponseListener,handler);
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                responseResultFailure(call, okResponseListener,handler);
+            }
+        });
+        return call;
+    }
+
 
     /**
      * when response success
