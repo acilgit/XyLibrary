@@ -148,6 +148,13 @@ public class ImageUtils {
         return outputStream;
     }
 
+    public static BitmapFactory.Options getBitmapInfo(String bmpPath) {
+        BitmapFactory.Options info = new BitmapFactory.Options();
+        info.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(bmpPath, info);
+        return info;
+    }
+
     /**
      * get rotate angle
      */
@@ -228,6 +235,14 @@ public class ImageUtils {
         return baos;
     }
 
+    public static ByteArrayOutputStream compressBitmapFileToStream(String filePath, int jpegQuality,  int targetMaxSide, int targetMiniSide) {
+        Bitmap bitmap = resizeToBitmap(filePath, targetMaxSide, targetMiniSide);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, jpegQuality, baos);
+        L.e("------quality-- after " + "  ------" + baos.toByteArray().length / 1024f);
+        return baos;
+    }
+
     /**
      * get ordinary Bitmap .
      *
@@ -235,6 +250,7 @@ public class ImageUtils {
      * @param targetPix
      * @return
      */
+    @Deprecated
     public static Bitmap resizeToBitmap(byte[] data, int targetPix) {
         BitmapFactory.Options options = null;
 
@@ -269,6 +285,7 @@ public class ImageUtils {
         return bm;
     }
 
+    @Deprecated
     public static Bitmap resizeToBitmap(int minSide, byte[] data) {
         BitmapFactory.Options options = null;
         BitmapFactory.Options info = new BitmapFactory.Options();
@@ -297,36 +314,41 @@ public class ImageUtils {
         return bm;
     }
 
-    public static Bitmap resizeToBitmap(String filePath, int photoSide, int miniSide) {
-
+    /**
+     *
+     * @param filePath
+     * @param targetMaxSide if bitmap maxSide smaller than this, do nothing
+     * @param targetMiniSide if bitmap miniSide smaller than this, do nothing
+     * @return
+     */
+    public static Bitmap resizeToBitmap(String filePath, int targetMaxSide, int targetMiniSide) {
         BitmapFactory.Options info = new BitmapFactory.Options();
         info.inJustDecodeBounds = true;
-//        info.inPreferredConfig = Bitmap.Config.RGB_565;
         BitmapFactory.decodeFile(filePath, info);
         int maxSide = Math.max(info.outWidth, info.outHeight);
         int minSide = Math.min(info.outWidth, info.outHeight);
-        L.d("sideLength outWidth:" + "(" + info.outWidth + ") outHeight:" + "(" + info.outHeight + ") ...:" + (1.0 * maxSide) / photoSide);
-        int ssize = photoSide > maxSide ? 1 : (int) (Math.floor((1.0 * maxSide) / photoSide));
-        int nowMinSide = minSide / ssize;
-        if (ssize > 1 && nowMinSide <= miniSide) {
-            ssize = (int) Math.floor(ssize * ((1.0f * nowMinSide) / miniSide));
-            if (ssize < 1) {
-                ssize = 1;
+        L.d("sideLength outWidth:" + "(" + info.outWidth + ") outHeight:" + "(" + info.outHeight + ") ...:" + (1.0 * maxSide) / targetMaxSide);
+        int scaleSsize = targetMaxSide > maxSide ? 1 : (int) (Math.floor((1.0 * maxSide) / targetMaxSide));
+        int nowMinSide = minSide / scaleSsize;
+        if (scaleSsize > 1 && nowMinSide <= targetMiniSide) {
+            scaleSsize = (int) Math.floor(scaleSsize * ((1.0f * nowMinSide) / targetMiniSide));
+            if (scaleSsize < 1) {
+                scaleSsize = 1;
             }
         }
         info = new BitmapFactory.Options();
 //        info.inPreferredConfig = Bitmap.Config.RGB_565;
-        info.inSampleSize = ssize;
+        info.inSampleSize = scaleSsize;
         info.inJustDecodeBounds = false;
         Bitmap bitmap = BitmapFactory.decodeFile(filePath, info);
 
         Matrix matrix = new Matrix();
         int h = bitmap.getHeight(), w = bitmap.getWidth();
-        int max = photoSide;
-        int min = miniSide;
+        int max = targetMaxSide;
+        int min = targetMiniSide;
         int newMaxSide = Math.max(h, w);
         int newMinSide = Math.min(h, w);
-        L.e("sideLength w:" + "(" + w + ") h:" + "(" + h + ") scaleSize:" + ssize);
+        L.e("sideLength w:" + "(" + w + ") h:" + "(" + h + ") scaleSize:" + scaleSsize);
         if (max >= newMaxSide || min >= newMinSide) {
         } else {
             float ratioMax = (1.0f * max / newMaxSide);
@@ -334,9 +356,7 @@ public class ImageUtils {
             float ratio = Math.max(ratioMax, ratioMin);
             matrix.postScale(ratio, ratio);
             bitmap = Bitmap.createBitmap(bitmap, 0, 0, w, h, matrix, true);
-            L.e("sideLength w:" + "(" + bitmap.getWidth() + ") h:" + "(" + bitmap.getHeight() + ")");
         }
-
         return bitmap;
     }
 

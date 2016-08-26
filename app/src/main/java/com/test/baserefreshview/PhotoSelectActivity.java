@@ -9,6 +9,7 @@ import android.widget.RelativeLayout;
 
 import com.xycode.xylibrary.base.PhotoSelectBaseActivity;
 import com.xycode.xylibrary.utils.TS;
+import com.yalantis.ucrop.UCrop;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -26,7 +27,7 @@ public class PhotoSelectActivity extends PhotoSelectBaseActivity {
     RelativeLayout rlMain;
 
     public static void startForResult(Activity activity, boolean isCrop) {
-        activity.startActivityForResult(new Intent(activity, PhotoSelectActivity.class).putExtra(IS_CROP, isCrop), REQUEST_CODE_PHOTO_SELECT);
+        activity.startActivityForResult(new Intent(activity, PhotoSelectActivity.class), REQUEST_CODE_PHOTO_SELECT);
     }
 
     @Override
@@ -55,5 +56,14 @@ public class PhotoSelectActivity extends PhotoSelectBaseActivity {
     @Override
     protected void permissionOnDenied(String permission) {
         TS.show("no " + permission);
+    }
+
+    @Override
+    protected UCrop.Options getCropOptions() {
+        UCrop.Options options = new UCrop.Options();
+        options.setFreeStyleCropEnabled(true);
+        options.setToolbarColor(getResources().getColor(R.color.colorPrimary));
+        options.setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
+        return options;
     }
 }

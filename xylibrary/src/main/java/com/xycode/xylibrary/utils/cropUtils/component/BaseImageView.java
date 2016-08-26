@@ -369,7 +369,7 @@ public class BaseImageView extends View {
         }
 
         if (isOut) {
-//            mAdjustRect.offsetTo(newLeft, newTop);
+            mAdjustRect.offsetTo(newLeft, newTop);
         }
     }
 
@@ -422,9 +422,7 @@ public class BaseImageView extends View {
             return null;
         }
 
-
         Bitmap src = mDrawable.getBitmap();
-
 
         float scaleX = (float)mAdjustRect.width() / (float)src.getWidth();
         float scaleY = (float)mAdjustRect.height() / (float)src.getHeight();
