@@ -1,7 +1,5 @@
 package com.test.baserefreshview;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -25,10 +23,6 @@ public class PhotoSelectActivity extends PhotoSelectBaseActivity {
     Button btnCancel;
     @Bind(R.id.rlMain)
     RelativeLayout rlMain;
-
-    public static void startForResult(Activity activity, boolean isCrop) {
-        activity.startActivityForResult(new Intent(activity, PhotoSelectActivity.class), REQUEST_CODE_PHOTO_SELECT);
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

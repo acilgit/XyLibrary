@@ -76,7 +76,6 @@ public class App extends Application {
             public boolean resultSuccessByJudge(Call call, Response response, JSONObject json, int resultCode) {
                 switch (resultCode) {
                     case OkHttp.RESULT_VERIFY_ERROR:
-
                         return true;
                 }
                 return false;

@@ -15,7 +15,6 @@ import com.test.baserefreshview.ListBean.Content.ContentBean;
 import com.xycode.xylibrary.adapter.XAdapter;
 import com.xycode.xylibrary.base.BaseActivity;
 import com.xycode.xylibrary.base.BaseFlowTagLayout;
-import com.xycode.xylibrary.base.PhotoSelectBaseActivity;
 import com.xycode.xylibrary.okHttp.Param;
 import com.xycode.xylibrary.uiKit.views.MultiImageView;
 import com.xycode.xylibrary.uiKit.views.loopview.AdLoopView;
@@ -166,7 +165,6 @@ public class MainActivity extends BaseActivity {
                         ImageUtils.loadBitmapFromFresco(getThis(), Uri.parse("http://mxycsku.qiniucdn.com/group5/M00/5B/0C/wKgBfVXdYkqAEzl0AAL6ZFMAdKk401.jpg"), new ImageUtils.IGetFrescoBitmap() {
                             @Override
                             public void afterGotBitmap(Bitmap bitmap) {
-
                                 Bitmap bmp = ImageUtils.doGaussianBlur(bitmap, 30, false);
                                 holder.setImageBitmap(R.id.iv, bmp);
                             }
@@ -184,15 +182,6 @@ public class MainActivity extends BaseActivity {
         xRefresher.setup(this, adapter, true, new XRefresher.RefreshRequest<ContentBean>() {
             @Override
             public String setRequestParamsReturnUrl(Param params) {
-
-              /*  int count = 0;
-                try {
-                    count = Integer.getInteger("666", 1234);
-                    TS.show(count+"");
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
-                    TS.show("fhfhfhfhf");
-                }*/
 //                params.add("a", "b");
 //                return "http://zhijia51.com/append/store_recommend/sell_house_page";
                 return "http://zhijia51.com/append/store_recommend/sell_house_page";
@@ -222,7 +211,7 @@ public class MainActivity extends BaseActivity {
         List<UrlData> bannerList = new ArrayList<>();
         bannerList.add(new UrlData("res:///"+ R.mipmap.chuzu));
         bannerList.add(new UrlData("http://mxycsku.qiniucdn.com/group6/M00/98/E9/wKgBjVXdGPiAUmMHAALfY_C7_7U637.jpg"));
-        bannerList.add(new UrlData("http://mxycsku.qiniucdn.com/group6/M00/96/F7/wKgBjVXbxnCABW_iAAKLH0qKKXo870.jpg"));
+        bannerList.add(new UrlData("http://mxycsku.qiniucdn.com/group6/M00/96/F7/wKgBjVXbxnCABW_iAAKLH0qKKXo870.jpg", new WH(1,2)));
         bannerList.add(new UrlData("http://mxycsku.qiniucdn.com/group6/M00/96/F7/wKgBjVXbxnCABW_iAAKLH0qKKXo870.jpg"));
 
         bannerView.setOnImageClickListener(new BaseLoopAdapter.OnItemClickListener() {
@@ -240,7 +229,7 @@ public class MainActivity extends BaseActivity {
 //                list.add("或在在要在");
 //                list.add("要");
 //                tags.setDataList(list);
-                PhotoSelectActivity.startForResult(getThis(), PhotoSelectActivity.class, PhotoSelectBaseActivity.CropParam.out(512, 512));
+                PhotoSelectActivity.startForResult(getThis(), PhotoSelectActivity.class, null);
                 TS.show("count " + xRefresher.getAdapter().getItemCount());
 //                DownloadHelper.getInstance().update(getThis(), "http://m.bg114.cn/scene/api/public/down_apk/1/driver1.0.20.apk", "有新版本了啊！！");
 //                Uri destination = Uri.fromFile(getTempHead());  // 保存地址

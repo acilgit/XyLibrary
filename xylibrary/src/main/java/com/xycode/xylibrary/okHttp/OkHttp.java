@@ -32,6 +32,8 @@ public class OkHttp {
     public static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json; charset=utf-8");
     public static final MediaType MEDIA_TYPE_MULTI_DATA = MediaType.parse("multipart/form-data; charset=utf-8");
 
+    public static final String FILE = "file";
+
     public static final int RESULT_ERROR = 0;
     public static final int RESULT_SUCCESS = 1;
     public static final int RESULT_VERIFY_ERROR = -1;
@@ -210,7 +212,7 @@ public class OkHttp {
     public static Call uploadFile(String url, File file, final OkResponseListener okResponseListener, OkFileHelper.FileProgressListener fileProgressListener) {
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
-                .addFormDataPart("file", file.getName(), RequestBody.create(MEDIA_TYPE_MULTI_DATA, file))
+                .addFormDataPart(FILE, file.getName(), RequestBody.create(MEDIA_TYPE_MULTI_DATA, file))
                 .build();
         OkFileHelper.ProgressRequestBody progressRequestBody = new OkFileHelper.ProgressRequestBody(requestBody, fileProgressListener);
         Request request = new Request.Builder()
@@ -258,15 +260,22 @@ public class OkHttp {
         Call call = OkHttp.getClient().newCall(request);
         final Handler handler = new Handler(Looper.getMainLooper());
         call.enqueue(new Callback() {
+
             @Override
             public void onResponse(Call call, Response response) {
-                responseResult(response, call, okResponseListener,handler);
+                if (response != null) {
+                    responseResult(response, call, okResponseListener, handler);
+                    response.close();
+                } else {
+                    responseResultFailure(call, okResponseListener, handler);
+                }
             }
 
             @Override
             public void onFailure(Call call, IOException e) {
-                responseResultFailure(call, okResponseListener,handler);
+                responseResultFailure(call, okResponseListener, handler);
             }
+
         });
         return call;
     }
