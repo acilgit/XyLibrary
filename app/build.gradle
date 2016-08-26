@@ -31,4 +31,5 @@ dependencies {
     compile 'com.androidadvance:topsnackbar:1.0.0'
     compile 'com.jakewharton:butterknife:7.0.1'
     compile project(path: ':xylibrary')
+    compile project(path: ':multi-image-selector')
 }

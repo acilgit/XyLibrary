@@ -1,1 +1,1 @@
-include ':app', ':xylibrary'
+include ':app', ':xylibrary', ':multi-image-selector'

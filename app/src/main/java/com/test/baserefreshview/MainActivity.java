@@ -122,6 +122,7 @@ public class MainActivity extends BaseActivity {
 
             @Override
             protected void handleItemViewClick(CustomHolder holder, ContentBean item, int viewId) {
+
                 switch (viewId) {
                     case R.id.tvName:
                         TS.show(" YES tvName " + viewId);
