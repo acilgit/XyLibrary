@@ -325,7 +325,7 @@ public class Tools {
                 if (index == 0) {
                     // do nothing
                 } else {
-                    Uri uri_temp = Uri.parse("content://media/external/images/media/" + index);
+                    Uri uri_temp = Uri.parse("content://media/external/imageBeen/media/" + index);
                     if (uri_temp != null) {
                         uri = uri_temp;
                     }

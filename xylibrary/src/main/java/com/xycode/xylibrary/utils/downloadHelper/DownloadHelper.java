@@ -243,7 +243,7 @@ public class DownloadHelper {
             inputStream = conn.getInputStream();
             if (conn.getResponseCode() != 200) {
                 inputStream.close();
-                throw new IOException("Image request failed with response code " + conn.getResponseCode());
+                throw new IOException("ImageBean request failed with response code " + conn.getResponseCode());
             }
             outputStream = new FileOutputStream(file);
 
