@@ -278,7 +278,7 @@ public class MultiImageView<T> extends LinearLayout {
                 rowLayout.addView(createImageView(position, true));
             }
         }
-//        L.e("------------ images created: "+ imagesList.size());
+//        L.e("------------ imageBeen created: "+ imagesList.size());
     }
 
     private ImageView createImageView(final int position, final boolean isMultiImage) {

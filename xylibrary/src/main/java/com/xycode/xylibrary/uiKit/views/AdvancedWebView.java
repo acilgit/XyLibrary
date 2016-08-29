@@ -255,7 +255,7 @@ public class AdvancedWebView extends WebView {
     /**
      * Adds an additional HTTP header that will be sent along with every HTTP `GET` request
      * 
-     * This does only affect the main requests, not the requests to included resources (e.g. images)
+     * This does only affect the main requests, not the requests to included resources (e.g. imageBeen)
      * 
      * If you later want to delete an HTTP header that was previously added this way, call `removeHttpHeader()`
      * 
