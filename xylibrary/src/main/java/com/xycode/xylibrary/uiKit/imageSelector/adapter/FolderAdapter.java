@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -22,50 +21,46 @@ import static com.xycode.xylibrary.uiKit.imageSelector.ImageSelectorOptions.opti
 
 
 /**
- * 文件夹Adapter
- * Created by Nereo on 2015/4/7.
- * Updated by nereo on 2016/1/19.
  */
 public class FolderAdapter extends BaseAdapter {
 
-    private Context mContext;
-    private LayoutInflater mInflater;
+    private Context context;
+    private LayoutInflater inflater;
 
-    private List<FolderBean> mFolderBeen = new ArrayList<>();
+    private List<FolderBean> folderBeen = new ArrayList<>();
 
-    int mImageSize;
+    int imageSize;
 
     int lastSelected = 0;
 
     public FolderAdapter(Context context) {
-        mContext = context;
-        mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            mImageSize = mContext.getResources().getDimensionPixelOffset(options().folderCoverSize);
+        this.context = context;
+        inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            imageSize = this.context.getResources().getDimensionPixelOffset(options().folderCoverSize);
     }
 
     /**
-     * 设置数据集
      *
      * @param folderBeen
      */
     public void setData(List<FolderBean> folderBeen) {
         if (folderBeen != null && folderBeen.size() > 0) {
-            mFolderBeen = folderBeen;
+            this.folderBeen = folderBeen;
         } else {
-            mFolderBeen.clear();
+            this.folderBeen.clear();
         }
         notifyDataSetChanged();
     }
 
     @Override
     public int getCount() {
-        return mFolderBeen.size() + 1;
+        return folderBeen.size() + 1;
     }
 
     @Override
     public FolderBean getItem(int i) {
         if (i == 0) return null;
-        return mFolderBeen.get(i - 1);
+        return folderBeen.get(i - 1);
     }
 
     @Override
@@ -77,19 +72,19 @@ public class FolderAdapter extends BaseAdapter {
     public View getView(int i, View view, ViewGroup viewGroup) {
         ViewHolder holder;
         if (view == null) {
-            view = mInflater.inflate(R.layout.item_image_selector_folder, viewGroup, false);
+            view = inflater.inflate(R.layout.item_image_selector_folder, viewGroup, false);
             holder = new ViewHolder(view);
         } else {
             holder = (ViewHolder) view.getTag();
         }
         if (holder != null) {
             if (i == 0) {
-                holder.name.setText(options().textAllFolder);
+                holder.name.setText(R.string.text_folder_all);
                 holder.path.setText("/sdcard");
                 holder.size.setText(String.format("%d%s",
-                        getTotalImageSize(), mContext.getResources().getString(R.string.photo_unit)));
-                if (mFolderBeen.size() > 0) {
-                    FolderBean f = mFolderBeen.get(0);
+                        getTotalImageSize(), context.getResources().getString(R.string.text_photo_unit)));
+                if (folderBeen.size() > 0) {
+                    FolderBean f = folderBeen.get(0);
                     if(f.cover==null){
                         holder.cover.setImageURI(Uri.parse(""));
                     }else {
@@ -111,8 +106,8 @@ public class FolderAdapter extends BaseAdapter {
 
     private int getTotalImageSize() {
         int result = 0;
-        if (mFolderBeen != null && mFolderBeen.size() > 0) {
-            for (FolderBean f : mFolderBeen) {
+        if (folderBeen != null && folderBeen.size() > 0) {
+            for (FolderBean f : folderBeen) {
                 result += f.imageBeen.size();
             }
         }
@@ -136,7 +131,6 @@ public class FolderAdapter extends BaseAdapter {
         TextView name;
         TextView path;
         TextView size;
-        ImageView indicator;
 
         ViewHolder(View view) {
             rlItem = (RelativeLayout) view.findViewById(R.id.rlItem);
@@ -154,11 +148,10 @@ public class FolderAdapter extends BaseAdapter {
             name.setText(data.name);
             path.setText(data.path);
             if (data.imageBeen != null) {
-                size.setText(String.format("%d%s", data.imageBeen.size(), mContext.getResources().getString(R.string.photo_unit)));
+                size.setText(String.format("%d%s", data.imageBeen.size(), context.getResources().getString(R.string.text_photo_unit)));
             } else {
-                size.setText("*" + mContext.getResources().getString(R.string.photo_unit));
+                size.setText("*" + context.getResources().getString(R.string.text_photo_unit));
             }
-            // 显示图片
             if (data.cover != null) {
                 cover.setImageURI(Uri.fromFile(new File(data.cover.path)));
             } else {

@@ -6,8 +6,6 @@ import java.util.Date;
 import java.util.Locale;
 
 /**
- * 时间处理工具
- * Created by Nereo on 2015/4/8.
  */
 public class TimeUtils {
 

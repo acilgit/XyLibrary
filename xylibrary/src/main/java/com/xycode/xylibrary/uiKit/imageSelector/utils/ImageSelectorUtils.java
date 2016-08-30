@@ -20,6 +20,8 @@ import com.facebook.imagepipeline.request.ImageRequestBuilder;
 
 import java.io.File;
 
+import static com.xycode.xylibrary.uiKit.imageSelector.ImageSelectorOptions.options;
+
 /**
  * Created by Administrator on 2016/6/14.
  */
@@ -58,7 +60,9 @@ public class ImageSelectorUtils {
         PipelineDraweeControllerBuilder controller = Fresco.newDraweeControllerBuilder()
                 .setImageRequest(imageRequest)
                 .setOldController(view.getController());
+        view.getHierarchy().setPlaceholderImage(options().imageholder);
         view.setController(controller.build());
+
     }
     public static void display(Uri path, final SimpleDraweeView view, Context context, int width, int height) {
         ImageRequest imageRequest = ImageRequestBuilder

@@ -1,11 +1,12 @@
 <resources>
     <string name="app_name">XYLibrary</string>
     <string name="blank"></string>
-    <string name="tip_take_photo">拍摄照片</string>
-    <string name="photo_unit">张</string>
-    <string name="action_done">完成</string>
-    <string name="folder_all">所有照片</string>
-    <string name="preview">预览</string>
+    <string name="text_take_photo">拍摄照片</string>
+    <string name="text_photo_unit">张</string>
+    <string name="text_done">完成</string>
+    <string name="text_folder_all">所有照片</string>
+    <string name="text_preview">预览</string>
+    <string name="msg_photo_error">图片错误</string>
     <string name="msg_no_camera">没有系统相机</string>
     <string name="msg_amount_limit">已经达到最高选择数量</string>
 </resources>

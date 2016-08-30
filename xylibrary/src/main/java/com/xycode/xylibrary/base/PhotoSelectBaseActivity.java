@@ -1,7 +1,6 @@
 package com.xycode.xylibrary.base;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,6 +10,7 @@ import android.support.v7.app.AlertDialog;
 
 import com.anthonycr.grant.PermissionsManager;
 import com.anthonycr.grant.PermissionsResultAction;
+import com.xycode.xylibrary.uiKit.imageSelector.ImageSelectorOptions;
 import com.xycode.xylibrary.utils.ImageUtils;
 import com.xycode.xylibrary.utils.Tools;
 import com.yalantis.ucrop.UCrop;
@@ -20,12 +20,14 @@ import java.io.Serializable;
 public abstract class PhotoSelectBaseActivity extends BaseActivity {
 
     public static final String PARAM = "param";
+    public static final String MULTI_SELECT = "multiSelect";
 
     private static final int REQUEST_CODE_CAMERA = 1;
     private static final int REQUEST_CODE_ALBUM = 2;
     private static final int REQUEST_CODE_CROP = 3;
 
     private boolean isCrop = false;
+    private boolean multiSelect = false;
 
     private CropParam cropParam;
     private UCrop.Options options;
@@ -34,11 +36,13 @@ public abstract class PhotoSelectBaseActivity extends BaseActivity {
         activity.startActivityForResult(new Intent(activity, activityClass).putExtra(IS_CROP, isCrop), REQUEST_CODE_PHOTO_SELECT);
     }*/
 
-    public static void startForResult(Activity activity, Class activityClass) {
-        startForResult(activity, activityClass, CropParam.out(0, 0));
+    public static void startForResult(BaseActivity activity, Class activityClass, ImageSelectorOptions options) {
+        Intent intent = new Intent(activity, activityClass);
+        intent.putExtra(MULTI_SELECT, true);
+        activity.startActivityForResult(intent, REQUEST_CODE_MULTI_PHOTO_SELECT);
     }
 
-    public static void startForResult(Activity activity, Class activityClass, CropParam param) {
+    public static void startForResult(BaseActivity activity, Class activityClass, CropParam param) {
         Intent intent = new Intent(activity, activityClass);
         if (param == null) {
             param = new CropParam();
