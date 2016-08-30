@@ -1,8 +1,6 @@
 package com.xycode.xylibrary.uiKit.imageSelector.bean;
 
 /**
- * 图片实体
- * Created by Nereo on 2015/4/7.
  */
 public class ImageBean {
     public String path;

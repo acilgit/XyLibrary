@@ -16,6 +16,7 @@ import com.xycode.xylibrary.adapter.XAdapter;
 import com.xycode.xylibrary.base.BaseActivity;
 import com.xycode.xylibrary.base.BaseFlowTagLayout;
 import com.xycode.xylibrary.okHttp.Param;
+import com.xycode.xylibrary.uiKit.imageSelector.ImageSelectorOptions;
 import com.xycode.xylibrary.uiKit.views.MultiImageView;
 import com.xycode.xylibrary.uiKit.views.loopview.AdLoopView;
 import com.xycode.xylibrary.uiKit.views.loopview.internal.BaseLoopAdapter;
@@ -253,5 +254,6 @@ public class MainActivity extends BaseActivity {
         } else {
 
         }
+        ImageSelectorOptions.options().showCamera
     }
 }

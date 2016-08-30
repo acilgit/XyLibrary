@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Point;
 import android.os.Build;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,9 +13,11 @@ import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.xycode.xylibrary.R;
+import com.xycode.xylibrary.uiKit.imageSelector.MultiImageSelectorActivity;
 import com.xycode.xylibrary.uiKit.imageSelector.MultiImageSelectorFragment;
 import com.xycode.xylibrary.uiKit.imageSelector.bean.ImageBean;
 import com.xycode.xylibrary.uiKit.imageSelector.utils.ImageSelectorUtils;
+import com.xycode.xylibrary.utils.L;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -28,24 +29,17 @@ import static com.xycode.xylibrary.uiKit.imageSelector.ImageSelectorOptions.opti
 /**
  * Created by Administrator on 2016/5/10.
  */
-public class GridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    //是否有相机
+public class ImageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_CAMERA = 1;
     private static final int TYPE_NORMAL = 0;
     private Context context;
 
     private LayoutInflater inflater;
-    //是否有相机
     private boolean showCamera = true;
-    //是否是多选(是则显示指示器，否则不显示)
     private boolean showSelectIndicator = true;
-    //展示的图片数据
     private List<ImageBean> imageBeen = new ArrayList<>();
-    //被选的图片数据
     private List<ImageBean> selectedImageBeen = new ArrayList<>();
-    //每个视图的宽度
     final int gridWidth;
-    //用于点击item时的回调
     MultiImageSelectorFragment fragment;
     public View.OnClickListener showCameraActionListener;
     public View.OnClickListener clickListener;
@@ -55,14 +49,14 @@ public class GridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             @Override
             public void onClick(View v) {
                 if (fragment != null && v.getTag(R.id.image) != null) {
-                    fragment.selectImageFromGrid((ImageBean) v.getTag(R.id.image), showSelectIndicator == true ? MultiImageSelectorFragment.MODE_MULTI : MultiImageSelectorFragment.MODE_SINGLE);
+                    fragment.selectImageFromGrid((ImageBean) v.getTag(R.id.image), showSelectIndicator == true ? MultiImageSelectorActivity.MODE_MULTI : MultiImageSelectorActivity.MODE_SINGLE);
                 }
             }
         };
         showCameraActionListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.e("qqq", "showCameraAction:" + "fragment" + (fragment == null));
+                L.e("qqq", "showCameraAction:" + "fragment" + (fragment == null));
                 if (fragment != null) {
                     fragment.showCameraAction();
                 }
@@ -71,7 +65,6 @@ public class GridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     /**
-     * 设置当前显示的图片的地址的列表
      *
      * @param imageBeen
      */
@@ -86,7 +79,6 @@ public class GridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     /**
-     * 设置是否展示多选指示器
      *
      * @param b
      */
@@ -95,7 +87,6 @@ public class GridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     /**
-     * 设置是否显示相机按钮
      *
      * @param b
      */
@@ -107,7 +98,6 @@ public class GridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     /**
-     * 更新被选择的图片的地址列表
      *
      * @param imageBean
      */
@@ -121,11 +111,10 @@ public class GridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     /**
-     * 设置默认展示的目录
      *
      * @param resultList
      */
-    public void setDefaultSelected(ArrayList<String> resultList) {
+    public void setDefaultSelected(List<String> resultList) {
         for (String path : resultList) {
             ImageBean imageBean = getImageByPath(path);
             if (imageBean != null) {
@@ -149,7 +138,7 @@ public class GridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
 
-    public GridAdapter(Context context, boolean showCamera, int column, MultiImageSelectorFragment fragment) {
+    public ImageAdapter(Context context, boolean showCamera, int column, MultiImageSelectorFragment fragment) {
         this.context = context;
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.showCamera = showCamera;
@@ -164,7 +153,6 @@ public class GridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             width = wm.getDefaultDisplay().getWidth();
         }
         gridWidth = width / column;
-        //将图片缩小column倍
     }
 
     @Override
@@ -243,15 +231,12 @@ public class GridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         void bindData(final ImageBean data) {
             if (data == null) return;
-            // 处理单选和多选状态
             if (showSelectIndicator) {
                 indicator.setVisibility(View.VISIBLE);
                 if (selectedImageBeen.contains(data)) {
-                    // 设置选中状态
                     indicator.setImageResource(options().indicatorImageChecked);
                     mask.setVisibility(View.VISIBLE);
                 } else {
-                    // 未选择
                     indicator.setImageResource(options().indicatorImageUnchecked);
                     mask.setVisibility(View.GONE);
                 }
@@ -260,7 +245,6 @@ public class GridAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             }
             File imageFile = new File(data.path);
             if (imageFile.exists()) {
-                // 显示图片
                 ImageSelectorUtils.display(imageFile, image, context, gridWidth, gridWidth);
             }
         }

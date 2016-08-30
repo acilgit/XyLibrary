@@ -11,8 +11,6 @@ import java.io.IOException;
 import static android.os.Environment.MEDIA_MOUNTED;
 
 /**
- * 文件操作类
- * Created by Nereo on 2015/4/8.
  */
 public class FileUtils {
 
@@ -38,31 +36,10 @@ public class FileUtils {
 
     private static final String EXTERNAL_STORAGE_PERMISSION = "android.permission.WRITE_EXTERNAL_STORAGE";
 
-    /**
-     * Returns application cache directory. Cache directory will be created on SD card
-     * <i>("/Android/data/[app_package_name]/cache")</i> if card is mounted and app has appropriate permission. Else -
-     * Android defines cache directory on device's file system.
-     *
-     * @param context Application context
-     * @return Cache {@link File directory}.<br />
-     * <b>NOTE:</b> Can be null in some unpredictable cases (if SD card is unmounted and
-     * {@link Context#getCacheDir() Context.getCacheDir()} returns null).
-     */
     public static File getCacheDirectory(Context context) {
         return getCacheDirectory(context, true);
     }
 
-    /**
-     * Returns application cache directory. Cache directory will be created on SD card
-     * <i>("/Android/data/[app_package_name]/cache")</i> (if card is mounted and app has appropriate permission) or
-     * on device's file system depending incoming parameters.
-     *
-     * @param context        Application context
-     * @param preferExternal Whether prefer external location for cache
-     * @return Cache {@link File directory}.<br />
-     * <b>NOTE:</b> Can be null in some unpredictable cases (if SD card is unmounted and
-     * {@link Context#getCacheDir() Context.getCacheDir()} returns null).
-     */
     public static File getCacheDirectory(Context context, boolean preferExternal) {
         File appCacheDir = null;
         String externalStorageState;
@@ -86,15 +63,6 @@ public class FileUtils {
         return appCacheDir;
     }
 
-    /**
-     * Returns individual application cache directory (for only image caching from ImageLoader). Cache directory will be
-     * created on SD card <i>("/Android/data/[app_package_name]/cache/uil-imageBeen")</i> if card is mounted and app has
-     * appropriate permission. Else - Android defines cache directory on device's file system.
-     *
-     * @param context Application context
-     * @param cacheDir Cache directory path (e.g.: "AppCacheDir", "AppDir/cache/imageBeen")
-     * @return Cache {@link File directory}
-     */
     public static File getIndividualCacheDirectory(Context context, String cacheDir) {
         File appCacheDir = getCacheDirectory(context);
         File individualCacheDir = new File(appCacheDir, cacheDir);

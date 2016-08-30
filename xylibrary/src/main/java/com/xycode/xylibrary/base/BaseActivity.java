@@ -28,6 +28,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     public static final int REQUEST_CODE_GOT_RESULT = 100;
     public static final int REQUEST_CODE_PHOTO_SELECT = 202;
+    public static final int REQUEST_CODE_MULTI_PHOTO_SELECT = 203;
 
     private static List<Activity> activities = new LinkedList<>();
 
