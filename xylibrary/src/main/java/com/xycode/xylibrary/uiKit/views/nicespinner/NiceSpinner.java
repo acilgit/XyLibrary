@@ -167,7 +167,7 @@ public class NiceSpinner extends TextView {
             popupWindow.setElevation(DEFAULT_ELEVATION);
             popupWindow.setBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.spinner_drawable));
         } else {
-            popupWindow.setBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.drop_down_shadow));
+            popupWindow.setBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.nice_spinner_drop_down_shadow));
         }
 
         popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
@@ -182,7 +182,7 @@ public class NiceSpinner extends TextView {
 
         isArrowHide = typedArray.getBoolean(R.styleable.NiceSpinner_hideArrow, false);
         if (!isArrowHide) {
-            Drawable basicDrawable = ContextCompat.getDrawable(context, R.drawable.arrow);
+            Drawable basicDrawable = ContextCompat.getDrawable(context, R.drawable.nice_spinner_arrow);
             int resId = typedArray.getColor(R.styleable.NiceSpinner_arrowTint, -1);
             if (basicDrawable != null) {
                 drawable = DrawableCompat.wrap(basicDrawable);

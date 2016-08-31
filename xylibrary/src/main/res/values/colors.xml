@@ -18,7 +18,7 @@
     <color name="transparentBlackDark" >#A0000000</color>
     <color name="transparentGlassDark">#c8414141</color>
     <color name="transparentSilver">#dee1e1e1</color>
-
+    <color name="nice_spinner_light_gray">#fff5f5f5</color>
     <!-- background color -->
     <color name="bgDivider">#CCC</color>
 
