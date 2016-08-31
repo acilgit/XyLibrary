@@ -45,6 +45,9 @@ public abstract class BaseItemView extends RelativeLayout {
     protected String itemDetail;
     protected String itemDescription;
 
+    protected OnViewClickListener onViewClickListener;
+    protected OnViewLongClickListener onViewLongClickListener;
+
     protected int layoutId = R.layout.layout_blank;
 
     public BaseItemView(Context context) {
@@ -92,6 +95,21 @@ public abstract class BaseItemView extends RelativeLayout {
         LayoutInflater.from(getContext()).inflate(getLayoutId(), this, true);
     }
 
+    public int getItemNum() {
+        return itemNum;
+    }
+
+    public int getItemCount() {
+        return itemCount;
+    }
+
+    public int getItemIndex() {
+        return itemIndex;
+    }
+
+    public float getItemFloat() {
+        return itemFloat;
+    }
 
     public <T extends View> T getView(int viewId) {
         View view = viewList.get(viewId);
@@ -221,6 +239,14 @@ public abstract class BaseItemView extends RelativeLayout {
         return this;
     }
 
+    public void setOnViewClickListener(OnViewClickListener onViewClickListener) {
+        this.onViewClickListener = onViewClickListener;
+    }
+
+    public void setOnViewLongClickListener(OnViewLongClickListener onViewLongClickListener) {
+        this.onViewLongClickListener = onViewLongClickListener;
+    }
+
     protected abstract int getLayoutId();
 
     protected
@@ -233,6 +259,14 @@ public abstract class BaseItemView extends RelativeLayout {
     @StyleableRes
     int[] setExtendEnumStyle() {
         return R.styleable.BaseItemView;
+    }
+
+    public interface OnViewClickListener{
+        void onClick(View view, Object object);
+    }
+
+   public interface OnViewLongClickListener{
+        void onLongClick(View view, Object object);
     }
 
 }

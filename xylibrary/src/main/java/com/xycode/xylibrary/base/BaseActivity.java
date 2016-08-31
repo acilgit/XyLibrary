@@ -16,6 +16,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 
 import com.xycode.xylibrary.annotation.annotationHelper.StateBinder;
@@ -36,11 +37,11 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     private static AlertDialog loadingDialog;
 
-//    private static AlertDialog loadingDialog;
+    //    private static AlertDialog loadingDialog;
     private static boolean loadingDialogShowManual = false;
 
-   private BroadcastReceiver finishReceiver;
-   private BaseActivity thisActivity;
+    private BroadcastReceiver finishReceiver;
+    private BaseActivity thisActivity;
 
     public static final String ACTION_FINISH_ACTIVITY = "FinishBaseActivity";
 
@@ -117,6 +118,7 @@ public abstract class BaseActivity extends AppCompatActivity {
             loadingDialog.dismiss();
         }
     }
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         StateBinder.saveState(this, outState);
@@ -284,14 +286,22 @@ public abstract class BaseActivity extends AppCompatActivity {
         onPhotoSelectResult(resultCode, uri);
     }
 
-    protected void onPhotoSelectResult(int resultCode, Uri uri){
+    protected void onPhotoSelectResult(int resultCode, Uri uri) {
 
     }
 
     protected abstract AlertDialog setLoadingDialog();
 
-    public AlertDialog getLoadingDialog(){
+    public AlertDialog getLoadingDialog() {
         return loadingDialog;
+    }
+
+    protected void setWindowMode(int windowMode) {
+        getWindow().setSoftInputMode(windowMode);
+    }
+
+    protected static class WindowMode {
+       public static int INPUT_ADJUST =  WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE | WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN;
     }
 
 }
