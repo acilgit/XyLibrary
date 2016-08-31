@@ -49,8 +49,11 @@
     <declare-styleable name="BaseItemView">
         <attr name="itemType" format="integer" />
         <attr name="itemNum" format="integer" />
+        <attr name="itemIndex" format="integer" />
         <attr name="itemCount" format="integer" />
         <attr name="itemFloat" format="float" />
+        <attr name="itemBool" format="boolean" />
+        <attr name="itemCheck" format="boolean" />
         <attr name="itemName" format="string" />
         <attr name="itemContent" format="string" />
         <attr name="itemDetail" format="string" />

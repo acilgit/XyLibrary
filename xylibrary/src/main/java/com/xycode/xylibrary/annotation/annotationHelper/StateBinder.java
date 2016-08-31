@@ -1,4 +1,4 @@
-package com.xycode.xylibrary.annotationHelper;
+package com.xycode.xylibrary.annotation.annotationHelper;
 
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -29,13 +29,16 @@ public class StateBinder {
         Field[] fields = targetClass.getFields();
         if (fields != null) {
             for (Field field : fields) {
-                if (field != null && field.isAccessible()) {
+                if (field != null) {
+                    boolean filedAccessible = field.isAccessible();
+                    if (!filedAccessible) {
+                        field.setAccessible(true);
+                    }
                     SaveState statue = field.getAnnotation(SaveState.class);
                     if (statue != null) {
                         try {
                             Object data = field.get(target);
                             Class fieldClazz = field.getType();
-                            //如果是基本基本数据类型
                             if (fieldClazz.isPrimitive()) {
                                 if (data.getClass() == Byte.class) {
                                     L.d(field.getName() + " is byte");
@@ -70,9 +73,8 @@ public class StateBinder {
                                     L.d(field.getName() + " is boolean");
                                     bundle.putBoolean(field.getName(), (Boolean) data);
                                 }
-                                //不是基本数据类型
                             } else {
-                                //String类型
+                                //String
                                 if (data.getClass() == String.class) {
                                     L.d(field.getName() + " is String");
                                     bundle.putString(field.getName(), (String) data);
@@ -94,13 +96,11 @@ public class StateBinder {
                                             }
                                         }
                                     }
-                                    //如果成员是数组
                                 } else if (fieldClazz.isArray()) {
                                     if (isImplementTarget(fieldClazz.getComponentType(), Parcelable.class))
                                         L.d(field.getName() + " is Parcelable array");
                                     bundle.putParcelableArray(field.getName(), (Parcelable[]) data);
                                 } else if (fieldClazz == SparseArray.class) {
-                                    //判断SparseArray里的元素是否是Parcelable的
                                     boolean parcelable = false;
                                     if (data != null) {
                                         for (int i = 0; i < ((SparseArray) data).size(); i++) {
@@ -121,8 +121,11 @@ public class StateBinder {
                             e.printStackTrace();
                         }
                     }
+                    if (!filedAccessible) {
+                        field.setAccessible(false);
+                    }
                 } else {
-                    throw new NullPointerException("不支持的修饰符");
+                    throw new NullPointerException("not support @");
                 }
             }
         }
@@ -144,7 +147,7 @@ public class StateBinder {
                 if (statue != null) {
                     Object data = source.get(field.getName());
                     try {
-                        field.set(target,data);
+                        field.set(target, data);
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
                     }
