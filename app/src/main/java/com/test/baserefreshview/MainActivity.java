@@ -15,6 +15,7 @@ import com.test.baserefreshview.ListBean.Content.ContentBean;
 import com.xycode.xylibrary.adapter.XAdapter;
 import com.xycode.xylibrary.base.BaseActivity;
 import com.xycode.xylibrary.base.BaseFlowTagLayout;
+import com.xycode.xylibrary.base.PhotoSelectBaseActivity;
 import com.xycode.xylibrary.okHttp.Param;
 import com.xycode.xylibrary.uiKit.imageSelector.ImageSelectorOptions;
 import com.xycode.xylibrary.uiKit.views.MultiImageView;
@@ -231,7 +232,7 @@ public class MainActivity extends BaseActivity {
 //                list.add("或在在要在");
 //                list.add("要");
 //                tags.setDataList(list);
-                PhotoSelectActivity.startForResult(getThis(), PhotoSelectActivity.class, null);
+                PhotoSelectActivity.startForResult(getThis(), PhotoSelectActivity.class, new PhotoSelectBaseActivity.CropParam());
                 TS.show("count " + xRefresher.getAdapter().getItemCount());
 //                DownloadHelper.getInstance().update(getThis(), "http://m.bg114.cn/scene/api/public/down_apk/1/driver1.0.20.apk", "有新版本了啊！！");
 //                Uri destination = Uri.fromFile(getTempHead());  // 保存地址
@@ -254,6 +255,5 @@ public class MainActivity extends BaseActivity {
         } else {
 
         }
-        ImageSelectorOptions.options().showCamera
     }
 }
