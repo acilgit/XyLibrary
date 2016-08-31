@@ -17,7 +17,6 @@ import com.xycode.xylibrary.base.BaseActivity;
 import com.xycode.xylibrary.base.BaseFlowTagLayout;
 import com.xycode.xylibrary.base.PhotoSelectBaseActivity;
 import com.xycode.xylibrary.okHttp.Param;
-import com.xycode.xylibrary.uiKit.imageSelector.ImageSelectorOptions;
 import com.xycode.xylibrary.uiKit.views.MultiImageView;
 import com.xycode.xylibrary.uiKit.views.loopview.AdLoopView;
 import com.xycode.xylibrary.uiKit.views.loopview.internal.BaseLoopAdapter;
@@ -46,6 +45,7 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setWindowMode(WindowMode.INPUT_ADJUST);
         setContentView(R.layout.activity_main);
 
         xRefresher = (XRefresher) findViewById(R.id.xRefresher);
