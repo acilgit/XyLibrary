@@ -101,5 +101,10 @@
         <enum name="invisible" value="4" />
         <enum name="gone" value="8" />
     </attr>
-
+    <declare-styleable name="NiceSpinner">
+        <attr name="arrowTint" format="color" />
+        <attr name="hideArrow" format="boolean" />
+        <attr name="backgroundSelector" format="integer"/>
+        <attr name="textTint" format="color"/>
+    </declare-styleable>
 </resources>
