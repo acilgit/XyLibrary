@@ -18,7 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
-import com.xycode.xylibrary.annotationHelper.StateBinder;
+import com.xycode.xylibrary.annotation.annotationHelper.StateBinder;
 
 import java.util.LinkedList;
 import java.util.List;

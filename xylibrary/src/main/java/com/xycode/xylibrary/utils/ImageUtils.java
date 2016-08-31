@@ -156,7 +156,7 @@ public class ImageUtils {
     }
 
     /**
-     * get rotate angle
+     * get ucrop_rotate angle
      */
     public static int readPictureDegree(String path) {
         int degree = 0;
