@@ -39,7 +39,7 @@ public class NiceSpinner extends TextView {
     private static final String INSTANCE_STATE = "instance_state";
     private static final String SELECTED_INDEX = "selected_index";
     private static final String IS_POPUP_SHOWING = "is_popup_showing";
-
+    private static final float defaultNarrowSize = 0.5f;
     private int selectedIndex;
     private Drawable drawable;
     private PopupWindow popupWindow;
@@ -114,7 +114,7 @@ public class NiceSpinner extends TextView {
         setGravity(Gravity.CENTER);
         /*setPadding(resources.getDimensionPixelSize(R.dimen.three_grid_unit), defaultPadding, defaultPadding,
             defaultPadding);*/
-        setPadding(0,0,0,0);
+        setPadding(0, 0, 0, 0);
         setClickable(true);
 
         backgroundSelector = typedArray.getResourceId(R.styleable.NiceSpinner_backgroundSelector, R.drawable.selector_nice_spinner);
@@ -190,7 +190,9 @@ public class NiceSpinner extends TextView {
                     DrawableCompat.setTint(drawable, resId);
                 }
             }
-            setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null);
+            drawable.setBounds(0, 0, (int) (drawable.getIntrinsicWidth() * typedArray.getFloat(R.styleable.NiceSpinner_narrowSize, defaultNarrowSize)), (int) (drawable.getIntrinsicWidth() * typedArray.getFloat(R.styleable.NiceSpinner_narrowSize, defaultNarrowSize)));
+            setCompoundDrawables(null,null,drawable,null);
+            //setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null);
         }
 
         typedArray.recycle();
@@ -202,7 +204,7 @@ public class NiceSpinner extends TextView {
 
     /**
      * Set the default spinner item using its index
-     * 
+     *
      * @param position the item's position
      */
     public void setSelectedIndex(int position) {
