@@ -301,7 +301,6 @@ public class Tools {
         return contentUri;
     }
 
-
     public static Uri getContentUriFromActivityResult(Activity activity, Intent data) {
         Uri uri = data.getData();
         String type = data.getType();
@@ -688,6 +687,13 @@ public class Tools {
             ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getSize(screenSize);
         }
         return screenSize;
+    }
+
+
+    public static void dialNumber(Context context, String phoneNo) {
+        Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + phoneNo));
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
     }
 
     public static class Cal {

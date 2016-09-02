@@ -33,6 +33,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.ButterKnife;
+
 /**
  * new
  */
@@ -47,6 +49,7 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setWindowMode(WindowMode.INPUT_ADJUST);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
 
         xRefresher = (XRefresher) findViewById(R.id.xRefresher);
         siv = (SimpleDraweeView) findViewById(R.id.siv);
@@ -130,7 +133,7 @@ public class MainActivity extends BaseActivity {
                         TS.show(" YES tvName " + viewId);
                         break;
                     case R.id.tvText:
-                        TS.show( " YES text " + viewId);
+                        TS.show(" YES text " + viewId);
                         break;
                     default:
                         TS.show(item.getAddress() + " YES " + viewId);
@@ -212,9 +215,9 @@ public class MainActivity extends BaseActivity {
 
     private void setBanner(AdLoopView bannerView) {
         List<UrlData> bannerList = new ArrayList<>();
-        bannerList.add(new UrlData("res:///"+ R.mipmap.chuzu));
+        bannerList.add(new UrlData("res:///" + R.mipmap.chuzu));
         bannerList.add(new UrlData("http://mxycsku.qiniucdn.com/group6/M00/98/E9/wKgBjVXdGPiAUmMHAALfY_C7_7U637.jpg"));
-        bannerList.add(new UrlData("http://mxycsku.qiniucdn.com/group6/M00/96/F7/wKgBjVXbxnCABW_iAAKLH0qKKXo870.jpg", new WH(1,2)));
+        bannerList.add(new UrlData("http://mxycsku.qiniucdn.com/group6/M00/96/F7/wKgBjVXbxnCABW_iAAKLH0qKKXo870.jpg", new WH(1, 2)));
         bannerList.add(new UrlData("http://mxycsku.qiniucdn.com/group6/M00/96/F7/wKgBjVXbxnCABW_iAAKLH0qKKXo870.jpg"));
 
         bannerView.setOnImageClickListener(new BaseLoopAdapter.OnItemClickListener() {

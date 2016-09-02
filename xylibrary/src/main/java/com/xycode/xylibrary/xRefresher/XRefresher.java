@@ -81,6 +81,7 @@ public class XRefresher<T> extends CoordinatorLayout {
     private int lastVisibleItem = 0;
     private boolean loadMore;
     private CoordinatorLayout rlMain;
+    private OnSwipeListener swipeListener;
 
     public static void setCustomerLoadMoreView(@LayoutRes int footerLayout) {
 //        XRefresher.loaderLayout = footerLayout;
@@ -159,6 +160,7 @@ public class XRefresher<T> extends CoordinatorLayout {
         this.loadMore = loadMore;
         this.activity = activity;
         this.refreshRequest = refreshRequest;
+        this.swipeListener = swipeListener;
         this.state = new RefreshState(refreshPageSize);
         this.adapter = adapter;
         this.recyclerView.setAdapter(adapter);
@@ -302,15 +304,21 @@ public class XRefresher<T> extends CoordinatorLayout {
     /**
      * refresh list
      */
+
+    public void refresh() {
+        if (swipeListener != null) swipeListener.onRefresh();
+        if (refreshRequest != null) refreshList(false);
+    }
+
+    public void swipeRefresh() {
+        if (swipeListener != null) swipeListener.onRefresh();
+    }
+
     public void refreshList() {
-        refreshList(false);
+        if (refreshRequest != null) refreshList(false);
     }
 
     private void refreshList(boolean showDialog) {
-       /* if (showDialog && showDialog) {
-            if (loadingDialog != null)
-                loadingDialog.show();
-        }*/
         if (getAdapter().getDataList().size() > 0) {
             getDataByRefresh(getAdapter().getDataList().size());
         } else {
@@ -360,6 +368,9 @@ public class XRefresher<T> extends CoordinatorLayout {
 
     public XAdapter.CustomHolder getHeader(int headerKey) {
         int headerPos = adapter.getHeaderPos(headerKey);
+        if (headerPos<0) {
+            return null;
+        }
         XAdapter.CustomHolder holder = (XAdapter.CustomHolder) getRecyclerView().getChildViewHolder(getRecyclerView().getChildAt(headerPos));
         return holder;
     }
