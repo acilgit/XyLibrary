@@ -27,6 +27,9 @@ import android.view.WindowManager;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.xycode.xylibrary.interfaces.Interfaces;
+import com.xycode.xylibrary.unit.StringData;
+import com.xycode.xylibrary.unit.UrlData;
 import com.xycode.xylibrary.unit.WH;
 
 import java.io.File;
@@ -722,5 +725,26 @@ public class Tools {
             return true;
         }
     }
+
+    public static List<StringData> getStringDataList(List list, Interfaces.OnStringData onStringData) {
+        ArrayList<StringData> dataList = new ArrayList<>();
+        if (list != null) {
+            for (int i = 0; i < list.size(); i++) {
+                dataList.add(new StringData(onStringData.getDataString(list.get(i)), list.get(i)));
+            }
+        }
+        return dataList;
+    }
+
+    public static List<UrlData> getUrlDataList(List list, Interfaces.OnStringData onStringData) {
+        ArrayList<UrlData> dataList = new ArrayList<>();
+        if (list != null) {
+            for (int i = 0; i < list.size(); i++) {
+                dataList.add(new UrlData(onStringData.getDataString(list.get(i)), list.get(i)));
+            }
+        }
+        return dataList;
+    }
+
 
 }
