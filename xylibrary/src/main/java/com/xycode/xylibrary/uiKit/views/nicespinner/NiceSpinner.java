@@ -25,6 +25,9 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.xycode.xylibrary.R;
+import com.xycode.xylibrary.okHttp.OkHttp;
+import com.xycode.xylibrary.okHttp.Param;
+import com.xycode.xylibrary.utils.Tools;
 
 import java.util.List;
 
@@ -78,6 +81,7 @@ public class NiceSpinner extends TextView {
         }
         return bundle;
     }
+
 
     @Override
     public void onRestoreInstanceState(Parcelable savedState) {
@@ -190,8 +194,19 @@ public class NiceSpinner extends TextView {
                     DrawableCompat.setTint(drawable, resId);
                 }
             }
-            drawable.setBounds(0, 0, (int) (drawable.getIntrinsicWidth() * typedArray.getFloat(R.styleable.NiceSpinner_narrowSize, defaultNarrowSize)), (int) (drawable.getIntrinsicWidth() * typedArray.getFloat(R.styleable.NiceSpinner_narrowSize, defaultNarrowSize)));
-            setCompoundDrawables(null,null,drawable,null);
+
+            int width = Tools.dp2px(getContext(), typedArray.getDimensionPixelSize(R.styleable.NiceSpinner_narrow_width, 0));
+            int height = Tools.dp2px(getContext(), typedArray.getDimensionPixelSize(R.styleable.NiceSpinner_narrow_height, 0));
+            if (width == 0 && height != 0) {
+                drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), height);
+            } else if (width != 0 && height == 0) {
+                drawable.setBounds(0, 0, width, drawable.getIntrinsicHeight());
+            } else if (width != 0 && height != 0) {
+                drawable.setBounds(0, 0, width, height);
+            } else {
+                drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+            }
+            setCompoundDrawables(null, null, drawable, null);
             //setCompoundDrawablesWithIntrinsicBounds(null, null, drawable, null);
         }
 
@@ -226,6 +241,7 @@ public class NiceSpinner extends TextView {
     public void setOnItemSelectedListener(@NonNull AdapterView.OnItemSelectedListener onItemSelectedListener) {
         this.onItemSelectedListener = onItemSelectedListener;
     }
+
 
     public <T> void attachDataSource(@NonNull List<T> dataset) {
         adapter = new NiceSpinnerAdapter<>(getContext(), dataset, textColor, backgroundSelector);
