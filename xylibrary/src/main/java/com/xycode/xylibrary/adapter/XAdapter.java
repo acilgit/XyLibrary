@@ -72,6 +72,19 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
             final CustomHolder holder = new CustomHolder(itemView) {
                 @Override
                 protected void createHolder(final CustomHolder holder) {
+                    holder.onClickListener = new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            handleItemViewClick(holder, dataList.get(holder.getAdapterPosition()), v.getId());
+                        }
+                    };
+
+                    holder.onLongClickListener = new View.OnLongClickListener() {
+                        @Override
+                        public boolean onLongClick(View v) {
+                            return handleItemViewLongClick(holder, dataList.get(holder.getAdapterPosition()), v.getId());
+                        }
+                    };
                     creatingFooter(holder);
                 }
             };
@@ -84,6 +97,19 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
                     final CustomHolder holder = new CustomHolder(itemView) {
                         @Override
                         protected void createHolder(final CustomHolder holder) {
+                            holder.onClickListener = new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    handleItemViewClick(holder, dataList.get(holder.getAdapterPosition()), v.getId());
+                                }
+                            };
+
+                            holder.onLongClickListener = new View.OnLongClickListener() {
+                                @Override
+                                public boolean onLongClick(View v) {
+                                    return handleItemViewLongClick(holder, dataList.get(holder.getAdapterPosition()), v.getId());
+                                }
+                            };
                             creatingHeader(holder, headerKey);
                         }
                     };
