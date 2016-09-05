@@ -128,6 +128,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         super.onRestoreInstanceState(savedInstanceState);
 //        StateBinder.bindState(this, savedInstanceState);
     }
+
   /*  public void showLoadingDialog(CharSequence text) {
         showLoadingDialog(text, false);
     }

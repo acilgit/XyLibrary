@@ -144,7 +144,6 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
                 }
             };
             return holder;
-
         }
     }
 
@@ -154,15 +153,12 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
             bindingFooter(((CustomHolder) holder));
             return;
         } else if (position < headerLayoutIdList.size()) {
-
             for (int i = 0; i < headerLayoutIdList.size(); i++) {
                 final int headerKey = headerLayoutIdList.keyAt(i);
                 if (getItemViewType(position) == headerKey) {
                     bindingHeader(((CustomHolder) holder), headerKey);
                 }
             }
-
-
             return;
         }
         bindingHolder(((CustomHolder) holder), dataList, position - headerLayoutIdList.size());
