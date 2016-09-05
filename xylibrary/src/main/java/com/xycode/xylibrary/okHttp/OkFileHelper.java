@@ -97,9 +97,11 @@ public class OkFileHelper {
                         contentLength = contentLength();
                     }
                     bytesWritten += byteCount;
+                    int percent = (int) ((100.0f*bytesWritten) / contentLength);
+
                     // callback
                     if (fileProgressListener != null) {
-                        fileProgressListener.update(bytesWritten, contentLength, bytesWritten == contentLength);
+                        fileProgressListener.update(bytesWritten, contentLength, percent, bytesWritten == contentLength);
                     }
                 }
             };
@@ -108,6 +110,6 @@ public class OkFileHelper {
 
     // progress listener callback
     public interface FileProgressListener {
-        void update(long bytesRead, long contentLength, boolean done);
+        void update(long bytesRead, long contentLength, int percent, boolean done);
     }
 }

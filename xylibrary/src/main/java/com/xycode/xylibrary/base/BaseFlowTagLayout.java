@@ -207,7 +207,7 @@ public abstract class BaseFlowTagLayout extends ViewGroup {
 
     protected abstract int getLayoutId();
 
-    public void setDataList(List dataList) {
+        public void setDataList(List dataList) {
         if (dataList != null && (this.dataList == null || !dataList.containsAll(this.dataList) || !this.dataList.containsAll(dataList))) {
             this.dataList = dataList;
             viewList.clear();
