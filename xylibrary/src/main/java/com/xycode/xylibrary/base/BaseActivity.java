@@ -19,6 +19,8 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 
+import com.xycode.xylibrary.annotation.annotationHelper.StateBinder;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -119,14 +121,14 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-//        StateBinder.saveState(this, outState);
+        StateBinder.saveState(this, outState);
         super.onSaveInstanceState(outState);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-//        StateBinder.bindState(this, savedInstanceState);
+        StateBinder.bindState(this, savedInstanceState);
     }
 
   /*  public void showLoadingDialog(CharSequence text) {
