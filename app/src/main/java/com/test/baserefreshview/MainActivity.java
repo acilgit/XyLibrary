@@ -15,6 +15,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.test.baserefreshview.ListBean.Content.ContentBean;
 import com.xycode.xylibrary.adapter.XAdapter;
+import com.xycode.xylibrary.annotation.SaveState;
 import com.xycode.xylibrary.base.BaseActivity;
 import com.xycode.xylibrary.base.BaseFlowTagLayout;
 import com.xycode.xylibrary.base.PhotoSelectBaseActivity;
@@ -45,6 +46,7 @@ public class MainActivity extends BaseActivity {
     private XRefresher xRefresher;
     TagLayout tags;
     private SimpleDraweeView siv;
+    @SaveState
     private int iii;
 
     @Override

@@ -24,6 +24,14 @@ public class TagLayout extends BaseFlowTagLayout {
 
     @Override
     protected View bindChildView(View contentView, List list, int position) {
+
+        switch (tagType) {
+            case 0:
+                break;
+            default:
+                break;
+        }
+
         TextView tv = (TextView) contentView.findViewById(R.id.tv);
         tv.setText(((String) list.get(position)));
         return contentView;
@@ -31,6 +39,13 @@ public class TagLayout extends BaseFlowTagLayout {
 
     @Override
     protected int getLayoutId() {
-        return R.layout.tag_layout;
+        switch (tagType) {
+            case 0:
+                return R.layout.tag_layout;
+            default:
+                return R.layout.layout_blank;
+        }
     }
+
+
 }

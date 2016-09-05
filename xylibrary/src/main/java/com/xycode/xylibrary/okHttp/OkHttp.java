@@ -213,16 +213,20 @@ public class OkHttp {
      * @param okResponseListener
      * @param fileProgressListener
      */
-    public static Call uploadFile(String url, File file, final OkResponseListener okResponseListener, OkFileHelper.FileProgressListener fileProgressListener) {
-        RequestBody requestBody = new MultipartBody.Builder()
+    public static Call uploadFile(String url, File file, Param param,  final OkResponseListener okResponseListener, OkFileHelper.FileProgressListener fileProgressListener) {
+        MultipartBody.Builder builder = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
-                .addFormDataPart(FILE, file.getName(), RequestBody.create(MEDIA_TYPE_MULTI_DATA, file))
-                .build();
+                .addFormDataPart(FILE, file.getName(), RequestBody.create(MEDIA_TYPE_MULTI_DATA, file));
+        for (String key : param.keySet()) {
+            builder.addFormDataPart(key, param.get(key));
+        }
+        RequestBody requestBody = builder.build();
         OkFileHelper.ProgressRequestBody progressRequestBody = new OkFileHelper.ProgressRequestBody(requestBody, fileProgressListener);
         Request request = new Request.Builder()
                 .url(url)
                 .post(progressRequestBody)
                 .build();
+
         Call call = OkHttp.getClient().newCall(request);
         final Handler handler = new Handler(Looper.getMainLooper());
         call.enqueue(new Callback() {
@@ -244,8 +248,7 @@ public class OkHttp {
         return call;
     }
 
-
-    public static Call uploadFileWithParams(String url, Map<String, File> files, Param param, final OkResponseListener okResponseListener, OkFileHelper.FileProgressListener fileProgressListener) {
+    public static Call uploadFiles(String url, Map<String, File> files, Param param, final OkResponseListener okResponseListener, OkFileHelper.FileProgressListener fileProgressListener) {
         MultipartBody.Builder builder = new MultipartBody.Builder();
         builder.setType(MultipartBody.FORM);
         for (String key : param.keySet()) {
