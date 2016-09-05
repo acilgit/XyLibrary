@@ -63,6 +63,7 @@ public class MainActivity extends BaseActivity {
         List<String> list = new ArrayList<>();
         list.add("或在在要要在");
         list.add("在在要要在");
+        list.add("在在要要在");
         list.add("要要在");
         tags.setDataList(list);
         tags.setTagCheckedMode(TagLayout.FLOW_TAG_CHECKED_SINGLE);
