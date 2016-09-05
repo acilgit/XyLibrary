@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.SparseArray;
 
-import com.xycode.xylibrary.exception.UnSupportFieldException;
+import com.xycode.xylibrary.annotation.SaveState;
 import com.xycode.xylibrary.utils.L;
 
 import java.io.Serializable;
@@ -14,7 +14,6 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import xy.annotation.SaveState;
 
 /**
  * Created by Administrator on 2016/8/8.
