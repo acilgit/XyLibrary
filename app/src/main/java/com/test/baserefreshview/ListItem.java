@@ -20,8 +20,8 @@ public class ListItem extends BaseItemView {
 
 
     @Override
-    protected int getLayoutId() {
-        switch (itemType) {
+    protected int getLayoutId(int type) {
+        switch (type) {
             case 1:
                 return R.layout.list_item_icon_text;
             default:
@@ -30,9 +30,8 @@ public class ListItem extends BaseItemView {
     }
 
     @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
-        switch (itemType) {
+    protected void setViews(int type) {
+        switch (type) {
             case 1:
                 setImageRes(R.id.ivIcon, itemIcon);
                 break;
