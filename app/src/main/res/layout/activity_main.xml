@@ -12,7 +12,12 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
+    <com.xycode.xylibrary.uiKit.views.nicespinner.NiceSpinner
+        android:id="@+id/nice_spinner"
+        android:layout_width="match_parent"
+        app:narrow_width="20dp"
+        app:narrow_height="20dp"
+        android:layout_height="80dp" />
     <com.facebook.drawee.view.SimpleDraweeView
         android:id="@+id/siv"
         style="@style/sivPicBase"

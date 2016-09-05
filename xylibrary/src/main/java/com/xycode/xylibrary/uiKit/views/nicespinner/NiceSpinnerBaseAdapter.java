@@ -21,6 +21,10 @@ public abstract class NiceSpinnerBaseAdapter<T> extends BaseAdapter {
     protected int mTextColor;
     protected int mBackgroundSelector;
 
+    public abstract static class SpinnerAble {
+        public abstract String getSpinnerText();
+    }
+
     public NiceSpinnerBaseAdapter(Context context, int textColor, int backgroundSelector) {
         mContext = context;
         mTextColor = textColor;
@@ -47,7 +51,6 @@ public abstract class NiceSpinnerBaseAdapter<T> extends BaseAdapter {
 
         textView.setText(getItem(position).toString());
         textView.setTextColor(mTextColor);
-
         return convertView;
     }
 
@@ -80,4 +83,5 @@ public abstract class NiceSpinnerBaseAdapter<T> extends BaseAdapter {
             this.textView = textView;
         }
     }
+
 }
