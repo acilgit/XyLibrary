@@ -1,1 +1,1 @@
-include ':app', ':xylibrary', ':processlib', ':androidannotation'
+include ':app', ':xylibrary'
