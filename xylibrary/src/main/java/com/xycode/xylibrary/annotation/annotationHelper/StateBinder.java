@@ -4,10 +4,6 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.SparseArray;
 
-import com.xycode.xylibrary.annotation.SaveState;
-import com.xycode.xylibrary.utils.L;
-
-import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
