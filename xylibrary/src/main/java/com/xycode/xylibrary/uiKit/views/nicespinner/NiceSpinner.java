@@ -195,8 +195,8 @@ public class NiceSpinner extends TextView {
                 }
             }
 
-            int width = Tools.dp2px(getContext(), typedArray.getDimensionPixelSize(R.styleable.NiceSpinner_narrow_width, 0));
-            int height = Tools.dp2px(getContext(), typedArray.getDimensionPixelSize(R.styleable.NiceSpinner_narrow_height, 0));
+            int width = typedArray.getDimensionPixelSize(R.styleable.NiceSpinner_narrow_width, 0);
+            int height = typedArray.getDimensionPixelSize(R.styleable.NiceSpinner_narrow_height, 0);
             if (width == 0 && height != 0) {
                 drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), height);
             } else if (width != 0 && height == 0) {
