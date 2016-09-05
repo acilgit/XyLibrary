@@ -1,25 +1,20 @@
 package com.test.baserefreshview;
 
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v7.app.AlertDialog;
-import android.util.SparseArray;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.AdapterView;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.test.baserefreshview.ListBean.Content.ContentBean;
-import com.test.baserefreshview.bean.TestBean;
 import com.xycode.xylibrary.adapter.XAdapter;
-
-import xy.annotation.SaveState;
-
 import com.xycode.xylibrary.base.BaseActivity;
 import com.xycode.xylibrary.base.BaseFlowTagLayout;
 import com.xycode.xylibrary.base.PhotoSelectBaseActivity;
@@ -27,7 +22,6 @@ import com.xycode.xylibrary.okHttp.Param;
 import com.xycode.xylibrary.uiKit.views.MultiImageView;
 import com.xycode.xylibrary.uiKit.views.loopview.AdLoopView;
 import com.xycode.xylibrary.uiKit.views.loopview.internal.BaseLoopAdapter;
-import com.xycode.xylibrary.uiKit.views.nicespinner.NiceSpinner;
 import com.xycode.xylibrary.unit.UrlData;
 import com.xycode.xylibrary.unit.ViewTypeUnit;
 import com.xycode.xylibrary.unit.WH;
@@ -41,7 +35,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.Bind;
 import butterknife.ButterKnife;
 
 /**
@@ -49,50 +42,21 @@ import butterknife.ButterKnife;
  */
 public class MainActivity extends BaseActivity {
 
-    TagLayout tags;
-    @Bind(R.id.siv)
-    SimpleDraweeView siv;
     private XRefresher xRefresher;
-    @SaveState
-    private long mLong = 1000l;
-    @SaveState
-    protected int mInt = 100;
-    SparseArray<XRefresher> sparseArray = null;
-    ArrayList<XRefresher> arraylist = null;
-    @SaveState
-    String[] stringArray = null;
-    @SaveState
-    ListBean serializabl = null;
-    XRefresher[] parcelaArray = null;
-    @SaveState
-    String mString = null;
-    @SaveState
-    TestBean parcelable = null;
-    @Bind(R.id.nice_spinner)
-    NiceSpinner spinner;
+    TagLayout tags;
+    private SimpleDraweeView siv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setWindowMode(WindowMode.INPUT_ADJUST);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+
         xRefresher = (XRefresher) findViewById(R.id.xRefresher);
-        //siv = (SimpleDraweeView) findViewById(R.id.siv);
+        siv = (SimpleDraweeView) findViewById(R.id.siv);
         tags = (TagLayout) findViewById(R.id.tags);
 
-
-        spinner.attachUrl(TestBean.class, null, null);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
         findViewById(R.id.li).setOnClickListener(null);
 
         List<String> list = new ArrayList<>();
@@ -214,13 +178,48 @@ public class MainActivity extends BaseActivity {
                             }
                         });
                         break;
+                    case 3:
+                    case 4:
+                        RecyclerView rv = holder.getView(R.id.rv);
+                        rv.setLayoutManager(new LinearLayoutManager(getThis()));
+                        break;
                     default:
+                        break;
+                }
+            }
+
+            @Override
+            protected void bindingHeader(CustomHolder holder, int headerKey) {
+                switch (headerKey) {
+                    case 3:
+                    case 4:
+                        List<String> listStr = new ArrayList<>();
+                        listStr.add("kasdjfa;sjfallajsdfa1");
+                        listStr.add("kasdjfa;sjfallajsdfa2");
+                        listStr.add("kasdjfa;sjfallajsdfa3");
+                        listStr.add("kasdjfa;地苛标准苛颉在在村苛另。工基本原则栽栽载村落枯塔顶，载栽甄别朝代喉咙暴露口在历史上2日3啥时3虽然3呢日呢是2呢是2国家是");
+                        XAdapter<String> xAdapter = new XAdapter<String>(getThis(), listStr) {
+                            @Override
+                            public void bindingHolder(CustomHolder holder, List<String> dataList, int pos) {
+                                holder.setText(R.id.tv, dataList.get(pos));
+                            }
+
+                            @Override
+                            protected ViewTypeUnit getViewTypeUnitForLayout(String item) {
+                                return new ViewTypeUnit(1, R.layout.list_item);
+                            }
+                        };
+                        RecyclerView rv = holder.getView(R.id.rv);
+                        rv.setAdapter(xAdapter);
                         break;
                 }
             }
         };
 
+
+        adapter.addHeader(3, R.layout.layout_recyclerview);
         adapter.addHeader(2, R.layout.layout_banner);
+        adapter.addHeader(4, R.layout.layout_recyclerview);
         adapter.setFooter(R.layout.footer);
 
         xRefresher.setup(this, adapter, true, new XRefresher.RefreshRequest<ContentBean>() {
@@ -253,6 +252,7 @@ public class MainActivity extends BaseActivity {
 
     private void setBanner(AdLoopView bannerView) {
         List<UrlData> bannerList = new ArrayList<>();
+
         bannerList.add(new UrlData("res:///" + R.mipmap.chuzu));
         bannerList.add(new UrlData("http://mxycsku.qiniucdn.com/group6/M00/98/E9/wKgBjVXdGPiAUmMHAALfY_C7_7U637.jpg"));
         bannerList.add(new UrlData("http://mxycsku.qiniucdn.com/group6/M00/96/F7/wKgBjVXbxnCABW_iAAKLH0qKKXo870.jpg", new WH(1, 2)));

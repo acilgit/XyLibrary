@@ -55,13 +55,17 @@
         <attr name="itemBool" format="boolean" />
         <attr name="itemCheck" format="boolean" />
         <attr name="itemName" format="string" />
+        <attr name="itemTitle" format="string" />
         <attr name="itemContent" format="string" />
         <attr name="itemDetail" format="string" />
         <attr name="itemDescription" format="string" />
         <attr name="itemIcon" format="reference" />
         <attr name="itemColor" format="reference" />
+        <attr name="itemBg" format="reference" />
+        <attr name="itemChildColor" format="reference" />
         <attr name="itemRes" format="reference" />
         <attr name="itemVisible" />
+        <attr name="itemChildVisible" />
     </declare-styleable>
 
     <declare-styleable name="BaseFlowTagLayout">
@@ -100,6 +104,12 @@
         <enum name="focus_crop" value="7" />
     </attr>
     <attr name="itemVisible">
+        <enum name="visible" value="0" />
+        <enum name="invisible" value="4" />
+        <enum name="gone" value="8" />
+    </attr>
+
+    <attr name="itemChildVisible">
         <enum name="visible" value="0" />
         <enum name="invisible" value="4" />
         <enum name="gone" value="8" />
