@@ -1,20 +1,10 @@
 package com.xycode.xylibrary.annotation.annotationHelper;
 
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.util.SparseArray;
 
-import com.xycode.xylibrary.exception.UnSupportFieldException;
-import com.xycode.xylibrary.utils.L;
-
-import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
 
-import xy.annotation.SaveState;
+//import xy.annotation.SaveState;
 
 /**
  * Created by Administrator on 2016/8/8.
@@ -29,7 +19,7 @@ public class StateBinder {
         }
         Class targetClass = target.getClass();
         Field[] fields = targetClass.getFields();
-        if (fields != null) {
+   /*     if (fields != null) {
             for (Field field : fields) {
                 if (field != null) {
                     SaveState statue = field.getAnnotation(SaveState.class);
@@ -276,7 +266,7 @@ public class StateBinder {
                     }
                 }
             }
-        }
+        }*/
     }
 
     public static boolean isImplementTarget(Class clz, Class target) {

@@ -4,7 +4,9 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/XyLibrary.iml" filepath="$PROJECT_DIR$/XyLibrary.iml" />
       <module fileurl="file://$PROJECT_DIR$/androidannotation/androidannotation.iml" filepath="$PROJECT_DIR$/androidannotation/androidannotation.iml" />
+      <module fileurl="file://$PROJECT_DIR$/androidannotation/androidannotation.iml" filepath="$PROJECT_DIR$/androidannotation/androidannotation.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/processlib/processlib.iml" filepath="$PROJECT_DIR$/processlib/processlib.iml" />
       <module fileurl="file://$PROJECT_DIR$/processlib/processlib.iml" filepath="$PROJECT_DIR$/processlib/processlib.iml" />
       <module fileurl="file://$PROJECT_DIR$/xylibrary/xylibrary.iml" filepath="$PROJECT_DIR$/xylibrary/xylibrary.iml" />
     </modules>
