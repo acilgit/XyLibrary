@@ -109,6 +109,7 @@
         <attr name="hideArrow" format="boolean" />
         <attr name="backgroundSelector" format="integer"/>
         <attr name="textTint" format="color"/>
-        <attr name="narrowSize" format="float"/>
+        <attr name="narrow_width" format="dimension"/>
+        <attr name="narrow_height" format="dimension"/>
     </declare-styleable>
 </resources>
