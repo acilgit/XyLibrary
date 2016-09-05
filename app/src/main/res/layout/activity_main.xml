@@ -21,12 +21,13 @@
     <com.facebook.drawee.view.SimpleDraweeView
         android:id="@+id/siv"
         style="@style/sivPicBase"
-        android:visibility="visible"
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
     <com.test.baserefreshview.TagLayout
         android:id="@+id/tags"
+        android:visibility="gone"
         android:layout_width="260dp"
         android:layout_height="wrap_content" />
 

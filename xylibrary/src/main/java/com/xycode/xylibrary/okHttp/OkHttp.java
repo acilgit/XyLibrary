@@ -39,6 +39,10 @@ public class OkHttp {
     public static final int RESULT_VERIFY_ERROR = -1;
     public static final int RESULT_OTHER = 2;
 
+    public static final int RESULT_PARSE_FAILED = 880;
+    public static final int NETWORK_ERROR_CODE = 881;
+    public static final int NO_NETWORK = 882;
+
     public static final long READ_TIMEOUT = 30;
     public static final long CONNECT_TIMEOUT = 10;
     public static final long WRITE_TIMEOUT = 60;
@@ -192,7 +196,7 @@ public class OkHttp {
                     } catch (IOException e) {
                         e.printStackTrace();
                         responseResultFailure(call, okResponseListener, handler);
-                    }finally {
+                    } finally {
                     }
                 }
             }).start();
@@ -292,6 +296,9 @@ public class OkHttp {
         BaseActivity.dismissLoadingDialogByManualState();
         if (response == null) {
             okInit.networkError(call, call.isCanceled());
+            if (okResponseListener != null) {
+                okResponseListener.handleAllFailureSituation(call, NO_NETWORK);
+            }
         } else if (response.isSuccessful()) {
             try {
                 String strResult = response.body().string();
@@ -311,16 +318,22 @@ public class OkHttp {
                                     okResponseListener.handleJsonSuccess(call, response, jsonObject);
                                 break;
                             case RESULT_ERROR:
-                                if (okResponseListener != null)
+                                if (okResponseListener != null) {
                                     okResponseListener.handleJsonError(call, response, jsonObject);
+                                    okResponseListener.handleAllFailureSituation(call, resultCode);
+                                }
                                 break;
                             case RESULT_VERIFY_ERROR:
-                                if (okResponseListener != null)
+                                if (okResponseListener != null) {
                                     okResponseListener.handleJsonVerifyError(call, response, jsonObject);
+                                    okResponseListener.handleAllFailureSituation(call, resultCode);
+                                }
                                 break;
                             default:
-                                if (okResponseListener != null)
+                                if (okResponseListener != null) {
                                     okResponseListener.handleJsonOther(call, response, jsonObject);
+                                    okResponseListener.handleAllFailureSituation(call, resultCode);
+                                }
                                 break;
                         }
                     }
@@ -333,6 +346,7 @@ public class OkHttp {
                         @Override
                         public void run() {
                             okResponseListener.handleParseError(call, response);
+                            okResponseListener.handleAllFailureSituation(call, RESULT_PARSE_FAILED);
                         }
                     });
                 }
@@ -344,6 +358,7 @@ public class OkHttp {
                     @Override
                     public void run() {
                         okResponseListener.handleResponseFailure(call, response);
+                        okResponseListener.handleAllFailureSituation(call, NETWORK_ERROR_CODE);
                     }
                 });
             }
@@ -389,6 +404,10 @@ public class OkHttp {
         }
 
         protected void handleResponseFailure(Call call, Response response) {
+
+        }
+
+        protected void handleAllFailureSituation(Call call, int resultCode) {
 
         }
     }

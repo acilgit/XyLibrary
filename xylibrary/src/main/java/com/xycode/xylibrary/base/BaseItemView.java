@@ -32,15 +32,19 @@ public abstract class BaseItemView extends RelativeLayout {
     protected int itemType;
     protected int itemIcon;
     protected int itemColor;
+    protected int itemChildColor;
+    protected int itemBg;
     protected int itemRes;
     protected int itemNum;
     protected int itemCount;
     protected int itemVisible;
+    protected int itemChildVisible;
     protected int itemIndex;
     protected boolean itemBool;
     protected boolean itemCheck;
     protected float itemFloat;
     protected String itemName;
+    protected String itemTitle;
     protected String itemContent;
     protected String itemDetail;
     protected String itemDescription;
@@ -66,15 +70,20 @@ public abstract class BaseItemView extends RelativeLayout {
         itemBool = a.getBoolean(R.styleable.BaseItemView_itemBool, false);
         itemCheck = a.getBoolean(R.styleable.BaseItemView_itemCheck, false);
         itemVisible = a.getInt(R.styleable.BaseItemView_itemVisible, VISIBLE);
+        itemChildVisible = a.getInt(R.styleable.BaseItemView_itemVisible, VISIBLE);
         itemFloat = a.getFloat(R.styleable.BaseItemView_itemFloat, 0);
         itemIcon = a.getResourceId(R.styleable.BaseItemView_itemIcon, 0);
         itemColor = a.getResourceId(R.styleable.BaseItemView_itemColor, 0);
+        itemChildColor = a.getResourceId(R.styleable.BaseItemView_itemChildColor, 0);
+        itemBg = a.getResourceId(R.styleable.BaseItemView_itemBg, 0);
         itemRes = a.getResourceId(R.styleable.BaseItemView_itemRes, 0);
         itemName = a.getString(R.styleable.BaseItemView_itemName);
+        itemTitle = a.getString(R.styleable.BaseItemView_itemTitle);
         itemContent = a.getString(R.styleable.BaseItemView_itemContent);
         itemDetail = a.getString(R.styleable.BaseItemView_itemDetail);
         itemDescription = a.getString(R.styleable.BaseItemView_itemDescription);
         itemName = itemName == null ? "" : itemName;
+        itemTitle = itemTitle == null ? "" : itemTitle;
         itemContent = itemContent == null ? "" : itemContent;
         itemDetail = itemDetail == null ? "" : itemDetail;
         itemDescription = itemDescription == null ? "" : itemDescription;
@@ -92,7 +101,8 @@ public abstract class BaseItemView extends RelativeLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        LayoutInflater.from(getContext()).inflate(getLayoutId(), this, true);
+        LayoutInflater.from(getContext()).inflate(getLayoutId(itemType), this, true);
+        setViews(itemType);
     }
 
     public int getItemNum() {
@@ -247,7 +257,9 @@ public abstract class BaseItemView extends RelativeLayout {
         this.onViewLongClickListener = onViewLongClickListener;
     }
 
-    protected abstract int getLayoutId();
+    protected abstract int getLayoutId(int type);
+
+    protected abstract void setViews(int type);
 
     protected
     @StyleableRes

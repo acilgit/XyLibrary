@@ -75,14 +75,14 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
                     holder.onClickListener = new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            handleItemViewClick(holder, dataList.get(holder.getAdapterPosition()), v.getId());
+                            handleItemViewClick(holder, null, v.getId());
                         }
                     };
 
                     holder.onLongClickListener = new View.OnLongClickListener() {
                         @Override
                         public boolean onLongClick(View v) {
-                            return handleItemViewLongClick(holder, dataList.get(holder.getAdapterPosition()), v.getId());
+                            return handleItemViewLongClick(holder, null, v.getId());
                         }
                     };
                     creatingFooter(holder);
@@ -100,14 +100,14 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
                             holder.onClickListener = new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    handleItemViewClick(holder, dataList.get(holder.getAdapterPosition()), v.getId());
+                                    handleItemViewClick(holder, null, v.getId());
                                 }
                             };
 
                             holder.onLongClickListener = new View.OnLongClickListener() {
                                 @Override
                                 public boolean onLongClick(View v) {
-                                    return handleItemViewLongClick(holder, dataList.get(holder.getAdapterPosition()), v.getId());
+                                    return handleItemViewLongClick(holder, null, v.getId());
                                 }
                             };
                             creatingHeader(holder, headerKey);
@@ -154,7 +154,15 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
             bindingFooter(((CustomHolder) holder));
             return;
         } else if (position < headerLayoutIdList.size()) {
-            bindingHeader(((CustomHolder) holder), position);
+
+            for (int i = 0; i < headerLayoutIdList.size(); i++) {
+                final int headerKey = headerLayoutIdList.keyAt(i);
+                if (getItemViewType(position) == headerKey) {
+                    bindingHeader(((CustomHolder) holder), headerKey);
+                }
+            }
+
+
             return;
         }
         bindingHolder(((CustomHolder) holder), dataList, position - headerLayoutIdList.size());
@@ -337,7 +345,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
 
     }
 
-    protected void bindingHeader(CustomHolder holder, int pos) {
+    protected void bindingHeader(CustomHolder holder, int headerKey) {
 
     }
 
