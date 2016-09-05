@@ -45,6 +45,7 @@ public class MainActivity extends BaseActivity {
     private XRefresher xRefresher;
     TagLayout tags;
     private SimpleDraweeView siv;
+    private int iii;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -288,6 +289,8 @@ public class MainActivity extends BaseActivity {
     protected void onPhotoSelectResult(int resultCode, Uri uri) {
         super.onPhotoSelectResult(resultCode, uri);
         if (resultCode == RESULT_OK) {
+            if (iii == 1) {
+            }
             siv.setImageURI(null);
             siv.setImageURI(uri);
             XAdapter.CustomHolder holder = xRefresher.getHeader(2);
