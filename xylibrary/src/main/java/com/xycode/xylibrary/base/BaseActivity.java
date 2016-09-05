@@ -125,6 +125,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
     }
 
+
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
