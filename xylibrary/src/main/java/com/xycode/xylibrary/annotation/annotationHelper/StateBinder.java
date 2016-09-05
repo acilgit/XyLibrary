@@ -2,10 +2,6 @@ package com.xycode.xylibrary.annotation.annotationHelper;
 
 import android.os.Bundle;
 
-import com.xycode.xylibrary.annotation.SaveState;
-import com.xycode.xylibrary.utils.L;
-
-import java.io.Serializable;
 import java.lang.reflect.Field;
 
 //import xy.annotation.SaveState;
