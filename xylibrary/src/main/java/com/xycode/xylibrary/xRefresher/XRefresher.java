@@ -16,6 +16,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.SparseArray;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.widget.TextView;
@@ -25,6 +26,7 @@ import com.xycode.xylibrary.R;
 import com.xycode.xylibrary.adapter.XAdapter;
 import com.xycode.xylibrary.okHttp.OkHttp;
 import com.xycode.xylibrary.okHttp.Param;
+import com.xycode.xylibrary.uiKit.recyclerview.FlexibleDividerDecoration;
 import com.xycode.xylibrary.uiKit.recyclerview.HorizontalDividerItemDecoration;
 
 import java.io.Serializable;
@@ -39,7 +41,7 @@ import okhttp3.Response;
 /**
  * Created by XY on 2016/6/17.
  */
-public class XRefresher<T> extends CoordinatorLayout {
+public class XRefresher<T> extends CoordinatorLayout  implements FlexibleDividerDecoration.VisibilityProvider, FlexibleDividerDecoration.SizeProvider{
 
     public static final int LOADER_MORE = 0;
     public static final int LOADER_LOADING = 1;
@@ -78,10 +80,15 @@ public class XRefresher<T> extends CoordinatorLayout {
 
     private RefreshRequest refreshRequest;
 
+    private HorizontalDividerItemDecoration horizontalDividerItemDecoration;
+    private int dividerSize = 0;
+
     private int lastVisibleItem = 0;
     private boolean loadMore;
     private CoordinatorLayout rlMain;
     private OnSwipeListener swipeListener;
+
+    private SparseArray<Boolean> dividers = new SparseArray<>();
 
     public static void setCustomerLoadMoreView(@LayoutRes int footerLayout) {
 //        XRefresher.loaderLayout = footerLayout;
@@ -341,7 +348,7 @@ public class XRefresher<T> extends CoordinatorLayout {
 
 
     public void setRecyclerViewDivider(@ColorRes int dividerColor, @DimenRes int dividerHeight) {
-        setRecyclerViewDivider(dividerColor, dividerHeight, 0, 0);
+        setRecyclerViewDivider(dividerColor, dividerHeight, R.dimen.zero, R.dimen.zero);
     }
 
     /**
@@ -354,9 +361,13 @@ public class XRefresher<T> extends CoordinatorLayout {
      */
     public void setRecyclerViewDivider(@ColorRes int dividerColor, @DimenRes int dividerHeight, @DimenRes int marginLeft, @DimenRes int marginRight) {
         HorizontalDividerItemDecoration.Builder builder = new HorizontalDividerItemDecoration.Builder(activity)
-                .colorResId(dividerColor).sizeResId(dividerHeight);
-        if (marginLeft == 0 || marginRight == 0) builder.marginResId(marginLeft, marginRight);
-        recyclerView.addItemDecoration(builder.build());
+                .visibilityProvider(this)
+                .sizeProvider(this)
+                .colorResId(dividerColor)/*.sizeResId(dividerHeight)*/
+                .marginResId(marginLeft, marginRight);
+        horizontalDividerItemDecoration = builder.build();
+        dividerSize = activity.getResources().getDimensionPixelSize(dividerHeight);
+        recyclerView.addItemDecoration(horizontalDividerItemDecoration);
     }
 
     public static void setLoadingArrowColor(@ColorRes int... loadingColorRes) {
@@ -375,6 +386,7 @@ public class XRefresher<T> extends CoordinatorLayout {
         return holder;
     }
     public XAdapter.CustomHolder getFooter() {
+        if(!getAdapter().hasFooter()) return null;
         XAdapter.CustomHolder holder = (XAdapter.CustomHolder) getRecyclerView().getChildViewHolder(getRecyclerView().getChildAt(adapter.getItemCount()-1));
         return holder;
     }
@@ -395,6 +407,27 @@ public class XRefresher<T> extends CoordinatorLayout {
                 loadMoreView.hide();
                 break;
         }
+    }
+
+
+    @Override
+    public boolean shouldHideDivider(int position, RecyclerView parent) {
+        if (position < getAdapter().getHeaderCount()) {
+            return true;
+        }else if (getAdapter().hasFooter() && position == getAdapter().getItemCount() - 2) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public int dividerSize(int position, RecyclerView parent) {
+        if (position < getAdapter().getHeaderCount()) {
+            return 0;
+        }else if (getAdapter().hasFooter() && position == getAdapter().getItemCount() - 2) {
+            return 0;
+        }
+        return dividerSize;
     }
 
     public static abstract class RefreshRequest<T> implements IRefreshRequest<T> {

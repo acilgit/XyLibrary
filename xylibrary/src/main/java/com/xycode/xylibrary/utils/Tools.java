@@ -20,6 +20,8 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.support.annotation.ColorRes;
+import android.support.annotation.DimenRes;
 import android.text.Html;
 import android.util.Base64;
 import android.view.View;
@@ -28,6 +30,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.xycode.xylibrary.interfaces.Interfaces;
+import com.xycode.xylibrary.uiKit.recyclerview.HorizontalDividerItemDecoration;
 import com.xycode.xylibrary.unit.StringData;
 import com.xycode.xylibrary.unit.UrlData;
 import com.xycode.xylibrary.unit.WH;
@@ -708,6 +711,13 @@ public class Tools {
             }
             return -1;
         }
+    }
+
+    public static HorizontalDividerItemDecoration getHorizontlDivider(Context context, @ColorRes int dividerColor, @DimenRes int dividerHeight, @DimenRes int marginLeft, @DimenRes int marginRight) {
+        HorizontalDividerItemDecoration.Builder builder = new HorizontalDividerItemDecoration.Builder(context)
+                .colorResId(dividerColor).sizeResId(dividerHeight)
+                .marginResId(marginLeft, marginRight);
+        return builder.build();
     }
 
     public static class Permission {

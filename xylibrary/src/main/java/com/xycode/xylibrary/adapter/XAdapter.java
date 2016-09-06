@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.xycode.xylibrary.R;
+import com.xycode.xylibrary.uiKit.recyclerview.FlexibleDividerDecoration;
 import com.xycode.xylibrary.unit.ViewTypeUnit;
 
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ import java.util.Map;
 /**
  * Created by xiu on 2016/4/3.
  */
-public abstract class XAdapter<T> extends RecyclerView.Adapter {
+public abstract class XAdapter<T> extends RecyclerView.Adapter{
 
     public static final int LAYOUT_FOOTER = -20331;
 
@@ -251,6 +252,16 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
         return null;
     }
 
+
+    public boolean hasFooter() {
+        return footerLayout != 0;
+    }
+
+
+    public int getHeaderCount() {
+        return headerLayoutIdList.size();
+    }
+
     public int getHeaderPos(int headerKey) {
         return headerLayoutIdList.indexOfKey(headerKey);
     }
@@ -425,6 +436,16 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
             return itemView;
         }
 
+        public XAdapter getRecyclerViewXAdapter(int recyclerViewId) {
+            RecyclerView rv =  getView(recyclerViewId);
+            if (rv != null) {
+                RecyclerView.Adapter adapter = rv.getAdapter();
+                if (adapter != null && adapter instanceof XAdapter) {
+                    return (XAdapter) adapter;
+                }
+            }
+            return null;
+        }
 
         public CustomHolder setText(int viewId, @StringRes int textRes) {
             setText(viewId, itemView.getContext().getString(textRes));
@@ -517,4 +538,5 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
             return this;
         }
     }
+
 }

@@ -323,6 +323,10 @@ public abstract class BaseFlowTagLayout extends ViewGroup {
         return tagCheckMode;
     }
 
+    public boolean childViewClick(int pos) {
+        return viewList.get(pos).performClick();
+    }
+
     /**
      *
      * @param tagMode

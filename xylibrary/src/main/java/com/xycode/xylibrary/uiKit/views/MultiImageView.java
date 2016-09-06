@@ -134,9 +134,8 @@ public class MultiImageView<T> extends LinearLayout {
     }
 
     public void setList(List<UrlData> lists) {
-        if (imagesList == null || imagesList.size() == lists.size()) {
+        if (imagesList == null || imagesList.size() != lists.size() || !imagesList.containsAll(lists) ) {
             imagesList = lists;
-        } else {
             initList(lists);
         }
     }
