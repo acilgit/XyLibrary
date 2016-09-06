@@ -17,7 +17,7 @@
         android:layout_width="match_parent"
         app:narrow_width="20dp"
         app:narrow_height="20dp"
-        android:layout_height="80dp" />
+        android:layout_height="30dp" />
     <com.facebook.drawee.view.SimpleDraweeView
         android:id="@+id/siv"
         style="@style/sivPicBase"
@@ -27,7 +27,7 @@
 
     <com.test.baserefreshview.TagLayout
         android:id="@+id/tags"
-        android:visibility="gone"
+        android:visibility="visible"
         android:layout_width="260dp"
         android:layout_height="wrap_content" />
 

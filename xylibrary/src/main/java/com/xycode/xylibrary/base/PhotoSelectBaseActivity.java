@@ -10,6 +10,7 @@ import android.support.v7.app.AlertDialog;
 
 import com.anthonycr.grant.PermissionsManager;
 import com.anthonycr.grant.PermissionsResultAction;
+import com.xycode.xylibrary.annotation.SaveState;
 import com.xycode.xylibrary.uiKit.imageSelector.ImageSelectorOptions;
 import com.xycode.xylibrary.utils.ImageUtils;
 import com.xycode.xylibrary.utils.Tools;
@@ -26,11 +27,15 @@ public abstract class PhotoSelectBaseActivity extends BaseActivity {
     private static final int REQUEST_CODE_ALBUM = 2;
     private static final int REQUEST_CODE_CROP = 3;
 
-    private boolean isCrop = false;
-    private boolean multiSelect = false;
-
     private CropParam cropParam;
     private UCrop.Options options;
+
+    @SaveState
+    private Uri tempCropUri;
+    @SaveState
+    private boolean isCrop = false;
+    @SaveState
+    private boolean multiSelect = false;
 
 /*    public static void startForResult(Activity activity, Class activityClass, boolean isCrop) {
         activity.startActivityForResult(new Intent(activity, activityClass).putExtra(IS_CROP, isCrop), REQUEST_CODE_PHOTO_SELECT);
@@ -112,14 +117,15 @@ public abstract class PhotoSelectBaseActivity extends BaseActivity {
                     break;
                 case REQUEST_CODE_CROP:
                     isCrop = false;
-                    resultUri[0] = ImageUtils.getTempCropImageUri(getThis());
+                    resultUri[0] = tempCropUri;
                     break;
                 default:
                     onResultFailure();
                     break;
             }
             if (isCrop) {
-                UCrop uCrop = UCrop.of(resultUri[0], ImageUtils.getTempCropImageUri(getThis()))
+                tempCropUri = ImageUtils.getTempCropImageUri(getThis());
+                UCrop uCrop = UCrop.of(resultUri[0], tempCropUri)
                         .withMaxResultSize(cropParam.outWidth, cropParam.outHeight);
                 if (cropParam.aspectRatioX > 0 && cropParam.aspectRatioX > 0)
                     uCrop.withAspectRatio(cropParam.aspectRatioX, cropParam.aspectRatioY);

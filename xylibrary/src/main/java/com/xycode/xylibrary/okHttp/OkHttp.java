@@ -10,6 +10,7 @@ import com.xycode.xylibrary.base.BaseActivity;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -147,38 +148,6 @@ public class OkHttp {
         final Call call = getClient().newCall(request);
 
         if (false) {
-          /*  final Handler handler = new Handler(Looper.myLooper());
-
-            if (Looper.myLooper() == Looper.getMainLooper()) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            Response response = call.execute();
-                            if (response != null) {
-                                responseResult(response, call, okResponseListener, handler);
-                            } else {
-                                responseResultFailure(call, okResponseListener, handler);
-                            }
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                            responseResultFailure(call, okResponseListener, handler);
-                        }
-                    }
-                });
-            } else {
-                try {
-                    Response response = call.execute();
-                    if (response != null) {
-                        responseResult(response, call, okResponseListener, handler);
-                    } else {
-                        responseResultFailure(call, okResponseListener, handler);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    responseResultFailure(call, okResponseListener, handler);
-                }
-            }*/
         } else {
             new Thread(new Runnable() {
                 final Handler handler = new Handler(Looper.getMainLooper());
@@ -213,51 +182,23 @@ public class OkHttp {
      * @param okResponseListener
      * @param fileProgressListener
      */
-    public static Call uploadFile(String url, File file, Param param,  final OkResponseListener okResponseListener, OkFileHelper.FileProgressListener fileProgressListener) {
-        MultipartBody.Builder builder = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart(FILE, file.getName(), RequestBody.create(MEDIA_TYPE_MULTI_DATA, file));
-        for (String key : param.keySet()) {
-            builder.addFormDataPart(key, param.get(key));
-        }
-        RequestBody requestBody = builder.build();
-        OkFileHelper.ProgressRequestBody progressRequestBody = new OkFileHelper.ProgressRequestBody(requestBody, fileProgressListener);
-        Request request = new Request.Builder()
-                .url(url)
-                .post(progressRequestBody)
-                .build();
-
-        Call call = OkHttp.getClient().newCall(request);
-        final Handler handler = new Handler(Looper.getMainLooper());
-        call.enqueue(new Callback() {
-            @Override
-            public void onResponse(Call call, Response response) {
-                if (response != null) {
-                    responseResult(response, call, okResponseListener, handler);
-                    response.close();
-                } else {
-                    responseResultFailure(call, okResponseListener, handler);
-                }
-            }
-
-            @Override
-            public void onFailure(Call call, IOException e) {
-                responseResultFailure(call, okResponseListener, handler);
-            }
-        });
-        return call;
+    public static Call uploadFile(String url, String fileKey, File file, Param param,  final OkResponseListener okResponseListener, OkFileHelper.FileProgressListener fileProgressListener) {
+        Map<String, File> files = new HashMap<>();
+        files.put(fileKey, file);
+        return uploadFiles(url, files, param, okResponseListener, fileProgressListener);
     }
 
     public static Call uploadFiles(String url, Map<String, File> files, Param param, final OkResponseListener okResponseListener, OkFileHelper.FileProgressListener fileProgressListener) {
         MultipartBody.Builder builder = new MultipartBody.Builder();
         builder.setType(MultipartBody.FORM);
-        for (String key : param.keySet()) {
-            builder.addFormDataPart(key, param.get(key));
+        if (param != null) {
+            for (String key : param.keySet()) {
+                builder.addFormDataPart(key, param.get(key));
+            }
         }
         for (String key : files.keySet()) {
             builder.addFormDataPart(key, files.get(key).getName(), RequestBody.create(MEDIA_TYPE_MULTI_DATA, files.get(key)));
         }
-
         RequestBody requestBody = builder.build();
         OkFileHelper.ProgressRequestBody progressRequestBody = new OkFileHelper.ProgressRequestBody(requestBody, fileProgressListener);
         Request request = new Request.Builder()

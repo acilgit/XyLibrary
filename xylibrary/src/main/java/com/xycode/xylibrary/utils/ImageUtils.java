@@ -44,7 +44,7 @@ import java.io.IOException;
 public class ImageUtils {
 
     private static final String TEMP_IMAGE_FILE_NAME = "tempImage.jpg";
-    private static final String TEMP_CROP_IMAGE_FILE_NAME = "tempCropImage.jpg";
+    private static final String TEMP_CROP_IMAGE_FILE_NAME = "tempCropImage";
 
     public static Uri getTempImageUri(Context context) {
         File file = new File(context.getExternalCacheDir() ,TEMP_IMAGE_FILE_NAME);
@@ -60,7 +60,7 @@ public class ImageUtils {
     }
 
     public static Uri getTempCropImageUri(Context context) {
-        File file = new File(context.getFilesDir() ,TEMP_CROP_IMAGE_FILE_NAME);
+        File file = new File(context.getFilesDir() ,TEMP_CROP_IMAGE_FILE_NAME+ DateUtils.getNow()+".jpg");
         if (!file.exists()) {
             try {
                 file.createNewFile();

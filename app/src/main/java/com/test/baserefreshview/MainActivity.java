@@ -220,11 +220,10 @@ public class MainActivity extends BaseActivity {
             }
         };
 
-
         adapter.addHeader(3, R.layout.layout_recyclerview);
         adapter.addHeader(2, R.layout.layout_banner);
         adapter.addHeader(4, R.layout.layout_recyclerview);
-        adapter.setFooter(R.layout.footer);
+//        adapter.setFooter(R.layout.footer);
 
         xRefresher.setup(this, adapter, true, new XRefresher.RefreshRequest<ContentBean>() {
             @Override
@@ -244,8 +243,7 @@ public class MainActivity extends BaseActivity {
                 return newItem.getId().equals(listItem.getId());
             }
         });
-
-        xRefresher.setRecyclerViewDivider(R.color.bgDivider, R.dimen.sideMargin, R.dimen.sideMargin, R.dimen.sideMargin);
+        xRefresher.setRecyclerViewDivider(android.R.color.holo_orange_light, R.dimen.margin32, R.dimen.sideMargin, R.dimen.sideMargin);
 //        xRefresher.refreshList();
     }
 
