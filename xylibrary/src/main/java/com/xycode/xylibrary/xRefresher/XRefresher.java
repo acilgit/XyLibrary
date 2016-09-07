@@ -16,7 +16,6 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
-import android.util.SparseArray;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.widget.TextView;
@@ -47,7 +46,7 @@ public class XRefresher<T> extends CoordinatorLayout  implements FlexibleDivider
     public static final int LOADER_LOADING = 1;
     public static final int LOADER_NO_MORE = 2;
 
-    private int loadMoreState = LOADER_NO_MORE;
+    private static boolean loadMoreAllTheTime = true;
 
     private static final int REFRESH = 1;
     private static final int LOAD = 2;
@@ -59,11 +58,14 @@ public class XRefresher<T> extends CoordinatorLayout  implements FlexibleDivider
 //    private static int loaderLayout = R.layout.layout_blank;
     private static int[] loadingColorRes = null;
 
+    private int loadMoreState = LOADER_NO_MORE;
+
     private LoadMoreView loadMoreView;
     private int background;
     private boolean backgroundIsRes = false;
     private int backgroundNoData;
     private boolean backgroundNoDataIsRes = false;
+
 
     private int hintColor;
     private float hintSize;
@@ -87,8 +89,6 @@ public class XRefresher<T> extends CoordinatorLayout  implements FlexibleDivider
     private boolean loadMore;
     private CoordinatorLayout rlMain;
     private OnSwipeListener swipeListener;
-
-    private SparseArray<Boolean> dividers = new SparseArray<>();
 
     public static void setCustomerLoadMoreView(@LayoutRes int footerLayout) {
 //        XRefresher.loaderLayout = footerLayout;
@@ -194,7 +194,7 @@ public class XRefresher<T> extends CoordinatorLayout  implements FlexibleDivider
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 if (newState == RecyclerView.SCROLL_STATE_IDLE && swipeMore && lastVisibleItem + 2 >= getAdapter().getItemCount()) {
-                    if (!state.lastPage && loadMoreState == LOADER_MORE) {
+                    if ((!state.lastPage || loadMoreAllTheTime) && loadMoreState == LOADER_MORE) {
                         setLoadMoreState(LOADER_LOADING);
                         getDataByRefresh(state.pageIndex + 1, state.pageDefaultSize);
                     }
@@ -223,17 +223,16 @@ public class XRefresher<T> extends CoordinatorLayout  implements FlexibleDivider
 
     private void getDataByRefresh(final int page, final int pageSize, final int refreshType) {
         Param params = new Param();
+        final int postPageSize = (pageSize < state.pageDefaultSize) ? state.pageDefaultSize : pageSize;
         final int actualPage = refreshType == REFRESH ? FIRST_PAGE : page;
         params.put(PAGE, String.valueOf(actualPage));
-        params.put(PAGE_SIZE, String.valueOf(pageSize));
+        params.put(PAGE_SIZE, String.valueOf(postPageSize));
         String url = refreshRequest.setRequestParamsReturnUrl(params);
         OkHttp.getInstance().postForm(url, OkHttp.setFormBody(params, false), new OkHttp.OkResponseListener() {
             @Override
             public void handleJsonSuccess(Call call, Response response, JSONObject json) {
-//                if (loadingDialog != null && loadingDialog.isShowing()) loadingDialog.dismiss();
                 final List<T> newList = refreshRequest.setListData(json);
-                if (/*pageSize* (actualPage+1-FIRST_PAGE) ||*/ newList.size() < pageSize)
-                    state.setLastPage(true);
+                state.setLastPage(newList.size() < postPageSize);
                 final List<T> list = new ArrayList<>();
                 switch (refreshType) {
                     case REFRESH:
@@ -407,6 +406,10 @@ public class XRefresher<T> extends CoordinatorLayout  implements FlexibleDivider
                 loadMoreView.hide();
                 break;
         }
+    }
+
+    public static void setLoadMoreState(boolean loadMoreAllTheTime) {
+        XRefresher.loadMoreAllTheTime = loadMoreAllTheTime;
     }
 
 

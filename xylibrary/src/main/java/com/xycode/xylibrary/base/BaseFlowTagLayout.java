@@ -36,6 +36,7 @@ public abstract class BaseFlowTagLayout extends ViewGroup {
      * FlowLayout support multi-select
      */
     public static final int FLOW_TAG_CHECKED_MULTI = 2;
+
     private SparseArray<View> viewList;
 
     protected int tagType;
@@ -244,9 +245,10 @@ public abstract class BaseFlowTagLayout extends ViewGroup {
                                 checkedTagArray.put(j, false);
                                 childView.setSelected(false);
                                 if (onTagSelectListener != null) {
-                                    for (int i = 0; i < checkedTagArray.size(); i++) {
-                                        onTagSelectListener.onItemSelect(viewList.get(i), dataList, i, checkedTagArray.get(i));
-                                    }
+                                    onTagSelectListener.onItemSelected(viewList, dataList, checkedTagArray, j);
+//                                    for (int i = 0; i < checkedTagArray.size(); i++) {
+//                                        onTagSelectListener.onItemSelected(viewList.get(i), dataList, i, checkedTagArray.get(i));
+//                                    }
                                 }
                                 return;
                             }
@@ -259,9 +261,10 @@ public abstract class BaseFlowTagLayout extends ViewGroup {
                             childView.setSelected(true);
 
                             if (onTagSelectListener != null) {
-                                for (int i = 0; i < checkedTagArray.size(); i++) {
-                                    onTagSelectListener.onItemSelect(viewList.get(i), dataList, i, checkedTagArray.get(i));
-                                }
+                                onTagSelectListener.onItemSelected(viewList, dataList, checkedTagArray, j);
+//                                for (int i = 0; i < checkedTagArray.size(); i++) {
+//                                    onTagSelectListener.onItemSelected(viewList.get(i), dataList, i, checkedTagArray.get(i));
+//                                }
                             }
                             break;
                         case FLOW_TAG_CHECKED_MULTI:
@@ -273,13 +276,14 @@ public abstract class BaseFlowTagLayout extends ViewGroup {
                                 childView.setSelected(true);
                             }
                             if (onTagSelectListener != null) {
-                                List<Integer> list = new ArrayList<>();
+                              /*  List<Integer> list = new ArrayList<>();
                                 for (int k = 0; k < dataList.size(); k++) {
                                     if (checkedTagArray.get(k)) {
                                         list.add(k);
                                     }
-                                    onTagSelectListener.onItemSelect(viewList.get(k), dataList, k, checkedTagArray.get(k));
-                                }
+                                    onTagSelectListener.onItemSelected(viewList.get(k), dataList, k, checkedTagArray.get(k));
+                                }   */
+                                onTagSelectListener.onItemSelected(viewList, dataList, checkedTagArray, j);
                             }
                             break;
                     }
@@ -341,7 +345,7 @@ public abstract class BaseFlowTagLayout extends ViewGroup {
     }
 
     public interface OnTagSelectListener {
-        void onItemSelect(View childView, List dataList, int pos, boolean selected);
+        void onItemSelected(SparseArray<View> childViewList, List dataList, SparseBooleanArray selectedStateList, int clickPos);
     }
 
         public static <T extends View> T getView(View parent, int viewId) {

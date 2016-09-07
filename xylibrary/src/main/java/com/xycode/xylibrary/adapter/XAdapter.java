@@ -18,7 +18,6 @@ import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.xycode.xylibrary.R;
-import com.xycode.xylibrary.uiKit.recyclerview.FlexibleDividerDecoration;
 import com.xycode.xylibrary.unit.ViewTypeUnit;
 
 import java.util.ArrayList;
@@ -76,14 +75,14 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter{
                     holder.onClickListener = new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            handleItemViewClick(holder, null, v.getId());
+                            handleItemViewClick(holder, null, v.getId(), new ViewTypeUnit(viewType, footerLayout));
                         }
                     };
 
                     holder.onLongClickListener = new View.OnLongClickListener() {
                         @Override
                         public boolean onLongClick(View v) {
-                            return handleItemViewLongClick(holder, null, v.getId());
+                            return handleItemViewLongClick(holder, null, v.getId(), new ViewTypeUnit(viewType, footerLayout));
                         }
                     };
                     creatingFooter(holder);
@@ -101,14 +100,14 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter{
                             holder.onClickListener = new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    handleItemViewClick(holder, null, v.getId());
+                                    handleItemViewClick(holder, null, v.getId(),  new ViewTypeUnit(headerKey, headerLayoutIdList.get(headerKey)));
                                 }
                             };
 
                             holder.onLongClickListener = new View.OnLongClickListener() {
                                 @Override
                                 public boolean onLongClick(View v) {
-                                    return handleItemViewLongClick(holder, null, v.getId());
+                                    return handleItemViewLongClick(holder, null, v.getId(), new ViewTypeUnit(headerKey, headerLayoutIdList.get(headerKey)));
                                 }
                             };
                             creatingHeader(holder, headerKey);
@@ -131,14 +130,14 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter{
                     holder.onClickListener = new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            handleItemViewClick(holder, dataList.get(holder.getAdapterPosition()), v.getId());
+                            handleItemViewClick(holder, dataList.get(holder.getAdapterPosition() - getHeaderCount()), v.getId(), viewTypeUnit);
                         }
                     };
 
                     holder.onLongClickListener = new View.OnLongClickListener() {
                         @Override
                         public boolean onLongClick(View v) {
-                            return handleItemViewLongClick(holder, dataList.get(holder.getAdapterPosition()), v.getId());
+                            return handleItemViewLongClick(holder, dataList.get(holder.getAdapterPosition()- getHeaderCount()), v.getId(), viewTypeUnit);
                         }
                     };
                     creatingHolder(holder, dataList, viewTypeUnit);
@@ -367,15 +366,15 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter{
     /**
      * override this method to add holder rootView onclick event，when handle over continue to on ClickListener in creating holder set.
      * some view if it override Touch method and did't return，can let it no use,  eg：RippleView
-     *
-     * @param holder
+     *  @param holder
      * @param item
+     * @param viewTypeUnit
      */
-    protected void handleItemViewClick(CustomHolder holder, T item, int viewId) {
+    protected void handleItemViewClick(CustomHolder holder, T item, int viewId, ViewTypeUnit viewTypeUnit) {
 
     }
 
-    protected boolean handleItemViewLongClick(CustomHolder holder, T item, int viewId) {
+    protected boolean handleItemViewLongClick(CustomHolder holder, T item, int viewId, ViewTypeUnit viewTypeUnit) {
         return false;
     }
 

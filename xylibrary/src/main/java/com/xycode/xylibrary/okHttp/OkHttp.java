@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.xycode.xylibrary.base.BaseActivity;
+import com.xycode.xylibrary.utils.L;
 
 import java.io.File;
 import java.io.IOException;
@@ -182,7 +183,7 @@ public class OkHttp {
      * @param okResponseListener
      * @param fileProgressListener
      */
-    public static Call uploadFile(String url, String fileKey, File file, Param param,  final OkResponseListener okResponseListener, OkFileHelper.FileProgressListener fileProgressListener) {
+    public static Call uploadFile(String url, String fileKey, File file, Param param, final OkResponseListener okResponseListener, OkFileHelper.FileProgressListener fileProgressListener) {
         Map<String, File> files = new HashMap<>();
         files.put(fileKey, file);
         return uploadFiles(url, files, param, okResponseListener, fileProgressListener);
@@ -238,14 +239,11 @@ public class OkHttp {
      */
     private static void responseResult(final Response response, final Call call, final OkResponseListener okResponseListener, Handler handler) {
         BaseActivity.dismissLoadingDialogByManualState();
-        if (response == null) {
-            okInit.networkError(call, call.isCanceled());
-            if (okResponseListener != null) {
-                okResponseListener.handleAllFailureSituation(call, NO_NETWORK);
-            }
-        } else if (response.isSuccessful()) {
+        if (response.isSuccessful()) {
+            String responseStr = "";
             try {
-                String strResult = response.body().string();
+                final String strResult = response.body().string();
+                responseStr = strResult;
                 final JSONObject jsonObject = JSON.parseObject(strResult);
                 final int resultCode = okInit.judgeResultWhenFirstReceivedResponse(call, response, jsonObject);
                 if (okInit.resultSuccessByJudge(call, response, jsonObject, resultCode)) {
@@ -259,22 +257,26 @@ public class OkHttp {
                         switch (resultCode) {
                             case RESULT_SUCCESS:
                                 if (okResponseListener != null)
-                                    okResponseListener.handleJsonSuccess(call, response, jsonObject);
+                                    L.e(call.request().url().url().toString() + " Success] --> " + strResult);
+                                okResponseListener.handleJsonSuccess(call, response, jsonObject);
                                 break;
                             case RESULT_ERROR:
                                 if (okResponseListener != null) {
+                                    L.e(call.request().url().url().toString() + " [Error] --> " + strResult);
                                     okResponseListener.handleJsonError(call, response, jsonObject);
                                     okResponseListener.handleAllFailureSituation(call, resultCode);
                                 }
                                 break;
                             case RESULT_VERIFY_ERROR:
                                 if (okResponseListener != null) {
+                                    L.e(call.request().url().url().toString() + " [VerifyError] --> " + strResult);
                                     okResponseListener.handleJsonVerifyError(call, response, jsonObject);
                                     okResponseListener.handleAllFailureSituation(call, resultCode);
                                 }
                                 break;
                             default:
                                 if (okResponseListener != null) {
+                                    L.e(call.request().url().url().toString() + " [OtherResultCode] --> " + strResult);
                                     okResponseListener.handleJsonOther(call, response, jsonObject);
                                     okResponseListener.handleAllFailureSituation(call, resultCode);
                                 }
@@ -282,8 +284,10 @@ public class OkHttp {
                         }
                     }
                 });
-            } catch (Exception e) {
+            } catch (IOException e) {
                 e.printStackTrace();
+                if (!responseStr.isEmpty()) responseStr = "\nResult: " + responseStr;
+                L.e(call.request().url().url().toString() + " [JsonParseFailed] --> " + e.getMessage() + responseStr);
                 okInit.judgeResultParseResponseFailed(call, response, e);
                 if (okResponseListener != null) {
                     handler.post(new Runnable() {
@@ -296,6 +300,7 @@ public class OkHttp {
                 }
             }
         } else {
+            L.e(call.request().url().url().toString() + " [NetworkErrorCode] --> " + response.code());
             okInit.receivedNetworkErrorCode(call, response);
             if (okResponseListener != null) {
                 handler.post(new Runnable() {
@@ -317,12 +322,14 @@ public class OkHttp {
      */
     private static void responseResultFailure(final Call call, final OkResponseListener okResponseListener, Handler handler) {
         okInit.networkError(call, call.isCanceled());
+        L.e(call.request().url().url().toString() + " [networkError] --> ");
         BaseActivity.dismissLoadingDialogByManualState();
         if (okResponseListener != null) {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
                     okResponseListener.handleNoServerNetwork(call, call.isCanceled());
+                    okResponseListener.handleAllFailureSituation(call, NO_NETWORK);
                 }
             });
 
