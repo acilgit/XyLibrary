@@ -8,6 +8,8 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.SparseArray;
+import android.util.SparseBooleanArray;
 import android.view.View;
 
 import com.alibaba.fastjson.JSON;
@@ -71,9 +73,14 @@ public class MainActivity extends BaseActivity {
         tags.setTagCheckedMode(TagLayout.FLOW_TAG_CHECKED_SINGLE);
         tags.setOnTagSelectListener(new BaseFlowTagLayout.OnTagSelectListener() {
             @Override
-            public void onItemSelect(View childView, List dataList, int pos, boolean selected) {
-                TagLayout.setTextColor(childView, R.id.tv, getResources().getColor(selected ? R.color.white : R.color.black));
+            public void onItemSelected(SparseArray<View> childViewList, List dataList, SparseBooleanArray selectedStateList, int clickPos) {
+
             }
+
+//            @Override
+//            public void onItemSelected(View childView, List dataList, int pos, boolean selected) {
+//                TagLayout.setTextColor(childView, R.id.tv, getResources().getColor(selected ? R.color.white : R.color.black));
+//            }
         });
         Uri uri = Uri.parse("http://mxycsku.qiniucdn.com/group5/M00/5B/0C/wKgBfVXdYkqAEzl0AAL6ZFMAdKk401.jpg");
 //        siv.setImageURI();
@@ -132,7 +139,7 @@ public class MainActivity extends BaseActivity {
             }
 
             @Override
-            protected void handleItemViewClick(CustomHolder holder, ContentBean item, int viewId) {
+            protected void handleItemViewClick(CustomHolder holder, ContentBean item, int viewId, ViewTypeUnit viewTypeUnit) {
 
                 switch (viewId) {
                     case R.id.tvName:
