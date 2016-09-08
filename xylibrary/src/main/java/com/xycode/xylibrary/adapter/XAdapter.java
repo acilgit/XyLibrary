@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.xycode.xylibrary.R;
+import com.xycode.xylibrary.base.BaseItemView;
 import com.xycode.xylibrary.unit.ViewTypeUnit;
 
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ import java.util.Map;
 /**
  * Created by xiu on 2016/4/3.
  */
-public abstract class XAdapter<T> extends RecyclerView.Adapter{
+public abstract class XAdapter<T> extends RecyclerView.Adapter {
 
     public static final int LAYOUT_FOOTER = -20331;
 
@@ -100,7 +101,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter{
                             holder.onClickListener = new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    handleItemViewClick(holder, null, v.getId(),  new ViewTypeUnit(headerKey, headerLayoutIdList.get(headerKey)));
+                                    handleItemViewClick(holder, null, v.getId(), new ViewTypeUnit(headerKey, headerLayoutIdList.get(headerKey)));
                                 }
                             };
 
@@ -137,7 +138,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter{
                     holder.onLongClickListener = new View.OnLongClickListener() {
                         @Override
                         public boolean onLongClick(View v) {
-                            return handleItemViewLongClick(holder, dataList.get(holder.getAdapterPosition()- getHeaderCount()), v.getId(), viewTypeUnit);
+                            return handleItemViewLongClick(holder, dataList.get(holder.getAdapterPosition() - getHeaderCount()), v.getId(), viewTypeUnit);
                         }
                     };
                     creatingHolder(holder, dataList, viewTypeUnit);
@@ -366,7 +367,8 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter{
     /**
      * override this method to add holder rootView onclick event，when handle over continue to on ClickListener in creating holder set.
      * some view if it override Touch method and did't return，can let it no use,  eg：RippleView
-     *  @param holder
+     *
+     * @param holder
      * @param item
      * @param viewTypeUnit
      */
@@ -436,12 +438,28 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter{
         }
 
         public XAdapter getRecyclerViewXAdapter(int recyclerViewId) {
-            RecyclerView rv =  getView(recyclerViewId);
+            RecyclerView rv = getView(recyclerViewId);
             if (rv != null) {
                 RecyclerView.Adapter adapter = rv.getAdapter();
                 if (adapter != null && adapter instanceof XAdapter) {
                     return (XAdapter) adapter;
                 }
+            }
+            return null;
+        }
+
+        public RecyclerView getRecyclerView(int recyclerViewId) {
+            View rv = getView(recyclerViewId);
+            if (rv != null && rv instanceof RecyclerView) {
+                return (RecyclerView) rv;
+            }
+            return null;
+        }
+
+        public BaseItemView getXItem(int viewId) {
+            View rv = getView(viewId);
+            if (rv != null && rv instanceof BaseItemView) {
+                return (BaseItemView) rv;
             }
             return null;
         }
@@ -513,6 +531,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter{
             itemView.setOnClickListener(onClickListener);
             return this;
         }
+
         public CustomHolder setClick(int viewId) {
             View view = getView(viewId);
             if (view != null) {
@@ -533,6 +552,22 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter{
             View view = getView(viewId);
             if (view != null) {
                 view.setEnabled(enable);
+            }
+            return this;
+        }
+
+        public CustomHolder setSelected(int viewId, boolean selected) {
+            View view = getView(viewId);
+            if (view != null) {
+                view.setSelected(selected);
+            }
+            return this;
+        }
+
+        public CustomHolder setVisibility(int viewId, int visibility) {
+            View view = getView(viewId);
+            if (view != null) {
+                view.setVisibility(visibility);
             }
             return this;
         }
