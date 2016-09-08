@@ -46,8 +46,6 @@ public class XRefresher<T> extends CoordinatorLayout  implements FlexibleDivider
     public static final int LOADER_LOADING = 1;
     public static final int LOADER_NO_MORE = 2;
 
-    private static boolean loadMoreAllTheTime = true;
-
     private static final int REFRESH = 1;
     private static final int LOAD = 2;
     private static String PAGE = "page";
@@ -194,7 +192,7 @@ public class XRefresher<T> extends CoordinatorLayout  implements FlexibleDivider
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 if (newState == RecyclerView.SCROLL_STATE_IDLE && swipeMore && lastVisibleItem + 2 >= getAdapter().getItemCount()) {
-                    if ((!state.lastPage || loadMoreAllTheTime) && loadMoreState == LOADER_MORE) {
+                    if ((!state.lastPage) && loadMoreState == LOADER_MORE) {
                         setLoadMoreState(LOADER_LOADING);
                         getDataByRefresh(state.pageIndex + 1, state.pageDefaultSize);
                     }
@@ -232,7 +230,7 @@ public class XRefresher<T> extends CoordinatorLayout  implements FlexibleDivider
             @Override
             public void handleJsonSuccess(Call call, Response response, JSONObject json) {
                 final List<T> newList = refreshRequest.setListData(json);
-                state.setLastPage(newList.size() < postPageSize);
+                state.setLastPage( (refreshType != REFRESH) && newList.size() < postPageSize);
                 final List<T> list = new ArrayList<>();
                 switch (refreshType) {
                     case REFRESH:
@@ -268,25 +266,12 @@ public class XRefresher<T> extends CoordinatorLayout  implements FlexibleDivider
 
             @Override
             public void handleJsonError(Call call, Response response, JSONObject json) {
-                handleError();
+
             }
 
             @Override
-            protected void handleNoServerNetwork(Call call, boolean isCanceled) {
-                handleError();
-            }
-
-            @Override
-            protected void handleParseError(Call call, Response response) {
-                handleError();
-            }
-
-            @Override
-            protected void handleResponseFailure(Call call, Response response) {
-                handleError();
-            }
-
-            private void handleError() {
+            protected void handleAllFailureSituation(Call call, int resultCode) {
+                super.handleAllFailureSituation(call, resultCode);
                 switch (refreshType) {
                     case REFRESH:
                         swipe.setRefreshing(false);
@@ -312,24 +297,30 @@ public class XRefresher<T> extends CoordinatorLayout  implements FlexibleDivider
      */
 
     public void refresh() {
-        if (swipeListener != null) swipeListener.onRefresh();
-        if (refreshRequest != null) refreshList(false);
+        swipeRefresh();
+        refreshList();
     }
 
     public void swipeRefresh() {
-        if (swipeListener != null) swipeListener.onRefresh();
+        if (swipeListener != null){
+            swipe.setRefreshing(true);
+            swipeListener.onRefresh();
+        }
     }
 
     public void refreshList() {
-        if (refreshRequest != null) refreshList(false);
+         refreshList(false);
     }
 
     private void refreshList(boolean showDialog) {
-        if (getAdapter().getDataList().size() > 0) {
-            getDataByRefresh(getAdapter().getDataList().size());
-        } else {
-            getDataByRefresh(state.pageDefaultSize);
-            swipe.setRefreshing(false);
+        if (refreshRequest != null) {
+            swipe.setRefreshing(true);
+            if (getAdapter().getDataList().size() > 0) {
+                getDataByRefresh(getAdapter().getDataList().size());
+            } else {
+                getDataByRefresh(state.pageDefaultSize);
+                swipe.setRefreshing(false);
+            }
         }
     }
 
@@ -407,11 +398,6 @@ public class XRefresher<T> extends CoordinatorLayout  implements FlexibleDivider
                 break;
         }
     }
-
-    public static void setLoadMoreState(boolean loadMoreAllTheTime) {
-        XRefresher.loadMoreAllTheTime = loadMoreAllTheTime;
-    }
-
 
     @Override
     public boolean shouldHideDivider(int position, RecyclerView parent) {
