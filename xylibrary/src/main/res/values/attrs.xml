@@ -55,6 +55,7 @@
         <attr name="itemBool" format="boolean" />
         <attr name="itemCheck" format="boolean" />
         <attr name="itemName" format="string" />
+        <attr name="itemHint" format="string" />
         <attr name="itemTitle" format="string" />
         <attr name="itemContent" format="string" />
         <attr name="itemDetail" format="string" />

@@ -260,6 +260,8 @@ public class XRefresher<T> extends CoordinatorLayout  implements FlexibleDivider
                         }
                     });
                     getAdapter().setDataList(list);
+                } else if (refreshType == REFRESH) {
+                    getAdapter().setDataList(list);
                 }
                 textView.setVisibility(getAdapter().getDataList().size() == 0 ? VISIBLE : GONE);
             }
@@ -303,7 +305,7 @@ public class XRefresher<T> extends CoordinatorLayout  implements FlexibleDivider
 
     public void swipeRefresh() {
         if (swipeListener != null){
-            swipe.setRefreshing(true);
+//            swipe.setRefreshing(true);
             swipeListener.onRefresh();
         }
     }
@@ -314,7 +316,7 @@ public class XRefresher<T> extends CoordinatorLayout  implements FlexibleDivider
 
     private void refreshList(boolean showDialog) {
         if (refreshRequest != null) {
-            swipe.setRefreshing(true);
+//            swipe.setRefreshing(true);
             if (getAdapter().getDataList().size() > 0) {
                 getDataByRefresh(getAdapter().getDataList().size());
             } else {
