@@ -84,6 +84,10 @@ public class ImageUtils {
         context.sendBroadcast(intent);
     }
 
+    public static Uri getResUri(int resId) {
+        return Uri.parse("res:///" + resId);
+    }
+
     public static Intent cropImage(Uri cropUri, Uri outputUri) {
         return cropImage(cropUri, outputUri, 1, 1, 300, 300);
     }

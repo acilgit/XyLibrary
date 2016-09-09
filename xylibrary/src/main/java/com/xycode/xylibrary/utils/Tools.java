@@ -26,6 +26,8 @@ import android.text.Html;
 import android.util.Base64;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -733,6 +735,23 @@ public class Tools {
             }
 
             return true;
+        }
+    }
+
+    public static void setInputMethodVisible(EditText editText, Boolean visible) {
+        if (editText != null) {
+            InputMethodManager inputManager = (InputMethodManager) editText.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (visible) {
+                //set can focus
+                editText.setFocusable(true);
+                editText.setFocusableInTouchMode(true);
+                //get focus
+                editText.requestFocus();
+                inputManager.showSoftInput(editText, 0);
+            } else {
+                editText.clearFocus();
+                inputManager.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+            }
         }
     }
 

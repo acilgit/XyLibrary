@@ -44,6 +44,7 @@ public abstract class BaseItemView extends RelativeLayout {
     protected boolean itemCheck;
     protected float itemFloat;
     protected String itemName;
+    protected String itemHint;
     protected String itemTitle;
     protected String itemContent;
     protected String itemDetail;
@@ -78,11 +79,13 @@ public abstract class BaseItemView extends RelativeLayout {
         itemBg = a.getResourceId(R.styleable.BaseItemView_itemBg, 0);
         itemRes = a.getResourceId(R.styleable.BaseItemView_itemRes, 0);
         itemName = a.getString(R.styleable.BaseItemView_itemName);
+        itemHint = a.getString(R.styleable.BaseItemView_itemHint);
         itemTitle = a.getString(R.styleable.BaseItemView_itemTitle);
         itemContent = a.getString(R.styleable.BaseItemView_itemContent);
         itemDetail = a.getString(R.styleable.BaseItemView_itemDetail);
         itemDescription = a.getString(R.styleable.BaseItemView_itemDescription);
         itemName = itemName == null ? "" : itemName;
+        itemHint = itemHint == null ? "" : itemHint;
         itemTitle = itemTitle == null ? "" : itemTitle;
         itemContent = itemContent == null ? "" : itemContent;
         itemDetail = itemDetail == null ? "" : itemDetail;
