@@ -183,7 +183,9 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
      * @param dataList
      * @param pos
      */
-    public abstract void bindingHolder(CustomHolder holder, List<T> dataList, int pos);
+    public void bindingHolder(CustomHolder holder, List<T> dataList, int pos){
+
+    }
 
  /*   public int getLoadMoreState() {
         return loadMoreState;
@@ -201,7 +203,9 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
      * @param item
      * @return
      */
-    protected abstract ViewTypeUnit getViewTypeUnitForLayout(T item);
+    protected ViewTypeUnit getViewTypeUnitForLayout(T item){
+        return null;
+    }
 
     /**
      * when you use layout list, you can override this method when binding holder views

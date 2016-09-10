@@ -257,7 +257,7 @@ public class OkHttp {
                         switch (resultCode) {
                             case RESULT_SUCCESS:
                                 if (okResponseListener != null)
-                                    L.e(call.request().url().url().toString() + " Success] --> " + strResult);
+                                    L.e(call.request().url().url().toString() + " [Success] --> " + strResult);
                                 okResponseListener.handleJsonSuccess(call, response, jsonObject);
                                 break;
                             case RESULT_ERROR:
@@ -286,14 +286,14 @@ public class OkHttp {
                 });
             } catch (IOException e) {
                 e.printStackTrace();
-                if (!responseStr.isEmpty()) responseStr = "\nResult: " + responseStr;
-                L.e(call.request().url().url().toString() + " [JsonParseFailed] --> " + e.getMessage() + responseStr);
-                okInit.judgeResultParseResponseFailed(call, response, e);
+                final String parseErrorResult = responseStr;
+                L.e(call.request().url().url().toString() + " [JsonParseFailed] --> " + e.getMessage() +  "\nResult: " + responseStr);
+                okInit.judgeResultParseResponseFailed(call, parseErrorResult, e);
                 if (okResponseListener != null) {
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
-                            okResponseListener.handleParseError(call, response);
+                            okResponseListener.handleParseError(call, parseErrorResult);
                             okResponseListener.handleAllFailureSituation(call, RESULT_PARSE_FAILED);
                         }
                     });
@@ -346,7 +346,7 @@ public class OkHttp {
 
         }
 
-        protected void handleParseError(Call call, Response response) {
+        protected void handleParseError(Call call, String responseResult) {
 
         }
 
@@ -422,9 +422,9 @@ public class OkHttp {
          * when parse JSON failed
          *
          * @param call
-         * @param response
+         * @param parseErrorResult
          */
-        void judgeResultParseResponseFailed(Call call, Response response, Exception e);
+        void judgeResultParseResponseFailed(Call call, String parseErrorResult, Exception e);
 
         /**
          * add defaultParams in param
