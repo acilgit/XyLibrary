@@ -1,5 +1,6 @@
 package com.xycode.xylibrary.okHttp;
 
+import android.app.Application;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
@@ -53,6 +54,7 @@ public class OkHttp {
     private static IOkInit okInit;
 
     private static OkHttp instance;
+    private static Application application;
 
     public static OkHttp getInstance() {
         if (instance == null) {
@@ -64,8 +66,9 @@ public class OkHttp {
     /**
      * init
      */
-    public static void init(IOkInit iOkInit) {
+    public static void init(Application app, IOkInit iOkInit) {
         if (okInit == null) {
+            application = app;
             okInit = iOkInit;
         }
     }
@@ -250,36 +253,48 @@ public class OkHttp {
                     BaseActivity.dismissLoadingDialogByManualState();
                     return;
                 }
-
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
                         switch (resultCode) {
                             case RESULT_SUCCESS:
-                                if (okResponseListener != null)
                                     L.e(call.request().url().url().toString() + " [Success] --> " + strResult);
-                                okResponseListener.handleJsonSuccess(call, response, jsonObject);
+                                    try {
+                                        okResponseListener.handleJsonSuccess(call, response, jsonObject);
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+
                                 break;
                             case RESULT_ERROR:
-                                if (okResponseListener != null) {
                                     L.e(call.request().url().url().toString() + " [Error] --> " + strResult);
-                                    okResponseListener.handleJsonError(call, response, jsonObject);
-                                    okResponseListener.handleAllFailureSituation(call, resultCode);
-                                }
+                                    try {
+                                        okResponseListener.handleJsonError(call, response, jsonObject);
+                                        okResponseListener.handleAllFailureSituation(call, resultCode);
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+
                                 break;
                             case RESULT_VERIFY_ERROR:
-                                if (okResponseListener != null) {
                                     L.e(call.request().url().url().toString() + " [VerifyError] --> " + strResult);
-                                    okResponseListener.handleJsonVerifyError(call, response, jsonObject);
-                                    okResponseListener.handleAllFailureSituation(call, resultCode);
-                                }
+                                    try {
+                                        okResponseListener.handleJsonVerifyError(call, response, jsonObject);
+                                        okResponseListener.handleAllFailureSituation(call, resultCode);
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+
                                 break;
                             default:
-                                if (okResponseListener != null) {
                                     L.e(call.request().url().url().toString() + " [OtherResultCode] --> " + strResult);
-                                    okResponseListener.handleJsonOther(call, response, jsonObject);
-                                    okResponseListener.handleAllFailureSituation(call, resultCode);
-                                }
+                                    try {
+                                        okResponseListener.handleJsonOther(call, response, jsonObject);
+                                        okResponseListener.handleAllFailureSituation(call, resultCode);
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+
                                 break;
                         }
                     }
@@ -287,30 +302,36 @@ public class OkHttp {
             } catch (IOException e) {
                 e.printStackTrace();
                 final String parseErrorResult = responseStr;
-                L.e(call.request().url().url().toString() + " [JsonParseFailed] --> " + e.getMessage() +  "\nResult: " + responseStr);
+                L.e(call.request().url().url().toString() + " [JsonParseFailed] --> " + e.getMessage() + "\nResult: " + responseStr);
                 okInit.judgeResultParseResponseFailed(call, parseErrorResult, e);
-                if (okResponseListener != null) {
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
-                            okResponseListener.handleParseError(call, parseErrorResult);
-                            okResponseListener.handleAllFailureSituation(call, RESULT_PARSE_FAILED);
+                            try {
+                                okResponseListener.handleParseError(call, parseErrorResult);
+                                okResponseListener.handleAllFailureSituation(call, RESULT_PARSE_FAILED);
+                            } catch (Exception e1) {
+                                e1.printStackTrace();
+                            }
                         }
                     });
-                }
+
             }
         } else {
             L.e(call.request().url().url().toString() + " [NetworkErrorCode] --> " + response.code());
             okInit.receivedNetworkErrorCode(call, response);
-            if (okResponseListener != null) {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        okResponseListener.handleResponseFailure(call, response);
-                        okResponseListener.handleAllFailureSituation(call, NETWORK_ERROR_CODE);
+                        try {
+                            okResponseListener.handleResponseFailure(call, response);
+                            okResponseListener.handleAllFailureSituation(call, NETWORK_ERROR_CODE);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
                 });
-            }
+
         }
     }
 
@@ -328,8 +349,12 @@ public class OkHttp {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
-                    okResponseListener.handleNoServerNetwork(call, call.isCanceled());
-                    okResponseListener.handleAllFailureSituation(call, NO_NETWORK);
+                    try {
+                        okResponseListener.handleNoServerNetwork(call, call.isCanceled());
+                        okResponseListener.handleAllFailureSituation(call, NO_NETWORK);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             });
 
@@ -338,35 +363,35 @@ public class OkHttp {
 
     public static abstract class OkResponseListener implements IOkResponseListener {
 
-        protected void handleJsonVerifyError(Call call, Response response, JSONObject json) {
+        protected void handleJsonVerifyError(Call call, Response response, JSONObject json) throws Exception {
 
         }
 
-        protected void handleJsonOther(Call call, Response response, JSONObject json) {
+        protected void handleJsonOther(Call call, Response response, JSONObject json) throws Exception {
 
         }
 
-        protected void handleParseError(Call call, String responseResult) {
+        protected void handleParseError(Call call, String responseResult) throws Exception {
 
         }
 
-        protected void handleNoServerNetwork(Call call, boolean isCanceled) {
+        protected void handleNoServerNetwork(Call call, boolean isCanceled) throws Exception {
 
         }
 
-        protected void handleResponseFailure(Call call, Response response) {
+        protected void handleResponseFailure(Call call, Response response) throws Exception {
 
         }
 
-        protected void handleAllFailureSituation(Call call, int resultCode) {
+        protected void handleAllFailureSituation(Call call, int resultCode) throws Exception {
 
         }
     }
 
     interface IOkResponseListener {
-        void handleJsonSuccess(Call call, Response response, JSONObject json);
+        void handleJsonSuccess(Call call, Response response, JSONObject json) throws Exception;
 
-        void handleJsonError(Call call, Response response, JSONObject json);
+        void handleJsonError(Call call, Response response, JSONObject json) throws Exception;
     }
 
     public interface IOkInit {
