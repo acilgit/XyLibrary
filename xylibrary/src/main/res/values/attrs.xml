@@ -67,6 +67,8 @@
         <attr name="itemRes" format="reference" />
         <attr name="itemVisible" />
         <attr name="itemChildVisible" />
+        <attr name="android:inputType" />
+
     </declare-styleable>
 
     <declare-styleable name="BaseFlowTagLayout">

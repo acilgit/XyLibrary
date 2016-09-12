@@ -50,6 +50,8 @@ public abstract class BaseItemView extends RelativeLayout {
     protected String itemDetail;
     protected String itemDescription;
 
+    protected int itemInputType;
+
     protected OnViewSenseListener onViewSenseListener;
 
     protected int layoutId = R.layout.layout_blank;
@@ -83,6 +85,7 @@ public abstract class BaseItemView extends RelativeLayout {
         itemContent = a.getString(R.styleable.BaseItemView_itemContent);
         itemDetail = a.getString(R.styleable.BaseItemView_itemDetail);
         itemDescription = a.getString(R.styleable.BaseItemView_itemDescription);
+        itemInputType = a.getInt(R.styleable.BaseItemView_android_inputType, 0);
         itemName = itemName == null ? "" : itemName;
         itemHint = itemHint == null ? "" : itemHint;
         itemTitle = itemTitle == null ? "" : itemTitle;
@@ -257,7 +260,7 @@ public abstract class BaseItemView extends RelativeLayout {
 
     protected abstract int getLayoutId(int type);
 
-    protected abstract void setViews(int type);
+    public abstract void setViews(int type);
 
     protected
     @StyleableRes

@@ -48,8 +48,8 @@ public class App extends Application {
         });*/
         TS.init(this);
         Fresco.initialize(this);
-        OkHttp.init(new OkHttp.IOkInit() {
-            @Override
+        OkHttp.init(this, new OkHttp.IOkInit() {
+           @Override
             public int judgeResultWhenFirstReceivedResponse(Call call, Response response, JSONObject json) {
                 String resultCode = json.getString("resultCode");
                 if ("1".equals(resultCode)) {
@@ -82,7 +82,7 @@ public class App extends Application {
             }
 
             @Override
-            public void judgeResultParseResponseFailed(Call call, Response response, Exception e) {
+            public void judgeResultParseResponseFailed(Call call, String response, Exception e) {
                     L.e(e.getMessage());
             }
 
