@@ -103,6 +103,12 @@ public class DateUtils {
         return calendar.getTime();
     }
 
+    public static long getCustomTimeMillis(int y, int m, int d) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(y, m, d);
+        return calendar.getTimeInMillis();
+    }
+
     /**
      * @param dateNow
      * @param datePassed

@@ -50,8 +50,7 @@ public abstract class BaseItemView extends RelativeLayout {
     protected String itemDetail;
     protected String itemDescription;
 
-    protected OnViewClickListener onViewClickListener;
-    protected OnViewLongClickListener onViewLongClickListener;
+    protected OnViewSenseListener onViewSenseListener;
 
     protected int layoutId = R.layout.layout_blank;
 
@@ -252,12 +251,8 @@ public abstract class BaseItemView extends RelativeLayout {
         return this;
     }
 
-    public void setOnViewClickListener(OnViewClickListener onViewClickListener) {
-        this.onViewClickListener = onViewClickListener;
-    }
-
-    public void setOnViewLongClickListener(OnViewLongClickListener onViewLongClickListener) {
-        this.onViewLongClickListener = onViewLongClickListener;
+    public void setOnViewSenseListener(OnViewSenseListener onViewSenseListener) {
+        this.onViewSenseListener = onViewSenseListener;
     }
 
     protected abstract int getLayoutId(int type);
@@ -276,12 +271,8 @@ public abstract class BaseItemView extends RelativeLayout {
         return R.styleable.BaseItemView;
     }
 
-    public interface OnViewClickListener{
+    public interface OnViewSenseListener {
         void onClick(View view, Object object);
-    }
-
-   public interface OnViewLongClickListener{
-        void onLongClick(View view, Object object);
     }
 
 }

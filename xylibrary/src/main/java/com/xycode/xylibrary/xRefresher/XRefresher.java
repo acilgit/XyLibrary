@@ -273,7 +273,6 @@ public class XRefresher<T> extends CoordinatorLayout  implements FlexibleDivider
 
             @Override
             protected void handleAllFailureSituation(Call call, int resultCode) {
-                super.handleAllFailureSituation(call, resultCode);
                 switch (refreshType) {
                     case REFRESH:
                         swipe.setRefreshing(false);
