@@ -72,7 +72,7 @@ ext {
     siteUrl = 'https://github.com/acilgit/XyLibrary'
     gitUrl = 'https://github.com/acilgit/XyLibrary.git'
 
-    libraryVersion = '0.2.74'
+    libraryVersion = '0.2.75'
 
     developerId = 'acil'
     developerName = 'acil-fong'

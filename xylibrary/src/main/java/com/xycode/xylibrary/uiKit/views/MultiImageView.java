@@ -379,6 +379,9 @@ public class MultiImageView<T> extends LinearLayout {
     }
 
     public List<UrlData> getDraweeViewList() {
+        if (imagesList == null) {
+            return new ArrayList<>();
+        }
         return imagesList;
     }
 

@@ -30,7 +30,7 @@ public class ListItem extends BaseItemView {
     }
 
     @Override
-    protected void setViews(int type) {
+    public void setViews(int type) {
         switch (type) {
             case 1:
                 setImageRes(R.id.ivIcon, itemIcon);

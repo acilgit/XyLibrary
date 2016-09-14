@@ -51,6 +51,8 @@
         <attr name="itemNum" format="integer" />
         <attr name="itemIndex" format="integer" />
         <attr name="itemCount" format="integer" />
+        <attr name="itemMax" format="integer" />
+        <attr name="itemMin" format="integer" />
         <attr name="itemFloat" format="float" />
         <attr name="itemBool" format="boolean" />
         <attr name="itemCheck" format="boolean" />
@@ -67,7 +69,9 @@
         <attr name="itemRes" format="reference" />
         <attr name="itemVisible" />
         <attr name="itemChildVisible" />
-        <attr name="android:inputType" />
+        <attr name="android:inputType"/>
+        <attr name="android:minLines"/>
+        <attr name="android:maxLines"/>
 
     </declare-styleable>
 

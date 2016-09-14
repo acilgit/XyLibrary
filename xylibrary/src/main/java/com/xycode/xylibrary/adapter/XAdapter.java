@@ -19,6 +19,7 @@ import android.widget.TextView;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.xycode.xylibrary.R;
 import com.xycode.xylibrary.base.BaseItemView;
+import com.xycode.xylibrary.uiKit.views.MultiImageView;
 import com.xycode.xylibrary.unit.ViewTypeUnit;
 
 import java.util.ArrayList;
@@ -456,6 +457,14 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
             View rv = getView(recyclerViewId);
             if (rv != null && rv instanceof RecyclerView) {
                 return (RecyclerView) rv;
+            }
+            return null;
+        }
+
+        public MultiImageView getMultiImageView(int multiImageViewId) {
+            View v = getView(multiImageViewId);
+            if (v != null && v instanceof MultiImageView) {
+                return (MultiImageView) v;
             }
             return null;
         }
