@@ -51,6 +51,10 @@ public abstract class BaseItemView extends RelativeLayout {
     protected String itemDescription;
 
     protected int itemInputType;
+    protected int itemMin;
+    protected int itemMax;
+    protected int itemMinLines;
+    protected int itemMaxLines;
 
     protected OnViewSenseListener onViewSenseListener;
 
@@ -86,6 +90,10 @@ public abstract class BaseItemView extends RelativeLayout {
         itemDetail = a.getString(R.styleable.BaseItemView_itemDetail);
         itemDescription = a.getString(R.styleable.BaseItemView_itemDescription);
         itemInputType = a.getInt(R.styleable.BaseItemView_android_inputType, 0);
+        itemMinLines = a.getInt(R.styleable.BaseItemView_android_maxLines, 0);
+        itemMaxLines = a.getInt(R.styleable.BaseItemView_android_maxLines, 0);
+        itemMin = a.getInt(R.styleable.BaseItemView_itemMin, -1);
+        itemMax = a.getInt(R.styleable.BaseItemView_itemMax, -1);
         itemName = itemName == null ? "" : itemName;
         itemHint = itemHint == null ? "" : itemHint;
         itemTitle = itemTitle == null ? "" : itemTitle;
@@ -133,6 +141,15 @@ public abstract class BaseItemView extends RelativeLayout {
             viewList.put(viewId, view);
         }
         return (T) view;
+    }
+
+    public String getText(int textViewId) {
+        TextView view = getView(textViewId);
+        if (view != null) {
+            return view.getText().toString();
+        } else {
+            return null;
+        }
     }
 
     public BaseItemView setText(int viewId, @StringRes int textRes) {

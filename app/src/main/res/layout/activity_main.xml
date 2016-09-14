@@ -40,6 +40,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
+        <EditText
+            android:inputType=""
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
     <com.xycode.xylibrary.xRefresher.XRefresher
         android:id="@+id/xRefresher"
         app:bgNoData="#fda"
