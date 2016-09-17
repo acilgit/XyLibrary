@@ -226,7 +226,7 @@ public class XRefresher<T> extends CoordinatorLayout  implements FlexibleDivider
         params.put(PAGE, String.valueOf(actualPage));
         params.put(PAGE_SIZE, String.valueOf(postPageSize));
         String url = refreshRequest.setRequestParamsReturnUrl(params);
-        OkHttp.getInstance().postForm(url, OkHttp.setFormBody(params, false), new OkHttp.OkResponseListener() {
+        OkHttp.postForm(activity, url, OkHttp.setFormBody(params, false), new OkHttp.OkResponseListener() {
             @Override
             public void handleJsonSuccess(Call call, Response response, JSONObject json) {
                 final List<T> newList = refreshRequest.setListData(json);

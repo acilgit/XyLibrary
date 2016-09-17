@@ -9,9 +9,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.telecom.Call;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
@@ -20,9 +22,13 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 
 import com.xycode.xylibrary.annotation.annotationHelper.StateBinder;
+import com.xycode.xylibrary.okHttp.Header;
+import com.xycode.xylibrary.okHttp.OkHttp;
 
 import java.util.LinkedList;
 import java.util.List;
+
+import okhttp3.RequestBody;
 
 /**
  * Created by Administrator on 2016/1/11 0011.
@@ -277,6 +283,17 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
         return null;
     }
+
+    /**
+     * okHttp request
+     */
+    public okhttp3.Call postForm(String url, RequestBody body, Header header, boolean addDefaultHeader, OkHttp.OkResponseListener okResponseListener) {
+        return OkHttp.postForm(getThis(), url, body, header, addDefaultHeader, okResponseListener);
+    }
+
+    /**
+     * Results return
+     */
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
