@@ -24,7 +24,9 @@ import android.view.inputmethod.InputMethodManager;
 import com.xycode.xylibrary.annotation.annotationHelper.StateBinder;
 import com.xycode.xylibrary.okHttp.Header;
 import com.xycode.xylibrary.okHttp.OkHttp;
+import com.xycode.xylibrary.okHttp.Param;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -46,6 +48,8 @@ public abstract class BaseActivity extends AppCompatActivity {
     //    private static AlertDialog loadingDialog;
     private static boolean loadingDialogShowManual = false;
 
+    private List<okhttp3.Call> requestList = new ArrayList<>();
+
     private BroadcastReceiver finishReceiver;
     private BaseActivity thisActivity;
 
@@ -62,6 +66,11 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        for (okhttp3.Call call : requestList) {
+            if (call != null) {
+                call.cancel();
+            }
+        }
         dismissLoadingDialog();
         removeActivity(this);
     }
@@ -288,7 +297,13 @@ public abstract class BaseActivity extends AppCompatActivity {
      * okHttp request
      */
     public okhttp3.Call postForm(String url, RequestBody body, Header header, boolean addDefaultHeader, OkHttp.OkResponseListener okResponseListener) {
-        return OkHttp.postForm(getThis(), url, body, header, addDefaultHeader, okResponseListener);
+        okhttp3.Call call = OkHttp.postForm(getThis(), url, body, header, addDefaultHeader, okResponseListener);
+        requestList.add(call);
+        return call;
+    }
+
+    public  RequestBody setFormBody(Param params) {
+       return OkHttp.setFormBody(params, false);
     }
 
     /**

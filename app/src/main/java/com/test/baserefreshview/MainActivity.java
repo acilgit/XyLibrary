@@ -237,7 +237,7 @@ public class MainActivity extends BaseActivity {
             public String setRequestParamsReturnUrl(Param params) {
 //                params.add("a", "b");
 //                return "http://zhijia51.com/append/store_recommend/sell_house_page";
-                return "http://zhijia51.com/append/store_recommend/sell_house_page";
+                return "http://www.zhijia51.com/append/store_recommend/sell_house_page";
             }
 
             @Override
