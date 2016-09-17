@@ -1,5 +1,6 @@
 package com.xycode.xylibrary.okHttp;
 
+import android.app.Activity;
 import android.app.Application;
 import android.os.Handler;
 import android.os.Looper;
@@ -106,31 +107,40 @@ public class OkHttp {
         return builder.build();
     }
 
-    public Call get(String url, boolean addDefaultHeader, OkResponseListener okResponseListener) {
-        return get(url, null, addDefaultHeader, okResponseListener);
+    public static  Call get(Activity activity, String url, boolean addDefaultHeader, OkResponseListener okResponseListener) {
+        return get(activity, url, null, addDefaultHeader, okResponseListener);
     }
 
-    public Call get(String url, Header header, boolean addDefaultHeader, final OkResponseListener okResponseListener) {
-        return postOrGet(url, null, header, addDefaultHeader, okResponseListener, true);
+    public static  Call get(Activity activity, String url, Header header, boolean addDefaultHeader, final OkResponseListener okResponseListener) {
+        return postOrGet(activity, url, null, header, addDefaultHeader, okResponseListener);
     }
 
-    public Call postForm(String url, @NonNull RequestBody body, OkResponseListener okResponseListener) {
-        return postForm(url, body, null, true, okResponseListener);
+    public static  Call postForm(Activity activity, String url, @NonNull RequestBody body, OkResponseListener okResponseListener) {
+        return postForm(activity, url, body, null, true, okResponseListener);
     }
 
-    public Call postForm(String url, @NonNull RequestBody body, boolean addDefaultHeader, OkResponseListener okResponseListener) {
-        return postForm(url, body, null, addDefaultHeader, okResponseListener);
+    public static  Call postForm(Activity activity, String url, @NonNull RequestBody body, boolean addDefaultHeader, OkResponseListener okResponseListener) {
+        return postForm(activity, url, body, null, addDefaultHeader, okResponseListener);
     }
 
-    public Call postForm(String url, @NonNull RequestBody body, Header header, boolean addDefaultHeader, OkResponseListener okResponseListener) {
-        return postOrGet(url, body, header, addDefaultHeader, okResponseListener, true);
+    public static  Call postForm(Activity activity, String url, @NonNull RequestBody body, Header header, boolean addDefaultHeader, OkResponseListener okResponseListener) {
+        return postOrGet(activity, url, body, header, addDefaultHeader, okResponseListener);
     }
 
-    public Call postForm(String url, RequestBody body, Header header, boolean addDefaultHeader, final OkResponseListener okResponseListener, boolean callbackInUIThread) {
-        return postOrGet(url, body, header, addDefaultHeader, okResponseListener, callbackInUIThread);
-    }
+  /*  public static  Call postForm(Activity activity, String url, RequestBody body, Header header, boolean addDefaultHeader, final OkResponseListener okResponseListener) {
+        return postOrGet(activity, url, body, header, addDefaultHeader, okResponseListener);
+    }*/
 
-    private Call postOrGet(String url, final RequestBody body, final Header header, boolean addDefaultHeader, final OkResponseListener okResponseListener, boolean callbackInUIThread) {
+    /**
+     *
+     * @param url
+     * @param body  when body isNull will use GET
+     * @param header
+     * @param addDefaultHeader
+     * @param okResponseListener
+     * @return
+     */
+    private static  Call postOrGet(final Activity activity, String url, final RequestBody body, final Header header, boolean addDefaultHeader, final OkResponseListener okResponseListener) {
         final Request.Builder builder = new Request.Builder().url(url);
         if (body != null) {
             builder.post(body);
@@ -151,29 +161,26 @@ public class OkHttp {
         final Request request = builder.build();
         final Call call = getClient().newCall(request);
 
-        if (false) {
-        } else {
             new Thread(new Runnable() {
-                final Handler handler = new Handler(Looper.getMainLooper());
+//                final Handler handler = new Handler(Looper.getMainLooper());
 
                 @Override
                 public void run() {
                     try {
                         final Response response = call.execute();
                         if (response != null) {
-                            responseResult(response, call, okResponseListener, handler);
+                            responseResult(response, call, okResponseListener, activity);
                             response.close();
                         } else {
-                            responseResultFailure(call, okResponseListener, handler);
+                            responseResultFailure(call, okResponseListener, activity);
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
-                        responseResultFailure(call, okResponseListener, handler);
+                        responseResultFailure(call, okResponseListener, activity);
                     } finally {
                     }
                 }
             }).start();
-        }
 
         return call;
     }
@@ -186,13 +193,13 @@ public class OkHttp {
      * @param okResponseListener
      * @param fileProgressListener
      */
-    public static Call uploadFile(String url, String fileKey, File file, Param param, final OkResponseListener okResponseListener, OkFileHelper.FileProgressListener fileProgressListener) {
+    public static Call uploadFile(Activity activity, String url, String fileKey, File file, Param param, final OkResponseListener okResponseListener, OkFileHelper.FileProgressListener fileProgressListener) {
         Map<String, File> files = new HashMap<>();
         files.put(fileKey, file);
-        return uploadFiles(url, files, param, okResponseListener, fileProgressListener);
+        return uploadFiles(activity, url, files, param, okResponseListener, fileProgressListener);
     }
 
-    public static Call uploadFiles(String url, Map<String, File> files, Param param, final OkResponseListener okResponseListener, OkFileHelper.FileProgressListener fileProgressListener) {
+    public static Call uploadFiles(final Activity activity, String url, Map<String, File> files, Param param, final OkResponseListener okResponseListener, OkFileHelper.FileProgressListener fileProgressListener) {
         MultipartBody.Builder builder = new MultipartBody.Builder();
         builder.setType(MultipartBody.FORM);
         if (param != null) {
@@ -210,22 +217,22 @@ public class OkHttp {
                 .post(progressRequestBody)
                 .build();
         Call call = OkHttp.getClient().newCall(request);
-        final Handler handler = new Handler(Looper.getMainLooper());
+//        final Handler handler = new Handler(Looper.getMainLooper());
         call.enqueue(new Callback() {
 
             @Override
             public void onResponse(Call call, Response response) {
                 if (response != null) {
-                    responseResult(response, call, okResponseListener, handler);
+                    responseResult(response, call, okResponseListener, activity);
                     response.close();
                 } else {
-                    responseResultFailure(call, okResponseListener, handler);
+                    responseResultFailure(call, okResponseListener, activity);
                 }
             }
 
             @Override
             public void onFailure(Call call, IOException e) {
-                responseResultFailure(call, okResponseListener, handler);
+                responseResultFailure(call, okResponseListener, activity);
             }
 
         });
@@ -240,7 +247,7 @@ public class OkHttp {
      * @param call
      * @param okResponseListener
      */
-    private static void responseResult(final Response response, final Call call, final OkResponseListener okResponseListener, Handler handler) {
+    private static void responseResult(final Response response, final Call call, final OkResponseListener okResponseListener, Activity activity) {
         BaseActivity.dismissLoadingDialogByManualState();
         if (response.isSuccessful()) {
             String responseStr = "";
@@ -253,7 +260,7 @@ public class OkHttp {
                     BaseActivity.dismissLoadingDialogByManualState();
                     return;
                 }
-                handler.post(new Runnable() {
+                activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         switch (resultCode) {
@@ -304,7 +311,7 @@ public class OkHttp {
                 final String parseErrorResult = responseStr;
                 L.e(call.request().url().url().toString() + " [JsonParseFailed] --> " + e.getMessage() + "\nResult: " + responseStr);
                 okInit.judgeResultParseResponseFailed(call, parseErrorResult, e);
-                    handler.post(new Runnable() {
+                activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             try {
@@ -320,7 +327,7 @@ public class OkHttp {
         } else {
             L.e(call.request().url().url().toString() + " [NetworkErrorCode] --> " + response.code());
             okInit.receivedNetworkErrorCode(call, response);
-                handler.post(new Runnable() {
+            activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         try {
@@ -341,12 +348,12 @@ public class OkHttp {
      * @param call
      * @param okResponseListener
      */
-    private static void responseResultFailure(final Call call, final OkResponseListener okResponseListener, Handler handler) {
+    private static void responseResultFailure(final Call call, final OkResponseListener okResponseListener, Activity activity) {
         okInit.networkError(call, call.isCanceled());
         L.e(call.request().url().url().toString() + " [networkError] --> ");
         BaseActivity.dismissLoadingDialogByManualState();
-        if (okResponseListener != null) {
-            handler.post(new Runnable() {
+        if (okResponseListener != null && activity!= null) {
+            activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     try {
