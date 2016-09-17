@@ -23,6 +23,7 @@ import android.widget.TextView;
 import com.alibaba.fastjson.JSONObject;
 import com.xycode.xylibrary.R;
 import com.xycode.xylibrary.adapter.XAdapter;
+import com.xycode.xylibrary.base.BaseActivity;
 import com.xycode.xylibrary.okHttp.OkHttp;
 import com.xycode.xylibrary.okHttp.Param;
 import com.xycode.xylibrary.uiKit.recyclerview.FlexibleDividerDecoration;
@@ -52,8 +53,6 @@ public class XRefresher<T> extends CoordinatorLayout  implements FlexibleDivider
     private static String PAGE_SIZE = "pageSize";
     private static int FIRST_PAGE = 1;
 
-    //    private static XAdapter.ICustomerLoadMore iCustomerLoadMore;
-//    private static int loaderLayout = R.layout.layout_blank;
     private static int[] loadingColorRes = null;
 
     private int loadMoreState = LOADER_NO_MORE;
@@ -69,7 +68,7 @@ public class XRefresher<T> extends CoordinatorLayout  implements FlexibleDivider
     private float hintSize;
     private String hint;
 
-    private Activity activity;
+    private BaseActivity activity;
 
     private RefreshState state;
     private XAdapter<T> adapter;
@@ -144,23 +143,23 @@ public class XRefresher<T> extends CoordinatorLayout  implements FlexibleDivider
 
     }
 
-    public void setup(Activity activity, XAdapter<T> adapter, boolean loadMore, OnSwipeListener swipeListener, RefreshRequest refreshRequest) {
+    public void setup(BaseActivity activity, XAdapter<T> adapter, boolean loadMore, OnSwipeListener swipeListener, RefreshRequest refreshRequest) {
         init(activity, adapter, loadMore, swipeListener, refreshRequest, 10);
     }
 
-    public void setup(Activity activity, XAdapter<T> adapter, boolean loadMore, OnSwipeListener swipeListener, RefreshRequest refreshRequest, int refreshPageSize) {
+    public void setup(BaseActivity activity, XAdapter<T> adapter, boolean loadMore, OnSwipeListener swipeListener, RefreshRequest refreshRequest, int refreshPageSize) {
         init(activity, adapter, loadMore, swipeListener, refreshRequest, refreshPageSize);
     }
 
-    public void setup(Activity activity, XAdapter<T> adapter, boolean loadMore, @NonNull RefreshRequest refreshRequest) {
+    public void setup(BaseActivity activity, XAdapter<T> adapter, boolean loadMore, @NonNull RefreshRequest refreshRequest) {
         init(activity, adapter, loadMore, null, refreshRequest, 10);
     }
 
-    public void setup(Activity activity, XAdapter<T> adapter, boolean loadMore, @NonNull RefreshRequest refreshRequest, int refreshPageSize) {
+    public void setup(BaseActivity activity, XAdapter<T> adapter, boolean loadMore, @NonNull RefreshRequest refreshRequest, int refreshPageSize) {
         init(activity, adapter, loadMore, null, refreshRequest, refreshPageSize);
     }
 
-    private void init(Activity activity, XAdapter<T> adapter, boolean loadMore, final OnSwipeListener swipeListener, final RefreshRequest refreshRequest, int refreshPageSize) {
+    private void init(BaseActivity activity, XAdapter<T> adapter, boolean loadMore, final OnSwipeListener swipeListener, final RefreshRequest refreshRequest, int refreshPageSize) {
         recyclerView.setLayoutManager(new LinearLayoutManager(activity));
         this.loadMore = loadMore;
         this.activity = activity;
@@ -226,7 +225,7 @@ public class XRefresher<T> extends CoordinatorLayout  implements FlexibleDivider
         params.put(PAGE, String.valueOf(actualPage));
         params.put(PAGE_SIZE, String.valueOf(postPageSize));
         String url = refreshRequest.setRequestParamsReturnUrl(params);
-        OkHttp.postForm(activity, url, OkHttp.setFormBody(params, false), new OkHttp.OkResponseListener() {
+        activity.postForm(url, activity.setFormBody(params), null, true, new OkHttp.OkResponseListener() {
             @Override
             public void handleJsonSuccess(Call call, Response response, JSONObject json) {
                 final List<T> newList = refreshRequest.setListData(json);
