@@ -2,8 +2,6 @@ package com.xycode.xylibrary.okHttp;
 
 import android.app.Activity;
 import android.app.Application;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 
 import com.alibaba.fastjson.JSON;
@@ -47,9 +45,6 @@ public class OkHttp {
     public static final int NETWORK_ERROR_CODE = 881;
     public static final int NO_NETWORK = 882;
 
-    public static final long READ_TIMEOUT = 30;
-    public static final long CONNECT_TIMEOUT = 10;
-    public static final long WRITE_TIMEOUT = 60;
 
     private static OkHttpClient client;
     private static IOkInit okInit;
@@ -74,6 +69,13 @@ public class OkHttp {
         }
     }
 
+    public static void init(Application app, IOkInit iOkInit, OkOptions okOptions) {
+        if (okInit == null) {
+            application = app;
+            okInit = iOkInit;
+        }
+    }
+
     public static void setMaxTransFileCount(int max) {
         getClient().dispatcher().setMaxRequestsPerHost(max);
     }
@@ -81,9 +83,9 @@ public class OkHttp {
     public static OkHttpClient getClient() {
         if (client == null) {
             client = new OkHttpClient.Builder()
-                    .readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
-                    .connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS)
-                    .writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS)
+                    .readTimeout(OkOptions.readTimeout, TimeUnit.SECONDS)
+                    .connectTimeout(OkOptions.connectTimeout, TimeUnit.SECONDS)
+                    .writeTimeout(OkOptions.writeTimeout, TimeUnit.SECONDS)
                     .build();
         }
         return client;
@@ -159,6 +161,7 @@ public class OkHttp {
             }
         }
         final Request request = builder.build();
+
         final Call call = getClient().newCall(request);
 
             new Thread(new Runnable() {
@@ -478,5 +481,17 @@ public class OkHttp {
 
     }
 
+    public static class OkOptions {
+
+        public static long readTimeout = 60;
+        public static long connectTimeout = 30;
+        public static long writeTimeout = 120;
+
+        public OkOptions(long readTimeout, long connectTimeout, long writeTimeout) {
+            OkOptions.readTimeout = readTimeout;
+            OkOptions.connectTimeout = connectTimeout;
+            OkOptions.writeTimeout = writeTimeout;
+        }
+    }
 
 }

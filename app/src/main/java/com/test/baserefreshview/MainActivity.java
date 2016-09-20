@@ -249,7 +249,7 @@ public class MainActivity extends BaseActivity {
             protected boolean ignoreSameItem(ContentBean newItem, ContentBean listItem) {
                 return newItem.getId().equals(listItem.getId());
             }
-        });
+        }, 3);
         xRefresher.setRecyclerViewDivider(android.R.color.holo_orange_light, R.dimen.margin32, R.dimen.sideMargin, R.dimen.sideMargin);
 //        xRefresher.refreshList();
     }

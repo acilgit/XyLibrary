@@ -37,20 +37,12 @@
         app:itemIcon="@mipmap/ic_launcher"
         app:itemName="你"
         app:itemContent="屌你"
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-        <EditText
-            android:inputType=""
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
     <com.xycode.xylibrary.xRefresher.XRefresher
         android:id="@+id/xRefresher"
-        app:bgNoData="#fda"
-        app:hint="非常好，没数据"
-        app:hintColor="#f33"
-        app:hintSize="14dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 

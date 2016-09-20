@@ -4,7 +4,6 @@ package com.xycode.xylibrary.xRefresher;
  * Created by XY on 2016/6/18.
  */
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.support.annotation.ColorRes;
@@ -49,10 +48,13 @@ public class XRefresher<T> extends CoordinatorLayout  implements FlexibleDivider
 
     private static final int REFRESH = 1;
     private static final int LOAD = 2;
+    private static int FIRST_PAGE = 1;
     private static String PAGE = "page";
     private static String PAGE_SIZE = "pageSize";
-    private static int FIRST_PAGE = 1;
 
+    private static String defaultNoDataText = "";
+
+    private static int defaultBackgroundNoData = 1;
     private static int[] loadingColorRes = null;
 
     private int loadMoreState = LOADER_NO_MORE;
@@ -89,7 +91,7 @@ public class XRefresher<T> extends CoordinatorLayout  implements FlexibleDivider
 
     public static void setCustomerLoadMoreView(@LayoutRes int footerLayout) {
 //        XRefresher.loaderLayout = footerLayout;
-        LoadMoreView.setlayoutId(footerLayout);
+        LoadMoreView.setLayoutId(footerLayout);
     }
 
     public XRefresher(Context context) {
@@ -112,8 +114,10 @@ public class XRefresher<T> extends CoordinatorLayout  implements FlexibleDivider
         backgroundNoData = typedArray.getColor(R.styleable.XRefresher_bgNoData, 1);
         if (backgroundNoData == 1) {
             backgroundNoData = typedArray.getResourceId(R.styleable.XRefresher_bgNoData, 1);
+            if(defaultBackgroundNoData!=1 && backgroundNoData==1) backgroundNoData = defaultBackgroundNoData;
             backgroundNoDataIsRes = backgroundNoData != 1;
         }
+        if(hint == null) hint = "";
 
         typedArray.recycle();
     }
@@ -127,7 +131,7 @@ public class XRefresher<T> extends CoordinatorLayout  implements FlexibleDivider
         loadMoreView = (LoadMoreView) findViewById(R.id.loadMoreView);
         textView = (TextView) findViewById(R.id.tvMain);
 
-        textView.setText(hint);
+        textView.setText(hint.isEmpty() ? defaultNoDataText : hint);
         if (hintSize != 1) textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, hintSize);
         if (hintColor != 1) textView.setTextColor(hintColor);
         if (backgroundIsRes) {
@@ -180,6 +184,9 @@ public class XRefresher<T> extends CoordinatorLayout  implements FlexibleDivider
         }
         if (loadingColorRes != null) {
             swipe.setColorSchemeResources(loadingColorRes);
+        }
+        if (refreshRequest == null) {
+            textView.setVisibility(GONE);
         }
     }
 
@@ -386,6 +393,13 @@ public class XRefresher<T> extends CoordinatorLayout  implements FlexibleDivider
         XRefresher.PAGE_SIZE = pageSize;
         XRefresher.FIRST_PAGE = firstPage;
     }
+
+    public static void setDefaultNoDataText(String hint, @ColorRes int bgColor) {
+        XRefresher.defaultNoDataText = hint;
+        XRefresher.defaultBackgroundNoData = bgColor;
+    }
+
+
 
     private void setLoadMoreState(int loadMoreState) {
         this.loadMoreState = loadMoreState;

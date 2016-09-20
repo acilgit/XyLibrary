@@ -3,6 +3,8 @@ package com.xycode.xylibrary.xRefresher;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.RelativeLayout;
 
 import com.xycode.xylibrary.R;
@@ -13,6 +15,15 @@ import com.xycode.xylibrary.R;
 public class LoadMoreView extends RelativeLayout {
 
     private static int layoutId = R.layout.layout_blank;
+
+    private static final int animating = 0;
+    private static final int showing = 1;
+    private static final int hidden = 2;
+
+    private Animation animationShow;
+    private Animation animationHide;
+
+    private int state = hidden;
 
     public LoadMoreView(Context context) {
         super(context, null);
@@ -26,18 +37,67 @@ public class LoadMoreView extends RelativeLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
         LayoutInflater.from(getContext()).inflate(layoutId, this, true);
-        hide();
+        setVisibility(GONE);
+
+        animationShow = AnimationUtils.loadAnimation(getContext(), R.animator.move_up);
+        animationHide = AnimationUtils.loadAnimation(getContext(), R.animator.move_down);
+        animationShow.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                if (state == hidden) {
+                    clearAnimation();
+                    startAnimation(animationHide);
+                } else {
+                    state = showing;
+                }
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        animationHide.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                state = hidden;
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
     }
 
     public void show() {
-        setVisibility(VISIBLE);
+        if (state == hidden) {
+            state = animating;
+            clearAnimation();
+            startAnimation(animationShow);
+        }
     }
 
     public void hide() {
-        setVisibility(GONE);
+        if (state == showing) {
+            clearAnimation();
+            startAnimation(animationHide);
+        } else {
+            state = hidden;
+        }
     }
 
-    public static void setlayoutId(int layoutId) {
+    public static void setLayoutId(int layoutId) {
         LoadMoreView.layoutId = layoutId;
 
     }

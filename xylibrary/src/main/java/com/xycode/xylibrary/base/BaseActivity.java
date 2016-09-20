@@ -9,11 +9,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.telecom.Call;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
@@ -296,6 +294,9 @@ public abstract class BaseActivity extends AppCompatActivity {
     /**
      * okHttp request
      */
+    public okhttp3.Call postForm(String url, Param param, boolean addDefaultHeader, OkHttp.OkResponseListener okResponseListener) {
+       return OkHttp.postForm(getThis(), url, setFormBody(param), null, addDefaultHeader, okResponseListener);
+    }
     public okhttp3.Call postForm(String url, RequestBody body, Header header, boolean addDefaultHeader, OkHttp.OkResponseListener okResponseListener) {
         okhttp3.Call call = OkHttp.postForm(getThis(), url, body, header, addDefaultHeader, okResponseListener);
         requestList.add(call);
