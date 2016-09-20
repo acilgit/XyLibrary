@@ -136,6 +136,7 @@ public class App extends Application {
         });
 
         XRefresher.setCustomerLoadMoreView(R.layout.layout_load_more);
+        XRefresher.setDefaultNoDataText("暂无数据", 1);
 
   /*      XRefresher.setCustomerFooterView(R.layout.layout_load_more, new XAdapter.ICustomerLoadMore() {
             @Override

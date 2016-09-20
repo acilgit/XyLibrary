@@ -21,6 +21,9 @@ import android.widget.TextView;
 import com.andexert.library.RippleView;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.xycode.xylibrary.R;
+import com.xycode.xylibrary.utils.DateUtils;
+
+import java.util.Calendar;
 
 /**
  * Created by XY on 2016-08-08.
@@ -55,6 +58,9 @@ public abstract class BaseItemView extends RelativeLayout {
     protected int itemMax;
     protected int itemMinLines;
     protected int itemMaxLines;
+
+    private int[] date = new int[]{0, 0, 0};
+    private int[] time = new int[]{0, 0};
 
     protected OnViewSenseListener onViewSenseListener;
 
@@ -271,8 +277,87 @@ public abstract class BaseItemView extends RelativeLayout {
         return this;
     }
 
+    public Calendar getDateTime() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(date[0], date[1], date[2], time[0], time[1]);
+        return calendar;
+    }
+
+    public void setDate(int dateViewId, String dateFormat, int... yearMonthDay) {
+        date = yearMonthDay;
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(date[0], date[1], date[2], time[0], time[1]);
+        setText(dateViewId, DateUtils.formatDateTime(dateFormat, calendar.getTime()));
+    }
+
+    public void setDateTime(int dateTimeViewId, String dateFormat, int... yearMonthDayHourMinute) {
+        date[0] =  yearMonthDayHourMinute[0];
+        date[1] =  yearMonthDayHourMinute[1];
+        date[2] =  yearMonthDayHourMinute[2];
+        time[0] =  yearMonthDayHourMinute[3];
+        time[1] =  yearMonthDayHourMinute[4];
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(date[0], date[1], date[2], time[0], time[1]);
+        setText(dateTimeViewId, DateUtils.formatDateTime(dateFormat, calendar.getTime()));
+    }
+
+    public void setTime(int timeViewId, String dateFormat, int... hourMinute) {
+        time = hourMinute;
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(date[0], date[1], date[2], time[0], time[1]);
+        setText(timeViewId, DateUtils.formatDateTime(dateFormat, calendar.getTime()));
+    }
+
     public void setOnViewSenseListener(OnViewSenseListener onViewSenseListener) {
         this.onViewSenseListener = onViewSenseListener;
+    }
+
+    public void setItemNum(int itemNum) {
+        this.itemNum = itemNum;
+    }
+
+    public void setItemCount(int itemCount) {
+        this.itemCount = itemCount;
+    }
+
+    public void setItemIndex(int itemIndex) {
+        this.itemIndex = itemIndex;
+    }
+
+    public boolean isItemCheck() {
+        return itemCheck;
+    }
+
+    public void setItemCheck(boolean itemCheck) {
+        this.itemCheck = itemCheck;
+    }
+
+    public int getItemMin() {
+        return itemMin;
+    }
+
+    public void setItemMin(int itemMin) {
+        this.itemMin = itemMin;
+    }
+
+    public int getItemMax() {
+        return itemMax;
+    }
+
+    public void setItemMax(int itemMax) {
+        this.itemMax = itemMax;
+    }
+
+    public String getItemHint() {
+        return itemHint;
+    }
+
+    public void setItemHint(String itemHint) {
+        this.itemHint = itemHint;
+    }
+
+    public void setItemFloat(float itemFloat) {
+        this.itemFloat = itemFloat;
     }
 
     protected abstract int getLayoutId(int type);

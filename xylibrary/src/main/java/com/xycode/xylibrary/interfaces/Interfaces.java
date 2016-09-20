@@ -9,4 +9,10 @@ public class Interfaces {
         String getDataString(T data);
     }
 
+    public interface OnDialogClickListener<T> {
+        void onCommit(T obj);
+
+        void onCancel(T obj);
+    }
+
 }
