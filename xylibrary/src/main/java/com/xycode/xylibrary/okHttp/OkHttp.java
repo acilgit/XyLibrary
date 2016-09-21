@@ -164,24 +164,20 @@ public class OkHttp {
 
         final Call call = getClient().newCall(request);
 
-            new Thread(new Runnable() {
-//                final Handler handler = new Handler(Looper.getMainLooper());
-
-                @Override
-                public void run() {
-                    try {
-                        final Response response = call.execute();
-                        if (response != null) {
-                            responseResult(response, call, okResponseListener, activity);
-                            response.close();
-                        } else {
-                            responseResultFailure(call, okResponseListener, activity);
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
+            new Thread(() -> {
+                try {
+                    final Response response = call.execute();
+                    L.e("call cancel --> " + call.isCanceled());
+                    if (response != null) {
+                        responseResult(response, call, okResponseListener, activity);
+                        response.close();
+                    } else {
                         responseResultFailure(call, okResponseListener, activity);
-                    } finally {
                     }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    responseResultFailure(call, okResponseListener, activity);
+                } finally {
                 }
             }).start();
 
@@ -263,50 +259,48 @@ public class OkHttp {
                     BaseActivity.dismissLoadingDialogByManualState();
                     return;
                 }
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        switch (resultCode) {
-                            case RESULT_SUCCESS:
-                                    L.e(call.request().url().url().toString() + " [Success] --> " + strResult);
-                                    try {
-                                        okResponseListener.handleJsonSuccess(call, response, jsonObject);
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
+                if(call.isCanceled()) return;
+                activity.runOnUiThread(() -> {
+                    switch (resultCode) {
+                        case RESULT_SUCCESS:
+                                L.e(call.request().url().url().toString() + " [Success] --> " + strResult);
+                                try {
+                                    okResponseListener.handleJsonSuccess(call, response, jsonObject);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
 
-                                break;
-                            case RESULT_ERROR:
-                                    L.e(call.request().url().url().toString() + " [Error] --> " + strResult);
-                                    try {
-                                        okResponseListener.handleJsonError(call, response, jsonObject);
-                                        okResponseListener.handleAllFailureSituation(call, resultCode);
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
+                            break;
+                        case RESULT_ERROR:
+                                L.e(call.request().url().url().toString() + " [Error] --> " + strResult);
+                                try {
+                                    okResponseListener.handleJsonError(call, response, jsonObject);
+                                    okResponseListener.handleAllFailureSituation(call, resultCode);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
 
-                                break;
-                            case RESULT_VERIFY_ERROR:
-                                    L.e(call.request().url().url().toString() + " [VerifyError] --> " + strResult);
-                                    try {
-                                        okResponseListener.handleJsonVerifyError(call, response, jsonObject);
-                                        okResponseListener.handleAllFailureSituation(call, resultCode);
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
+                            break;
+                        case RESULT_VERIFY_ERROR:
+                                L.e(call.request().url().url().toString() + " [VerifyError] --> " + strResult);
+                                try {
+                                    okResponseListener.handleJsonVerifyError(call, response, jsonObject);
+                                    okResponseListener.handleAllFailureSituation(call, resultCode);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
 
-                                break;
-                            default:
-                                    L.e(call.request().url().url().toString() + " [OtherResultCode] --> " + strResult);
-                                    try {
-                                        okResponseListener.handleJsonOther(call, response, jsonObject);
-                                        okResponseListener.handleAllFailureSituation(call, resultCode);
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
+                            break;
+                        default:
+                                L.e(call.request().url().url().toString() + " [OtherResultCode] --> " + strResult);
+                                try {
+                                    okResponseListener.handleJsonOther(call, response, jsonObject);
+                                    okResponseListener.handleAllFailureSituation(call, resultCode);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
 
-                                break;
-                        }
+                            break;
                     }
                 });
             } catch (IOException e) {
@@ -314,33 +308,29 @@ public class OkHttp {
                 final String parseErrorResult = responseStr;
                 L.e(call.request().url().url().toString() + " [JsonParseFailed] --> " + e.getMessage() + "\nResult: " + responseStr);
                 okInit.judgeResultParseResponseFailed(call, parseErrorResult, e);
-                activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                okResponseListener.handleParseError(call, parseErrorResult);
-                                okResponseListener.handleAllFailureSituation(call, RESULT_PARSE_FAILED);
-                            } catch (Exception e1) {
-                                e1.printStackTrace();
-                            }
-                        }
-                    });
+                if(call.isCanceled()) return;
+                activity.runOnUiThread(() -> {
+                    try {
+                        okResponseListener.handleParseError(call, parseErrorResult);
+                        okResponseListener.handleAllFailureSituation(call, RESULT_PARSE_FAILED);
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                    }
+                });
 
             }
         } else {
             L.e(call.request().url().url().toString() + " [NetworkErrorCode] --> " + response.code());
             okInit.receivedNetworkErrorCode(call, response);
-            activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            okResponseListener.handleResponseFailure(call, response);
-                            okResponseListener.handleAllFailureSituation(call, NETWORK_ERROR_CODE);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
+            if(call.isCanceled()) return;
+            activity.runOnUiThread(() -> {
+                try {
+                    okResponseListener.handleResponseFailure(call, response);
+                    okResponseListener.handleAllFailureSituation(call, NETWORK_ERROR_CODE);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
 
         }
     }
@@ -356,15 +346,13 @@ public class OkHttp {
         L.e(call.request().url().url().toString() + " [networkError] --> ");
         BaseActivity.dismissLoadingDialogByManualState();
         if (okResponseListener != null && activity!= null) {
-            activity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        okResponseListener.handleNoServerNetwork(call, call.isCanceled());
-                        okResponseListener.handleAllFailureSituation(call, NO_NETWORK);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+            if(call.isCanceled()) return;
+            activity.runOnUiThread(() -> {
+                try {
+                    okResponseListener.handleNoServerNetwork(call, call.isCanceled());
+                    okResponseListener.handleAllFailureSituation(call, NO_NETWORK);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             });
 
@@ -492,6 +480,8 @@ public class OkHttp {
             OkOptions.connectTimeout = connectTimeout;
             OkOptions.writeTimeout = writeTimeout;
         }
+
+
     }
 
 }

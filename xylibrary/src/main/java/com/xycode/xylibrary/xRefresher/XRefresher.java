@@ -31,7 +31,6 @@ import com.xycode.xylibrary.uiKit.recyclerview.HorizontalDividerItemDecoration;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import okhttp3.Call;
@@ -172,12 +171,9 @@ public class XRefresher<T> extends CoordinatorLayout  implements FlexibleDivider
         this.state = new RefreshState(refreshPageSize);
         this.adapter = adapter;
         this.recyclerView.setAdapter(adapter);
-        ((SwipeRefreshLayout) findViewById(R.id.swipe)).setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                if (swipeListener != null) swipeListener.onRefresh();
-                if (refreshRequest != null) refreshList();
-            }
+        ((SwipeRefreshLayout) findViewById(R.id.swipe)).setOnRefreshListener(() -> {
+            if (swipeListener != null) swipeListener.onRefresh();
+            if (refreshRequest != null) refreshList();
         });
         if (loadMore) {
             setLoadMoreListener();
@@ -236,7 +232,7 @@ public class XRefresher<T> extends CoordinatorLayout  implements FlexibleDivider
             @Override
             public void handleJsonSuccess(Call call, Response response, JSONObject json) {
                 final List<T> newList = refreshRequest.setListData(json);
-                state.setLastPage( (refreshType != REFRESH) && newList.size() < postPageSize);
+                state.setLastPage(/* (refreshType != REFRESH) &&*/ newList.size() < postPageSize);
                 final List<T> list = new ArrayList<>();
                 switch (refreshType) {
                     case REFRESH:
@@ -260,11 +256,7 @@ public class XRefresher<T> extends CoordinatorLayout  implements FlexibleDivider
                         }
                         if (!hasSameItem) list.add(newItem);
                     }
-                    Collections.sort(list, new Comparator<T>() {
-                        public int compare(T arg0, T arg1) {
-                            return refreshRequest.compareTo(arg0, arg1);
-                        }
-                    });
+                    Collections.sort(list, (arg0, arg1) -> refreshRequest.compareTo(arg0, arg1));
                     getAdapter().setDataList(list);
                 } else if (refreshType == REFRESH) {
                     getAdapter().setDataList(list);

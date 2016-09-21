@@ -18,7 +18,8 @@ public class LoadMoreView extends RelativeLayout {
 
     private static final int animating = 0;
     private static final int showing = 1;
-    private static final int hidden = 2;
+    private static final int hiding = 2;
+    private static final int hidden = 3;
 
     private Animation animationShow;
     private Animation animationHide;
@@ -44,13 +45,12 @@ public class LoadMoreView extends RelativeLayout {
         animationShow.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
-
             }
 
             @Override
             public void onAnimationEnd(Animation animation) {
                 if (state == hidden) {
-                    clearAnimation();
+//                    clearAnimation();
                     startAnimation(animationHide);
                 } else {
                     state = showing;
@@ -65,7 +65,7 @@ public class LoadMoreView extends RelativeLayout {
         animationHide.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
-
+                state = hiding;
             }
 
             @Override
@@ -92,7 +92,7 @@ public class LoadMoreView extends RelativeLayout {
         if (state == showing) {
             clearAnimation();
             startAnimation(animationHide);
-        } else {
+        } else if(state != hiding){
             state = hidden;
         }
     }

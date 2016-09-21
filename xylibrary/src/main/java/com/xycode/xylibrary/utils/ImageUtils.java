@@ -659,12 +659,7 @@ public class ImageUtils {
     }
 
     public static void setFrescoViewUri(final SimpleDraweeView imageView, Uri uri, Uri previewUri) {
-        setFrescoViewUri(imageView, uri, previewUri, new IGetFrescoImageInfo() {
-            @Override
-            public void afterGotImageInfo(ImageInfo imageInfo, float ratio) {
-                imageView.setAspectRatio(ratio);
-            }
-        });
+        setFrescoViewUri(imageView, uri, previewUri, (imageInfo, ratio) -> imageView.setAspectRatio(ratio));
     }
 
     public static void setFrescoViewUri(SimpleDraweeView imageView, Uri uri, Uri previewUri, final IGetFrescoImageInfo iGetFrescoImageInfo) {
