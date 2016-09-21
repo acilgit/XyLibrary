@@ -1,7 +1,6 @@
 package com.test.baserefreshview;
 
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
@@ -115,21 +114,15 @@ public class MainActivity extends BaseActivity {
                     }
                 });*/
 
-                        mvItem.setOverlayDrawableListener(new MultiImageView.OnImageOverlayListener() {
-                            @Override
-                            public Drawable setOverlayDrawable(int position) {
-                                if (position == 8) {
-                                    return getResources().getDrawable(R.drawable.more_images);
-                                }
-                                return null;
+                        mvItem.setOverlayDrawableListener(position -> {
+                            if (position == 8) {
+                                return getResources().getDrawable(R.drawable.more_images);
                             }
+                            return null;
                         });
-                        mvItem.setOnItemClickListener(new MultiImageView.OnItemClickListener() {
-                            @Override
-                            public void onItemClick(View view, int position, UrlData urlData) {
-                                WH wh = Tools.getWidthHeightFromFilename(dataList.get(holder.getAdapterPosition()).getCoverPicture(), "_wh", "x");
-                                TS.show(getThis(), "wh:" + wh.width + " h:" + wh.height + " r:" + wh.getAspectRatio());
-                            }
+                        mvItem.setOnItemClickListener((view, position, urlData) -> {
+                            WH wh = Tools.getWidthHeightFromFilename(dataList.get(holder.getAdapterPosition()).getCoverPicture(), "_wh", "x");
+                            TS.show(getThis(), "wh:" + wh.width + " h:" + wh.height + " r:" + wh.getAspectRatio());
                         });
                         break;
                     default:
@@ -232,7 +225,12 @@ public class MainActivity extends BaseActivity {
         adapter.addHeader(4, R.layout.layout_recyclerview);
 //        adapter.setFooter(R.layout.footer);
 
-        xRefresher.setup(this, adapter, true, new XRefresher.RefreshRequest<ContentBean>() {
+        xRefresher.setup(this, adapter, true, new XRefresher.OnSwipeListener() {
+            @Override
+            public void onRefresh() {
+
+            }
+        }, new XRefresher.RefreshRequest<ContentBean>() {
             @Override
             public String setRequestParamsReturnUrl(Param params) {
 //                params.add("a", "b");
