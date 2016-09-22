@@ -82,7 +82,7 @@ public abstract class BaseItemView extends RelativeLayout {
         itemBool = a.getBoolean(R.styleable.BaseItemView_itemBool, false);
         itemCheck = a.getBoolean(R.styleable.BaseItemView_itemCheck, false);
         itemVisible = a.getInt(R.styleable.BaseItemView_itemVisible, VISIBLE);
-        itemChildVisible = a.getInt(R.styleable.BaseItemView_itemVisible, VISIBLE);
+        itemChildVisible = a.getInt(R.styleable.BaseItemView_itemChildVisible, VISIBLE);
         itemFloat = a.getFloat(R.styleable.BaseItemView_itemFloat, 0);
         itemIcon = a.getResourceId(R.styleable.BaseItemView_itemIcon, 0);
         itemColor = a.getResourceId(R.styleable.BaseItemView_itemColor, 0);
