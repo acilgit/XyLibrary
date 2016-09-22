@@ -76,6 +76,7 @@ public abstract class BaseItemView extends RelativeLayout {
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.BaseItemView);
 
+
         itemNum = a.getInt(R.styleable.BaseItemView_itemNum, 0);
         itemCount = a.getInt(R.styleable.BaseItemView_itemCount, 0);
         itemIndex = a.getInt(R.styleable.BaseItemView_itemIndex, 0);
