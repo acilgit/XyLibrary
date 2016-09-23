@@ -27,6 +27,7 @@ import com.xycode.xylibrary.okHttp.OkHttp;
 import com.xycode.xylibrary.okHttp.Param;
 import com.xycode.xylibrary.uiKit.recyclerview.FlexibleDividerDecoration;
 import com.xycode.xylibrary.uiKit.recyclerview.HorizontalDividerItemDecoration;
+import com.xycode.xylibrary.utils.TS;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -55,6 +56,8 @@ public class XRefresher<T> extends CoordinatorLayout  implements FlexibleDivider
 
     private static int defaultBackgroundNoData = 1;
     private static int[] loadingColorRes = null;
+
+    private static InitRefresher initRefresher = null;
 
     private int loadMoreState = LOADER_NO_MORE;
 
@@ -266,7 +269,7 @@ public class XRefresher<T> extends CoordinatorLayout  implements FlexibleDivider
 
             @Override
             public void handleJsonError(Call call, Response response, JSONObject json) {
-
+               if(initRefresher!= null) initRefresher.handleError(call, json);
             }
 
             @Override
@@ -479,6 +482,15 @@ public class XRefresher<T> extends CoordinatorLayout  implements FlexibleDivider
          * Refresh
          */
         void onRefresh();
+    }
+
+    public interface InitRefresher {
+
+         void handleError(Call call, JSONObject json);
+    }
+
+    public static void init() {
+
     }
 
     public static class RefreshState implements Serializable {

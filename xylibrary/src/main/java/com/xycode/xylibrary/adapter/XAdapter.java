@@ -74,19 +74,9 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
             final CustomHolder holder = new CustomHolder(itemView) {
                 @Override
                 protected void createHolder(final CustomHolder holder) {
-                    holder.onClickListener = new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            handleItemViewClick(holder, null, v.getId(), new ViewTypeUnit(viewType, footerLayout));
-                        }
-                    };
+                    holder.onClickListener = v -> handleItemViewClick(holder, null, v.getId(), new ViewTypeUnit(viewType, footerLayout));
 
-                    holder.onLongClickListener = new View.OnLongClickListener() {
-                        @Override
-                        public boolean onLongClick(View v) {
-                            return handleItemViewLongClick(holder, null, v.getId(), new ViewTypeUnit(viewType, footerLayout));
-                        }
-                    };
+                    holder.onLongClickListener = v -> handleItemViewLongClick(holder, null, v.getId(), new ViewTypeUnit(viewType, footerLayout));
                     creatingFooter(holder);
                 }
             };
@@ -99,19 +89,9 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
                     final CustomHolder holder = new CustomHolder(itemView) {
                         @Override
                         protected void createHolder(final CustomHolder holder) {
-                            holder.onClickListener = new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    handleItemViewClick(holder, null, v.getId(), new ViewTypeUnit(headerKey, headerLayoutIdList.get(headerKey)));
-                                }
-                            };
+                            holder.onClickListener = v -> handleItemViewClick(holder, null, v.getId(), new ViewTypeUnit(headerKey, headerLayoutIdList.get(headerKey)));
 
-                            holder.onLongClickListener = new View.OnLongClickListener() {
-                                @Override
-                                public boolean onLongClick(View v) {
-                                    return handleItemViewLongClick(holder, null, v.getId(), new ViewTypeUnit(headerKey, headerLayoutIdList.get(headerKey)));
-                                }
-                            };
+                            holder.onLongClickListener = v -> handleItemViewLongClick(holder, null, v.getId(), new ViewTypeUnit(headerKey, headerLayoutIdList.get(headerKey)));
                             creatingHeader(holder, headerKey);
                         }
                     };
@@ -129,19 +109,9 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
             final CustomHolder holder = new CustomHolder(itemView) {
                 @Override
                 protected void createHolder(final CustomHolder holder) {
-                    holder.onClickListener = new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            handleItemViewClick(holder, dataList.get(holder.getAdapterPosition() - getHeaderCount()), v.getId(), viewTypeUnit);
-                        }
-                    };
+                    holder.onClickListener = v -> handleItemViewClick(holder, dataList.get(holder.getAdapterPosition() - getHeaderCount()), v.getId(), viewTypeUnit);
 
-                    holder.onLongClickListener = new View.OnLongClickListener() {
-                        @Override
-                        public boolean onLongClick(View v) {
-                            return handleItemViewLongClick(holder, dataList.get(holder.getAdapterPosition() - getHeaderCount()), v.getId(), viewTypeUnit);
-                        }
-                    };
+                    holder.onLongClickListener = v -> handleItemViewLongClick(holder, dataList.get(holder.getAdapterPosition() - getHeaderCount()), v.getId(), viewTypeUnit);
                     creatingHolder(holder, dataList, viewTypeUnit);
                 }
             };

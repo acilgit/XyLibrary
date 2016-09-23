@@ -13,11 +13,6 @@ android {
         versionName "0.2.35"
     }
 
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-
     buildTypes {
         release {
             minifyEnabled false
@@ -25,6 +20,10 @@ android {
         }
     }
     compileOptions.encoding ="UTF-8"
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 /*task sourcesJar(type: Jar) {
@@ -49,7 +48,7 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 }*/
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:24.1.1'
     compile 'com.android.support:design:24.1.1'
@@ -79,7 +78,7 @@ ext {
     siteUrl = 'https://github.com/acilgit/XyLibrary'
     gitUrl = 'https://github.com/acilgit/XyLibrary.git'
 
-    libraryVersion = '0.2.86'
+    libraryVersion = '0.2.87'
 
     developerId = 'acil'
     developerName = 'acil-fong'

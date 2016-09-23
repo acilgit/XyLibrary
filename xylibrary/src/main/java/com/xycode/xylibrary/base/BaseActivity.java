@@ -38,6 +38,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     public static final int REQUEST_CODE_GOT_RESULT = 100;
     public static final int REQUEST_CODE_PHOTO_SELECT = 202;
     public static final int REQUEST_CODE_MULTI_PHOTO_SELECT = 203;
+    public static final int REQUEST_CODE_GOT_PHONE_NUMBER = 301;
 
     private static List<Activity> activities = new LinkedList<>();
 
@@ -233,12 +234,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     public static void finishAllActivity() {
         for (final Activity activity : activities) {
             if (activity != null) {
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        activity.finish();
-                    }
-                });
+                activity.runOnUiThread(() -> activity.finish());
             } else {
                 activities.remove(activity);
             }
