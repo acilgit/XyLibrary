@@ -18,10 +18,12 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.provider.ContactsContract;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DimenRes;
+import android.support.v7.app.AlertDialog;
 import android.text.Html;
 import android.util.Base64;
 import android.view.View;
@@ -31,6 +33,7 @@ import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.xycode.xylibrary.base.BaseActivity;
 import com.xycode.xylibrary.interfaces.Interfaces;
 import com.xycode.xylibrary.uiKit.recyclerview.HorizontalDividerItemDecoration;
 import com.xycode.xylibrary.unit.StringData;
@@ -702,6 +705,31 @@ public class Tools {
         Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + phoneNo));
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
+    }
+
+    public static void pickNumber(Activity context) {
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType(ContactsContract.CommonDataKinds.Phone.CONTENT_TYPE);
+        context.startActivityForResult(intent, BaseActivity.REQUEST_CODE_GOT_PHONE_NUMBER);
+    }
+
+
+    public static String receivedPhoneNumber(Activity context, Intent data) throws Exception{
+        ContentResolver reContentResolver = context.getContentResolver();
+        String phone = "";
+        Cursor cursor = null;
+        try {
+            cursor = reContentResolver.query(data.getData(), null, null, null, null);
+            if (cursor.moveToFirst()) {
+                final String number = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                phone = new StringBuffer(number.replaceAll("-", "").replaceAll(" ", "").replace("+86", "").replace("+", "00")).toString();
+            }
+        } catch (Exception e) {
+            throw e;
+        } finally {
+           if(cursor != null) cursor.close();
+        }
+        return phone;
     }
 
     public static class Cal {

@@ -15,4 +15,10 @@ public class Interfaces {
         void onCancel(T obj);
     }
 
+    public interface CB<T> {
+        void onSuccess(T obj);
+
+        void onFailure(T obj);
+    }
+
 }

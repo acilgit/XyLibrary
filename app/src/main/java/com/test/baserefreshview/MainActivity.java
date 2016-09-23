@@ -10,9 +10,15 @@ import android.support.v7.widget.RecyclerView;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LinearInterpolator;
+import android.widget.RelativeLayout;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.facebook.drawee.drawable.ScalingUtils;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.test.baserefreshview.ListBean.Content.ContentBean;
 import com.xycode.xylibrary.adapter.XAdapter;
@@ -69,23 +75,15 @@ public class MainActivity extends BaseActivity {
         list.add("要要在");
         tags.setDataList(list);
         tags.setTagCheckedMode(TagLayout.FLOW_TAG_CHECKED_SINGLE);
-        tags.setOnTagSelectListener(new BaseFlowTagLayout.OnTagSelectListener() {
-            @Override
-            public void onItemSelected(SparseArray<View> childViewList, List dataList, SparseBooleanArray selectedStateList, int clickPos) {
+        tags.setOnTagSelectListener((childViewList, dataList, selectedStateList, clickPos) -> {
 
-            }
-
-//            @Override
-//            public void onItemSelected(View childView, List dataList, int pos, boolean selected) {
-//                TagLayout.setTextColor(childView, R.id.tv, getResources().getColor(selected ? R.color.white : R.color.black));
-//            }
         });
         Uri uri = Uri.parse("http://mxycsku.qiniucdn.com/group5/M00/5B/0C/wKgBfVXdYkqAEzl0AAL6ZFMAdKk401.jpg");
 //        siv.setImageURI();
 
         ImageUtils.setFrescoViewUri(siv, uri, null);
 
-        XAdapter<ContentBean> adapter = new XAdapter<ContentBean>(this, new ArrayList<ContentBean>()) {
+        XAdapter<ContentBean> adapter = new XAdapter<ContentBean>(this, new ArrayList<>()) {
             @Override
             protected ViewTypeUnit getViewTypeUnitForLayout(ContentBean item) {
                 switch (item.getId()) {
@@ -225,11 +223,8 @@ public class MainActivity extends BaseActivity {
         adapter.addHeader(4, R.layout.layout_recyclerview);
 //        adapter.setFooter(R.layout.footer);
 
-        xRefresher.setup(this, adapter, true, new XRefresher.OnSwipeListener() {
-            @Override
-            public void onRefresh() {
+        xRefresher.setup(this, adapter, true, () -> {
 
-            }
         }, new XRefresher.RefreshRequest<ContentBean>() {
             @Override
             public String setRequestParamsReturnUrl(Param params) {
@@ -265,13 +260,11 @@ public class MainActivity extends BaseActivity {
         bannerList.add(new UrlData("http://mxycsku.qiniucdn.com/group6/M00/96/F7/wKgBjVXbxnCABW_iAAKLH0qKKXo870.jpg", new WH(1, 2)));
         bannerList.add(new UrlData("http://mxycsku.qiniucdn.com/group6/M00/96/F7/wKgBjVXbxnCABW_iAAKLH0qKKXo870.jpg"));
 
-        bannerView.setOnImageClickListener(new BaseLoopAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(PagerAdapter parent, View view, int position, int realPosition, UrlData urlData) {
+        bannerView.setOnImageClickListener((parent, view, position, realPosition, urlData) -> {
 
-                File externalCacheDir = getThis().getExternalCacheDir();
-                L.e("externalCacheDir  " + externalCacheDir + " " + getThis().getFilesDir());
-                List<String> list = new ArrayList<>();
+            File externalCacheDir = getThis().getExternalCacheDir();
+            L.e("externalCacheDir  " + externalCacheDir + " " + getThis().getFilesDir());
+            List<String> list = new ArrayList<>();
 //                list.add("或在在要要在");
 //                list.add("在在要要在");
 //                list.add("或要要在");
@@ -281,12 +274,39 @@ public class MainActivity extends BaseActivity {
 //                list.add("要");
 //                tags.setDataList(list);
 //                PhotoSelectActivity.startForResult(getThis(), PhotoSelectActivity.class, new PhotoSelectBaseActivity.CropParam());
-                TS.show("count " + xRefresher.getAdapter().getItemCount());
+            TS.show("count " + xRefresher.getAdapter().getItemCount());
+
+            RelativeLayout rl = new RelativeLayout(getThis());
+            RelativeLayout.LayoutParams param = new RelativeLayout.LayoutParams(600,600);
+
+            rl.setLayoutParams(param);
+            rl.setBackgroundColor(R.color.colorPrimary);
+
+
+            SimpleDraweeView siv = new SimpleDraweeView(getThis());
+            siv.getHierarchy().setActualImageScaleType(ScalingUtils.ScaleType.FIT_XY);
+            siv.setAspectRatio(1);
+            int side = Tools.dp2px(getThis(), 16);
+            RelativeLayout.LayoutParams ivParam = new RelativeLayout.LayoutParams(side, side);
+            ivParam.addRule(RelativeLayout.CENTER_IN_PARENT);
+            siv.setLayoutParams(ivParam);
+            siv.setImageURI(ImageUtils.getResUri(com.xycode.xylibrary.R.mipmap.loading));
+
+            rl.addView(siv);
+            ((ViewGroup) findViewById(R.id.ll)).addView(rl);
+
+            Animation animation = AnimationUtils.loadAnimation(getThis(), com.xycode.xylibrary.R.animator.rotate_loading);
+            LinearInterpolator lin = new LinearInterpolator();
+            animation.setInterpolator(lin);
+
+            siv.setAnimation(animation);
+            animation.start();
+
+
 //                DownloadHelper.getInstance().update(getThis(), "http://m.bg114.cn/scene/api/public/down_apk/1/driver1.0.20.apk", "有新版本了啊！！");
 //                Uri destination = Uri.fromFile(getTempHead());  // 保存地址
 //                Crop.of(uri, destination).withSize(150, 150).crop(getThis(), BaseActivity.REQUEST_CODE_GOT_RESULT);
 //                TS.show(getThis(), "Hi + " + position + " real:" + realPosition);
-            }
         });
         bannerView.initData(bannerList);
     }

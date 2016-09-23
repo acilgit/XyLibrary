@@ -25,8 +25,8 @@ public abstract class BaseLazyFragment extends Fragment {
     boolean loaded = false;
     private boolean loadFailed = false;
 
-    protected Activity getThis() {
-        return getActivity();
+    protected BaseActivity getThis() {
+        return (BaseActivity) getActivity();
     }
 
     @Override
@@ -65,8 +65,12 @@ public abstract class BaseLazyFragment extends Fragment {
     /**
      *
      */
-    protected abstract void onShow();
-    protected abstract void onHide();
+    protected void onShow(){
+
+    }
+    protected void onHide(){
+
+    }
 
     /**
      *
@@ -100,6 +104,8 @@ public abstract class BaseLazyFragment extends Fragment {
         animation.setInterpolator(lin);
 
         siv.setAnimation(animation);
+        animation.start();
+
 
         onFirstShow();
         loaded = true;
