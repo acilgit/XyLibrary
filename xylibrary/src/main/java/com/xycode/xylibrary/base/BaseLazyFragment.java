@@ -1,7 +1,6 @@
 package com.xycode.xylibrary.base;
 
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -9,8 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
 import android.widget.RelativeLayout;
 
 import com.facebook.drawee.drawable.ScalingUtils;
@@ -52,9 +51,9 @@ public abstract class BaseLazyFragment extends Fragment {
         super.setUserVisibleHint(isVisibleToUser);
         if(isVisibleToUser) {
             tryLoad();
-            onShow();
+            if(loaded) onShow();
         } else {
-            onHide();
+            if(loaded) onHide();
         }
     }
 
@@ -84,28 +83,20 @@ public abstract class BaseLazyFragment extends Fragment {
         RelativeLayout rl = new RelativeLayout(getContext());
         RelativeLayout.LayoutParams param = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
-        rl.setLayoutParams(param);
-
-
         SimpleDraweeView siv = new SimpleDraweeView(getContext());
         siv.getHierarchy().setActualImageScaleType(ScalingUtils.ScaleType.FIT_XY);
         siv.setAspectRatio(1);
-        int side = Tools.dp2px(getContext(), 16);
+        int side = Tools.dp2px(getContext(), 24);
         RelativeLayout.LayoutParams ivParam = new RelativeLayout.LayoutParams(side, side);
         ivParam.addRule(RelativeLayout.CENTER_IN_PARENT);
-        siv.setLayoutParams(ivParam);
         siv.setImageURI(ImageUtils.getResUri(R.mipmap.loading));
-
-        rl.addView(siv);
-        ((ViewGroup) getView()).addView(rl);
-
-        Animation animation = AnimationUtils.loadAnimation(getContext(), R.animator.rotate_loading);
+        rl.addView(siv, ivParam);
+        ((ViewGroup) getView()).addView(rl, param);
+        RotateAnimation animation = new RotateAnimation(0, 359, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         LinearInterpolator lin = new LinearInterpolator();
         animation.setInterpolator(lin);
-
         siv.setAnimation(animation);
         animation.start();
-
 
         onFirstShow();
         loaded = true;
