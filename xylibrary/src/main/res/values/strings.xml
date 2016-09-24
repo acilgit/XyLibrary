@@ -9,4 +9,9 @@
     <string name="msg_photo_error">图片错误</string>
     <string name="msg_no_camera">没有系统相机</string>
     <string name="msg_amount_limit">已经达到最高选择数量</string>
+    <string name="compress_listener_not_null">压缩图片监听不能为空</string>
+    <string name="compress_parent_path_can_not_be_null">压缩目录不能为空</string>
+    <string name="father_can_not_be_a_file">父目录不能是文件</string>
+    <string name="file_uri_error">文件uri错误</string>
+    <string name="file_no_exits">文件不存在</string>
 </resources>
