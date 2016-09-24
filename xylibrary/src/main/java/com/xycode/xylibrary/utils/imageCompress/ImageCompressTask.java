@@ -58,7 +58,7 @@ public class ImageCompressTask implements Runnable {
 
     public ImageCompressTask(@NonNull List<String> files, @NonNull Context context, @NonNull String path, @NonNull CompressListener listener) {
         if (files == null) {
-            throw new NullPointerException("参数不能为空");
+            throw new NullPointerException(context.getString(R.string.params_can_not_be_null));
         }
         List<File> file = new ArrayList<>();
         for (String s : files) {
@@ -69,7 +69,7 @@ public class ImageCompressTask implements Runnable {
 
     public ImageCompressTask(@NonNull Context context, @NonNull String files, @NonNull String path, @NonNull CompressListener listener) {
         if (files == null) {
-            throw new NullPointerException("参数不能为空");
+            throw new NullPointerException(context.getString(R.string.params_can_not_be_null));
         }
         List<File> file = new ArrayList<>();
         file.add(new File(files));
@@ -78,7 +78,7 @@ public class ImageCompressTask implements Runnable {
 
     public ImageCompressTask(@NonNull Context context, @NonNull File files, @NonNull String path, @NonNull CompressListener listener) {
         if (files == null) {
-            throw new NullPointerException("参数不能为空");
+            throw new NullPointerException(context.getString(R.string.params_can_not_be_null));
         }
         List<File> file = new ArrayList<>();
         file.add(files);
@@ -87,7 +87,7 @@ public class ImageCompressTask implements Runnable {
 
     public ImageCompressTask(@NonNull Context context, @NonNull Uri files, @NonNull String path, @NonNull CompressListener listener) {
         if (files == null) {
-            throw new NullPointerException("参数不能为空");
+            throw new NullPointerException(context.getString(R.string.params_can_not_be_null));
         }
         List<File> file = new ArrayList<>();
         try {
@@ -112,7 +112,7 @@ public class ImageCompressTask implements Runnable {
                 }
             }
         } else {
-            throw new NullPointerException("参数不能为空");
+            throw new NullPointerException(context.getString(R.string.params_can_not_be_null));
         }
         init(file, path, listener, context);
     }
@@ -125,7 +125,7 @@ public class ImageCompressTask implements Runnable {
      */
     private void init(List<File> files, String paths, CompressListener listener, Context context) {
         if (files == null || listener == null || context == null) {
-            throw new NullPointerException("参数不能为空");
+            throw new NullPointerException(context.getString(R.string.params_can_not_be_null));
         }
         mContext = context;
         mFiles.clear();

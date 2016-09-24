@@ -14,4 +14,5 @@
     <string name="father_can_not_be_a_file">父目录不能是文件</string>
     <string name="file_uri_error">文件uri错误</string>
     <string name="file_no_exits">文件不存在</string>
+    <string name="params_can_not_be_null">参数不能为空</string>
 </resources>
