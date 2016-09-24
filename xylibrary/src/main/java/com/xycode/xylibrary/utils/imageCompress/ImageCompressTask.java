@@ -21,17 +21,20 @@ import java.util.UUID;
  */
 public class ImageCompressTask implements Runnable {
     public interface CompressListener {
-        void done(List<File> files, List<File> fails, boolean allsuccess);
+        void done(List<File> files, List<File> fails, boolean allSuccess);
+
         void error(Exception e);
     }
 
     String JPG = ".jpg";
     String PNG = ".png";
     File parent;
-    List<File> mFiles = new ArrayList<>();
+    List<File> files = new ArrayList<>();
     private static int maxSide = 1600;
+    private static int minSide = 512;
+    private static int imageQuality = 85;
 
-    public static void setSides(int minSide, int maxSide) {
+    public static void setSides(int minSide, int maxSide, int imageQuality) {
         if (minSide < 0) {
             return;
         } else {
@@ -44,13 +47,12 @@ public class ImageCompressTask implements Runnable {
         }
     }
 
-    private static final String defulat = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "xyLib";
-    private Context mContext;
-    private static int minSide = 512;
+    private static final String defaultPath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "xyLib";
+    private Context context;
     private int number;
     private int success;
     private int fail;
-    private CompressListener mListener;
+    private CompressListener listener;
 
     public ImageCompressTask(@NonNull Context context, @NonNull List<File> files, @NonNull String path, @NonNull CompressListener listener) {
         init(files, path, listener, context);
@@ -127,18 +129,18 @@ public class ImageCompressTask implements Runnable {
         if (files == null || listener == null || context == null) {
             throw new NullPointerException(context.getString(R.string.params_can_not_be_null));
         }
-        mContext = context;
-        mFiles.clear();
-        mFiles.addAll(files);
-        number = mFiles.size();
+        this.context = context;
+        this.files.clear();
+        this.files.addAll(files);
+        number = this.files.size();
         success = 0;
         fail = 0;
         if (paths == null || paths.isEmpty()) {
-            parent = new File(defulat);
+            parent = new File(defaultPath);
         } else {
             parent = new File(paths);
         }
-        mListener = listener;
+        this.listener = listener;
     }
 
     public static void delecCache(File file) {
@@ -163,35 +165,35 @@ public class ImageCompressTask implements Runnable {
 
     @Override
     public void run() {
-        if (mListener == null) {
-            throw new NullPointerException(mContext.getString(R.string.compress_listener_not_null));
+        if (listener == null) {
+            throw new NullPointerException(context.getString(R.string.compress_listener_not_null));
         }
         if (parent == null) {
-            mListener.error(new NullPointerException(mContext.getString(R.string.compress_parent_path_can_not_be_null)));
+            listener.error(new NullPointerException(context.getString(R.string.compress_parent_path_can_not_be_null)));
         }
         if (!parent.exists()) {
             if (parent.isDirectory()) {
                 parent.mkdirs();
             } else {
-                mListener.error(new NullPointerException(mContext.getString(R.string.father_can_not_be_a_file)));
+                listener.error(new NullPointerException(context.getString(R.string.father_can_not_be_a_file)));
             }
         }
         List<File> success = new ArrayList<>();
         List<File> fail = new ArrayList<>();
-        for (File file : mFiles) {
+        for (File file : files) {
             if (file.exists()) {
                 File local = new File(parent.getAbsolutePath() + File.separator + UUID.randomUUID() + JPG);
-                boolean flag = ImageUtils.saveBitmapToFile(mContext, local, ImageUtils.resizeToBitmap(file.getPath(), maxSide, minSide));
+                boolean flag = ImageUtils.compressBitmapFromPathToFile(file.getPath(), local, imageQuality, maxSide, minSide);
                 if (flag) {
                     success.add(local);
                 } else {
                     fail.add(file);
                 }
             } else {
-                L.e(mContext.getString(R.string.file_no_exits));
+                L.e(context.getString(R.string.file_no_exits));
                 fail.add(file);
             }
         }
-        mListener.done(success, fail, fail.size() < 1 && (success.size() + fail.size() == mFiles.size()));
+        listener.done(success, fail, fail.size() < 1 && (success.size() + fail.size() == files.size()));
     }
 }
