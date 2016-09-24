@@ -1,5 +1,7 @@
 package com.xycode.xylibrary.interfaces;
 
+import org.json.JSONObject;
+
 /**
  * Created by XY on 2016-09-02.
  */
@@ -9,16 +11,14 @@ public class Interfaces {
         String getDataString(T data);
     }
 
-    public interface OnDialogClickListener<T> {
+    public interface OnCommitListener<T> {
         void onCommit(T obj);
 
         void onCancel(T obj);
     }
 
+    @FunctionalInterface
     public interface CB<T> {
-        void onSuccess(T obj);
-
-        void onFailure(T obj);
+        void go(T obj);
     }
-
 }

@@ -43,6 +43,7 @@ import java.io.IOException;
  */
 public class ImageUtils {
 
+    private static final String TEMP_FILE_NAME = "temp";
     private static final String TEMP_IMAGE_FILE_NAME = "tempImage.jpg";
     private static final String TEMP_CROP_IMAGE_FILE_NAME = "tempCropImage";
 
@@ -61,6 +62,19 @@ public class ImageUtils {
 
     public static Uri getTempCropImageUri(Context context) {
         File file = new File(context.getFilesDir() ,TEMP_CROP_IMAGE_FILE_NAME+ DateUtils.getNow()+".jpg");
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        Uri uri = Uri.fromFile(file);
+        return Uri.parse("file://" + uri.getPath());
+    }
+
+    public static Uri getNewTempImageUri(Context context) {
+        File file = new File(context.getFilesDir() ,TEMP_FILE_NAME+ DateUtils.getNow()+".jpg");
         if (!file.exists()) {
             try {
                 file.createNewFile();
@@ -247,6 +261,25 @@ public class ImageUtils {
         return baos;
     }
 
+    public static boolean compressBitmapFromPathToFile(String sourcePath, File targetFile, int jpegQuality,  int targetMaxSide, int targetMiniSide) {
+        Bitmap bitmap = resizeToBitmap(sourcePath, targetMaxSide, targetMiniSide);
+        File dir = new File(targetFile.getParent());
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+        try {
+            FileOutputStream outputStream = new FileOutputStream(targetFile);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, jpegQuality, outputStream);
+            outputStream.flush();
+            outputStream.close();
+            L.d("saveBitmapToFile localFile" + "(" + targetFile.getPath() + ") -- (" + targetFile.length() / 1024 + "K)");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        bitmap.recycle();
+        return true;
+    }
     /**
      * get ordinary Bitmap .
      *

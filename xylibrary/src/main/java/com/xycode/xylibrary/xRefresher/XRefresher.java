@@ -489,8 +489,8 @@ public class XRefresher<T> extends CoordinatorLayout  implements FlexibleDivider
          void handleError(Call call, JSONObject json);
     }
 
-    public static void init() {
-
+    public static void init(InitRefresher initRefresher) {
+        XRefresher.initRefresher = initRefresher;
     }
 
     public static class RefreshState implements Serializable {
