@@ -37,13 +37,11 @@ public class DateUtils {
 
 
     public static long daysToLong(int days) {
-
         Calendar calendar = getCalendar(getNow());
         int y = (int) Math.floor(days / 10000.0);
         int m = (int) Math.floor((days - y * 10000) / 100.0);
         int d = (int) Math.floor((days - y * 10000 - m * 100));
         calendar.set(y, m, d, 0, 0, 0);
-
         return calendar.getTimeInMillis();
     }
 

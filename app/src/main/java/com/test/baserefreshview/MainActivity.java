@@ -30,6 +30,8 @@ import com.xycode.xylibrary.okHttp.Param;
 import com.xycode.xylibrary.uiKit.views.MultiImageView;
 import com.xycode.xylibrary.uiKit.views.loopview.AdLoopView;
 import com.xycode.xylibrary.uiKit.views.loopview.internal.BaseLoopAdapter;
+import com.xycode.xylibrary.uiKit.views.nicespinner.NiceSpinner;
+import com.xycode.xylibrary.unit.StringData;
 import com.xycode.xylibrary.unit.UrlData;
 import com.xycode.xylibrary.unit.ViewTypeUnit;
 import com.xycode.xylibrary.unit.WH;
@@ -41,6 +43,7 @@ import com.xycode.xylibrary.xRefresher.XRefresher;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -55,6 +58,7 @@ public class MainActivity extends BaseActivity {
     private SimpleDraweeView siv;
     @SaveState
     private int iii;
+    NiceSpinner spinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,10 +66,17 @@ public class MainActivity extends BaseActivity {
         setWindowMode(WindowMode.INPUT_ADJUST);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-
+        start(TestA.class);
         xRefresher = (XRefresher) findViewById(R.id.xRefresher);
         siv = (SimpleDraweeView) findViewById(R.id.siv);
         tags = (TagLayout) findViewById(R.id.tags);
+        spinner = (NiceSpinner) findViewById(R.id.nice_spinner);
+        spinner.attachDataSource(Arrays.asList(R.array.test_array));
+
+        /*
+        spinner.attachDataSource(new ArrayList<StringData>());
+        spinner.getStringData().getObject()
+        */
 
         findViewById(R.id.li).setOnClickListener(null);
 
@@ -278,7 +289,7 @@ public class MainActivity extends BaseActivity {
             TS.show("count " + xRefresher.getAdapter().getItemCount());
 
             RelativeLayout rl = new RelativeLayout(getThis());
-            RelativeLayout.LayoutParams param = new RelativeLayout.LayoutParams(600,600);
+            RelativeLayout.LayoutParams param = new RelativeLayout.LayoutParams(600, 600);
 
             rl.setLayoutParams(param);
             rl.setBackgroundColor(R.color.colorPrimary);
