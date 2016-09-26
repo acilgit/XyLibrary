@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.ColorRes;
@@ -25,9 +24,7 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.xycode.xylibrary.R;
-import com.xycode.xylibrary.okHttp.OkHttp;
-import com.xycode.xylibrary.okHttp.Param;
-import com.xycode.xylibrary.utils.Tools;
+import com.xycode.xylibrary.unit.StringData;
 
 import java.util.List;
 
@@ -88,7 +85,6 @@ public class NiceSpinner extends TextView {
         if (savedState instanceof Bundle) {
             Bundle bundle = (Bundle) savedState;
             selectedIndex = bundle.getInt(SELECTED_INDEX);
-
             if (adapter != null) {
                 setText(adapter.getItemInDataset(selectedIndex).toString());
                 adapter.notifyItemSelected(selectedIndex);
@@ -167,20 +163,16 @@ public class NiceSpinner extends TextView {
         popupWindow.setOutsideTouchable(true);
         popupWindow.setFocusable(true);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+       /* if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             popupWindow.setElevation(DEFAULT_ELEVATION);
             popupWindow.setBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.spinner_drawable));
-        } else {
-            popupWindow.setBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.nice_spinner_drop_down_shadow));
-        }
+        } else {*/
+        popupWindow.setBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.nice_spinner_drop_down_shadow));
+        // }
 
-        popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
-
-            @Override
-            public void onDismiss() {
-                if (!isArrowHide) {
-                    animateArrow(false);
-                }
+        popupWindow.setOnDismissListener(() -> {
+            if (!isArrowHide) {
+                animateArrow(false);
             }
         });
 
@@ -258,6 +250,14 @@ public class NiceSpinner extends TextView {
         selectedIndex = 0;
         listView.setAdapter(adapter);
         setText(adapter.getItemInDataset(selectedIndex).toString());
+    }
+
+    public <T extends Object> T getSelectedData() {
+        return (T) adapter.getCurrentItem();
+    }
+
+    public StringData getStringData() {
+        return (StringData) adapter.getCurrentItem();
     }
 
     @Override

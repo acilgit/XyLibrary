@@ -15,4 +15,5 @@
     <string name="file_uri_error">文件uri错误</string>
     <string name="file_no_exits">文件不存在</string>
     <string name="params_can_not_be_null">参数不能为空</string>
+    <string name="array_out_of_bouds">array_out_of_bouds</string>
 </resources>
