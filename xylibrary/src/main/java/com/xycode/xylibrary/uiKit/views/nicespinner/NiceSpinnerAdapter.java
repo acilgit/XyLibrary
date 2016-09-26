@@ -35,4 +35,10 @@ public class NiceSpinnerAdapter<T> extends NiceSpinnerBaseAdapter {
     public T getItemInDataset(int position) {
         return mItems.get(position);
     }
+
+    @Override
+    public Object getCurrentItem() {
+        return getItemInDataset(mSelectedIndex);
+    }
+
 }

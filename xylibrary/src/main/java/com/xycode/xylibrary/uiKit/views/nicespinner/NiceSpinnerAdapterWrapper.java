@@ -34,4 +34,9 @@ public class NiceSpinnerAdapterWrapper extends NiceSpinnerBaseAdapter {
     public Object getItemInDataset(int position) {
         return mBaseAdapter.getItem(position);
     }
+
+    @Override
+    public Object getCurrentItem() {
+        return getItemInDataset(mSelectedIndex);
+    }
 }

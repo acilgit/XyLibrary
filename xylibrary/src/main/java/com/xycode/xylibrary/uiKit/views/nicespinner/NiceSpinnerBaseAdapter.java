@@ -84,4 +84,6 @@ public abstract class NiceSpinnerBaseAdapter<T> extends BaseAdapter {
         }
     }
 
+    public abstract T getCurrentItem();
+
 }
