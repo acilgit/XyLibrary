@@ -24,15 +24,18 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.xycode.xylibrary.R;
+import com.xycode.xylibrary.interfaces.Interfaces;
 import com.xycode.xylibrary.unit.StringData;
+import com.xycode.xylibrary.utils.Tools;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author angelo.marchesin
  */
 @SuppressWarnings("unused")
-public class NiceSpinner extends TextView {
+public class NiceSpinner<T> extends TextView {
 
     private static final int MAX_LEVEL = 10000;
     private static final int DEFAULT_ELEVATION = 16;
@@ -93,12 +96,7 @@ public class NiceSpinner extends TextView {
             if (bundle.getBoolean(IS_POPUP_SHOWING)) {
                 if (popupWindow != null) {
                     // Post the show request into the looper to avoid bad token exception
-                    post(new Runnable() {
-                        @Override
-                        public void run() {
-                            showDropDown();
-                        }
-                    });
+                    post(() -> showDropDown());
                 }
             }
             savedState = bundle.getParcelable(INSTANCE_STATE);
@@ -132,30 +130,26 @@ public class NiceSpinner extends TextView {
         //hide vertical and horizontal scrollbars
         listView.setVerticalScrollBarEnabled(false);
         listView.setHorizontalScrollBarEnabled(false);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (position >= selectedIndex && position < adapter.getCount()) {
-                    position++;
-                }
-
-                // Need to set selected index before calling listeners or getSelectedIndex() can be
-                // reported incorrectly due to race conditions.
-                selectedIndex = position;
-
-                if (onItemClickListener != null) {
-                    onItemClickListener.onItemClick(parent, view, position, id);
-                }
-
-                if (onItemSelectedListener != null) {
-                    onItemSelectedListener.onItemSelected(parent, view, position, id);
-                }
-
-                adapter.notifyItemSelected(position);
-                setText(adapter.getItemInDataset(position).toString());
-                dismissDropDown();
+        listView.setOnItemClickListener((parent, view, position, id) -> {
+            if (position >= selectedIndex && position < adapter.getCount()) {
+                position++;
             }
+
+            // Need to set selected index before calling listeners or getSelectedIndex() can be
+            // reported incorrectly due to race conditions.
+            selectedIndex = position;
+
+            if (onItemClickListener != null) {
+                onItemClickListener.onItemClick(parent, view, position, id);
+            }
+
+            if (onItemSelectedListener != null) {
+                onItemSelectedListener.onItemSelected(parent, view, position, id);
+            }
+
+            adapter.notifyItemSelected(position);
+            setText(adapter.getItemInDataset(position).toString());
+            dismissDropDown();
         });
 
         popupWindow = new PopupWindow(context);
@@ -234,11 +228,27 @@ public class NiceSpinner extends TextView {
         this.onItemSelectedListener = onItemSelectedListener;
     }
 
+    public void setDataList(@NonNull List list, Interfaces.OnStringData<T> onStringData) {
+        setAttachDataSource(list, onStringData);
+    }
 
-    public <T> void attachDataSource(@NonNull List<T> dataset) {
-        adapter = new NiceSpinnerAdapter<>(getContext(), dataset, textColor, backgroundSelector);
+    public void setDataList(@NonNull List<StringData> dataSet) {
+        setAttachDataSource(dataSet, null);
+    }
+
+    private void setAttachDataSource(@NonNull List dataSet, Interfaces.OnStringData<T> onStringData) {
+        if (dataSet.size() > 0) {
+            if (dataSet.get(0) instanceof StringData) {
+                adapter = new NiceSpinnerAdapter(getContext(), dataSet, textColor, backgroundSelector);
+            } else {
+                adapter = new NiceSpinnerAdapter(getContext(), Tools.getStringDataList(dataSet, onStringData), textColor, backgroundSelector);
+            }
+        } else {
+            adapter = new NiceSpinnerAdapter(getContext(), new ArrayList<>(), textColor, backgroundSelector);
+        }
         setAdapterInternal(adapter);
     }
+
 
     public void setAdapter(@NonNull ListAdapter adapter) {
         this.adapter = new NiceSpinnerAdapterWrapper(getContext(), adapter, textColor, backgroundSelector);
@@ -252,12 +262,12 @@ public class NiceSpinner extends TextView {
         setText(adapter.getItemInDataset(selectedIndex).toString());
     }
 
-    public <T extends Object> T getSelectedData() {
-        return (T) adapter.getCurrentItem();
+    public T getSelectedData() {
+        return  ((StringData<T>) adapter.getCurrentItem()).getObject();
     }
 
-    public StringData getStringData() {
-        return (StringData) adapter.getCurrentItem();
+    public String getSelectedString() {
+        return  adapter.getCurrentItem().getString();
     }
 
     @Override

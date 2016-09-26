@@ -2,17 +2,20 @@ package com.xycode.xylibrary.uiKit.views.nicespinner;
 
 import android.content.Context;
 
+import com.xycode.xylibrary.unit.StringData;
+import com.xycode.xylibrary.utils.Tools;
+
 import java.util.List;
 
 /**
  * @author angelo.marchesin
  */
 
-public class NiceSpinnerAdapter<T> extends NiceSpinnerBaseAdapter {
+public class NiceSpinnerAdapter extends NiceSpinnerBaseAdapter {
 
-    private final List<T> mItems;
+    private final List<StringData> mItems;
 
-    public NiceSpinnerAdapter(Context context, List<T> items, int textColor, int backgroundSelector) {
+    public NiceSpinnerAdapter(Context context, List<StringData> items, int textColor, int backgroundSelector) {
         super(context, textColor, backgroundSelector);
         mItems = items;
     }
@@ -23,7 +26,7 @@ public class NiceSpinnerAdapter<T> extends NiceSpinnerBaseAdapter {
     }
 
     @Override
-    public T getItem(int position) {
+    public StringData getItem(int position) {
         if (position >= mSelectedIndex) {
             return mItems.get(position + 1);
         } else {
@@ -31,13 +34,14 @@ public class NiceSpinnerAdapter<T> extends NiceSpinnerBaseAdapter {
         }
     }
 
+
     @Override
-    public T getItemInDataset(int position) {
+    public StringData getItemInDataset(int position) {
         return mItems.get(position);
     }
 
     @Override
-    public Object getCurrentItem() {
+    public StringData getCurrentItem() {
         return getItemInDataset(mSelectedIndex);
     }
 
