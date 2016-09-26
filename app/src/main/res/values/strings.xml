@@ -1,4 +1,12 @@
 <resources>
     <string name="app_name">BaseRefreshView</string>
     <string name="ts_no_network">网络不给力</string>
+    <array name="test_array">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+    </array>
 </resources>

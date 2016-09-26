@@ -43,7 +43,6 @@ public class ImageCompressTask implements Runnable {
             ImageCompressTask.maxSide = maxSide;
         }
     }
-
     private static final String defulat = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "xyLib";
     private Context mContext;
     private static int minSide = 512;
