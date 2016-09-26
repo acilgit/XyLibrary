@@ -24,6 +24,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okio.BufferedSink;
 
 /**
  * Created by XY on 2016/7/7.
@@ -32,6 +33,7 @@ public class OkHttp {
 
     public static final MediaType MEDIA_TYPE_MARKDOWN = MediaType.parse("text/x-markdown; charset=utf-8");
     public static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json; charset=utf-8");
+    public static final MediaType MEDIA_TYPE_URL_ENCODED = MediaType.parse("application/x-www-form-urlencoded; charset=utf-8");
     public static final MediaType MEDIA_TYPE_MULTI_DATA = MediaType.parse("multipart/form-data; charset=utf-8");
 
     public static final String FILE = "file";
@@ -144,7 +146,11 @@ public class OkHttp {
      */
     private static  Call postOrGet(final Activity activity, String url, final RequestBody body, final Header header, boolean addDefaultHeader, final OkResponseListener okResponseListener) {
         final Request.Builder builder = new Request.Builder().url(url);
+
         if (body != null) {
+            if (OkOptions.mediaType != null) {
+//                body.contentType() =
+            }
             builder.post(body);
         } else {
             builder.get();
@@ -161,7 +167,6 @@ public class OkHttp {
             }
         }
         final Request request = builder.build();
-
         final Call call = getClient().newCall(request);
 
             new Thread(() -> {
@@ -469,11 +474,21 @@ public class OkHttp {
 
     }
 
+    private abstract class XRequestBody extends RequestBody {
+        @Override
+        public MediaType contentType() {
+            return OkOptions.mediaType;
+        }
+    }
+
+
     public static class OkOptions {
 
         public static long readTimeout = 60;
         public static long connectTimeout = 30;
         public static long writeTimeout = 120;
+        public static MediaType mediaType = null;
+
 
         public OkOptions(long readTimeout, long connectTimeout, long writeTimeout) {
             OkOptions.readTimeout = readTimeout;
@@ -481,7 +496,9 @@ public class OkHttp {
             OkOptions.writeTimeout = writeTimeout;
         }
 
-
+        public static void setMediaType(MediaType mediaType) {
+            OkOptions.mediaType = mediaType;
+        }
     }
 
 }

@@ -9,13 +9,14 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.xycode.xylibrary.R;
+import com.xycode.xylibrary.unit.StringData;
 
 /**
  * @author angelo.marchesin
  */
 
 @SuppressWarnings("unused")
-public abstract class NiceSpinnerBaseAdapter<T> extends BaseAdapter {
+public abstract class NiceSpinnerBaseAdapter extends BaseAdapter {
     protected Context mContext;
     protected int mSelectedIndex;
     protected int mTextColor;
@@ -49,7 +50,7 @@ public abstract class NiceSpinnerBaseAdapter<T> extends BaseAdapter {
             textView = ((ViewHolder) convertView.getTag()).textView;
         }
 
-        textView.setText(getItem(position).toString());
+        textView.setText(getItem(position).getString());
         textView.setTextColor(mTextColor);
         return convertView;
     }
@@ -68,12 +69,12 @@ public abstract class NiceSpinnerBaseAdapter<T> extends BaseAdapter {
     }
 
     @Override
-    public abstract T getItem(int position);
+    public abstract StringData getItem(int position);
 
     @Override
     public abstract int getCount();
 
-    public abstract T getItemInDataset(int position);
+    public abstract StringData getItemInDataset(int position);
 
     protected static class ViewHolder {
 
@@ -84,6 +85,6 @@ public abstract class NiceSpinnerBaseAdapter<T> extends BaseAdapter {
         }
     }
 
-    public abstract T getCurrentItem();
+    public abstract StringData getCurrentItem();
 
 }
