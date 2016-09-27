@@ -71,7 +71,7 @@ public class MainActivity extends BaseActivity {
         siv = (SimpleDraweeView) findViewById(R.id.siv);
         tags = (TagLayout) findViewById(R.id.tags);
         spinner = (NiceSpinner) findViewById(R.id.nice_spinner);
-        spinner.attachDataSource(Arrays.asList(R.array.test_array));
+//        spinner.attachDataSource(Arrays.asList(R.array.test_array));
 
         /*
         spinner.attachDataSource(new ArrayList<StringData>());
