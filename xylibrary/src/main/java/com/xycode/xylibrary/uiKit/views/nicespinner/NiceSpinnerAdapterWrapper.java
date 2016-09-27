@@ -3,6 +3,8 @@ package com.xycode.xylibrary.uiKit.views.nicespinner;
 import android.content.Context;
 import android.widget.ListAdapter;
 
+import com.xycode.xylibrary.unit.StringData;
+
 /**
  * @author angelo.marchesin
  */
@@ -22,21 +24,21 @@ public class NiceSpinnerAdapterWrapper extends NiceSpinnerBaseAdapter {
     }
 
     @Override
-    public Object getItem(int position) {
+    public StringData getItem(int position) {
         if (position >= mSelectedIndex) {
-            return mBaseAdapter.getItem(position + 1);
+            return (StringData) mBaseAdapter.getItem(position + 1);
         } else {
-            return mBaseAdapter.getItem(position);
+            return (StringData) mBaseAdapter.getItem(position);
         }
     }
 
     @Override
-    public Object getItemInDataset(int position) {
-        return mBaseAdapter.getItem(position);
+    public StringData getItemInDataset(int position) {
+        return (StringData) mBaseAdapter.getItem(position);
     }
 
     @Override
-    public Object getCurrentItem() {
+    public StringData getCurrentItem() {
         return getItemInDataset(mSelectedIndex);
     }
 }

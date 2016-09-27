@@ -58,7 +58,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         thisActivity = this;
-        registerFinishReceiver();
+//        registerFinishReceiver();
         addActivity(this);
     }
 
@@ -102,6 +102,10 @@ public abstract class BaseActivity extends AppCompatActivity {
         intent.setClass(this, activityClass);
         baseIntent.setIntent(intent);
         this.startActivityForResult(intent, requestCode);
+    }
+
+    public boolean isLoadingDialogShowing() {
+        return loadingDialog != null && loadingDialog.isShowing();
     }
 
     public void showLoadingDialog() {

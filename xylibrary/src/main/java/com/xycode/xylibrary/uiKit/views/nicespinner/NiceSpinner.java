@@ -17,6 +17,10 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
 import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -89,14 +93,14 @@ public class NiceSpinner<T> extends TextView {
             Bundle bundle = (Bundle) savedState;
             selectedIndex = bundle.getInt(SELECTED_INDEX);
             if (adapter != null) {
-                setText(adapter.getItemInDataset(selectedIndex).toString());
+                setText(adapter.getItemInDataset(selectedIndex).getString());
                 adapter.notifyItemSelected(selectedIndex);
             }
 
             if (bundle.getBoolean(IS_POPUP_SHOWING)) {
                 if (popupWindow != null) {
                     // Post the show request into the looper to avoid bad token exception
-                    post(() -> showDropDown());
+                    post(this::showDropDown);
                 }
             }
             savedState = bundle.getParcelable(INSTANCE_STATE);
@@ -148,7 +152,7 @@ public class NiceSpinner<T> extends TextView {
             }
 
             adapter.notifyItemSelected(position);
-            setText(adapter.getItemInDataset(position).toString());
+            setText(adapter.getItemInDataset(position).getString());
             dismissDropDown();
         });
 
@@ -213,7 +217,7 @@ public class NiceSpinner<T> extends TextView {
             if (position >= 0 && position <= adapter.getCount()) {
                 adapter.notifyItemSelected(position);
                 selectedIndex = position;
-                setText(adapter.getItemInDataset(position).toString());
+                setText(adapter.getItemInDataset(position).getString());
             } else {
                 throw new IllegalArgumentException("Position must be lower than adapter count!");
             }
@@ -259,7 +263,7 @@ public class NiceSpinner<T> extends TextView {
         // If the adapter needs to be settled again, ensure to reset the selected index as well
         selectedIndex = 0;
         listView.setAdapter(adapter);
-        setText(adapter.getItemInDataset(selectedIndex).toString());
+        setText(adapter.getItemInDataset(selectedIndex).getString());
     }
 
     public T getSelectedData() {
@@ -290,11 +294,19 @@ public class NiceSpinner<T> extends TextView {
     }
 
     private void animateArrow(boolean shouldRotateUp) {
-        int start = shouldRotateUp ? 0 : MAX_LEVEL;
+     /*   int start = shouldRotateUp ? 0 : MAX_LEVEL;
         int end = shouldRotateUp ? MAX_LEVEL : 0;
-        ObjectAnimator animator = ObjectAnimator.ofInt(drawable, "level", start, end);
-        animator.setInterpolator(new LinearOutSlowInInterpolator());
-        animator.start();
+//        AnimationUtils.loadAnimation(getContext(), R.anim.loading_bg);
+//        ObjectAnimator animator = ObjectAnimator.ofInt(drawable, "level", start, end);
+        ObjectAnimator animator = ObjectAnimator.ofFloat(drawable, "rotationX", shouldRotateUp ? 0f : 180f, shouldRotateUp ? 180f : 360f);
+//        ObjectAnimator.
+//        RotateAnimation animation = new RotateAnimation(shouldRotateUp ? 0 : 180, shouldRotateUp ? 180 : 360, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+//        animation.setDuration(500);
+//        animation.setRepeatCount(1);
+//        animation.setInterpolator(new LinearOutSlowInInterpolator());
+        animator.setDuration(300);
+        animator.setInterpolator(new LinearInterpolator());
+        animator.start();*/
     }
 
     public void dismissDropDown() {

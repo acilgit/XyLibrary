@@ -21,9 +21,9 @@ public class TestA extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.test);
-        one = (NiceSpinner) findViewById(R.id.test_one);
-        two = (NiceSpinner) findViewById(R.id.test_two);
+//        setContentView(R.layout.test);
+//        one = (NiceSpinner) findViewById(R.id.test_one);
+//        two = (NiceSpinner) findViewById(R.id.test_two);
         List<String> list = new ArrayList<>();
         list.add("或在在要要在");
         list.add("在在要要在");
