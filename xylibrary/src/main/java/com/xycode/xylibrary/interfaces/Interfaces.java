@@ -1,24 +1,25 @@
 package com.xycode.xylibrary.interfaces;
 
-import org.json.JSONObject;
+import java.io.Serializable;
 
 /**
  * Created by XY on 2016-09-02.
  */
 public class Interfaces {
 
-    public interface OnStringData<T> {
+    @FunctionalInterface
+    public interface OnStringData<T> extends Serializable{
         String getDataString(T data);
     }
 
-    public interface OnCommitListener<T> {
+    public interface OnCommitListener<T> extends Serializable{
         void onCommit(T obj);
 
         void onCancel(T obj);
     }
 
     @FunctionalInterface
-    public interface CB<T> {
+    public interface CB<T> extends Serializable{
         void go(T obj);
     }
 }
