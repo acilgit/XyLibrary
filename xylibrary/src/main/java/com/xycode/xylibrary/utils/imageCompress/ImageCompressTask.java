@@ -47,7 +47,7 @@ public class ImageCompressTask implements Runnable {
         }
     }
 
-    private static final String defaultPath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "xyLib";
+    private static final String defaultPath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "xyLib" + File.separator;
     private Context context;
     private int number;
     private int success;
@@ -169,13 +169,16 @@ public class ImageCompressTask implements Runnable {
             throw new NullPointerException(context.getString(R.string.compress_listener_not_null));
         }
         if (parent == null) {
-            listener.error(new NullPointerException(context.getString(R.string.compress_parent_path_can_not_be_null)));
+            throw new NullPointerException(context.getString(R.string.compress_parent_path_can_not_be_null));
         }
-        if (!parent.exists()) {
-            if (parent.isDirectory()) {
-                parent.mkdirs();
-            } else {
-                listener.error(new NullPointerException(context.getString(R.string.father_can_not_be_a_file)));
+        if(!parent.exists()){
+            parent.mkdirs();
+            if(!parent.isDirectory()){
+                throw new NullPointerException(context.getString(R.string.father_can_not_be_a_file));
+            }else {
+                if(!parent.exists()){
+                    parent.mkdirs();
+                }
             }
         }
         List<File> success = new ArrayList<>();
