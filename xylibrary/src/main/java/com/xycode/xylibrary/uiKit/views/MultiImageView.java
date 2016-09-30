@@ -15,6 +15,7 @@ import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
 import com.facebook.drawee.generic.RoundingParams;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.xycode.xylibrary.R;
+import com.xycode.xylibrary.instance.FrescoLoader;
 import com.xycode.xylibrary.unit.UrlData;
 import com.xycode.xylibrary.utils.ImageUtils;
 import com.xycode.xylibrary.utils.Tools;
@@ -302,44 +303,39 @@ public class MultiImageView<T> extends LinearLayout {
             imageView.setLayoutParams(onePicPara);
         }
 
-        Uri previewUri = null;
-        if (imageLoadListener != null) {
-            previewUri = imageLoadListener.setPreviewUri(position);
-        }
+//        Uri previewUri = null;
+//        if (imageLoadListener != null) {
+//            previewUri = imageLoadListener.setPreviewUri(position);
+//        }
 
-        ImageUtils.setSimpleDraweeParams(imageView, new ImageUtils.ISetDraweeHierarchy() {
-            @Override
-            public void setHierarchyBuilder(GenericDraweeHierarchyBuilder hierarchyBuilder) {
-                if(att_fadeDurationTime>0) hierarchyBuilder.setFadeDuration(    att_fadeDurationTime);
-                if (att_actualScale != -1) hierarchyBuilder.setActualImageScaleType(actualScale);
-                if (att_placeHolder != -1)
-                    hierarchyBuilder.setPlaceholderImage(getResources().getDrawable(att_placeHolder), holderScale);
-                if (att_failureHolder != -1) {
-                    if (att_failureScale != -1) {
-                        hierarchyBuilder.setFailureImage(getResources().getDrawable(att_failureHolder), failureScale);
-                    } else {
-                        hierarchyBuilder.setFailureImage(getResources().getDrawable(att_failureHolder));
-                    }
+        ImageUtils.setSimpleDraweeParams(imageView, hierarchyBuilder -> {
+            if(att_fadeDurationTime>0) hierarchyBuilder.setFadeDuration(    att_fadeDurationTime);
+            if (att_actualScale != -1) hierarchyBuilder.setActualImageScaleType(actualScale);
+            if (att_placeHolder != -1)
+                hierarchyBuilder.setPlaceholderImage(getResources().getDrawable(att_placeHolder), holderScale);
+            if (att_failureHolder != -1) {
+                if (att_failureScale != -1) {
+                    hierarchyBuilder.setFailureImage(getResources().getDrawable(att_failureHolder), failureScale);
+                } else {
+                    hierarchyBuilder.setFailureImage(getResources().getDrawable(att_failureHolder));
                 }
-                if (att_pressedOverlayHolder != -1)
-                    hierarchyBuilder.setPressedStateOverlay(getResources().getDrawable(att_pressedOverlayHolder));
-                if (att_roundedCornerRadius != -1)
-                    hierarchyBuilder.setRoundingParams(new RoundingParams().setCornersRadius(att_roundedCornerRadius));
-                if (imageOverlayListener != null) {
-                    Drawable drawable = imageOverlayListener.setOverlayDrawable(position);
-                    if (drawable != null) hierarchyBuilder.setOverlay(drawable);
-                }
+            }
+            if (att_pressedOverlayHolder != -1)
+                hierarchyBuilder.setPressedStateOverlay(getResources().getDrawable(att_pressedOverlayHolder));
+            if (att_roundedCornerRadius != -1)
+                hierarchyBuilder.setRoundingParams(new RoundingParams().setCornersRadius(att_roundedCornerRadius));
+            if (imageOverlayListener != null) {
+                Drawable drawable = imageOverlayListener.setOverlayDrawable(position);
+                if (drawable != null) hierarchyBuilder.setOverlay(drawable);
             }
         });
 
-        ImageUtils.setImageUriWithPreview(imageView, Uri.parse(url), previewUri);
+        FrescoLoader.setImageURI(imageView,url);
+//        ImageUtils.setImageUriWithPreview(imageView, Uri.parse(url), previewUri);
         imageView.setTag(url);
-        imageView.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (onItemClickListener != null) {
-                    onItemClickListener.onItemClick(v, position, imagesList.get(position));
-                }
+        imageView.setOnClickListener(v -> {
+            if (onItemClickListener != null) {
+                onItemClickListener.onItemClick(v, position, imagesList.get(position));
             }
         });
         return imageView;

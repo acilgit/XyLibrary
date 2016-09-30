@@ -308,7 +308,7 @@ public class OkHttp {
                             break;
                     }
                 });
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 final String parseErrorResult = responseStr;
                 L.e(call.request().url().url().toString() + " [JsonParseFailed] --> " + e.getMessage() + "\nResult: " + responseStr);

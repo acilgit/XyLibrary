@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 
 import com.facebook.drawee.drawable.ScalingUtils;
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.xycode.xylibrary.instance.FrescoLoader;
 import com.xycode.xylibrary.uiKit.views.loopview.internal.BaseLoopAdapter;
 import com.xycode.xylibrary.unit.UrlData;
 import com.xycode.xylibrary.utils.ImageUtils;
@@ -51,7 +52,7 @@ class AdLoopAdapter extends BaseLoopAdapter {
             if (onPreviewUrlListener != null) {
                 ImageUtils.setImageUriWithPreview(imageView, imageUrl, onPreviewUrlListener.getPreviewUrl(imageUrl, position));
             } else {
-                imageView.setImageURI(uri);
+                FrescoLoader.setImageURI(imageView, imageUrl);
             }
         }
         imageView.setTag(imageUrl);

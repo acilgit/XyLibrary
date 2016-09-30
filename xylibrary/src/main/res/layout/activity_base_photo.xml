@@ -1,0 +1,14 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:background="@color/black"
+    android:id="@+id/rlMain"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+        <com.xycode.xylibrary.uiKit.views.NoScrollViewPager
+            android:id="@+id/vpMain"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+</RelativeLayout>
+

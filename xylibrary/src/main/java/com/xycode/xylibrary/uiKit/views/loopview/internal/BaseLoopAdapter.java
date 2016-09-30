@@ -82,14 +82,7 @@ public abstract class BaseLoopAdapter extends PagerAdapter {
         view = instantiateItemView(imageUrl, index);
 
         if(onItemClickListener != null) {
-            view.setOnClickListener(new OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    onItemClickListener.onItemClick(BaseLoopAdapter.this, view, index, position, loopData.get(index));
-                }
-
-            });
+            view.setOnClickListener(v -> onItemClickListener.onItemClick(BaseLoopAdapter.this, view, index, position, loopData.get(index)));
         }
 
         container.addView(view, 0);
@@ -108,6 +101,11 @@ public abstract class BaseLoopAdapter extends PagerAdapter {
         onItemClickListener = listener;
     }
 
+    /**
+     * use FrescoLoader
+     * @param listener
+     */
+    @Deprecated
     public void setPreviewUrlListener(BaseLoopView.OnPreviewUrlListener listener) {
         onPreviewUrlListener = listener;
     }

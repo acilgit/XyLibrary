@@ -19,7 +19,7 @@ import android.widget.TextView;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.xycode.xylibrary.R;
 import com.xycode.xylibrary.base.BaseItemView;
-import com.xycode.xylibrary.instance.SetupFresco;
+import com.xycode.xylibrary.instance.FrescoLoader;
 import com.xycode.xylibrary.uiKit.views.MultiImageView;
 import com.xycode.xylibrary.unit.ViewTypeUnit;
 import com.xycode.xylibrary.utils.ImageUtils;
@@ -473,7 +473,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
             if (view != null) {
                 if (view instanceof SimpleDraweeView) {
 //                    ((SimpleDraweeView) view).setImageURI(Uri.parse(url));
-                    ImageUtils.setImageUriWithPreview((SimpleDraweeView) view, url, SetupFresco.getPreviewUri(url));
+                    ImageUtils.setImageUriWithPreview((SimpleDraweeView) view, url, FrescoLoader.getPreviewUri(url));
                 } else if (view instanceof ImageView) {
                     ((ImageView) view).setImageURI(Uri.parse(url));
                 }
@@ -491,7 +491,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
             if (view != null) {
                 if (view instanceof SimpleDraweeView) {
                     ((SimpleDraweeView) view).setImageURI(uri);
-//                    ImageUtils.setImageUriWithPreview((SimpleDraweeView) view, uri, SetupFresco.getPreviewUri(uri.));
+//                    ImageUtils.setImageUriWithPreview((SimpleDraweeView) view, uri, FrescoLoader.getPreviewUri(uri.));
                 } else if (view instanceof ImageView) {
                     ((ImageView) view).setImageURI(uri);
                 }

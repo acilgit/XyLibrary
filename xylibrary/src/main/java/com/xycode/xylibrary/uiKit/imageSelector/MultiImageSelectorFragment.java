@@ -102,20 +102,17 @@ public class MultiImageSelectorFragment extends Fragment {
 
         categoryText = (TextView) view.findViewById(R.id.btnCategory);
         categoryText.setText(R.string.text_folder_all);
-        categoryText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (folderPopupWindow == null) {
-                    createPopupFolderList();
-                }
-                if (folderPopupWindow.isShowing()) {
-                    folderPopupWindow.dismiss();
-                } else {
-                    folderPopupWindow.show();
-                    int index = folderAdapter.getSelectIndex();
-                    index = index == 0 ? index : index - 1;
-                    folderPopupWindow.getListView().setSelection(index);
-                }
+        categoryText.setOnClickListener(view1 -> {
+            if (folderPopupWindow == null) {
+                createPopupFolderList();
+            }
+            if (folderPopupWindow.isShowing()) {
+                folderPopupWindow.dismiss();
+            } else {
+                folderPopupWindow.show();
+                int index = folderAdapter.getSelectIndex();
+                index = index == 0 ? index : index - 1;
+                folderPopupWindow.getListView().setSelection(index);
             }
         });
 
@@ -124,11 +121,8 @@ public class MultiImageSelectorFragment extends Fragment {
             btnPreview.setText(R.string.text_preview);
             btnPreview.setEnabled(false);
         }
-        btnPreview.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        btnPreview.setOnClickListener(view12 -> {
 
-            }
         });
 
         recyclerView = (RecyclerView) view.findViewById(R.id.grid);
@@ -151,40 +145,34 @@ public class MultiImageSelectorFragment extends Fragment {
         folderPopupWindow.setHeight(height);
         folderPopupWindow.setAnchorView(popupAnchorView);
         folderPopupWindow.setModal(true);
-        folderPopupWindow.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                folderAdapter.setSelectIndex(i);
-                final int index = i;
-                final AdapterView v = adapterView;
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        folderPopupWindow.dismiss();
-                        if (index == 0) {
-                            getActivity().getSupportLoaderManager().restartLoader(LOADER_ALL, null, loaderCallbacks);
-                            categoryText.setText(R.string.text_folder_all);
-                            if (options().showCamera) {
-                                imageAdapter.setShowCamera(true);
-                            } else {
-                                imageAdapter.setShowCamera(false);
-                            }
-                        } else {
-                            FolderBean folderBean = (FolderBean) v.getAdapter().getItem(index);
-                            if (null != folderBean) {
-                                imageAdapter.setData(folderBean.imageBeen);
-                                categoryText.setText(folderBean.name);
-                                if (options().selectedList != null && options().selectedList.size() > 0) {
-                                    imageAdapter.setDefaultSelected(options().selectedList);
-                                }
-                            }
-                            imageAdapter.setShowCamera(false);
-                        }
-                        recyclerView.smoothScrollToPosition(0);
+        folderPopupWindow.setOnItemClickListener((adapterView, view, i, l) -> {
+            folderAdapter.setSelectIndex(i);
+            final int index = i;
+            final AdapterView v = adapterView;
+            new Handler().postDelayed(() -> {
+                folderPopupWindow.dismiss();
+                if (index == 0) {
+                    getActivity().getSupportLoaderManager().restartLoader(LOADER_ALL, null, loaderCallbacks);
+                    categoryText.setText(R.string.text_folder_all);
+                    if (options().showCamera) {
+                        imageAdapter.setShowCamera(true);
+                    } else {
+                        imageAdapter.setShowCamera(false);
                     }
-                }, 100);
+                } else {
+                    FolderBean folderBean = (FolderBean) v.getAdapter().getItem(index);
+                    if (null != folderBean) {
+                        imageAdapter.setData(folderBean.imageBeen);
+                        categoryText.setText(folderBean.name);
+                        if (options().selectedList != null && options().selectedList.size() > 0) {
+                            imageAdapter.setDefaultSelected(options().selectedList);
+                        }
+                    }
+                    imageAdapter.setShowCamera(false);
+                }
+                recyclerView.smoothScrollToPosition(0);
+            }, 100);
 
-            }
         });
     }
 

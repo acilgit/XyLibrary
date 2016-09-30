@@ -6,6 +6,7 @@ import android.support.v7.app.AlertDialog;
 
 import com.alibaba.fastjson.JSONObject;
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.xycode.xylibrary.instance.FrescoLoader;
 import com.xycode.xylibrary.okHttp.Header;
 import com.xycode.xylibrary.okHttp.OkHttp;
 import com.xycode.xylibrary.okHttp.Param;
@@ -137,6 +138,12 @@ public class App extends Application {
 
         XRefresher.setCustomerLoadMoreView(R.layout.layout_load_more);
         XRefresher.setDefaultNoDataText("暂无数据", 1);
+
+        FrescoLoader.init(url ->  null);
+     /*   FrescoLoader.init(url -> {
+            WH wh = Tools.getWidthHeightFromFilename(url, "_wh", "_");
+            return url + "!" + (wh.getAspectRatio() * 40) + "!40";
+        });*/
 
   /*      XRefresher.setCustomerFooterView(R.layout.layout_load_more, new XAdapter.ICustomerLoadMore() {
             @Override

@@ -1,0 +1,13 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+        <com.xycode.xylibrary.uiKit.views.TouchImageView
+            android:id="@+id/ivPhoto"
+            android:scaleType="fitCenter"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"/>
+
+</RelativeLayout>
+
