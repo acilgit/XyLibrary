@@ -1,5 +1,4 @@
 package com.xycode.xylibrary.uiKit.views;
-
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.support.v4.view.ViewPager;

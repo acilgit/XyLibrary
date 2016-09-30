@@ -752,16 +752,22 @@ public class ImageUtils {
     }
 
     public static void setImageUriWithPreview(SimpleDraweeView simpleDraweeView, String uri, String previewUri) {
-        setImageUriWithPreview(simpleDraweeView, Uri.parse(uri), Uri.parse(previewUri));
+        setImageUriWithPreview(simpleDraweeView, Uri.parse(uri), previewUri == null ? null : Uri.parse(previewUri));
     }
 
     public static void setImageUriWithPreview(SimpleDraweeView simpleDraweeView, Uri uri, Uri previewUri) {
-        if (uri == null) return;
+        if (uri == null) {
+            simpleDraweeView.setImageURI(null);
+            return;
+        } else if (previewUri == null) {
+            simpleDraweeView.setImageURI(uri);
+            return;
+        }
         PipelineDraweeControllerBuilder builder = Fresco.newDraweeControllerBuilder()
                 .setImageRequest(ImageRequest.fromUri(uri))
                 .setOldController(simpleDraweeView.getController())
-                .setAutoPlayAnimations(true);
-        if (previewUri != null) builder.setLowResImageRequest(ImageRequest.fromUri(previewUri));
+                .setAutoPlayAnimations(true)
+                .setLowResImageRequest(ImageRequest.fromUri(previewUri));
         DraweeController controller = builder.build();
         simpleDraweeView.setController(controller);
     }

@@ -1,17 +1,22 @@
 package com.xycode.xylibrary.unit;
 
+import java.io.Serializable;
+
 /**
  * Created by XY on 2016-08-22.
  */
-public class UrlData {
+public class UrlData<T> implements Serializable{
     private String url;
-    private Object data;
+    private T data;
+
+    public UrlData() {
+    }
 
     public UrlData(String url) {
         this.url = url;
     }
 
-    public UrlData(String url, Object data) {
+    public UrlData(String url, T data) {
         this.url = url;
         this.data = data;
     }
@@ -24,11 +29,11 @@ public class UrlData {
         this.url = url;
     }
 
-    public Object getData() {
-        return data == null ? "" : data;
+    public T getData() {
+        return data;
     }
 
-    public void setData(Object data) {
+    public void setData(T data) {
         this.data = data;
     }
 }

@@ -20,7 +20,6 @@ import static com.xycode.xylibrary.uiKit.imageSelector.ImageSelectorOptions.opti
 public class MultiImageSelectorActivity extends BaseActivity implements MultiImageSelectorFragment.Callback{
 
     public static final int MODE_SINGLE = 0;
-
     public static final int MODE_MULTI = 1;
     public static final String EXTRA_RESULT = "EXTRA_RESULT";
 
@@ -59,15 +58,12 @@ public class MultiImageSelectorActivity extends BaseActivity implements MultiIma
             updateDoneText();
             submitButton.setEnabled(true);
         }
-        submitButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(options().selectedList != null && options().selectedList.size() >0){
-                    Intent data = new Intent();
-                    data.putStringArrayListExtra(EXTRA_RESULT, (ArrayList<String>) options().selectedList);
-                    setResult(RESULT_OK, data);
-                    finish();
-                }
+        submitButton.setOnClickListener(view -> {
+            if(options().selectedList != null && options().selectedList.size() >0){
+                Intent data = new Intent();
+                data.putStringArrayListExtra(EXTRA_RESULT, (ArrayList<String>) options().selectedList);
+                setResult(RESULT_OK, data);
+                finish();
             }
         });
     }

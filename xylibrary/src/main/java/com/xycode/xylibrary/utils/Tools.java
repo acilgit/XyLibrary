@@ -214,7 +214,7 @@ public class Tools {
     }
 
     public static WH getWidthHeightFromFilename(String filename, String mark, String splitter) {
-        int h = 500, w = 500;
+        int h = 0, w = 500;
         try {
             String name = getFileNameNoExt(filename);
             int pos = name.lastIndexOf(mark);
@@ -227,7 +227,7 @@ public class Tools {
                 }
             }
         } catch (Exception e) {
-            w = 500;
+            w = 0;
             h = 500;
         }
         WH wh = new WH(w, h);

@@ -16,4 +16,7 @@
     <string name="file_no_exits">文件不存在</string>
     <string name="params_can_not_be_null">参数不能为空</string>
     <string name="array_out_of_bouds">array_out_of_bouds</string>
+    <string name="text_today">"今天 "</string>
+    <string name="text_yestoday">"昨天 "</string>
+    <string name="text_before_yestoday">"前天 "</string>
 </resources>

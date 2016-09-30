@@ -26,6 +26,7 @@ import java.net.URL;
 public class DownloadHelper {
 
     private static DownloadHelper helper = null;
+    private DownloadOptions options;
     private Activity activity;
     private Handler downloadHandler;
     private DownloadDialog downloadDialog;
@@ -33,15 +34,15 @@ public class DownloadHelper {
     private OnShowDownloadDialog onShowDownloadDialog;
     private OnProgressListener onProgressListener;
 
-    public static int defaultDownloadFileSize = 1024*1024*20;
+    private static int defaultDownloadFileSize = 1024*1024*20;
 
-    public static String downloadingTitle = "";
-    public static String downloadingCancelButtonName = "";
-    public static String updateButtonName = "update";
-    public static String updateMessage;
-    public static String cancelButtonName = null;
-    public static String downloadFileUrl = "";
-    public static String tempDownloadFileName = "tempDownloadFileName.apk";
+//    private String downloadingTitle = "";
+//    private String downloadingCancelButtonName = "";
+//    private String updateButtonName = "";
+    private String updateMessage;
+//    private String cancelButtonName = null;
+    private String downloadFileUrl = "";
+    private String tempDownloadFileName = "tempDownloadFileName.apk";
 
     private InputStream inputStream;
     private OutputStream outputStream;
@@ -49,16 +50,15 @@ public class DownloadHelper {
     int fileLength = 0;
     int downedFileLength = 0;
 
+    private CancelListener cancelListener;
+
     private boolean cancelDownload;
     private boolean noFileLength = false;
 
-    public static void init(String updateButtonName, String cancelButtonName, String downloadingTitle, String downloadingCancelButtonName, @NonNull OnShowDownloadDialog onShowDownloadDialog) {
+    public static void init(DownloadOptions options, @NonNull OnShowDownloadDialog onShowDownloadDialog) {
         if (helper != null) return;
         helper = new DownloadHelper(onShowDownloadDialog);
-        DownloadHelper.updateButtonName = updateButtonName;
-        DownloadHelper.cancelButtonName = cancelButtonName;
-        DownloadHelper.downloadingTitle = downloadingTitle;
-        DownloadHelper.downloadingCancelButtonName = downloadingCancelButtonName;
+        helper.options = options;
     }
 
     public DownloadHelper(@NonNull OnShowDownloadDialog onShowDownloadDialog) {
@@ -69,7 +69,7 @@ public class DownloadHelper {
         return helper;
     }
 
-    public static String getDownloadTempFileName() {
+    public String getDownloadTempFileName() {
         return Environment.getExternalStorageDirectory().getAbsolutePath()+"/tempdownload/" + tempDownloadFileName;
     }
 
@@ -81,10 +81,18 @@ public class DownloadHelper {
         this.cancelDownload = true;
     }
 
-    public void update(final Activity activity, final String downloadFileUrl, String updateMessage) {
+    /**
+     * check update
+     * @param activity
+     * @param cancelListener
+     * @param downloadFileUrl
+     * @param updateMessage
+     */
+    public void update(final Activity activity, final CancelListener cancelListener, final String downloadFileUrl, String updateMessage) {
         this.activity = activity;
-        DownloadHelper.downloadFileUrl = downloadFileUrl;
-        DownloadHelper.updateMessage = updateMessage;
+        getInstance().downloadFileUrl = downloadFileUrl;
+        getInstance().updateMessage = updateMessage;
+        getInstance().cancelListener = cancelListener;
         if (downloadHandler == null) {
             downloadHandler = new Handler() {
                 int fileLength = 0;
@@ -135,6 +143,12 @@ public class DownloadHelper {
                                 onProgressListener.onFailure();
                             }
                             if (downloadDialog != null) downloadDialog.getDialog().cancel();
+                            /**
+                             * when download being canceled, callback
+                             */
+                            if (cancelDownload && cancelListener != null) {
+                                cancelListener.onCancel();
+                            }
                             break;
                     }
                 }
@@ -143,25 +157,21 @@ public class DownloadHelper {
 
         final AlertDialog.Builder builder = onShowDownloadDialog.getConfirmDialogBuilder(activity, updateMessage);
         builder.setCancelable(false)
-                .setPositiveButton(updateButtonName, new DialogInterface.OnClickListener() {
+                .setPositiveButton(options.updateButtonName, (dialog, which) -> {
 
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                    AlertDialog.Builder customerBuilder = onShowDownloadDialog.getProgressDialogBuilder(activity);
+                    if (customerBuilder != null) customerDownloadDialog = builder.create();
 
-                        AlertDialog.Builder customerBuilder = onShowDownloadDialog.getProgressDialogBuilder(activity);
-                        if (customerBuilder != null) customerDownloadDialog = builder.create();
-
-                        if (customerDownloadDialog != null) {
-                            customerDownloadDialog.show();
-                        } else {
-                            downloadDialog = new DownloadDialog(activity, downloadingTitle);
-                            downloadDialog.showDialog();
-                        }
-
+                    if (customerDownloadDialog != null) {
+                        customerDownloadDialog.show();
+                    } else {
+                        downloadDialog = new DownloadDialog(activity, options.downloadingTitle);
+                        downloadDialog.showDialog();
                     }
+
                 });
-        if (cancelButtonName != null) {
-            builder.setNegativeButton(cancelButtonName, null);
+        if (options.cancelButtonName != null) {
+            builder.setNegativeButton(options.cancelButtonName, null);
         }
         builder.create().show();
     }
@@ -180,11 +190,8 @@ public class DownloadHelper {
             dialog.setCanceledOnTouchOutside(false);
             dialog.setProgress(100);
             dialog.setIndeterminate(false);
-            dialog.setButton(DialogInterface.BUTTON_POSITIVE, downloadingCancelButtonName, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    helper.cancelDownload();
-                }
+            dialog.setButton(DialogInterface.BUTTON_POSITIVE, options.downloadingCancelButtonName, (dialog1, which) -> {
+                helper.cancelDownload();
             });
         }
 
@@ -194,13 +201,7 @@ public class DownloadHelper {
 
         public void showDialog() {
             dialog.show();
-            Runnable runnable = new Runnable() {
-                @Override
-                public void run() {
-                    downFile();
-                }
-            };
-            new Thread(runnable).start();
+            new Thread(DownloadHelper.this::downFile).start();
         }
 
     }
@@ -318,7 +319,56 @@ public class DownloadHelper {
         void onFinish();
 
         void onFailure();
+    }
 
+    public static class DownloadOptions {
+       private String updateButtonName;
+       private String cancelButtonName;
+       private String downloadingTitle;
+       private String downloadingCancelButtonName;
+
+        public DownloadOptions(String updateButtonName, String cancelButtonName, String downloadingTitle, String downloadingCancelButtonName) {
+            this.updateButtonName = updateButtonName;
+            this.cancelButtonName = cancelButtonName;
+            this.downloadingTitle = downloadingTitle;
+            this.downloadingCancelButtonName = downloadingCancelButtonName;
+        }
+
+        public String getUpdateButtonName() {
+            return updateButtonName == null ? "" : updateButtonName;
+        }
+
+        public void setUpdateButtonName(String updateButtonName) {
+            this.updateButtonName = updateButtonName;
+        }
+
+        public String getCancelButtonName() {
+            return cancelButtonName == null ? "" : cancelButtonName;
+        }
+
+        public void setCancelButtonName(String cancelButtonName) {
+            this.cancelButtonName = cancelButtonName;
+        }
+
+        public String getDownloadingTitle() {
+            return downloadingTitle == null ? "" : downloadingTitle;
+        }
+
+        public void setDownloadingTitle(String downloadingTitle) {
+            this.downloadingTitle = downloadingTitle;
+        }
+
+        public String getDownloadingCancelButtonName() {
+            return downloadingCancelButtonName == null ? "" : downloadingCancelButtonName;
+        }
+
+        public void setDownloadingCancelButtonName(String downloadingCancelButtonName) {
+            this.downloadingCancelButtonName = downloadingCancelButtonName;
+        }
+    }
+
+    public interface CancelListener{
+        void onCancel();
     }
 
 }

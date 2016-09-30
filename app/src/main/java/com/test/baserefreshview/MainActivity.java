@@ -3,13 +3,9 @@ package com.test.baserefreshview;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.view.PagerAdapter;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.SparseArray;
-import android.util.SparseBooleanArray;
-import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -24,14 +20,11 @@ import com.test.baserefreshview.ListBean.Content.ContentBean;
 import com.xycode.xylibrary.adapter.XAdapter;
 import com.xycode.xylibrary.annotation.SaveState;
 import com.xycode.xylibrary.base.BaseActivity;
-import com.xycode.xylibrary.base.BaseFlowTagLayout;
-import com.xycode.xylibrary.interfaces.Interfaces;
+import com.xycode.xylibrary.instance.FrescoLoader;
 import com.xycode.xylibrary.okHttp.Param;
 import com.xycode.xylibrary.uiKit.views.MultiImageView;
 import com.xycode.xylibrary.uiKit.views.loopview.AdLoopView;
-import com.xycode.xylibrary.uiKit.views.loopview.internal.BaseLoopAdapter;
 import com.xycode.xylibrary.uiKit.views.nicespinner.NiceSpinner;
-import com.xycode.xylibrary.unit.StringData;
 import com.xycode.xylibrary.unit.UrlData;
 import com.xycode.xylibrary.unit.ViewTypeUnit;
 import com.xycode.xylibrary.unit.WH;
@@ -43,7 +36,6 @@ import com.xycode.xylibrary.xRefresher.XRefresher;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -116,13 +108,10 @@ public class MainActivity extends BaseActivity {
                         holder.setClick(R.id.llItem);
                         holder.setClick(R.id.tvName);
                         MultiImageView mvItem = holder.getView(R.id.mvItem);
-            /*    mvItem.setLoadImageListener(new MultiImageView.OnImageLoadListener() {
-                    @Override
-                    public Uri setPreviewUri(int position) {
-                        WH wh = Tools.getWidthHeightFromFilename(list.get(position), "_wh", "x");
-                        return Uri.parse(list.get(position)+"!"+(wh.getAspectRatio()*20)+"!20");
-                    }
-                });*/
+                mvItem.setLoadImageListener(position -> {
+                    WH wh = Tools.getWidthHeightFromFilename(list.get(position), "_wh", "x");
+                    return Uri.parse(list.get(position)+"!"+(wh.getAspectRatio()*20)+"!20");
+                });
 
                         mvItem.setOverlayDrawableListener(position -> {
                             if (position == 8) {
@@ -332,8 +321,8 @@ public class MainActivity extends BaseActivity {
             siv.setImageURI(null);
             siv.setImageURI(uri);
             XAdapter.CustomHolder holder = xRefresher.getHeader(2);
-            holder.setImageUrl(R.id.iv, "");
-            holder.setImageURI(R.id.iv, uri);
+//            holder.setImageUrl(R.id.iv, "");
+            holder.setImageURI(R.id.iv, String.valueOf(uri));
         } else {
 
         }

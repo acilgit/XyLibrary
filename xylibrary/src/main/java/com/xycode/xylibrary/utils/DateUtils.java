@@ -1,10 +1,15 @@
 package com.xycode.xylibrary.utils;
 
+import android.content.Context;
+
+import com.xycode.xylibrary.R;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * Created by XY on 2016/7/12.
@@ -180,4 +185,37 @@ public class DateUtils {
         return months;
     }
 
+    public static String getChatTime(Context context, long date) {
+        int offSet = Calendar.getInstance().getTimeZone().getRawOffset();
+        long today = (System.currentTimeMillis() + offSet) / 86400000;
+        long start = (date + offSet) / 86400000;
+        long intervalTime = start - today;
+
+        Calendar current = Calendar.getInstance();
+        current.setTimeZone(TimeZone.getTimeZone("GMT+8:00"));
+        current.setTimeInMillis(System.currentTimeMillis());
+        int mThisYear = current.get(Calendar.YEAR);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeZone(TimeZone.getTimeZone("GMT+8:00"));
+        calendar.setTimeInMillis(date);
+
+        int mYear = calendar.get(Calendar.YEAR);
+        String mHour = String.valueOf(calendar.get(Calendar.HOUR_OF_DAY));
+        String mMinute = String.valueOf(calendar.get(Calendar.MINUTE));
+        String mSecond = String.valueOf(calendar.get(Calendar.SECOND));
+        String strDes = "";
+        if (intervalTime == 0) {
+            strDes = context.getString(R.string.text_today) + mHour + ":" + mMinute;
+        } else if (intervalTime == -1) {
+            strDes = context.getString(R.string.text_yestoday) + mHour + ":" + mMinute;
+        } else if (intervalTime == -2) {
+            strDes = context.getString(R.string.text_before_yestoday) + mHour + ":" + mMinute;
+        } else if (mYear < mThisYear) {
+            strDes = DateUtils.formatDateTime("yy-MM-dd HH:mm", date);
+        } else {
+            strDes = DateUtils.formatDateTime("MM-dd HH:mm", date);
+        }
+        return strDes;
+    }
 }

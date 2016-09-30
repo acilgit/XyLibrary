@@ -20,5 +20,8 @@ public class WH {
         return width * 1.0f / height;
     }
 
+    public boolean isAvailable() {
+        return getAspectRatio() > 0;
+    }
 
 }
