@@ -44,6 +44,7 @@
 
     <declare-styleable name="NoScrollViewPager">
         <attr name="enableScroll" format="boolean" />
+        <attr name="measureAllPages" format="boolean" />
     </declare-styleable>
 
     <declare-styleable name="BaseItemView">
