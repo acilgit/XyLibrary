@@ -199,7 +199,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
         ViewTypeUnit viewTypeUnit = getViewTypeUnitForLayout(dataList.get(position - headerCount));
         for (Integer key : multiLayoutMap.keySet()) {
             if (multiLayoutMap.get(key).getMark().equals(viewTypeUnit.getMark())) {
-                return key;
+                return key.intValue();
             }
         }
         int viewType = multiLayoutMap.size() + 10000;
