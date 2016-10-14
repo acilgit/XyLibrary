@@ -11,4 +11,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface SaveState {
+    int JSONOBJECT = 1;
+    int NORMALOBJECT = 0;
+    int value() default NORMALOBJECT;
+
 }

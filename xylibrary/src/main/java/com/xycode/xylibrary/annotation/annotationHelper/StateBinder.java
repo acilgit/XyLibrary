@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.SparseArray;
 
+import com.alibaba.fastjson.JSON;
 import com.xycode.xylibrary.annotation.SaveState;
 import com.xycode.xylibrary.utils.L;
 
@@ -36,6 +37,11 @@ public class StateBinder {
                             Object data = field.get(target);
                             Class fieldClazz = field.getType();
                             if (data != null) {
+
+
+                                /*
+                                * Do   when  target field  is  Primitive
+                                 */
                                 if (fieldClazz.isPrimitive()) {
                                     if (data.getClass() == Byte.class) {
                                         L.d(field.getName() + " is byte");
@@ -72,16 +78,36 @@ public class StateBinder {
                                     }
                                 } else {
 
-                                    //String
+                                    //Do when target field is String
+
+
                                     if (data.getClass() == String.class) {
                                         L.d(field.getName() + " is String");
                                         bundle.putString(field.getName(), (String) data);
+
+                                    //When target field is not an array & its implement Serializable
+
                                     } else if (!fieldClazz.isArray() && isImplementTarget(fieldClazz, Serializable.class)) {
                                         L.d(field.getName() + " is Serializable");
                                         bundle.putSerializable(field.getName(), (Serializable) data);
+
+                                    //When target field is not an array & its implement Parcelable
+
                                     } else if (!fieldClazz.isArray() && isImplementTarget(fieldClazz, Parcelable.class)) {
                                         L.d(field.getName() + " is Parcelable");
                                         bundle.putParcelable(field.getName(), (Parcelable) data);
+
+                                    //When target field is not an array & not a list & not implement Serializable & not implement Parcelable
+
+                                    } else if (!fieldClazz.isArray() && !(data.getClass() == List.class)) {
+
+                                        if (statue.value() == SaveState.JSONOBJECT) {
+                                            if (data != null)
+                                                bundle.putString(field.getName(), JSON.toJSONString(data));
+                                        }
+
+                                    //When target field is list
+
                                     } else if (data.getClass() == List.class) {
                                         Type fc = field.getGenericType();
                                         if (fc != null) {
@@ -94,10 +120,16 @@ public class StateBinder {
                                                 }
                                             }
                                         }
+
+                                    //When target field is array
+
                                     } else if (fieldClazz.isArray()) {
                                         if (isImplementTarget(fieldClazz.getComponentType(), Parcelable.class))
                                             L.d(field.getName() + " is Parcelable array");
                                         bundle.putParcelableArray(field.getName(), (Parcelable[]) data);
+
+                                     //When target field is SparseArray
+
                                     } else if (fieldClazz == SparseArray.class) {
                                         boolean parcelable = false;
                                         if (data != null) {
@@ -140,7 +172,7 @@ public class StateBinder {
                     if (statue != null) {
                         try {
                             Object data = field.get(target);
-                            if(data!=null){
+                            if (data != null) {
                                 Class fieldClazz = field.getType();
                                 if (fieldClazz.isPrimitive()) {
                                     if (data.getClass() == Byte.class) {
@@ -187,6 +219,11 @@ public class StateBinder {
                                     } else if (!fieldClazz.isArray() && isImplementTarget(fieldClazz, Parcelable.class)) {
                                         L.d(field.getName() + " is Parcelable");
                                         bundle.putParcelable(field.getName(), (Parcelable) data);
+                                    } else if (!fieldClazz.isArray() && !(data.getClass() == List.class)) {
+                                        if (statue.value() == SaveState.JSONOBJECT) {
+                                            if (data != null)
+                                                bundle.putString(field.getName(), JSON.toJSONString(data));
+                                        }
                                     } else if (data.getClass() == List.class) {
                                         Type fc = field.getGenericType();
                                         if (fc != null) {
@@ -251,7 +288,14 @@ public class StateBinder {
                 if (statue != null) {
                     Object data = source.get(field.getName());
                     try {
-                        field.set(target, data);
+                        switch (statue.value()) {
+                            case SaveState.JSONOBJECT:
+                                field.set(target,JSON.parseObject((String)data,field.getClass()));
+                                break;
+                            case SaveState.NORMALOBJECT:
+                                field.set(target, data);
+                                break;
+                        }
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
                     }
@@ -266,7 +310,14 @@ public class StateBinder {
                 if (statue != null) {
                     Object data = source.get(field.getName());
                     try {
-                        field.set(target, data);
+                        switch (statue.value()) {
+                            case SaveState.JSONOBJECT:
+                                field.set(target,JSON.parseObject((String)data,field.getClass()));
+                                break;
+                            case SaveState.NORMALOBJECT:
+                                field.set(target, data);
+                                break;
+                        }
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
                     } finally {
