@@ -23,19 +23,9 @@ import java.util.List;
 
 public abstract class BasePhotoActivity extends BaseActivity {
 
-    private static ShareStorage photoStorage;
-    private static final String photoSP = "photoSP";
     private static final String photos = "photos";
     private static final String position = "position";
-
     View.OnLongClickListener longClickListener;
-
-    private static ShareStorage getPhotoStorage(Context context) {
-        if (photoStorage == null) {
-            photoStorage = new ShareStorage(context, photoSP);
-        }
-        return photoStorage;
-    }
 
     public static void startThis(BaseActivity activity, Class photoActivityClass, String url) {
         List<UrlData> urls = new ArrayList<>();
@@ -44,8 +34,8 @@ public abstract class BasePhotoActivity extends BaseActivity {
     }
 
     public static void startThis(BaseActivity activity,  Class photoActivityClass, List<UrlData> urls, int pos) {
-        getPhotoStorage(activity).put(photos, JSON.toJSONString(urls));
-        activity.startActivity(new Intent(activity, photoActivityClass).putExtra(position, pos));
+//        getPhotoStorage(activity).put(photos, JSON.toJSONString(urls));
+        activity.startActivity(new Intent(activity, photoActivityClass).putExtra(photos, JSON.toJSONString(urls)).putExtra(position, pos));
     }
 
     @Override
@@ -57,7 +47,7 @@ public abstract class BasePhotoActivity extends BaseActivity {
 
         int pos = getIntent().getIntExtra(position, 0);
         try {
-            List<UrlData> urlDatas = JSON.parseArray(getPhotoStorage(getThis()).getString(photos), UrlData.class);
+            List<UrlData> urlDatas = JSON.parseArray(getIntent().getStringExtra(photos), UrlData.class);
             boolean singlePhoto = urlDatas.size() == 1;
             PhotoPagerAdapter fragmentAdapter = new PhotoPagerAdapter(this, urlDatas);
             vpMain.setScrollable(!singlePhoto);
@@ -75,7 +65,6 @@ public abstract class BasePhotoActivity extends BaseActivity {
     public void setOnLongClickListener(View.OnLongClickListener longClickListener) {
         this.longClickListener = longClickListener;
     }
-
 
     class PhotoPagerAdapter extends PagerAdapter {
 

@@ -37,6 +37,7 @@ public class OkHttp {
     public static final MediaType MEDIA_TYPE_MULTI_DATA = MediaType.parse("multipart/form-data; charset=utf-8");
 
     public static final String FILE = "file";
+    public static final byte[] lock = new byte[0];
 
     public static final int RESULT_ERROR = 0;
     public static final int RESULT_SUCCESS = 1;
@@ -83,14 +84,16 @@ public class OkHttp {
     }
 
     public static OkHttpClient getClient() {
-        if (client == null) {
-            client = new OkHttpClient.Builder()
-                    .readTimeout(OkOptions.readTimeout, TimeUnit.SECONDS)
-                    .connectTimeout(OkOptions.connectTimeout, TimeUnit.SECONDS)
-                    .writeTimeout(OkOptions.writeTimeout, TimeUnit.SECONDS)
-                    .build();
+        synchronized (lock) {
+            if (client == null) {
+                client = new OkHttpClient.Builder()
+                        .readTimeout(OkOptions.readTimeout, TimeUnit.SECONDS)
+                        .connectTimeout(OkOptions.connectTimeout, TimeUnit.SECONDS)
+                        .writeTimeout(OkOptions.writeTimeout, TimeUnit.SECONDS)
+                        .build();
+            }
+            return client;
         }
-        return client;
     }
 
     public static RequestBody setFormBody(Param params) {

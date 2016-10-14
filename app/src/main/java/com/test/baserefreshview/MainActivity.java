@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.SparseArray;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -52,17 +54,23 @@ public class MainActivity extends BaseActivity {
     private int iii;
     NiceSpinner spinner;
 
+    @SaveState
+    private SparseArray<View> viewSparseArray = new SparseArray<>();
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setWindowMode(WindowMode.INPUT_ADJUST);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        start(TestA.class);
+//        start(TestA.class);
         xRefresher = (XRefresher) findViewById(R.id.xRefresher);
         siv = (SimpleDraweeView) findViewById(R.id.siv);
         tags = (TagLayout) findViewById(R.id.tags);
         spinner = (NiceSpinner) findViewById(R.id.nice_spinner);
+
+
 //        spinner.attachDataSource(Arrays.asList(R.array.test_array));
 
         /*
@@ -249,6 +257,11 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+    }
+
+    @Override
     protected AlertDialog setLoadingDialog() {
         return null;
     }
@@ -262,6 +275,9 @@ public class MainActivity extends BaseActivity {
         bannerList.add(new UrlData("http://mxycsku.qiniucdn.com/group6/M00/96/F7/wKgBjVXbxnCABW_iAAKLH0qKKXo870.jpg"));
 
         bannerView.setOnImageClickListener((parent, view, position, realPosition, urlData) -> {
+
+            viewSparseArray.put(1, spinner);
+            viewSparseArray.put(2, tags);
 
             File externalCacheDir = getThis().getExternalCacheDir();
             L.e("externalCacheDir  " + externalCacheDir + " " + getThis().getFilesDir());

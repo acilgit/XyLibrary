@@ -2,6 +2,8 @@ package com.xycode.xylibrary.base;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.ColorInt;
 import android.util.AttributeSet;
 import android.util.SparseArray;
@@ -15,6 +17,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.xycode.xylibrary.R;
+import com.xycode.xylibrary.annotation.SaveState;
+import com.xycode.xylibrary.annotation.annotationHelper.StateBinder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,8 +41,10 @@ public abstract class BaseFlowTagLayout extends ViewGroup {
      */
     public static final int FLOW_TAG_CHECKED_MULTI = 2;
 
+    @SaveState
     private SparseArray<View> viewList;
 
+    @SaveState
     protected int tagType;
 
     /**
@@ -300,6 +306,24 @@ public abstract class BaseFlowTagLayout extends ViewGroup {
         this.onTagSelectListener = onTagSelectListener;
     }
 
+    @Override
+    public Parcelable onSaveInstanceState() {
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(StateBinder.INSTANCE_STATE, super.onSaveInstanceState());
+        StateBinder.saveState(this, bundle);
+        return bundle;
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Parcelable state) {
+        if (state instanceof Bundle) {
+            Bundle bundle = (Bundle) state;
+            StateBinder.bindState(this, bundle);
+            state = bundle.getParcelable(StateBinder.INSTANCE_STATE);
+        }
+        super.onRestoreInstanceState(state);
+    }
+
     /**
      *
      * @param adapter
@@ -318,7 +342,6 @@ public abstract class BaseFlowTagLayout extends ViewGroup {
             mAdapter.registerDataSetObserver(mDataSetObserver);
         }
     }*/
-
     /**
      *
      * @return

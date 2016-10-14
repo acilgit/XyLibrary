@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
@@ -21,9 +23,13 @@ import android.widget.TextView;
 import com.andexert.library.RippleView;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.xycode.xylibrary.R;
+import com.xycode.xylibrary.annotation.SaveState;
+import com.xycode.xylibrary.annotation.annotationHelper.StateBinder;
 import com.xycode.xylibrary.utils.DateUtils;
 
 import java.util.Calendar;
+
+import com.xycode.xylibrary.annotation.annotationHelper.StateBinder;
 
 /**
  * Created by XY on 2016-08-08.
@@ -32,39 +38,39 @@ public abstract class BaseItemView extends RelativeLayout {
 
     private SparseArray<View> viewList;
 
-    protected int itemType;
-    protected int itemIcon;
-    protected int itemColor;
-    protected int itemChildColor;
-    protected int itemBg;
-    protected int itemRes;
-    protected int itemNum;
-    protected int itemCount;
-    protected int itemVisible;
-    protected int itemChildVisible;
-    protected int itemIndex;
-    protected boolean itemBool;
-    protected boolean itemCheck;
-    protected float itemFloat;
-    protected String itemName;
-    protected String itemHint;
-    protected String itemTitle;
-    protected String itemContent;
-    protected String itemDetail;
-    protected String itemDescription;
+    @SaveState protected int itemType;
+    @SaveState protected int itemIcon;
+    @SaveState protected int itemColor;
+    @SaveState protected int itemChildColor;
+    @SaveState protected int itemBg;
+    @SaveState protected int itemRes;
+    @SaveState protected int itemNum;
+    @SaveState protected int itemCount;
+    @SaveState protected int itemVisible;
+    @SaveState protected int itemChildVisible;
+    @SaveState protected int itemIndex;
+    @SaveState protected boolean itemBool;
+    @SaveState protected boolean itemCheck;
+    @SaveState protected float itemFloat;
+    @SaveState protected String itemName;
+    @SaveState protected String itemHint;
+    @SaveState protected String itemTitle;
+    @SaveState protected String itemContent;
+    @SaveState protected String itemDetail;
+    @SaveState protected String itemDescription;
 
-    protected int itemInputType;
-    protected int itemMin;
-    protected int itemMax;
-    protected int itemMinLines;
-    protected int itemMaxLines;
+   @SaveState protected int itemInputType;
+   @SaveState protected int itemMin;
+   @SaveState protected int itemMax;
+   @SaveState protected int itemMinLines;
+   @SaveState protected int itemMaxLines;
 
-    private int[] date = new int[]{0, 0, 0};
-    private int[] time = new int[]{0, 0};
+   @SaveState private int[] date = new int[]{0, 0, 0};
+   @SaveState private int[] time = new int[]{0, 0};
 
     protected OnViewSenseListener onViewSenseListener;
 
-    protected int layoutId = R.layout.layout_blank;
+    @SaveState protected int layoutId = R.layout.layout_blank;
 
     public BaseItemView(Context context) {
         super(context, null);
@@ -359,6 +365,24 @@ public abstract class BaseItemView extends RelativeLayout {
 
     public void setItemFloat(float itemFloat) {
         this.itemFloat = itemFloat;
+    }
+
+    @Override
+    public Parcelable onSaveInstanceState() {
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(StateBinder.INSTANCE_STATE, super.onSaveInstanceState());
+        StateBinder.saveState(this, bundle);
+        return bundle;
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Parcelable state) {
+        if (state instanceof Bundle) {
+            Bundle bundle = (Bundle) state;
+            StateBinder.bindState(this, bundle);
+            state = bundle.getParcelable(StateBinder.INSTANCE_STATE);
+        }
+        super.onRestoreInstanceState(state);
     }
 
     protected abstract int getLayoutId(int type);
