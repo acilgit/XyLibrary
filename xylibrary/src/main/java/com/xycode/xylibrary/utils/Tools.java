@@ -36,6 +36,7 @@ import android.widget.TextView;
 import com.xycode.xylibrary.base.BaseActivity;
 import com.xycode.xylibrary.interfaces.Interfaces;
 import com.xycode.xylibrary.uiKit.recyclerview.HorizontalDividerItemDecoration;
+import com.xycode.xylibrary.unit.ContactUnit;
 import com.xycode.xylibrary.unit.StringData;
 import com.xycode.xylibrary.unit.UrlData;
 import com.xycode.xylibrary.unit.WH;
@@ -713,15 +714,16 @@ public class Tools {
         context.startActivityForResult(intent, BaseActivity.REQUEST_CODE_GOT_PHONE_NUMBER);
     }
 
-
-    public static String receivedPhoneNumber(Activity context, Intent data) throws Exception{
+    public static ContactUnit receivedPhoneNumber(Activity context, Intent data) throws Exception{
         ContentResolver reContentResolver = context.getContentResolver();
         String phone = "";
+        String name = "";
         Cursor cursor = null;
         try {
             cursor = reContentResolver.query(data.getData(), null, null, null, null);
             if (cursor.moveToFirst()) {
-                final String number = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                String number = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                name = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
                 phone = new StringBuffer(number.replaceAll("-", "").replaceAll(" ", "").replace("+86", "").replace("+", "00")).toString();
             }
         } catch (Exception e) {
@@ -729,7 +731,7 @@ public class Tools {
         } finally {
            if(cursor != null) cursor.close();
         }
-        return phone;
+        return new ContactUnit(name, phone);
     }
 
     public static class Cal {

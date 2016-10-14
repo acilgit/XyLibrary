@@ -101,7 +101,7 @@ public class App extends Application {
         });
         OkHttp.setMaxTransFileCount(2);
 
-        DownloadHelper.init("现在更新", "暂不更新", "正在下载中", "取消", new DownloadHelper.OnShowDownloadDialog() {
+        /*DownloadHelper.init("现在更新", "暂不更新", "正在下载中", "取消", new DownloadHelper.OnShowDownloadDialog() {
             @Override
             public AlertDialog.Builder getConfirmDialogBuilder(Activity activity, String updateMessage) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(activity);
@@ -134,12 +134,12 @@ public class App extends Application {
             public void onFailure() {
                 TS.show("下载失败");
             }
-        });
+        });*/
 
         XRefresher.setCustomerLoadMoreView(R.layout.layout_load_more);
         XRefresher.setDefaultNoDataText("暂无数据", 1);
 
-        FrescoLoader.init(url ->  null);
+//        FrescoLoader.init(url ->  null);
      /*   FrescoLoader.init(url -> {
             WH wh = Tools.getWidthHeightFromFilename(url, "_wh", "_");
             return url + "!" + (wh.getAspectRatio() * 40) + "!40";

@@ -22,6 +22,7 @@ import android.widget.TextView;
 import com.alibaba.fastjson.JSONObject;
 import com.xycode.xylibrary.R;
 import com.xycode.xylibrary.adapter.XAdapter;
+import com.xycode.xylibrary.annotation.SaveState;
 import com.xycode.xylibrary.base.BaseActivity;
 import com.xycode.xylibrary.okHttp.OkHttp;
 import com.xycode.xylibrary.okHttp.Param;
@@ -40,7 +41,9 @@ import okhttp3.Response;
 /**
  * Created by XY on 2016/6/17.
  */
-public class XRefresher<T> extends CoordinatorLayout  implements FlexibleDividerDecoration.VisibilityProvider, FlexibleDividerDecoration.SizeProvider{
+public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerDecoration.VisibilityProvider, FlexibleDividerDecoration.SizeProvider {
+
+    public static final int HEADER_ONE = 0;
 
     public static final int LOADER_MORE = 0;
     public static final int LOADER_LOADING = 1;
@@ -62,16 +65,24 @@ public class XRefresher<T> extends CoordinatorLayout  implements FlexibleDivider
     private int loadMoreState = LOADER_NO_MORE;
 
     private LoadMoreView loadMoreView;
+    @SaveState
     private int background;
+    @SaveState
     private boolean backgroundIsRes = false;
+    @SaveState
     private int backgroundNoData;
+    @SaveState
     private boolean backgroundNoDataIsRes = false;
 
 
+    @SaveState
     private int hintColor;
+    @SaveState
     private float hintSize;
+    @SaveState
     private String hint;
 
+    @SaveState
     private BaseActivity activity;
 
     private RefreshState state;
@@ -84,9 +95,12 @@ public class XRefresher<T> extends CoordinatorLayout  implements FlexibleDivider
     private RefreshRequest refreshRequest;
 
     private HorizontalDividerItemDecoration horizontalDividerItemDecoration;
+    @SaveState
     private int dividerSize = 0;
 
+    @SaveState
     private int lastVisibleItem = 0;
+    @SaveState
     private boolean loadMore;
     private CoordinatorLayout rlMain;
     private OnSwipeListener swipeListener;
@@ -116,10 +130,11 @@ public class XRefresher<T> extends CoordinatorLayout  implements FlexibleDivider
         backgroundNoData = typedArray.getColor(R.styleable.XRefresher_bgNoData, 1);
         if (backgroundNoData == 1) {
             backgroundNoData = typedArray.getResourceId(R.styleable.XRefresher_bgNoData, 1);
-            if(defaultBackgroundNoData!=1 && backgroundNoData==1) backgroundNoData = defaultBackgroundNoData;
+            if (defaultBackgroundNoData != 1 && backgroundNoData == 1)
+                backgroundNoData = defaultBackgroundNoData;
             backgroundNoDataIsRes = backgroundNoData != 1;
         }
-        if(hint == null) hint = "";
+        if (hint == null) hint = "";
 
         typedArray.recycle();
     }
@@ -269,7 +284,7 @@ public class XRefresher<T> extends CoordinatorLayout  implements FlexibleDivider
 
             @Override
             public void handleJsonError(Call call, Response response, JSONObject json) {
-               if(initRefresher!= null) initRefresher.handleError(call, json);
+                if (initRefresher != null) initRefresher.handleError(call, json);
             }
 
             @Override
@@ -304,14 +319,14 @@ public class XRefresher<T> extends CoordinatorLayout  implements FlexibleDivider
     }
 
     public void swipeRefresh() {
-        if (swipeListener != null){
+        if (swipeListener != null) {
 //            swipe.setRefreshing(true);
             swipeListener.onRefresh();
         }
     }
 
     public void refreshList() {
-         refreshList(false);
+        refreshList(false);
     }
 
     private void refreshList(boolean showDialog) {
@@ -369,17 +384,24 @@ public class XRefresher<T> extends CoordinatorLayout  implements FlexibleDivider
         }
     }
 
+
+
+    public XAdapter.CustomHolder getHeader() {
+        return getHeader(HEADER_ONE);
+    }
+
     public XAdapter.CustomHolder getHeader(int headerKey) {
         int headerPos = adapter.getHeaderPos(headerKey);
-        if (headerPos<0) {
+        if (headerPos < 0) {
             return null;
         }
         XAdapter.CustomHolder holder = (XAdapter.CustomHolder) getRecyclerView().getChildViewHolder(getRecyclerView().getChildAt(headerPos));
         return holder;
     }
+
     public XAdapter.CustomHolder getFooter() {
-        if(!getAdapter().hasFooter()) return null;
-        XAdapter.CustomHolder holder = (XAdapter.CustomHolder) getRecyclerView().getChildViewHolder(getRecyclerView().getChildAt(adapter.getItemCount()-1));
+        if (!getAdapter().hasFooter()) return null;
+        XAdapter.CustomHolder holder = (XAdapter.CustomHolder) getRecyclerView().getChildViewHolder(getRecyclerView().getChildAt(adapter.getItemCount() - 1));
         return holder;
     }
 
@@ -393,7 +415,6 @@ public class XRefresher<T> extends CoordinatorLayout  implements FlexibleDivider
         XRefresher.defaultNoDataText = hint;
         XRefresher.defaultBackgroundNoData = bgColor;
     }
-
 
 
     private void setLoadMoreState(int loadMoreState) {
@@ -412,7 +433,7 @@ public class XRefresher<T> extends CoordinatorLayout  implements FlexibleDivider
     public boolean shouldHideDivider(int position, RecyclerView parent) {
         if (position < getAdapter().getHeaderCount()) {
             return true;
-        }else if (getAdapter().hasFooter() && position == getAdapter().getItemCount() - 2) {
+        } else if (getAdapter().hasFooter() && position == getAdapter().getItemCount() - 2) {
             return true;
         }
         return false;
@@ -422,7 +443,7 @@ public class XRefresher<T> extends CoordinatorLayout  implements FlexibleDivider
     public int dividerSize(int position, RecyclerView parent) {
         if (position < getAdapter().getHeaderCount()) {
             return 0;
-        }else if (getAdapter().hasFooter() && position == getAdapter().getItemCount() - 2) {
+        } else if (getAdapter().hasFooter() && position == getAdapter().getItemCount() - 2) {
             return 0;
         }
         return dividerSize;
@@ -486,7 +507,7 @@ public class XRefresher<T> extends CoordinatorLayout  implements FlexibleDivider
 
     public interface InitRefresher {
 
-         void handleError(Call call, JSONObject json);
+        void handleError(Call call, JSONObject json);
     }
 
     public static void init(InitRefresher initRefresher) {

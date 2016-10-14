@@ -108,6 +108,8 @@ public class NiceSpinner<T> extends TextView {
         super.onRestoreInstanceState(savedState);
     }
 
+
+
     private void init(Context context, AttributeSet attrs) {
         Resources resources = getResources();
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.NiceSpinner);

@@ -19,6 +19,8 @@ import java.util.List;
  * Created by Administrator on 2016/8/8.
  */
 public class StateBinder {
+    public static final String  INSTANCE_STATE = "INSTANCE_STATE";
+
     public static void saveState(Object target, Bundle bundle) {
         if (bundle == null) {
             return;

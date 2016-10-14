@@ -23,6 +23,7 @@ import com.xycode.xylibrary.instance.FrescoLoader;
 import com.xycode.xylibrary.uiKit.views.MultiImageView;
 import com.xycode.xylibrary.unit.ViewTypeUnit;
 import com.xycode.xylibrary.utils.ImageUtils;
+import com.xycode.xylibrary.xRefresher.XRefresher;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -77,7 +78,6 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
                 @Override
                 protected void createHolder(final CustomHolder holder) {
                     holder.onClickListener = v -> handleItemViewClick(holder, null, v.getId(), new ViewTypeUnit(viewType, footerLayout));
-
                     holder.onLongClickListener = v -> handleItemViewLongClick(holder, null, v.getId(), new ViewTypeUnit(viewType, footerLayout));
                     creatingFooter(holder);
                 }
@@ -319,6 +319,10 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
 
     public void setFooter(@LayoutRes int footerLayout) {
         this.footerLayout = footerLayout;
+    }
+
+    public void addHeader(@LayoutRes int headerLayoutId) {
+        addHeader(XRefresher.HEADER_ONE, headerLayoutId);
     }
 
     public void addHeader(int headerKey, @LayoutRes int headerLayoutId) {
