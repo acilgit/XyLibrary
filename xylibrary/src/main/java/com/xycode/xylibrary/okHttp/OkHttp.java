@@ -86,7 +86,7 @@ public class OkHttp {
         if (addDefaultParams) {
             Param defaultParams = okInit.setDefaultParams(new Param());
             for (String key : defaultParams.keySet()) {
-                builder.add(key, params.get(key));
+                builder.add(key, defaultParams.get(key));
             }
         }
         return builder.build();
