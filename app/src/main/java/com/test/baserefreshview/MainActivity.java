@@ -20,8 +20,8 @@ import com.facebook.drawee.drawable.ScalingUtils;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.test.baserefreshview.ListBean.Content.ContentBean;
 import com.xycode.xylibrary.adapter.XAdapter;
-import com.xycode.xylibrary.annotation.SaveState;
 import com.xycode.xylibrary.base.BaseActivity;
+import com.xycode.xylibrary.annotation.SaveState;
 import com.xycode.xylibrary.instance.FrescoLoader;
 import com.xycode.xylibrary.okHttp.Param;
 import com.xycode.xylibrary.uiKit.views.MultiImageView;
@@ -42,6 +42,7 @@ import java.util.List;
 
 import butterknife.ButterKnife;
 
+
 /**
  * new
  */
@@ -55,7 +56,7 @@ public class MainActivity extends BaseActivity {
     NiceSpinner spinner;
 
     @SaveState
-    private SparseArray<View> viewSparseArray = new SparseArray<>();
+    private SparseArray<View> viewSparseArray;
 
 
     @Override
@@ -275,7 +276,7 @@ public class MainActivity extends BaseActivity {
         bannerList.add(new UrlData("http://mxycsku.qiniucdn.com/group6/M00/96/F7/wKgBjVXbxnCABW_iAAKLH0qKKXo870.jpg"));
 
         bannerView.setOnImageClickListener((parent, view, position, realPosition, urlData) -> {
-
+            viewSparseArray = new SparseArray<>();
             viewSparseArray.put(1, spinner);
             viewSparseArray.put(2, tags);
 
