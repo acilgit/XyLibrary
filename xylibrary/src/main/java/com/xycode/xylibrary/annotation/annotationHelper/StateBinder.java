@@ -103,7 +103,7 @@ public class StateBinder {
 
                                     } else if (!fieldClazz.isArray() && !(data.getClass() == List.class)) {
 
-                                        if (statue.value() == SaveState.JSONOBJECT) {
+                                        if (statue.value() == SaveState.JSON_OBJECT) {
                                             if (data != null)
                                                 bundle.putString(field.getName(), JSON.toJSONString(data));
                                         }
@@ -222,7 +222,7 @@ public class StateBinder {
                                         L.d(field.getName() + " is Parcelable");
                                         bundle.putParcelable(field.getName(), (Parcelable) data);
                                     } else if (!fieldClazz.isArray() && !(data.getClass() == List.class)) {
-                                        if (statue.value() == SaveState.JSONOBJECT) {
+                                        if (statue.value() == SaveState.JSON_OBJECT) {
                                             if (data != null)
                                                 bundle.putString(field.getName(), JSON.toJSONString(data));
                                         }
@@ -291,10 +291,10 @@ public class StateBinder {
                     Object data = source.get(field.getName());
                     try {
                         switch (statue.value()) {
-                            case SaveState.JSONOBJECT:
+                            case SaveState.JSON_OBJECT:
                                 field.set(target,JSON.parseObject((String)data,field.getClass()));
                                 break;
-                            case SaveState.NORMALOBJECT:
+                            case SaveState.NORMAL_OBJECT:
                                 field.set(target, data);
                                 break;
                         }
@@ -313,10 +313,10 @@ public class StateBinder {
                     Object data = source.get(field.getName());
                     try {
                         switch (statue.value()) {
-                            case SaveState.JSONOBJECT:
+                            case SaveState.JSON_OBJECT:
                                 field.set(target,JSON.parseObject((String)data,field.getClass()));
                                 break;
-                            case SaveState.NORMALOBJECT:
+                            case SaveState.NORMAL_OBJECT:
                                 field.set(target, data);
                                 break;
                         }

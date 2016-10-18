@@ -246,7 +246,13 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
         params.put(PAGE, String.valueOf(actualPage));
         params.put(PAGE_SIZE, String.valueOf(postPageSize));
         String url = refreshRequest.setRequestParamsReturnUrl(params);
-        activity.postForm(url, activity.setFormBody(params), null, true, new OkHttp.OkResponseListener() {
+        boolean addDefaultParam = false;
+        boolean addDefaultHeader = true;
+        if(initRefresher != null) {
+            addDefaultParam = initRefresher.addDefaultParam();
+            addDefaultHeader= initRefresher.addDefaultHeader();
+        }
+        activity.postForm(url, OkHttp.setFormBody(params, addDefaultParam), null, addDefaultHeader, new OkHttp.OkResponseListener() {
             @Override
             public void handleJsonSuccess(Call call, Response response, JSONObject json) {
                 final List<T> newList = refreshRequest.setListData(json);
@@ -508,6 +514,10 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
     public interface InitRefresher {
 
         void handleError(Call call, JSONObject json);
+
+        boolean addDefaultHeader();
+
+        boolean addDefaultParam();
     }
 
     public static void init(InitRefresher initRefresher) {
