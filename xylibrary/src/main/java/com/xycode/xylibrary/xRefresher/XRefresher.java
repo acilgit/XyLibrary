@@ -255,7 +255,13 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
         activity.postForm(url, OkHttp.setFormBody(params, addDefaultParam), null, addDefaultHeader, new OkHttp.OkResponseListener() {
             @Override
             public void handleJsonSuccess(Call call, Response response, JSONObject json) {
-                final List<T> newList = refreshRequest.setListData(json);
+                List<T> getList = refreshRequest.setListData(json);
+                final List<T> newList;
+                if (getList == null) {
+                    newList = new ArrayList<>();
+                } else {
+                    newList = getList;
+                }
                 state.setLastPage(/* (refreshType != REFRESH) &&*/ newList.size() < postPageSize);
                 final List<T> list = new ArrayList<>();
                 switch (refreshType) {

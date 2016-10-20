@@ -47,6 +47,17 @@
         <attr name="measureAllPages" format="boolean" />
     </declare-styleable>
 
+    <declare-styleable name="XTextView">
+        <attr name="leftHeight" format="dimension" />
+        <attr name="leftWidth" format="dimension" />
+        <attr name="rightHeight" format="dimension" />
+        <attr name="rightWidth" format="dimension" />
+        <attr name="topHeight" format="dimension" />
+        <attr name="topWidth" format="dimension" />
+        <attr name="bottomHeight" format="dimension" />
+        <attr name="bottomWidth" format="dimension" />
+    </declare-styleable>
+
     <declare-styleable name="BaseItemView">
         <attr name="itemType" format="integer" />
         <attr name="itemNum" format="integer" />
