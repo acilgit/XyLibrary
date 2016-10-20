@@ -47,7 +47,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     //    private static AlertDialog loadingDialog;
     private static boolean loadingDialogShowManual = false;
 
-    private List<okhttp3.Call> requestList = new ArrayList<>();
+    protected List<okhttp3.Call> requestList = new ArrayList<>();
 
     private BroadcastReceiver finishReceiver;
     private BaseActivity thisActivity;
