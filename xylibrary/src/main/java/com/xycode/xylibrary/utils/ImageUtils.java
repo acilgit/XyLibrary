@@ -9,6 +9,7 @@ import android.graphics.drawable.Animatable;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.view.View;
 
 import com.facebook.binaryresource.BinaryResource;
 import com.facebook.binaryresource.FileBinaryResource;
@@ -48,7 +49,7 @@ public class ImageUtils {
     private static final String TEMP_CROP_IMAGE_FILE_NAME = "tempCropImage";
 
     public static Uri getTempImageUri(Context context) {
-        File file = new File(context.getExternalCacheDir() ,TEMP_IMAGE_FILE_NAME);
+        File file = new File(context.getExternalCacheDir(), TEMP_IMAGE_FILE_NAME);
         if (!file.exists()) {
             try {
                 file.createNewFile();
@@ -61,7 +62,7 @@ public class ImageUtils {
     }
 
     public static Uri getTempCropImageUri(Context context) {
-        File file = new File(context.getFilesDir() ,TEMP_CROP_IMAGE_FILE_NAME+ DateUtils.getNow()+".jpg");
+        File file = new File(context.getFilesDir(), TEMP_CROP_IMAGE_FILE_NAME + DateUtils.getNow() + ".jpg");
         if (!file.exists()) {
             try {
                 file.createNewFile();
@@ -74,7 +75,7 @@ public class ImageUtils {
     }
 
     public static Uri getNewTempImageUri(Context context) {
-        File file = new File(context.getFilesDir() ,TEMP_FILE_NAME+ DateUtils.getNow()+".jpg");
+        File file = new File(context.getFilesDir(), TEMP_FILE_NAME + DateUtils.getNow() + ".jpg");
         if (!file.exists()) {
             try {
                 file.createNewFile();
@@ -253,7 +254,7 @@ public class ImageUtils {
         return baos;
     }
 
-    public static ByteArrayOutputStream compressBitmapFileToStream(String filePath, int jpegQuality,  int targetMaxSide, int targetMiniSide) {
+    public static ByteArrayOutputStream compressBitmapFileToStream(String filePath, int jpegQuality, int targetMaxSide, int targetMiniSide) {
         Bitmap bitmap = resizeToBitmap(filePath, targetMaxSide, targetMiniSide);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, jpegQuality, baos);
@@ -261,7 +262,7 @@ public class ImageUtils {
         return baos;
     }
 
-    public static boolean compressBitmapFromPathToFile(String sourcePath, File targetFile, int jpegQuality,  int targetMaxSide, int targetMiniSide) {
+    public static boolean compressBitmapFromPathToFile(String sourcePath, File targetFile, int jpegQuality, int targetMaxSide, int targetMiniSide) {
         Bitmap bitmap = resizeToBitmap(sourcePath, targetMaxSide, targetMiniSide);
         File dir = new File(targetFile.getParent());
         if (!dir.exists()) {
@@ -280,6 +281,7 @@ public class ImageUtils {
         bitmap.recycle();
         return true;
     }
+
     /**
      * get ordinary Bitmap .
      *
@@ -352,9 +354,8 @@ public class ImageUtils {
     }
 
     /**
-     *
      * @param filePath
-     * @param targetMaxSide if bitmap maxSide smaller than this, do nothing
+     * @param targetMaxSide  if bitmap maxSide smaller than this, do nothing
      * @param targetMiniSide if bitmap miniSide smaller than this, do nothing
      * @return
      */
@@ -697,6 +698,9 @@ public class ImageUtils {
 
     public static void setFrescoViewUri(SimpleDraweeView imageView, Uri uri, Uri previewUri, final IGetFrescoImageInfo iGetFrescoImageInfo) {
         if (uri == null) {
+            if (imageView.getAspectRatio() <= 0) {
+                imageView.setVisibility(View.GONE);
+            }
             return;
         }
         ImageRequest request = ImageRequestBuilder.newBuilderWithSource(uri)
@@ -713,7 +717,9 @@ public class ImageUtils {
                     @Override
                     public void onFinalImageSet(String id, ImageInfo imageInfo, Animatable animatable) {
                         if (showFinalImageInfo && iGetFrescoImageInfo != null) {
-                            iGetFrescoImageInfo.afterGotImageInfo(imageInfo, (1.0f * imageInfo.getWidth()) / imageInfo.getHeight());
+                            float ratio = (1.0f * imageInfo.getWidth()) / imageInfo.getHeight();
+                            iGetFrescoImageInfo.afterGotImageInfo(imageInfo, ratio);
+                            imageView.setVisibility(ratio > 0 ? View.VISIBLE : View.GONE);
                         }
                     }
 
