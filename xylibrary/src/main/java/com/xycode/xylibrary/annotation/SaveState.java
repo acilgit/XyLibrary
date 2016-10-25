@@ -13,6 +13,8 @@ import java.lang.annotation.Target;
 public @interface SaveState {
     int JSON_OBJECT = 1;
     int NORMAL_OBJECT = 0;
+    int VIEW_SPARSEARRAY = 2;
+
     int value() default NORMAL_OBJECT;
 
 }
