@@ -16,7 +16,6 @@ import java.math.BigDecimal;
 public class CacheUtils {
     /**
      * @return
-     * @throws Exception
      */
     public static String getTotalCacheSize(Context context) {
         long cacheSize = 0;
@@ -73,8 +72,8 @@ public class CacheUtils {
 
     /**
      * get cache folder size
-     * Context.getExternalFilesDir() --> SDCard/Android/data/app_package/files/
-     * Context.getExternalCacheDir() --> SDCard/Android/data/app_package/cache/
+     * Context.getExternalFilesDir() SDCard/Android/data/app_package/files/
+     * Context.getExternalCacheDir() SDCard/Android/data/app_package/cache/
      *
      * @param file
      * @return

@@ -29,7 +29,7 @@ import java.net.URL;
  * Created by Administrator on 2016/10/22 0022.
  */
 
-public class CompulsiveHelper extends Activity {
+public class CompulsiveHelperActivity extends Activity {
     public static final String Title = "title";
     public static final String Illustration = "illustration";
     public static final String Cancel = "cancel";
@@ -90,7 +90,7 @@ public class CompulsiveHelper extends Activity {
 
 
     public static void update(Context context, CancelCallBack cancelCallback, Param builder) {
-        Intent intent = new Intent(context, CompulsiveHelper.class);
+        Intent intent = new Intent(context, CompulsiveHelperActivity.class);
         mCancelCallBack = cancelCallback;
         if (builder.getKey(URL) == null) {
             TS.show(context.getString(R.string.tips_get_dowload_url_fail));
@@ -222,7 +222,7 @@ public class CompulsiveHelper extends Activity {
             } else {
                 mIllustration.setVisibility(View.GONE);
                 mCancel.setVisibility(View.GONE);
-                new Thread(CompulsiveHelper.this::downFile).start();
+                new Thread(CompulsiveHelperActivity.this::downFile).start();
                 mConfirm.setText(R.string.update_connecting);
                 mConfirm.setSelected(true);
             }
