@@ -19,4 +19,17 @@
     <string name="text_today">"今天 "</string>
     <string name="text_yestoday">"昨天 "</string>
     <string name="text_before_yestoday">"前天 "</string>
+    <string name="update_now">现在更新</string>
+    <string name="new_version">新版本</string>
+    <string name="text_update_next_time">暂不更新</string>
+    <string name="text_updating">正在更新</string>
+    <string name="text_cancel_update">取消更新</string>
+    <string name="text_update_now">现在更新</string>
+    <string name="update_illustration">暂无说明</string>
+    <string name="tips_get_dowload_url_fail">获取下载地址失败</string>
+    <string name="separator">/</string>
+    <string name="percent" formatted="false">%s%%</string>
+    <string name="zero">0</string>
+    <string name="update_connecting">正在连接</string>
+    <string name="update_error_tips">更新包时出现问题:</string>
 </resources>

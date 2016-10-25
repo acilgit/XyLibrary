@@ -20,4 +20,8 @@ public class Param extends HashMap<String, String> {
         this.put(key, value);
         return this;
     }
+
+    public String getKey(String key) {
+        return this.get(key) == null ? "" : this.get(key);
+    }
 }

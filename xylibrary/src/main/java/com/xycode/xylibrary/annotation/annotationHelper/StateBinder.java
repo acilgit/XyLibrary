@@ -1,11 +1,15 @@
 package com.xycode.xylibrary.annotation.annotationHelper;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.SparseArray;
+import android.view.View;
 
 import com.alibaba.fastjson.JSON;
 import com.xycode.xylibrary.annotation.SaveState;
+import com.xycode.xylibrary.annotation.SerializableMap;
+import com.xycode.xylibrary.annotation.Sparsekey;
 import com.xycode.xylibrary.utils.L;
 
 import java.io.Serializable;
@@ -13,13 +17,15 @@ import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Administrator on 2016/8/8.
  */
 public class StateBinder {
-    public static final String  INSTANCE_STATE = "INSTANCE_STATE";
+    public static final String INSTANCE_STATE = "INSTANCE_STATE";
 
     public static void saveState(Object target, Bundle bundle) {
         if (bundle == null) {
@@ -28,6 +34,7 @@ public class StateBinder {
         if (target == null) {
             return;
         }
+        SerializableMap map = new SerializableMap(new HashMap());
         Class targetClass = target.getClass();
         Field[] fields = targetClass.getFields();
         if (fields != null) {
@@ -87,28 +94,28 @@ public class StateBinder {
                                         L.d(field.getName() + " is String");
                                         bundle.putString(field.getName(), (String) data);
 
-                                    //When target field is not an array & its implement Serializable
+                                        //When target field is not an array & its implement Serializable
 
                                     } else if (!fieldClazz.isArray() && isImplementTarget(fieldClazz, Serializable.class)) {
                                         L.d(field.getName() + " is Serializable");
                                         bundle.putSerializable(field.getName(), (Serializable) data);
 
-                                    //When target field is not an array & its implement Parcelable
+                                        //When target field is not an array & its implement Parcelable
 
                                     } else if (!fieldClazz.isArray() && isImplementTarget(fieldClazz, Parcelable.class)) {
                                         L.d(field.getName() + " is Parcelable");
                                         bundle.putParcelable(field.getName(), (Parcelable) data);
 
-                                    //When target field is not an array & not a list & not implement Serializable & not implement Parcelable
+                                        //When target field is not an array & not a list & not implement Serializable & not implement Parcelable
 
-                                    } else if (!fieldClazz.isArray() && !(data.getClass() == List.class)) {
+                                    } else if (!fieldClazz.isArray() && !(fieldClazz == SparseArray.class) && !(data.getClass() == List.class)) {
 
                                         if (statue.value() == SaveState.JSON_OBJECT) {
                                             if (data != null)
                                                 bundle.putString(field.getName(), JSON.toJSONString(data));
                                         }
 
-                                    //When target field is list
+                                        //When target field is list
 
                                     } else if (data.getClass() == List.class) {
                                         Type fc = field.getGenericType();
@@ -123,14 +130,14 @@ public class StateBinder {
                                             }
                                         }
 
-                                    //When target field is array
+                                        //When target field is array
 
                                     } else if (fieldClazz.isArray()) {
                                         if (isImplementTarget(fieldClazz.getComponentType(), Parcelable.class))
                                             L.d(field.getName() + " is Parcelable array");
                                         bundle.putParcelableArray(field.getName(), (Parcelable[]) data);
 
-                                     //When target field is SparseArray
+                                        //When target field is SparseArray
 
                                     } else if (fieldClazz == SparseArray.class) {
                                         boolean parcelable = false;
@@ -146,6 +153,18 @@ public class StateBinder {
                                         if (parcelable) {
                                             L.d(field.getName() + " is Parcelable sparseArray");
                                             bundle.putSparseParcelableArray(field.getName(), (SparseArray<? extends Parcelable>) data);
+                                        } else {
+                                            switch (statue.value()) {
+                                                case SaveState.VIEW_SPARSEARRAY:
+                                                    SparseArray<View> viewslist = (SparseArray<View>) data;
+                                                    Sparsekey[] ids = new Sparsekey[((SparseArray) data).size()];
+                                                    for (int i = 0; i < ids.length; i++) {
+                                                        Sparsekey temp = new Sparsekey(viewslist.keyAt(i), viewslist.get(viewslist.keyAt(i)).getId());
+                                                        ids[i] = temp;
+                                                    }
+                                                    map.getMap().put(field.getName() + "_sp", ids);
+                                                    break;
+                                            }
                                         }
                                     } else {
                                         L.e(field.getName() + "'s java type is unsupported , you can only use the @SaveState at a field that its java type is supported by Bundle");
@@ -221,7 +240,7 @@ public class StateBinder {
                                     } else if (!fieldClazz.isArray() && isImplementTarget(fieldClazz, Parcelable.class)) {
                                         L.d(field.getName() + " is Parcelable");
                                         bundle.putParcelable(field.getName(), (Parcelable) data);
-                                    } else if (!fieldClazz.isArray() && !(data.getClass() == List.class)) {
+                                    } else if (!fieldClazz.isArray() && !(fieldClazz == SparseArray.class) && !(data.getClass() == List.class)) {
                                         if (statue.value() == SaveState.JSON_OBJECT) {
                                             if (data != null)
                                                 bundle.putString(field.getName(), JSON.toJSONString(data));
@@ -256,6 +275,19 @@ public class StateBinder {
                                         if (parcelable) {
                                             L.d(field.getName() + " is Parcelable sparseArray");
                                             bundle.putSparseParcelableArray(field.getName(), (SparseArray<? extends Parcelable>) data);
+                                        } else {
+                                            switch (statue.value()) {
+                                                case SaveState.VIEW_SPARSEARRAY:
+                                                    SparseArray<View> viewslist = (SparseArray<View>) data;
+                                                    Sparsekey[] ids = new Sparsekey[((SparseArray) data).size()];
+                                                    for (int i = 0; i < ids.length; i++) {
+                                                        Sparsekey temp = new Sparsekey(viewslist.keyAt(i), viewslist.get(viewslist.keyAt(i)).getId());
+                                                        ids[i] = temp;
+                                                    }
+                                                    map.getMap().put(field.getName() + "_sp", ids);
+                                                    //bundle.putSparseParcelableArray(field.getName(), new SparseArray<Sparsekey>());
+                                                    break;
+                                            }
                                         }
                                     } else {
                                         L.e(field.getName() + "'s java type is unsupported, you can only use the @SaveState at a field that its java type is supported by Bundle");
@@ -272,6 +304,8 @@ public class StateBinder {
                 }
             }
         }
+
+        bundle.putSerializable("sp_map", map);
     }
 
 
@@ -292,10 +326,14 @@ public class StateBinder {
                     try {
                         switch (statue.value()) {
                             case SaveState.JSON_OBJECT:
-                                field.set(target,JSON.parseObject((String)data,field.getClass()));
+                                field.set(target, JSON.parseObject((String) data, field.getClass()));
                                 break;
                             case SaveState.NORMAL_OBJECT:
                                 field.set(target, data);
+                                break;
+                            case SaveState.VIEW_SPARSEARRAY:
+                                SerializableMap map = (SerializableMap) source.getSerializable("sp_map");
+                                bindSprareArray(field, map, target, data);
                                 break;
                         }
                     } catch (IllegalAccessException e) {
@@ -304,7 +342,7 @@ public class StateBinder {
                 }
             }
         }
-        Field[] privateFields = targetClass.getFields();
+        Field[] privateFields = targetClass.getDeclaredFields();
         if (fields != null) {
             for (Field field : privateFields) {
                 field.setAccessible(true);
@@ -314,10 +352,14 @@ public class StateBinder {
                     try {
                         switch (statue.value()) {
                             case SaveState.JSON_OBJECT:
-                                field.set(target,JSON.parseObject((String)data,field.getClass()));
+                                field.set(target, JSON.parseObject((String) data, field.getClass()));
                                 break;
                             case SaveState.NORMAL_OBJECT:
                                 field.set(target, data);
+                                break;
+                            case SaveState.VIEW_SPARSEARRAY:
+                                SerializableMap map = (SerializableMap) source.getSerializable("sp_map");
+                                bindSprareArray(field, map, target, data);
                                 break;
                         }
                     } catch (IllegalAccessException e) {
@@ -326,6 +368,26 @@ public class StateBinder {
                         field.setAccessible(false);
                     }
                 }
+            }
+        }
+    }
+
+    private static void bindSprareArray(Field field, SerializableMap map, Object target, Object data) {
+        if (field == null || map == null || target == null) {
+            return;
+        }
+        if (target instanceof Activity) {
+            Sparsekey[] keys = (Sparsekey[]) map.getMap().get(field.getName() + "_sp");
+            SparseArray<View> viewslist = new SparseArray<View>();
+            if (keys != null) {
+                for (Sparsekey key : keys) {
+                    viewslist.put(key.getKey(), ((Activity) target).getWindow().getDecorView().findViewById(key.getIds()));
+                }
+            }
+            try {
+                field.set(target, viewslist);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
             }
         }
     }
