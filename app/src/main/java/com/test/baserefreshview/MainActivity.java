@@ -34,6 +34,7 @@ import com.xycode.xylibrary.utils.ImageUtils;
 import com.xycode.xylibrary.utils.L;
 import com.xycode.xylibrary.utils.TS;
 import com.xycode.xylibrary.utils.Tools;
+import com.xycode.xylibrary.utils.downloadHelper.CompulsiveHelperActivity;
 import com.xycode.xylibrary.xRefresher.XRefresher;
 
 import java.io.File;
@@ -54,9 +55,10 @@ public class MainActivity extends BaseActivity {
     @SaveState
     private int iii;
     NiceSpinner spinner;
-
-    @SaveState
-    private SparseArray<View> viewSparseArray;
+    @SaveState(SaveState.JSON_OBJECT)
+    private ListBean mBean = new ListBean();
+    @SaveState(SaveState.VIEW_SPARSEARRAY)
+    private SparseArray<View> viewSparseArray = new SparseArray<>();
 
 
     @Override
@@ -70,8 +72,10 @@ public class MainActivity extends BaseActivity {
         siv = (SimpleDraweeView) findViewById(R.id.siv);
         tags = (TagLayout) findViewById(R.id.tags);
         spinner = (NiceSpinner) findViewById(R.id.nice_spinner);
-
-
+        viewSparseArray.put(1, tags);
+        viewSparseArray.put(2, spinner);
+        mBean.setMessage("ddddddd");
+        mBean.setResultCode(1);
 //        spinner.attachDataSource(Arrays.asList(R.array.test_array));
 
         /*
@@ -117,10 +121,10 @@ public class MainActivity extends BaseActivity {
                         holder.setClick(R.id.llItem);
                         holder.setClick(R.id.tvName);
                         MultiImageView mvItem = holder.getView(R.id.mvItem);
-                mvItem.setLoadImageListener(position -> {
-                    WH wh = Tools.getWidthHeightFromFilename(list.get(position), "_wh", "x");
-                    return Uri.parse(list.get(position)+"!"+(wh.getAspectRatio()*20)+"!20");
-                });
+                        mvItem.setLoadImageListener(position -> {
+                            WH wh = Tools.getWidthHeightFromFilename(list.get(position), "_wh", "x");
+                            return Uri.parse(list.get(position) + "!" + (wh.getAspectRatio() * 20) + "!20");
+                        });
 
                         mvItem.setOverlayDrawableListener(position -> {
                             if (position == 8) {
@@ -255,6 +259,29 @@ public class MainActivity extends BaseActivity {
         }, 3);
         xRefresher.setRecyclerViewDivider(android.R.color.holo_orange_light, R.dimen.margin32, R.dimen.sideMargin, R.dimen.sideMargin);
 //        xRefresher.refreshList();
+        CompulsiveHelperActivity.update(getThis(), new CompulsiveHelperActivity.CancelCallBack() {
+            @Override
+            public void onCancel(boolean must) {
+                if (must) ;
+            }
+
+            @Override
+            public void onFinish(boolean must) {
+                if (must) ;
+            }
+
+            @Override
+            public void onFailed(boolean must) {
+                if (must) ;
+            }
+
+            @Override
+            public void onDownLoad(int downLength, int fileLength) {
+
+            }
+        }, new Param().add(CompulsiveHelperActivity.URL, "down_url")
+                .add(CompulsiveHelperActivity.IsMust, String.valueOf(1)).add(CompulsiveHelperActivity.Illustration, "关系说明"));
+
     }
 
     @Override

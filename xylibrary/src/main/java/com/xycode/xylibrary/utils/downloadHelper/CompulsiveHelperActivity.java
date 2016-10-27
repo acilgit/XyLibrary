@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
 
 /**
  * Created by Administrator on 2016/10/22 0022.
@@ -70,7 +71,7 @@ public class CompulsiveHelperActivity extends Activity {
 
         void onFailed(boolean must);
 
-        void onDowdLoad(int downLength, int fileLength);
+        void onDownLoad(int downLength, int fileLength);
 
     }
 
@@ -120,16 +121,16 @@ public class CompulsiveHelperActivity extends Activity {
     }
 
     private void init() {
-        Param builder = (Param) getIntent().getSerializableExtra(Params);
+        HashMap<String, String> builder = (HashMap) getIntent().getSerializableExtra(Params);
         if (builder != null) {
-            title = builder.getKey(Title);
-            illustration = builder.getKey(Illustration);
-            cancel = builder.getKey(Cancel);
-            confirm = builder.getKey(Confirm);
-            isMust = builder.getKey(IsMust).isEmpty() ? isMust : builder.getKey(IsMust);
-            downloadFileUrl = builder.getKey(URL);
-            errorTips = builder.getKey(ErrorTips);
-            contacts_way = builder.getKey(ContactsWay);
+            title = builder.get(Title);
+            illustration = builder.get(Illustration);
+            cancel = builder.get(Cancel);
+            confirm = builder.get(Confirm);
+            isMust = builder.get(IsMust).isEmpty() ? isMust : builder.get(IsMust);
+            downloadFileUrl = builder.get(URL);
+            errorTips = builder.get(ErrorTips);
+            contacts_way = builder.get(ContactsWay);
         }
         if (!TextUtils.isEmpty(title)) {
             mTitle.setText(title);
@@ -177,7 +178,7 @@ public class CompulsiveHelperActivity extends Activity {
                             mProgress.setProgress(msg.arg1 * 100 / fileLength);
                             mUpdateProgress.setText(String.format(getString(R.string.percent), String.valueOf(msg.arg1 * 100 / fileLength)));
                             if (mCancelCallBack != null) {
-                                mCancelCallBack.onDowdLoad(msg.arg1, fileLength);
+                                mCancelCallBack.onDownLoad(msg.arg1, fileLength);
                             }
                             break;
                         case 2: // finish
