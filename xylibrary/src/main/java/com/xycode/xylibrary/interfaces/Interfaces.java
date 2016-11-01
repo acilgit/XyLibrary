@@ -22,4 +22,9 @@ public class Interfaces {
     public interface CB<T> extends Serializable{
         void go(T obj);
     }
+
+    @FunctionalInterface
+    public interface FeedBack<T> extends Serializable{
+        Object go(T obj);
+    }
 }

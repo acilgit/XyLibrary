@@ -31,6 +31,11 @@ public class PhotoSelectActivity extends PhotoSelectBaseActivity {
         ButterKnife.bind(this);
     }
 
+    @Override
+    protected boolean useEventBus() {
+        return false;
+    }
+
     @OnClick({R.id.btnCamera, R.id.btnAlbum, R.id.btnCancel, R.id.rlMain})
     public void onClick(View view) {
         switch (view.getId()) {

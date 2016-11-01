@@ -22,11 +22,12 @@ import com.test.baserefreshview.ListBean.Content.ContentBean;
 import com.xycode.xylibrary.adapter.XAdapter;
 import com.xycode.xylibrary.base.BaseActivity;
 import com.xycode.xylibrary.annotation.SaveState;
-import com.xycode.xylibrary.instance.FrescoLoader;
+import com.xycode.xylibrary.interfaces.Interfaces;
 import com.xycode.xylibrary.okHttp.Param;
 import com.xycode.xylibrary.uiKit.views.MultiImageView;
 import com.xycode.xylibrary.uiKit.views.loopview.AdLoopView;
 import com.xycode.xylibrary.uiKit.views.nicespinner.NiceSpinner;
+import com.xycode.xylibrary.unit.MsgEvent;
 import com.xycode.xylibrary.unit.UrlData;
 import com.xycode.xylibrary.unit.ViewTypeUnit;
 import com.xycode.xylibrary.unit.WH;
@@ -36,6 +37,8 @@ import com.xycode.xylibrary.utils.TS;
 import com.xycode.xylibrary.utils.Tools;
 import com.xycode.xylibrary.utils.downloadHelper.CompulsiveHelperActivity;
 import com.xycode.xylibrary.xRefresher.XRefresher;
+
+import org.w3c.dom.Text;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -93,7 +96,7 @@ public class MainActivity extends BaseActivity {
         tags.setDataList(list);
         tags.setTagCheckedMode(TagLayout.FLOW_TAG_CHECKED_SINGLE);
         tags.setOnTagSelectListener((childViewList, dataList, selectedStateList, clickPos) -> {
-
+            start(New1Activity.class);
         });
         Uri uri = Uri.parse("http://mxycsku.qiniucdn.com/group5/M00/5B/0C/wKgBfVXdYkqAEzl0AAL6ZFMAdKk401.jpg");
 //        siv.setImageURI();
@@ -290,9 +293,16 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
+    protected boolean useEventBus() {
+        return true;
+    }
+
+    @Override
     protected AlertDialog setLoadingDialog() {
         return null;
     }
+
+    public static final String NAME = "Main" + "Reset";
 
     private void setBanner(AdLoopView bannerView) {
         List<UrlData> bannerList = new ArrayList<>();
@@ -307,6 +317,11 @@ public class MainActivity extends BaseActivity {
             viewSparseArray.put(1, spinner);
             viewSparseArray.put(2, tags);
 
+            postEvent("anEventName", "ABC", obj -> {
+                L.e((String) obj);
+                return "AA";
+            });
+
             File externalCacheDir = getThis().getExternalCacheDir();
             L.e("externalCacheDir  " + externalCacheDir + " " + getThis().getFilesDir());
             List<String> list = new ArrayList<>();
@@ -319,7 +334,7 @@ public class MainActivity extends BaseActivity {
 //                list.add("要");
 //                tags.setDataList(list);
 //                PhotoSelectActivity.startForResult(getThis(), PhotoSelectActivity.class, new PhotoSelectBaseActivity.CropParam());
-            TS.show("count " + xRefresher.getAdapter().getItemCount());
+//            TS.show("count " + xRefresher.getAdapter().getItemCount());
 
             RelativeLayout rl = new RelativeLayout(getThis());
             RelativeLayout.LayoutParams param = new RelativeLayout.LayoutParams(600, 600);
@@ -370,5 +385,17 @@ public class MainActivity extends BaseActivity {
         } else {
 
         }
+    }
+
+    @Override
+    protected void onEvent(MsgEvent event) {
+        TS.show(getThis(), event.getString());
+        Object o = event.getFeedBack().go("Event " + event.getString());
+        L.e("object: " + o);
+    }
+
+    @Override
+    protected void onEventBackground(MsgEvent event) {
+        L.e(" BG   object: ");
     }
 }

@@ -69,6 +69,11 @@ public class MultiImageSelectorActivity extends BaseActivity implements MultiIma
     }
 
     @Override
+    protected boolean useEventBus() {
+        return false;
+    }
+
+    @Override
     protected AlertDialog setLoadingDialog() {
         return null;
     }
@@ -116,6 +121,7 @@ public class MultiImageSelectorActivity extends BaseActivity implements MultiIma
     public void onCameraShot(File imageFile) {
         sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(imageFile)));
     }
+
 
 /*    protected ImageSelectorOptions getOptions(){
         return ImageSelectorOptions.options();

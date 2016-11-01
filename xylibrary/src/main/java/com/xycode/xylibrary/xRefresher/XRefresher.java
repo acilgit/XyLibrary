@@ -28,7 +28,6 @@ import com.xycode.xylibrary.okHttp.OkHttp;
 import com.xycode.xylibrary.okHttp.Param;
 import com.xycode.xylibrary.uiKit.recyclerview.FlexibleDividerDecoration;
 import com.xycode.xylibrary.uiKit.recyclerview.HorizontalDividerItemDecoration;
-import com.xycode.xylibrary.utils.TS;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -93,6 +92,7 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
     private TextView textView;
 
     private RefreshRequest refreshRequest;
+    private OnLastPageListener onLastPageListener;
 
     private HorizontalDividerItemDecoration horizontalDividerItemDecoration;
     @SaveState
@@ -248,9 +248,9 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
         String url = refreshRequest.setRequestParamsReturnUrl(params);
         boolean addDefaultParam = false;
         boolean addDefaultHeader = true;
-        if(initRefresher != null) {
+        if (initRefresher != null) {
             addDefaultParam = initRefresher.addDefaultParam();
-            addDefaultHeader= initRefresher.addDefaultHeader();
+            addDefaultHeader = initRefresher.addDefaultHeader();
         }
         activity.postForm(url, OkHttp.setFormBody(params, addDefaultParam), null, addDefaultHeader, new OkHttp.OkResponseListener() {
             @Override
@@ -291,6 +291,7 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
                 } else if (refreshType == REFRESH) {
                     getAdapter().setDataList(list);
                 }
+                if (onLastPageListener != null) onLastPageListener.receivedList(state.lastPage);
                 textView.setVisibility(getAdapter().getDataList().size() == 0 ? VISIBLE : GONE);
             }
 
@@ -397,7 +398,6 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
     }
 
 
-
     public XAdapter.CustomHolder getHeader() {
         return getHeader(HEADER_ONE);
     }
@@ -428,6 +428,13 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
         XRefresher.defaultBackgroundNoData = bgColor;
     }
 
+    public void setOnLastPageListener(OnLastPageListener onLastPageListener) {
+        this.onLastPageListener = onLastPageListener;
+    }
+
+    public boolean isLastPage() {
+        return state.lastPage;
+    }
 
     private void setLoadMoreState(int loadMoreState) {
         this.loadMoreState = loadMoreState;
@@ -515,6 +522,10 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
          * Refresh
          */
         void onRefresh();
+    }
+
+    public interface OnLastPageListener {
+        void receivedList(boolean isLastPage);
     }
 
     public interface InitRefresher {

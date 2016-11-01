@@ -15,8 +15,14 @@ import android.widget.RelativeLayout;
 import com.facebook.drawee.drawable.ScalingUtils;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.xycode.xylibrary.R;
+import com.xycode.xylibrary.interfaces.Interfaces;
+import com.xycode.xylibrary.unit.MsgEvent;
 import com.xycode.xylibrary.utils.ImageUtils;
 import com.xycode.xylibrary.utils.Tools;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 
 public abstract class BaseLazyFragment extends Fragment {
@@ -32,6 +38,50 @@ public abstract class BaseLazyFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         loaded = false;
+    }
+
+    @Override
+    public void onDestroy() {
+        if (useEventBus()) {
+            EventBus.getDefault().unregister(this);
+        }
+        super.onDestroy();
+    }
+
+    /**
+     * EventBus
+     */
+    protected abstract boolean useEventBus();
+
+    public void postEvent(String eventName) {
+        postEvent(eventName, null, null);
+    }
+
+    public void postEvent(String eventName, Interfaces.FeedBack feedBack) {
+        postEvent(eventName, null, feedBack);
+    }
+
+    public void postEvent(String eventName, Object object) {
+        postEvent(eventName, object, null);
+    }
+
+    public void postEvent(String eventName, String object) {
+        postEvent(eventName, object, null);
+    }
+
+    public void postEvent(String eventName, Object object, Interfaces.FeedBack feedBack) {
+        EventBus.getDefault().post(new MsgEvent(eventName, object, feedBack));
+    }
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    protected void onEvent(MsgEvent event) {
+
+    }
+
+    @Subscribe
+    protected void onEventBackground(MsgEvent event) {
+
     }
 
     @Nullable
@@ -98,6 +148,9 @@ public abstract class BaseLazyFragment extends Fragment {
         siv.setAnimation(animation);
         animation.start();
 
+        if (useEventBus()) {
+            EventBus.getDefault().register(this);
+        }
         onFirstShow();
         loaded = true;
         siv.clearAnimation();

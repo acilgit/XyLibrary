@@ -20,9 +20,16 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 
 import com.xycode.xylibrary.annotation.annotationHelper.StateBinder;
+import com.xycode.xylibrary.interfaces.Interfaces;
 import com.xycode.xylibrary.okHttp.Header;
 import com.xycode.xylibrary.okHttp.OkHttp;
 import com.xycode.xylibrary.okHttp.Param;
+import com.xycode.xylibrary.unit.MsgEvent;
+import com.xycode.xylibrary.utils.Tools;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -58,13 +65,17 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         thisActivity = this;
-//        registerFinishReceiver();
         addActivity(this);
+        if (useEventBus()) {
+            EventBus.getDefault().register(this);
+        }
     }
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
+        if (useEventBus()) {
+            EventBus.getDefault().unregister(this);
+        }
         for (okhttp3.Call call : requestList) {
             if (call != null) {
                 call.cancel();
@@ -72,6 +83,17 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
         dismissLoadingDialog();
         removeActivity(this);
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
     }
 
     protected BaseActivity getThis() {
@@ -292,6 +314,42 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     /**
+     * EventBus
+     */
+    protected abstract boolean useEventBus();
+
+    public void postEvent(String eventName) {
+        postEvent(eventName, null, null);
+    }
+
+    public void postEvent(String eventName, Interfaces.FeedBack feedBack) {
+        postEvent(eventName, null, feedBack);
+    }
+
+    public void postEvent(String eventName, Object object) {
+        postEvent(eventName, object, null);
+    }
+
+    public void postEvent(String eventName, String object) {
+        postEvent(eventName, object, null);
+    }
+
+    public void postEvent(String eventName, Object object, Interfaces.FeedBack feedBack) {
+        EventBus.getDefault().post(new MsgEvent(eventName, object, feedBack));
+    }
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    protected void onEvent(MsgEvent event) {
+
+    }
+
+    @Subscribe
+    protected void onEventBackground(MsgEvent event) {
+
+    }
+
+    /**
      * okHttp request
      */
     public okhttp3.Call postForm(String url, Param param, boolean addDefaultHeader, OkHttp.OkResponseListener okResponseListener) {
@@ -338,5 +396,6 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected static class WindowMode {
        public static int INPUT_ADJUST =  WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE | WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN;
     }
+
 
 }

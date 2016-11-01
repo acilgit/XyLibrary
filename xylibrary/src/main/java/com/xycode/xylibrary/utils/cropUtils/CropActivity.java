@@ -149,6 +149,11 @@ public class CropActivity extends BaseActivity {
         bitmap.recycle();
     }
 
+    @Override
+    protected boolean useEventBus() {
+        return false;
+    }
+
     protected void onSaveClick() {
         if (mIsSaving) {
             return;

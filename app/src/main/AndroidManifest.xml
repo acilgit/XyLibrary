@@ -21,8 +21,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".PhotoSelectActivity"></activity>
-        <activity android:name=".TestA"/>
+        <activity android:name=".PhotoSelectActivity" />
+        <activity android:name=".TestA" />
+        <activity android:name=".New1Activity"></activity>
     </application>
 
 </manifest>

@@ -26,7 +26,6 @@ public class TestA extends BaseActivity implements ImageCompressTask.CompressLis
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.test);
         //one = (NiceSpinner) findViewById(R.id.test_one);
         //two = (NiceSpinner) findViewById(R.id.test_two);
        // button = (Button) findViewById(R.id.btn);
@@ -54,6 +53,11 @@ public class TestA extends BaseActivity implements ImageCompressTask.CompressLis
                 return data;
             }
         }));
+    }
+
+    @Override
+    protected boolean useEventBus() {
+        return true;
     }
 
     @Override
