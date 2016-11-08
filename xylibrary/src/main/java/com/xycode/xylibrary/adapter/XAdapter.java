@@ -156,7 +156,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
      * @param dataList
      * @param pos
      */
-    public void bindingHolder(CustomHolder holder, List<T> dataList, int pos){
+    public void bindingHolder(CustomHolder holder, List<T> dataList, int pos) {
 
     }
 
@@ -176,7 +176,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
      * @param item
      * @return
      */
-    protected ViewTypeUnit getViewTypeUnitForLayout(T item){
+    protected ViewTypeUnit getViewTypeUnitForLayout(T item) {
         return null;
     }
 
@@ -564,6 +564,14 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
             View view = getView(viewId);
             if (view != null) {
                 view.setVisibility(visibility);
+            }
+            return this;
+        }
+
+        public CustomHolder setTextColor(int viewId, int color) {
+            View view = getView(viewId);
+            if (view != null) {
+                ((TextView) (view)).setTextColor(color);
             }
             return this;
         }
