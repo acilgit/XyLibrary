@@ -109,7 +109,6 @@ public class NiceSpinner<T> extends TextView {
     }
 
 
-
     private void init(Context context, AttributeSet attrs) {
         Resources resources = getResources();
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.NiceSpinner);
@@ -144,6 +143,7 @@ public class NiceSpinner<T> extends TextView {
             // Need to set selected index before calling listeners or getSelectedIndex() can be
             // reported incorrectly due to race conditions.
             selectedIndex = position;
+            adapter.notifyItemSelected(position);
 
             if (onItemClickListener != null) {
                 onItemClickListener.onItemClick(parent, view, position, id);
@@ -152,8 +152,6 @@ public class NiceSpinner<T> extends TextView {
             if (onItemSelectedListener != null) {
                 onItemSelectedListener.onItemSelected(parent, view, position, id);
             }
-
-            adapter.notifyItemSelected(position);
             setText(adapter.getItemInDataset(position).getString());
             dismissDropDown();
         });
@@ -269,11 +267,11 @@ public class NiceSpinner<T> extends TextView {
     }
 
     public T getSelectedData() {
-        return  ((StringData<T>) adapter.getCurrentItem()).getObject();
+        return ((StringData<T>) adapter.getCurrentItem()).getObject();
     }
 
     public String getSelectedString() {
-        return  adapter.getCurrentItem().getString();
+        return adapter.getCurrentItem().getString();
     }
 
     @Override
