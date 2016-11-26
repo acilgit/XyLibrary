@@ -1,13 +1,17 @@
 package com.xycode.xylibrary.base;
 
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.alibaba.fastjson.JSON;
@@ -16,7 +20,7 @@ import com.xycode.xylibrary.uiKit.views.NoScrollViewPager;
 import com.xycode.xylibrary.uiKit.views.TouchImageView;
 import com.xycode.xylibrary.unit.UrlData;
 import com.xycode.xylibrary.utils.ImageUtils;
-import com.xycode.xylibrary.utils.ShareStorage;
+import com.xycode.xylibrary.utils.Tools;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,15 +29,20 @@ public abstract class BasePhotoActivity extends BaseActivity {
 
     private static final String photos = "photos";
     private static final String position = "position";
+    private static BaseActivity activity;
     View.OnLongClickListener longClickListener;
+    private LinearLayout llIndexContainer;
+    private NoScrollViewPager vpMain;
+    private int pos;
 
     public static void startThis(BaseActivity activity, Class photoActivityClass, String url) {
         List<UrlData> urls = new ArrayList<>();
         urls.add(new UrlData(url));
+        BasePhotoActivity.activity = activity;
         startThis(activity, photoActivityClass, urls, 0);
     }
 
-    public static void startThis(BaseActivity activity,  Class photoActivityClass, List<UrlData> urls, int pos) {
+    public static void startThis(BaseActivity activity, Class photoActivityClass, List<UrlData> urls, int pos) {
 //        getPhotoStorage(activity).put(photos, JSON.toJSONString(urls));
         activity.startActivity(new Intent(activity, photoActivityClass).putExtra(photos, JSON.toJSONString(urls)).putExtra(position, pos));
     }
@@ -41,11 +50,16 @@ public abstract class BasePhotoActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //remove ActionBar
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        //set full screen
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_base_photo);
-        NoScrollViewPager vpMain = (NoScrollViewPager) findViewById(R.id.vpMain);
+        vpMain = (NoScrollViewPager) findViewById(R.id.vpMain);
         RelativeLayout rlMain = (RelativeLayout) findViewById(R.id.rlMain);
+        llIndexContainer = (LinearLayout) findViewById(R.id.ll_index_container);
 
-        int pos = getIntent().getIntExtra(position, 0);
+        pos = getIntent().getIntExtra(position, 0);
         try {
             List<UrlData> urlDatas = JSON.parseArray(getIntent().getStringExtra(photos), UrlData.class);
             boolean singlePhoto = urlDatas.size() == 1;
@@ -54,6 +68,9 @@ public abstract class BasePhotoActivity extends BaseActivity {
             vpMain.setAdapter(fragmentAdapter);
             vpMain.setOffscreenPageLimit(1);
             vpMain.setCurrentItem(pos);
+            if (isShowDotsView() && urlDatas.size() > 1) {
+                updateIndicatorView(urlDatas.size());
+            }
         } catch (Exception e) {
             e.printStackTrace();
             finish();
@@ -62,9 +79,66 @@ public abstract class BasePhotoActivity extends BaseActivity {
 
     protected abstract View addPageView(ViewGroup container, UrlData data);
 
+    protected boolean isShowDotsView() {
+        return false;
+    }
+
+
     public void setOnLongClickListener(View.OnLongClickListener longClickListener) {
         this.longClickListener = longClickListener;
     }
+
+    /**
+     * add Indicator Methed ,Afferent Datas size
+     *
+     * @param size
+     */
+    public void updateIndicatorView(int size) {
+        addIndicatorImageViews(size);
+        setViewPagerChangeListener(size);
+    }
+
+
+    private void addIndicatorImageViews(int size) {
+        llIndexContainer.removeAllViews();
+        for (int i = 0; i < size; i++) {
+            ImageView iv = new ImageView(getBaseContext());
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(Tools.dp2px(getBaseContext(), 5), Tools.dp2px(getBaseContext(), 5));
+            if (i != 0) {
+                lp.leftMargin = Tools.dp2px(getBaseContext(), 7);
+            }
+            iv.setLayoutParams(lp);
+            iv.setBackgroundResource(R.drawable.abc_background_indicator);
+            iv.setEnabled(i == pos);
+            llIndexContainer.addView(iv);
+        }
+    }
+
+    private void setViewPagerChangeListener(final int size) {
+        vpMain.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                if (size > 0) {
+                    int newPosition = position % size;
+                    for (int i = 0; i < size; i++) {
+                        llIndexContainer.getChildAt(i).setEnabled(false);
+                        if (i == newPosition) {
+                            llIndexContainer.getChildAt(i).setEnabled(true);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onPageScrolled(int position, float arg1, int arg2) {
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int arg0) {
+            }
+        });
+    }
+
 
     class PhotoPagerAdapter extends PagerAdapter {
 
@@ -97,7 +171,7 @@ public abstract class BasePhotoActivity extends BaseActivity {
             }
             container.addView(currentView);
             View addPageView = addPageView(container, data);
-            if(addPageView != null) container.addView(addPageView);
+            if (addPageView != null) container.addView(addPageView);
 
             return currentView;
         }

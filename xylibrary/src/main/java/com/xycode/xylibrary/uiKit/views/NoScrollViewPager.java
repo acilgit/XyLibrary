@@ -81,4 +81,6 @@ public class NoScrollViewPager extends ViewPager {
         view.measure(0, 0);
         return view.getMeasuredHeight();
     }
+
+
 }

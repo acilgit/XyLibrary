@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    android:orientation="vertical">
+
+
+    <com.xycode.xylibrary.uiKit.views.MultiImageView
+        android:id="@+id/multiView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:itemSameSize="true"
+        app:maxColumn="4"
+        app:pressedOverlayImage="@color/transparentWhiteLite"
+        app:singleImageSize="normal" />
+</LinearLayout>
