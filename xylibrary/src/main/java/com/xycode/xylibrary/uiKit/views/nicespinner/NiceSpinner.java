@@ -37,6 +37,7 @@ import java.util.List;
 
 /**
  * @author angelo.marchesin
+ *
  */
 @SuppressWarnings("unused")
 public class NiceSpinner<T> extends TextView {

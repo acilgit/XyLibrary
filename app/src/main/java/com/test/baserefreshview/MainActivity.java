@@ -50,7 +50,7 @@ import butterknife.ButterKnife;
 /**
  * new
  */
-public class MainActivity extends BaseActivity {
+public class MainActivity extends ABaseActivity {
 
     private XRefresher xRefresher;
     TagLayout tags;
@@ -388,14 +388,12 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
-    protected void onEvent(MsgEvent event) {
-        TS.show(getThis(), event.getString());
-        Object o = event.getFeedBack().go("Event " + event.getString());
-        L.e("object: " + o);
-    }
-
-    @Override
-    protected void onEventBackground(MsgEvent event) {
-        L.e(" BG   object: ");
+    public void onEvent(MsgEvent event) {
+        if (event.getEventName().equals("anEventName")) {
+            TS.show(getThis(), event.getString());
+            Object o = event.getFeedBack().go("Event " + event.getString());
+            L.e("object: " + o);
+            xRefresher.refresh();
+        }
     }
 }

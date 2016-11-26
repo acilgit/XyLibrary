@@ -75,12 +75,12 @@ public abstract class BaseLazyFragment extends Fragment {
 
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    protected void onEvent(MsgEvent event) {
+    public void onEvent(MsgEvent event) {
 
     }
 
     @Subscribe
-    protected void onEventBackground(MsgEvent event) {
+    public void onEventBackground(MsgEvent event) {
 
     }
 

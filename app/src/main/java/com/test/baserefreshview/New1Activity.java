@@ -8,7 +8,7 @@ import android.widget.Button;
 import com.xycode.xylibrary.base.BaseActivity;
 import com.xycode.xylibrary.utils.L;
 
-public class New1Activity extends BaseActivity {
+public class New1Activity extends ABaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

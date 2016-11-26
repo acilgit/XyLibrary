@@ -338,14 +338,13 @@ public abstract class BaseActivity extends AppCompatActivity {
         EventBus.getDefault().post(new MsgEvent(eventName, object, feedBack));
     }
 
-
     @Subscribe(threadMode = ThreadMode.MAIN)
-    protected void onEvent(MsgEvent event) {
+    public void onEvent(MsgEvent event) {
 
     }
 
     @Subscribe
-    protected void onEventBackground(MsgEvent event) {
+    public void onEventBackground(MsgEvent event) {
 
     }
 

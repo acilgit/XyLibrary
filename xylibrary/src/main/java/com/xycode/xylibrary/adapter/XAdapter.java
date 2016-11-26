@@ -7,12 +7,11 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.StringRes;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -22,6 +21,7 @@ import com.xycode.xylibrary.base.BaseItemView;
 import com.xycode.xylibrary.instance.FrescoLoader;
 import com.xycode.xylibrary.uiKit.views.MultiImageView;
 import com.xycode.xylibrary.unit.ViewTypeUnit;
+import com.xycode.xylibrary.utils.DateUtils;
 import com.xycode.xylibrary.utils.ImageUtils;
 import com.xycode.xylibrary.xRefresher.XRefresher;
 
@@ -70,6 +70,15 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
         this.multiLayoutMap = new HashMap<>();
     }
 
+    /**
+     * only do once method
+     * or
+     * not use immediately adapterPosition method, like clickListener
+     *
+     * @param parent
+     * @param viewType
+     * @return
+     */
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, final int viewType) {
         if (viewType == LAYOUT_FOOTER) {
@@ -197,6 +206,13 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
         }
 
         ViewTypeUnit viewTypeUnit = getViewTypeUnitForLayout(dataList.get(position - headerCount));
+        if (viewTypeUnit == null) {
+            try {
+                throw new Exception("XAdapter doesn't override getViewTypeUnitForLayout or set the dataList as null");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         for (Integer key : multiLayoutMap.keySet()) {
             if (multiLayoutMap.get(key).getMark().equals(viewTypeUnit.getMark())) {
                 return key.intValue();
@@ -458,15 +474,36 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
             return this;
         }
 
+        public CustomHolder setFormat(int viewId, int formatRes, Object... objects) {
+            setText(viewId, String.format(itemView.getContext().getString(formatRes), objects));
+            return this;
+        }
+
+        public CustomHolder setDate(int viewId, String dateFormat, long dateTime) {
+            setText(viewId, DateUtils.formatDateTime(dateFormat, dateTime));
+            return this;
+        }
+
         public CustomHolder setText(int viewId, String text) {
             View view = getView(viewId);
             if (view != null) {
-                if (view instanceof EditText) {
+               /* if (view instanceof EditText) {
                     ((EditText) view).setText(text);
                 } else if (view instanceof Button) {
                     ((Button) view).setText(text);
-                } else if (view instanceof TextView) {
-                    ((TextView) view).setText(text);
+                } else*/
+                if (view instanceof TextView) {
+                    ((TextView) view).setText(TextUtils.isEmpty(text) ? "" : text);
+                }
+            }
+            return this;
+        }
+
+        public CustomHolder setTextColor(int viewId, int textColor) {
+            View view = getView(viewId);
+            if (view != null) {
+                if (view instanceof TextView) {
+                    ((TextView) view).setTextColor(textColor);
                 }
             }
             return this;
@@ -568,12 +605,12 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
             return this;
         }
 
-        public CustomHolder setTextColor(int viewId, int color) {
-            View view = getView(viewId);
-            if (view != null) {
-                ((TextView) (view)).setTextColor(color);
-            }
-            return this;
+        public CustomHolder hideView(int viewId, boolean isHidden) {
+            return setVisibility(viewId, isHidden ? View.GONE : View.VISIBLE);
+        }
+
+        public CustomHolder showView(int viewId) {
+            return setVisibility(viewId, View.VISIBLE);
         }
     }
 

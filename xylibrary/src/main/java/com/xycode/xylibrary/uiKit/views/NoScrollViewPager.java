@@ -51,7 +51,6 @@ public class NoScrollViewPager extends ViewPager {
         }
     }
 
-
     @Override
     public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);

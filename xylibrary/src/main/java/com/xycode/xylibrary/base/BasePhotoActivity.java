@@ -34,6 +34,7 @@ public abstract class BasePhotoActivity extends BaseActivity {
     private LinearLayout llIndexContainer;
     private NoScrollViewPager vpMain;
     private int pos;
+    private Options options;
 
     public static void startThis(BaseActivity activity, Class photoActivityClass, String url) {
         List<UrlData> urls = new ArrayList<>();
@@ -55,6 +56,7 @@ public abstract class BasePhotoActivity extends BaseActivity {
         //set full screen
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_base_photo);
+        options = setDisplayOptions();
         vpMain = (NoScrollViewPager) findViewById(R.id.vpMain);
         RelativeLayout rlMain = (RelativeLayout) findViewById(R.id.rlMain);
         llIndexContainer = (LinearLayout) findViewById(R.id.ll_index_container);
@@ -68,7 +70,7 @@ public abstract class BasePhotoActivity extends BaseActivity {
             vpMain.setAdapter(fragmentAdapter);
             vpMain.setOffscreenPageLimit(1);
             vpMain.setCurrentItem(pos);
-            if (isShowDotsView() && urlDatas.size() > 1) {
+            if (options.isShowDotsView() && urlDatas.size() > 1) {
                 updateIndicatorView(urlDatas.size());
             }
         } catch (Exception e) {
@@ -79,17 +81,41 @@ public abstract class BasePhotoActivity extends BaseActivity {
 
     protected abstract View addPageView(ViewGroup container, UrlData data);
 
-    protected boolean isShowDotsView() {
+   /* protected boolean isShowDotsView() {
         return false;
+    }*/
+
+    protected Options setDisplayOptions() {
+        return new Options();
     }
 
+    public class Options {
+        boolean isShowDotsView = false;
+        int bitmapFailureRes = 0;
+
+        public boolean isShowDotsView() {
+            return isShowDotsView;
+        }
+
+        public void setShowDotsView(boolean showDotsView) {
+            isShowDotsView = showDotsView;
+        }
+
+        public int getBitmapFailureRes() {
+            return bitmapFailureRes;
+        }
+
+        public void setBitmapFailureRes(int bitmapFailureRes) {
+            this.bitmapFailureRes = bitmapFailureRes;
+        }
+    }
 
     public void setOnLongClickListener(View.OnLongClickListener longClickListener) {
         this.longClickListener = longClickListener;
     }
 
     /**
-     * add Indicator Methed ,Afferent Datas size
+     * add Indicator Method ,Afferent Datas size
      *
      * @param size
      */
@@ -163,10 +189,14 @@ public abstract class BasePhotoActivity extends BaseActivity {
             ivPhoto.setOnLongClickListener(longClickListener);
             if (data.getUrl() != null) {
                 ImageUtils.loadBitmapFromFresco(context, Uri.parse(data.getUrl()), bitmap -> runOnUiThread(() -> {
-                    float pRatio = (bitmap.getHeight() * 1.0f) / bitmap.getWidth();
-                    float ratio = pRatio / 1.6f;
-                    ivPhoto.setMaxZoom((ratio > 1 ? ratio * 3 : 3));
-                    ivPhoto.setImageBitmap(bitmap);
+                    if (bitmap != null) {
+                        float pRatio = (bitmap.getHeight() * 1.0f) / bitmap.getWidth();
+                        float ratio = pRatio / 1.6f;
+                        ivPhoto.setMaxZoom((ratio > 1 ? ratio * 3 : 3));
+                        ivPhoto.setImageBitmap(bitmap);
+                    } else {
+                        if(options.bitmapFailureRes != 0) ivPhoto.setImageResource(options.bitmapFailureRes);
+                    }
                 }));
             }
             container.addView(currentView);
