@@ -24,6 +24,10 @@
         <activity android:name=".PhotoSelectActivity" />
         <activity android:name=".TestA" />
         <activity android:name=".New1Activity"></activity>
+        <activity android:name=".PhotoDemoActivity" />
+        <activity
+            android:name=".PhotoActivity"
+             />
     </application>
 
 </manifest>

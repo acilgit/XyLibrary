@@ -1,8 +1,7 @@
 package com.test.baserefreshview;
 
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.Button;
 
@@ -37,5 +36,10 @@ public class New1Activity extends BaseActivity {
     @Override
     protected AlertDialog setLoadingDialog() {
         return null;
+    }
+
+
+    public void lookPhoto(View view) {
+        start(PhotoDemoActivity.class);
     }
 }
