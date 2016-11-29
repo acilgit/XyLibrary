@@ -13,6 +13,11 @@ import java.util.List;
 
 public class NiceSpinnerAdapter extends NiceSpinnerBaseAdapter {
 
+    @Override
+    public List getItems() {
+        return mItems;
+    }
+
     private final List<StringData> mItems;
 
     public NiceSpinnerAdapter(Context context, List<StringData> items, int textColor, int backgroundSelector) {
@@ -20,6 +25,7 @@ public class NiceSpinnerAdapter extends NiceSpinnerBaseAdapter {
         mItems = items;
     }
 
+    //我是一个饼
     @Override
     public int getCount() {
         return mItems.size() - 1;

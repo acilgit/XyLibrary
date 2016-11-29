@@ -11,6 +11,8 @@ import android.widget.TextView;
 import com.xycode.xylibrary.R;
 import com.xycode.xylibrary.unit.StringData;
 
+import java.util.List;
+
 /**
  * @author angelo.marchesin
  */
@@ -21,7 +23,7 @@ public abstract class NiceSpinnerBaseAdapter extends BaseAdapter {
     protected int mSelectedIndex;
     protected int mTextColor;
     protected int mBackgroundSelector;
-
+    public abstract List getItems();
     public abstract static class SpinnerAble {
         public abstract String getSpinnerText();
     }

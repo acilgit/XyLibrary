@@ -37,7 +37,6 @@ import java.util.List;
 
 /**
  * @author angelo.marchesin
- *
  */
 @SuppressWarnings("unused")
 public class NiceSpinner<T> extends TextView {
@@ -55,9 +54,25 @@ public class NiceSpinner<T> extends TextView {
     private NiceSpinnerBaseAdapter adapter;
     private AdapterView.OnItemClickListener onItemClickListener;
     private AdapterView.OnItemSelectedListener onItemSelectedListener;
+
+
+    private OnItemSelect onItemSelect;
     private boolean isArrowHide;
     private int textColor;
     private int backgroundSelector;
+
+
+    public List<T> getDataList() {
+        if (adapter == null) {
+            return null;
+        }
+        return adapter.getItems();
+    }
+
+
+    public interface OnItemSelect {
+        void onItemSelected(AdapterView<?> parent, View view, int position, long id);
+    }
 
     @SuppressWarnings("ConstantConditions")
     public NiceSpinner(Context context) {
@@ -149,7 +164,9 @@ public class NiceSpinner<T> extends TextView {
             if (onItemClickListener != null) {
                 onItemClickListener.onItemClick(parent, view, position, id);
             }
-
+            if (onItemSelect != null) {
+                onItemSelect.onItemSelected(parent, view, position, id);
+            }
             if (onItemSelectedListener != null) {
                 onItemSelectedListener.onItemSelected(parent, view, position, id);
             }
@@ -208,6 +225,10 @@ public class NiceSpinner<T> extends TextView {
         return selectedIndex;
     }
 
+    public void addOnItemSelect(OnItemSelect onItemSelect) {
+        this.onItemSelect = onItemSelect;
+    }
+
     /**
      * Set the default spinner item using its index
      *
@@ -264,15 +285,17 @@ public class NiceSpinner<T> extends TextView {
         // If the adapter needs to be settled again, ensure to reset the selected index as well
         selectedIndex = 0;
         listView.setAdapter(adapter);
+        adapter.notifyItemSelected(selectedIndex);
+
         setText(adapter.getItemInDataset(selectedIndex).getString());
     }
 
     public T getSelectedData() {
-        return ((StringData<T>) adapter.getCurrentItem()).getObject();
+        return adapter.getCurrentItem() != null ? ((StringData<T>) adapter.getCurrentItem()).getObject() : null;
     }
 
     public String getSelectedString() {
-        return adapter.getCurrentItem().getString();
+        return adapter.getCurrentItem() != null ? adapter.getCurrentItem().getString() : null;
     }
 
     @Override

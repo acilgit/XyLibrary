@@ -5,11 +5,17 @@ import android.widget.ListAdapter;
 
 import com.xycode.xylibrary.unit.StringData;
 
+import java.util.List;
+
 /**
  * @author angelo.marchesin
  */
 
 public class NiceSpinnerAdapterWrapper extends NiceSpinnerBaseAdapter {
+
+    public ListAdapter getBaseAdapter() {
+        return mBaseAdapter;
+    }
 
     private final ListAdapter mBaseAdapter;
 
@@ -18,9 +24,18 @@ public class NiceSpinnerAdapterWrapper extends NiceSpinnerBaseAdapter {
         mBaseAdapter = toWrap;
     }
 
+
+
+
+
     @Override
     public int getCount() {
         return mBaseAdapter.getCount() - 1;
+    }
+
+    @Override
+    public List getItems() {
+        return null;
     }
 
     @Override
