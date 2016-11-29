@@ -62,6 +62,8 @@ public class MainActivity extends ABaseActivity {
     private ListBean mBean = new ListBean();
     @SaveState(SaveState.VIEW_SPARSEARRAY)
     private SparseArray<View> viewSparseArray = new SparseArray<>();
+    @SaveState
+    List<String> list;
 
 
     @Override
