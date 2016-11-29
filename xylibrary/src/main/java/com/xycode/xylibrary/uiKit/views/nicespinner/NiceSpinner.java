@@ -71,7 +71,7 @@ public class NiceSpinner<T> extends TextView {
 
 
     public interface OnItemSelect {
-        void onItemSelected(AdapterView<?> parent, View view, int position, long id);
+        void onItemSelected(AdapterView<?> spinnerView, View view, int position, long id);
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -291,7 +291,9 @@ public class NiceSpinner<T> extends TextView {
     }
 
     public T getSelectedData() {
-        return adapter.getCurrentItem() != null ? ((StringData<T>) adapter.getCurrentItem()).getObject() : null;
+        if(adapter == null || adapter.getCurrentItem() != null)
+            return null;
+        return  ((StringData<T>) adapter.getCurrentItem()).getObject();
     }
 
     public String getSelectedString() {

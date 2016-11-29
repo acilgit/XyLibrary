@@ -138,7 +138,7 @@ public class App extends Application {
         });*/
 
         XRefresher.setCustomerLoadMoreView(R.layout.layout_load_more);
-        XRefresher.setDefaultNoDataText("暂无数据", 1);
+//        XRefresher.setDefaultNoDataText("暂无数据", 1);
 
 //        FrescoLoader.init(url ->  null);
      /*   FrescoLoader.init(url -> {

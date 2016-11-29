@@ -61,6 +61,8 @@ public abstract class BasePhotoActivity extends BaseActivity {
         RelativeLayout rlMain = (RelativeLayout) findViewById(R.id.rlMain);
         llIndexContainer = (LinearLayout) findViewById(R.id.ll_index_container);
 
+        if (options.backgroundColor != 0) rlMain.setBackgroundResource(options.backgroundColor);
+
         pos = getIntent().getIntExtra(position, 0);
         try {
             List<UrlData> urlDatas = JSON.parseArray(getIntent().getStringExtra(photos), UrlData.class);
@@ -92,6 +94,7 @@ public abstract class BasePhotoActivity extends BaseActivity {
     public class Options {
         boolean isShowDotsView = false;
         int bitmapFailureRes = 0;
+        int backgroundColor = 0;
 
         public boolean isShowDotsView() {
             return isShowDotsView;
@@ -107,6 +110,14 @@ public abstract class BasePhotoActivity extends BaseActivity {
 
         public void setBitmapFailureRes(int bitmapFailureRes) {
             this.bitmapFailureRes = bitmapFailureRes;
+        }
+
+        public int getBackgroundColor() {
+            return backgroundColor;
+        }
+
+        public void setBackgroundColor(int backgroundColor) {
+            this.backgroundColor = backgroundColor;
         }
     }
 
@@ -195,7 +206,8 @@ public abstract class BasePhotoActivity extends BaseActivity {
                         ivPhoto.setMaxZoom((ratio > 1 ? ratio * 3 : 3));
                         ivPhoto.setImageBitmap(bitmap);
                     } else {
-                        if(options.bitmapFailureRes != 0) ivPhoto.setImageResource(options.bitmapFailureRes);
+                        if (options.bitmapFailureRes != 0)
+                            ivPhoto.setImageResource(options.bitmapFailureRes);
                     }
                 }));
             }

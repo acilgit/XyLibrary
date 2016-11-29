@@ -24,10 +24,6 @@ public class NiceSpinnerAdapterWrapper extends NiceSpinnerBaseAdapter {
         mBaseAdapter = toWrap;
     }
 
-
-
-
-
     @Override
     public int getCount() {
         return mBaseAdapter.getCount() - 1;

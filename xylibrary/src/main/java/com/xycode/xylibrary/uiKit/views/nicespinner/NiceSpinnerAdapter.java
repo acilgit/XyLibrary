@@ -25,7 +25,6 @@ public class NiceSpinnerAdapter extends NiceSpinnerBaseAdapter {
         mItems = items;
     }
 
-    //我是一个饼
     @Override
     public int getCount() {
         return mItems.size() - 1;
