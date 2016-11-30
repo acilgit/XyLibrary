@@ -37,6 +37,7 @@ public class CompulsiveHelperActivity extends Activity {
     public static final String IsMust = "isMust";
     public static final String Confirm = "confirm";
     public static final String Must = "0";
+    public static final String NotMust = "1";
     public static final String URL = "URL";
     public static final String Params = "Params";
     public static final String ErrorTips = "ErrorTips";
@@ -86,10 +87,17 @@ public class CompulsiveHelperActivity extends Activity {
     private boolean cancelDownload;
     private boolean noFileLength = false;
 
+    private Options options;
 
     private Handler downloadHandler;
 
-
+    /**
+     *
+     * @param context
+     * @param cancelCallback
+     * @param builder   must contain url
+     */
+    @Deprecated
     public static void update(Context context, CancelCallBack cancelCallback, Param builder) {
         Intent intent = new Intent(context, CompulsiveHelperActivity.class);
         mCancelCallBack = cancelCallback;
@@ -99,6 +107,107 @@ public class CompulsiveHelperActivity extends Activity {
         }
         intent.putExtra(Params, builder);
         context.startActivity(intent);
+    }
+
+    public static void update(Context context, CancelCallBack cancelCallback, Options options) {
+        Intent intent = new Intent(context, CompulsiveHelperActivity.class);
+        mCancelCallBack = cancelCallback;
+
+        Param builder = new Param()
+                .add(Title, options.title)
+                .add(Illustration, options.illustration)
+                .add(Cancel, options.cancel)
+                .add(Confirm, options.confirm)
+                .add(IsMust, options.isMust ? Must : NotMust)
+                .add(URL, options.downloadFileUrl)
+                .add(ErrorTips, options.errorTips)
+                .add(ContactsWay, options.contacts_way);
+
+        if (builder.getKey(URL) == null) {
+            TS.show(context.getString(R.string.tips_get_dowload_url_fail));
+            return;
+        }
+        intent.putExtra(Params, builder);
+        context.startActivity(intent);
+    }
+
+    public static class Options {
+        private String title;
+        private String illustration;
+        private String cancel;
+        private String confirm;
+        private boolean isMust;
+        private String downloadFileUrl;
+        private String errorTips;
+        private String contacts_way;
+
+        public Options(String downloadFileUrl) {
+            this.downloadFileUrl = downloadFileUrl;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
+
+        public String getIllustration() {
+            return illustration;
+        }
+
+        public void setIllustration(String illustration) {
+            this.illustration = illustration;
+        }
+
+        public String getCancel() {
+            return cancel;
+        }
+
+        public void setCancel(String cancel) {
+            this.cancel = cancel;
+        }
+
+        public String getConfirm() {
+            return confirm;
+        }
+
+        public void setConfirm(String confirm) {
+            this.confirm = confirm;
+        }
+
+        public boolean isMust() {
+            return isMust;
+        }
+
+        public void setMust(boolean must) {
+            isMust = must;
+        }
+
+        public String getDownloadFileUrl() {
+            return downloadFileUrl;
+        }
+
+        public void setDownloadFileUrl(String downloadFileUrl) {
+            this.downloadFileUrl = downloadFileUrl;
+        }
+
+        public String getErrorTips() {
+            return errorTips;
+        }
+
+        public void setErrorTips(String errorTips) {
+            this.errorTips = errorTips;
+        }
+
+        public String getContacts_way() {
+            return contacts_way;
+        }
+
+        public void setContacts_way(String contacts_way) {
+            this.contacts_way = contacts_way;
+        }
     }
 
     @Override
@@ -127,7 +236,7 @@ public class CompulsiveHelperActivity extends Activity {
             illustration = builder.get(Illustration);
             cancel = builder.get(Cancel);
             confirm = builder.get(Confirm);
-            isMust = builder.get(IsMust).isEmpty() ? isMust : builder.get(IsMust);
+            isMust = TextUtils.isEmpty(builder.get(IsMust)) ? isMust : builder.get(IsMust);
             downloadFileUrl = builder.get(URL);
             errorTips = builder.get(ErrorTips);
             contacts_way = builder.get(ContactsWay);

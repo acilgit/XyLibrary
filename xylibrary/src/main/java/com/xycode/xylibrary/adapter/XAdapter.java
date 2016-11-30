@@ -20,6 +20,7 @@ import com.xycode.xylibrary.R;
 import com.xycode.xylibrary.base.BaseItemView;
 import com.xycode.xylibrary.instance.FrescoLoader;
 import com.xycode.xylibrary.uiKit.views.MultiImageView;
+import com.xycode.xylibrary.uiKit.views.nicespinner.NiceSpinner;
 import com.xycode.xylibrary.unit.ViewTypeUnit;
 import com.xycode.xylibrary.utils.DateUtils;
 import com.xycode.xylibrary.utils.ImageUtils;
@@ -461,6 +462,14 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
             return null;
         }
 
+        public NiceSpinner getNiceSpinner(int niceSpinnerId) {
+            View v = getView(niceSpinnerId);
+            if (v != null && v instanceof NiceSpinner) {
+                return (NiceSpinner) v;
+            }
+            return null;
+        }
+
         public BaseItemView getXItem(int viewId) {
             View rv = getView(viewId);
             if (rv != null && rv instanceof BaseItemView) {
@@ -469,22 +478,35 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
             return null;
         }
 
-        public CustomHolder setText(int viewId, @StringRes int textRes) {
-            setText(viewId, itemView.getContext().getString(textRes));
+        public CustomHolder setText(int viewId, @StringRes int resText) {
+            setTextForView(viewId, itemView.getResources().getString(resText));
+            return this;
+        }
+
+        public CustomHolder setText(int viewId, Object text) {
+            String string;
+            if (text == null) {
+                string = "";
+            } else if (text instanceof String) {
+                string = (String) text;
+            } else {
+                string = String.valueOf(text);
+            }
+            setTextForView(viewId, string);
             return this;
         }
 
         public CustomHolder setFormat(int viewId, int formatRes, Object... objects) {
-            setText(viewId, String.format(itemView.getContext().getString(formatRes), objects));
+            setTextForView(viewId, String.format(itemView.getContext().getString(formatRes), objects));
             return this;
         }
 
         public CustomHolder setDate(int viewId, String dateFormat, long dateTime) {
-            setText(viewId, DateUtils.formatDateTime(dateFormat, dateTime));
+            setTextForView(viewId, DateUtils.formatDateTime(dateFormat, dateTime));
             return this;
         }
 
-        public CustomHolder setText(int viewId, String text) {
+        private CustomHolder setTextForView(int viewId, String text) {
             View view = getView(viewId);
             if (view != null) {
                /* if (view instanceof EditText) {
