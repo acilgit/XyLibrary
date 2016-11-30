@@ -33,8 +33,8 @@ public class PhotoDemoActivity extends BaseActivity {
         MultiImageView multiImageView = (MultiImageView) findViewById(R.id.multiView);
 
         List<UrlData> images = new ArrayList<>();
-        images.add(new UrlData("res:///" + R.mipmap.ic_ball));
-        images.add(new UrlData("res:///" + R.mipmap.ic_camera));
+        images.add(new UrlData("res:///" + R.mipmap.aa));
+        images.add(new UrlData("res:///" + R.mipmap.bbb));
 //        images.add(new UrlData("res:///" + R.mipmap.ic_launcher));
 //        images.add(new UrlData("res:///" + R.mipmap.ic_camera_g));
         multiImageView.setList(images);

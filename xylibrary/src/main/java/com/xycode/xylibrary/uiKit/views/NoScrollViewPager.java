@@ -1,7 +1,7 @@
 package com.xycode.xylibrary.uiKit.views;
+
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -57,7 +57,7 @@ public class NoScrollViewPager extends ViewPager {
 
         if (!measureAllPages) return;
 
-        int maxHeight = 0;
+        /*int maxHeight = 0;
         if (getAdapter().instantiateItem(this, getCurrentItem()) instanceof View) {
             if (getAdapter() != null && getAdapter().getCount() > 0) {
                 for (int i = 0; i < getAdapter().getCount(); i++) {
@@ -71,7 +71,25 @@ public class NoScrollViewPager extends ViewPager {
             maxHeight = measurePage(((Fragment) getAdapter().instantiateItem(this, getCurrentItem())).getView());
         }
         heightMeasureSpec = MeasureSpec.makeMeasureSpec(maxHeight, MeasureSpec.AT_MOST);
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);*/
+
+        int height = 0;
+        //for to all child height
+        for (int i = 0; i < getChildCount(); i++) {
+            View child = getChildAt(i);
+            child.measure(widthMeasureSpec,
+                    MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+            int h = child.getMeasuredHeight();
+            if (h > height) //use maximum view Height
+                height = h;
+        }
+
+        heightMeasureSpec = MeasureSpec.makeMeasureSpec(height,
+                MeasureSpec.EXACTLY);
+
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+
     }
 
     public int measurePage(View view) {
