@@ -47,7 +47,7 @@ public class NiceSpinner<T> extends TextView {
     private static final String SELECTED_INDEX = "selected_index";
     private static final String IS_POPUP_SHOWING = "is_popup_showing";
     private static final float defaultNarrowSize = 0.5f;
-    private int selectedIndex;
+    private int selectedIndex = -1;
     private Drawable drawable;
     private PopupWindow popupWindow;
     private ListView listView;
@@ -291,13 +291,15 @@ public class NiceSpinner<T> extends TextView {
     }
 
     public T getSelectedData() {
-        if(adapter == null || adapter.getCurrentItem() != null)
+        if(adapter == null || adapter.getCurrentItem() == null)
             return null;
         return  ((StringData<T>) adapter.getCurrentItem()).getObject();
     }
 
     public String getSelectedString() {
-        return adapter.getCurrentItem() != null ? adapter.getCurrentItem().getString() : null;
+        if(adapter == null || adapter.getCurrentItem() == null)
+            return null;
+        return adapter.getCurrentItem().getString();
     }
 
     @Override
