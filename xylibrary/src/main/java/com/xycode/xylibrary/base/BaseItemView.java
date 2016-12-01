@@ -23,6 +23,7 @@ import android.widget.TextView;
 import com.andexert.library.RippleView;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.xycode.xylibrary.R;
+import com.xycode.xylibrary.adapter.XAdapter;
 import com.xycode.xylibrary.annotation.SaveState;
 import com.xycode.xylibrary.annotation.annotationHelper.StateBinder;
 import com.xycode.xylibrary.utils.DateUtils;
@@ -81,7 +82,6 @@ public abstract class BaseItemView extends RelativeLayout {
         viewList = new SparseArray<>();
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.BaseItemView);
-
 
         itemNum = a.getInt(R.styleable.BaseItemView_itemNum, 0);
         itemCount = a.getInt(R.styleable.BaseItemView_itemCount, 0);
@@ -165,34 +165,49 @@ public abstract class BaseItemView extends RelativeLayout {
         }
     }
 
+    public BaseItemView setFormat(int viewId, int formatRes, Object... objects) {
+        setTextForView(viewId, String.format(getContext().getString(formatRes), objects));
+        return this;
+    }
+
+    public BaseItemView setDate(int viewId, String dateFormat, long dateTime) {
+        setTextForView(viewId, DateUtils.formatDateTime(dateFormat, dateTime));
+        return this;
+    }
     public BaseItemView setText(int viewId, @StringRes int textRes) {
         setText(viewId, getContext().getString(textRes));
         return this;
     }
 
-    public BaseItemView setText(int viewId, String text) {
+    public BaseItemView setText(int viewId, Object text) {
+        String string;
+        if (text == null) {
+            string = "";
+        } else if (text instanceof String) {
+            string = (String) text;
+        } else {
+            string = String.valueOf(text);
+        }
+        setTextForView(viewId, string);
+        return this;
+    }
+
+
+    private BaseItemView setTextForView(int viewId, String text) {
         View view = getView(viewId);
         if (view != null) {
-            if (view instanceof EditText) {
-                ((EditText) view).setText(text);
-            } else if (view instanceof Button) {
-                ((Button) view).setText(text);
-            } else if (view instanceof TextView) {
+           if (view instanceof TextView) {
                 ((TextView) view).setText(text);
-            }
+           }
         }
         return this;
     }
 
-    public BaseItemView setTextColor(int viewId, @ColorRes int textColor) {
+    public BaseItemView setTextColor(int viewId, @ColorRes int textColorRes) {
         View view = getView(viewId);
         if (view != null) {
-            if (view instanceof EditText) {
-                ((EditText) view).setTextColor(getResources().getColor(textColor));
-            } else if (view instanceof Button) {
-                ((Button) view).setTextColor(getResources().getColor(textColor));
-            } else if (view instanceof TextView) {
-                ((TextView) view).setTextColor(getResources().getColor(textColor));
+            if (view instanceof TextView) {
+                ((TextView) view).setTextColor(getResources().getColor(textColorRes));
             }
         }
         return this;

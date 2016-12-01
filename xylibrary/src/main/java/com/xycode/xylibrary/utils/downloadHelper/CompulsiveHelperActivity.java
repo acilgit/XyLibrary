@@ -344,11 +344,11 @@ public class CompulsiveHelperActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        finish();
         cancelDownload = true;
         if (mCancelCallBack != null) {
             mCancelCallBack.onCancel(isMust());
         }
+        finish();
     }
 
     public boolean isMust() {
