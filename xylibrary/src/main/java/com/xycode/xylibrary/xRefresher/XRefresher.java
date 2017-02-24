@@ -17,6 +17,8 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.TextView;
 
 import com.alibaba.fastjson.JSONObject;
@@ -28,6 +30,7 @@ import com.xycode.xylibrary.okHttp.OkHttp;
 import com.xycode.xylibrary.okHttp.Param;
 import com.xycode.xylibrary.uiKit.recyclerview.FlexibleDividerDecoration;
 import com.xycode.xylibrary.uiKit.recyclerview.HorizontalDividerItemDecoration;
+import com.xycode.xylibrary.utils.L;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -39,6 +42,7 @@ import okhttp3.Response;
 
 /**
  * Created by XY on 2016/6/17.
+ * 列表刷新器
  */
 public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerDecoration.VisibilityProvider, FlexibleDividerDecoration.SizeProvider {
 
@@ -205,13 +209,24 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
     }
 
     private void setLoadMoreListener() {
-        recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             private boolean swipeMore = false;
+            private boolean noScrolled = true;
 
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                int scrollState = recyclerView.getScrollState();
+                L.e("scrollState --> " + scrollState);
                 super.onScrollStateChanged(recyclerView, newState);
                 if (newState == RecyclerView.SCROLL_STATE_IDLE && swipeMore && lastVisibleItem + 2 >= getAdapter().getItemCount()) {
+                    if ((!state.lastPage) && loadMoreState == LOADER_MORE) {
+                        setLoadMoreState(LOADER_LOADING);
+                        getDataByRefresh(state.pageIndex + 1, state.pageDefaultSize);
+                    }
+                } else if (newState == RecyclerView.SCROLL_STATE_IDLE && lastVisibleItem > 0
+                        && adapter.getDataList().size() > 0
+                        && noScrolled
+                        && lastVisibleItem + 2 >= getAdapter().getItemCount()) {
                     if ((!state.lastPage) && loadMoreState == LOADER_MORE) {
                         setLoadMoreState(LOADER_LOADING);
                         getDataByRefresh(state.pageIndex + 1, state.pageDefaultSize);
@@ -222,6 +237,9 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
+                if (dy > 0 && noScrolled) {
+                    noScrolled = false;
+                }
                 swipeMore = dy > 0;
                 lastVisibleItem = ((LinearLayoutManager) recyclerView.getLayoutManager()).findLastVisibleItemPosition();
             }
@@ -297,7 +315,9 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
 
             @Override
             public void handleJsonError(Call call, Response response, JSONObject json) {
-                if (initRefresher != null) initRefresher.handleError(call, json);
+                if (!refreshRequest.handleError(call, json) && initRefresher != null) {
+                    initRefresher.handleError(call, json);
+                }
             }
 
             @Override
@@ -309,6 +329,9 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
                     case LOAD:
                         setLoadMoreState(state.lastPage ? LOADER_NO_MORE : LOADER_MORE);
                         break;
+                }
+                if (!refreshRequest.handleAllFailureSituation(call, resultCode) && initRefresher != null) {
+                    initRefresher.handleAllFailureSituation(call, resultCode);
                 }
             }
         });
@@ -497,6 +520,28 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
         protected int compareTo(T item0, T item1) {
             return 0;
         }
+
+        /**
+         * 返回错误判断的时候会调用此方法，如果返回结果是true则不执行InitRefresher的handleError()方法
+         *
+         * @param call
+         * @param json
+         * @return if true to stop InitRefresher.handleError()
+         */
+        protected boolean handleError(Call call, JSONObject json) {
+            return false;
+        }
+
+        /**
+         * 返回错误判断的时候会调用此方法，如果返回结果是true则不执行InitRefresher的handleError()方法
+         *
+         * @param call
+         * @param resultCode
+         * @return if true to stop InitRefresher.handleAllFailureSituation()
+         */
+        protected boolean handleAllFailureSituation(Call call, int resultCode) {
+            return false;
+        }
     }
 
     private interface IRefreshRequest<T> {
@@ -517,6 +562,9 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
         List<T> setListData(JSONObject json);
     }
 
+    /**
+     * 刷新监听
+     */
     public interface OnSwipeListener {
         /**
          * Refresh
@@ -524,16 +572,46 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
         void onRefresh();
     }
 
+    /**
+     * 最后一页
+     */
     public interface OnLastPageListener {
         void receivedList(boolean isLastPage);
     }
 
+    /**
+     * 设置Refresher的默认选项
+     */
     public interface InitRefresher {
 
+        /**
+         * 默认的结果出错操作，例如toast
+         *
+         * @param call
+         * @param json
+         */
         void handleError(Call call, JSONObject json);
 
+        /**
+         * 默认的所有出错的操作，例如 关闭LoadingDialog显示
+         *
+         * @param call
+         * @param resultCode 结果值
+         */
+        void handleAllFailureSituation(Call call, int resultCode);
+
+        /**
+         * 设置默认的Header
+         *
+         * @return
+         */
         boolean addDefaultHeader();
 
+        /**
+         * 设置默认的参数
+         *
+         * @return
+         */
         boolean addDefaultParam();
     }
 

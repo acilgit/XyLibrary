@@ -13,8 +13,14 @@ import com.xycode.xylibrary.R;
  * Created by XY on 2016-07-28.
  */
 public class NoScrollViewPager extends ViewPager {
+
+    public static final int FIT_SINGLE_PAGE = 0;
+    public static final int FIT_SHOWN_PAGE = 1;
+    public static final int FIT_MAXHEIGHT_PAGE = 2;
+
     private boolean isScrollable = false;
     private boolean measureAllPages = false;
+    private int measurePageType;
 
     public NoScrollViewPager(Context context) {
         super(context, null);
@@ -26,6 +32,7 @@ public class NoScrollViewPager extends ViewPager {
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.NoScrollViewPager);
         isScrollable = a.getBoolean(R.styleable.NoScrollViewPager_enableScroll, false);
         measureAllPages = a.getBoolean(R.styleable.NoScrollViewPager_measureAllPages, false);
+        measurePageType = a.getInt(R.styleable.NoScrollViewPager_measurePageType, FIT_SINGLE_PAGE);
         a.recycle();
     }
 
@@ -74,13 +81,27 @@ public class NoScrollViewPager extends ViewPager {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);*/
 
         int height = 0;
-        //for to all child height
-        for (int i = 0; i < getChildCount(); i++) {
-            View child = getChildAt(i);
-            child.measure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
-            int h = child.getMeasuredHeight();
-            if (h > height) //use maximum view Height
-                height = h;
+
+        switch (measurePageType) {
+            case FIT_SINGLE_PAGE :
+            case FIT_MAXHEIGHT_PAGE :
+                //for to all child height
+                for (int i = 0; i < getChildCount(); i++) {
+                    View child = getChildAt(i);
+                    child.measure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+                    int h = child.getMeasuredHeight();
+                    //use maximum view Height
+                    if (h > height)
+                        height = h;
+                }
+                break;
+            case FIT_SHOWN_PAGE :
+                View child = getChildAt(getCurrentItem());
+                child.measure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+                height = child.getMeasuredHeight();
+                break;
+            default:
+                break;
         }
 
         heightMeasureSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY);

@@ -24,7 +24,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.HashMap;
+
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 /**
  * Created by Administrator on 2016/10/22 0022.
@@ -392,13 +398,24 @@ public class CompulsiveHelperActivity extends Activity {
         Message message = new Message();
 
         try {
-            HttpURLConnection conn = getHttpConnection(downloadFileUrl);
-            fileLength = conn.getContentLength();
-            inputStream = conn.getInputStream();
-            if (conn.getResponseCode() != 200) {
-                inputStream.close();
-                throw new IOException("ImageBean request failed with response code " + conn.getResponseCode());
+            if (downloadFileUrl.startsWith("https")) {
+                HttpsURLConnection conn = getHttpsConnection(downloadFileUrl);
+                fileLength = conn.getContentLength();
+                inputStream = conn.getInputStream();
+                if (conn.getResponseCode() != 200) {
+                    inputStream.close();
+                    throw new IOException("ImageBean request failed with response code " + conn.getResponseCode());
+                }
+            } else {
+                HttpURLConnection conn = getHttpConnection(downloadFileUrl);
+                fileLength = conn.getContentLength();
+                inputStream = conn.getInputStream();
+                if (conn.getResponseCode() != 200) {
+                    inputStream.close();
+                    throw new IOException("ImageBean request failed with response code " + conn.getResponseCode());
+                }
             }
+
             outputStream = new FileOutputStream(file);
 
             message.arg1 = fileLength;
@@ -445,6 +462,19 @@ public class CompulsiveHelperActivity extends Activity {
     public static HttpURLConnection getHttpConnection(String url) {
         try {
             HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
+            conn.setRequestProperty("Accept-Encoding", "identity");
+            conn.setConnectTimeout(30000);
+            conn.setReadTimeout(30000);
+            return conn;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static HttpsURLConnection getHttpsConnection(String url) {
+        try {
+            SslUtils.ignoreSsl();
+            HttpsURLConnection conn = (HttpsURLConnection) new URL(url).openConnection();
             conn.setRequestProperty("Accept-Encoding", "identity");
             conn.setConnectTimeout(30000);
             conn.setReadTimeout(30000);

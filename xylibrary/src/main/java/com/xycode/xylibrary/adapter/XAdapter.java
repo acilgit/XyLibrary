@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.facebook.imagepipeline.common.ResizeOptions;
 import com.xycode.xylibrary.R;
 import com.xycode.xylibrary.base.BaseItemView;
 import com.xycode.xylibrary.instance.FrescoLoader;
@@ -38,7 +39,13 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
 
     public static final int LAYOUT_FOOTER = -20331;
 
+    /**
+     * 所有数据，包括被过滤的数据
+     */
     private List<T> mainList;
+    /**
+     * 显示的数据
+     */
     private List<T> dataList;
     private Context context;
     private SparseArray<Integer> headerLayoutIdList;
@@ -82,6 +89,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
      */
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, final int viewType) {
+        // Footer创建
         if (viewType == LAYOUT_FOOTER) {
             View itemView = LayoutInflater.from(context).inflate(footerLayout, parent, false);
             final CustomHolder holder = new CustomHolder(itemView) {
@@ -94,6 +102,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
             };
             return holder;
         } else {
+            // Header创建
             for (int i = 0; i < headerLayoutIdList.size(); i++) {
                 final int headerKey = headerLayoutIdList.keyAt(i);
                 if (viewType == headerKey) {
@@ -115,7 +124,6 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
             if (viewTypeUnit != null) {
                 l = viewTypeUnit.getLayoutId();
             }
-
             @LayoutRes int layoutId = l;
             View itemView = LayoutInflater.from(context).inflate(layoutId, parent, false);
             final CustomHolder holder = new CustomHolder(itemView) {
@@ -131,6 +139,11 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
         }
     }
 
+    /**
+     * 展示
+     * @param holder
+     * @param position
+     */
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (position == dataList.size() + headerLayoutIdList.size()) {
@@ -149,7 +162,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
     }
 
     /**
-     * when create Holder
+     * 创建Holder时执行，只执行一次或被销毁后再次会被执行
      *
      * @param holder
      * @param dataList
@@ -160,7 +173,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
     }
 
     /**
-     * bind holder
+     * 绑定展示数据时执行，多次执行
      *
      * @param holder
      * @param dataList
@@ -180,6 +193,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
     }*/
 
     /**
+     * 根据Mark确定展示的Layout
      * override this method can show different holder for layout
      * don't return LAYOUT_FOOTER = -20331
      *
@@ -245,7 +259,6 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
         }
         return null;
     }
-
 
     public boolean hasFooter() {
         return footerLayout != 0;
@@ -406,21 +419,31 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
         void onItemLongClick(CustomHolder holder, T item);
     }*/
 
-    public static abstract class CustomHolder extends RecyclerView.ViewHolder {
+    /**
+     * 自定义Holder
+     * 可用于不同的View中
+     */
+    public static class CustomHolder extends RecyclerView.ViewHolder {
 
         private SparseArray<View> viewList;
         private View itemView;
         private View.OnClickListener onClickListener;
         private View.OnLongClickListener onLongClickListener;
 
-        public CustomHolder(View itemView) {
-            super(itemView);
-            this.itemView = itemView;
+        public CustomHolder(View view) {
+            super(view);
+            this.itemView = view;
             viewList = new SparseArray<>();
             createHolder(this);
         }
 
-        protected abstract void createHolder(CustomHolder holder);
+        /**
+         * 创建时执行
+         * @param holder
+         */
+        protected void createHolder(CustomHolder holder){
+
+        }
 
         public <T extends View> T getView(int viewId) {
             View view = viewList.get(viewId);
@@ -466,6 +489,22 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
             View v = getView(niceSpinnerId);
             if (v != null && v instanceof NiceSpinner) {
                 return (NiceSpinner) v;
+            }
+            return null;
+        }
+
+        public TextView getTextView(int textViewId) {
+            View v = getView(textViewId);
+            if (v != null && v instanceof TextView) {
+                return (TextView) v;
+            }
+            return null;
+        }
+
+        public SimpleDraweeView getSimpleDraweeView(int draweeViewId) {
+            View v = getView(draweeViewId);
+            if (v != null && v instanceof SimpleDraweeView) {
+                return (SimpleDraweeView) v;
             }
             return null;
         }
@@ -531,12 +570,11 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
             return this;
         }
 
-        public CustomHolder setImageUrl(int viewId, String url) {
+        public CustomHolder setImageUrl(int viewId, String url, ResizeOptions resizeOptions) {
             View view = getView(viewId);
             if (view != null) {
                 if (view instanceof SimpleDraweeView) {
-//                    ((SimpleDraweeView) view).setImageURI(Uri.parse(url));
-                    ImageUtils.setImageUriWithPreview((SimpleDraweeView) view, url, FrescoLoader.getPreviewUri(url));
+                    ImageUtils.setImageUriWithPreview((SimpleDraweeView) view, url, FrescoLoader.getPreviewUri(url), resizeOptions);
                 } else if (view instanceof ImageView) {
                     ((ImageView) view).setImageURI(Uri.parse(url));
                 }
@@ -547,6 +585,10 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
 
         public CustomHolder setImageURI(int viewId, String url) {
             return setImageUrl(viewId, url);
+        }
+
+        public CustomHolder setImageUrl(int viewId, String url) {
+            return setImageUrl(viewId, url, null);
         }
 
         private CustomHolder setImageURI(int viewId, Uri uri) {

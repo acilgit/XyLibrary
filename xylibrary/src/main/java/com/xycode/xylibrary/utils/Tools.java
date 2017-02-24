@@ -25,6 +25,7 @@ import android.support.annotation.ColorRes;
 import android.support.annotation.DimenRes;
 import android.support.v7.app.AlertDialog;
 import android.text.Html;
+import android.text.TextUtils;
 import android.util.Base64;
 import android.view.View;
 import android.view.WindowManager;
@@ -40,12 +41,15 @@ import com.xycode.xylibrary.unit.ContactUnit;
 import com.xycode.xylibrary.unit.StringData;
 import com.xycode.xylibrary.unit.UrlData;
 import com.xycode.xylibrary.unit.WH;
+import com.xycode.xylibrary.utils.downloadHelper.CompulsiveHelperActivity;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -54,6 +58,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.net.ssl.HttpsURLConnection;
 
 
 /**
@@ -562,6 +568,78 @@ public class Tools {
             }
         }
         return stringList;
+    }
+
+
+    public static InputStream getStreamFromNetwork(String url, String serverAddress) {
+        if (TextUtils.isEmpty(url)) {
+            return null;
+        }
+        InputStream inputStream;
+        if (url.startsWith("https")) {
+            HttpsURLConnection conn = null;
+            conn = CompulsiveHelperActivity.getHttpsConnection(url);
+            try {
+                inputStream = conn.getInputStream();
+                if (conn.getResponseCode() != 200) {
+                    inputStream.close();
+                    throw new IOException("Image request failed with response code " + conn.getResponseCode());
+                } else {
+                    return inputStream;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else if (url.startsWith("http")) {
+            HttpURLConnection conn;
+            conn = CompulsiveHelperActivity.getHttpConnection(url);
+            try {
+                inputStream = conn.getInputStream();
+                if (conn.getResponseCode() != 200) {
+                    inputStream.close();
+                    throw new IOException("Image request failed with response code " + conn.getResponseCode());
+                } else {
+                    return inputStream;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            if (!url.startsWith("/")) {
+                url = "/" + url;
+            }
+            url = serverAddress + url;
+            if (url.startsWith("https")) {
+                HttpsURLConnection conn = null;
+                conn = CompulsiveHelperActivity.getHttpsConnection(url);
+                try {
+                    inputStream = conn.getInputStream();
+                    if (conn.getResponseCode() != 200) {
+                        inputStream.close();
+                        throw new IOException("Image request failed with response code " + conn.getResponseCode());
+                    } else {
+                        return inputStream;
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else if (url.startsWith("http")) {
+                HttpURLConnection conn = null;
+                conn = CompulsiveHelperActivity.getHttpConnection(url);
+                try {
+                    inputStream = conn.getInputStream();
+                    if (conn.getResponseCode() != 200) {
+                        inputStream.close();
+                        throw new IOException("Image request failed with response code " + conn.getResponseCode());
+                    } else {
+                        return inputStream;
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return null;
     }
 
 

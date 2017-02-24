@@ -17,26 +17,26 @@
         <attr name="loopLayout" format="reference" />
         <attr name="aspectRatio" format="float" />
         <attr name="holderImage" />
-        <attr name="imageScaleType"/>
+        <attr name="imageScaleType" />
     </declare-styleable>
 
     <declare-styleable name="MultiImageView">
         <attr name="holderImage" />
         <attr name="onFailureImage" format="reference" />
         <attr name="pressedOverlayImage" format="reference" />
-        <attr name="imageScaleType"/>
-        <attr name="holderImageScaleType"/>
-        <attr name="onFailureImageScaleType"/>
+        <attr name="imageScaleType" />
+        <attr name="holderImageScaleType" />
+        <attr name="onFailureImageScaleType" />
         <attr name="imagePadding" format="dimension" />
         <attr name="cornerRadius" format="dimension" />
         <attr name="itemSameSize" format="boolean" />
-        <attr name="singleImageSize"  format="enum">
+        <attr name="singleImageSize" format="enum">
             <enum name="normal" value="0" />
             <enum name="large" value="1" />
             <enum name="full" value="2" />
         </attr>
-        <attr name="maxColumn" format="integer"/>
-        <attr name="fadeDurationTime" format="integer"/>
+        <attr name="maxColumn" format="integer" />
+        <attr name="fadeDurationTime" format="integer" />
         <attr name="maxRow" format="integer|enum">
             <enum name="unlimited" value="-1" />
         </attr>
@@ -45,6 +45,11 @@
     <declare-styleable name="NoScrollViewPager">
         <attr name="enableScroll" format="boolean" />
         <attr name="measureAllPages" format="boolean" />
+        <attr name="measurePageType" format="enum">
+            <enum name="fitSinglePage" value="0" />
+            <enum name="fitShownPage" value="1" />
+            <enum name="fitMaxHeightPage" value="2" />
+        </attr>
     </declare-styleable>
 
     <declare-styleable name="XTextView">
@@ -81,9 +86,9 @@
         <attr name="itemRes" format="reference" />
         <attr name="itemVisible" />
         <attr name="itemChildVisible" />
-        <attr name="android:inputType"/>
-        <attr name="android:minLines"/>
-        <attr name="android:maxLines"/>
+        <attr name="android:inputType" />
+        <attr name="android:minLines" />
+        <attr name="android:maxLines" />
 
     </declare-styleable>
 
@@ -133,12 +138,13 @@
         <enum name="invisible" value="4" />
         <enum name="gone" value="8" />
     </attr>
+
     <declare-styleable name="NiceSpinner">
         <attr name="arrowTint" format="color" />
         <attr name="hideArrow" format="boolean" />
-        <attr name="backgroundSelector" format="integer"/>
-        <attr name="textTint" format="color"/>
-        <attr name="narrow_width" format="dimension"/>
-        <attr name="narrow_height" format="dimension"/>
+        <attr name="backgroundSelector" format="integer" />
+        <attr name="textTint" format="color" />
+        <attr name="narrow_width" format="dimension" />
+        <attr name="narrow_height" format="dimension" />
     </declare-styleable>
 </resources>

@@ -1,15 +1,21 @@
 package com.xycode.xylibrary.utils;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.drawable.Animatable;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.text.Html;
+import android.text.Spanned;
 import android.view.View;
+import android.widget.TextView;
 
 import com.facebook.binaryresource.BinaryResource;
 import com.facebook.binaryresource.FileBinaryResource;
@@ -18,6 +24,7 @@ import com.facebook.common.executors.CallerThreadExecutor;
 import com.facebook.common.references.CloseableReference;
 import com.facebook.datasource.DataSource;
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.drawee.backends.pipeline.PipelineDraweeController;
 import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder;
 import com.facebook.drawee.controller.ControllerListener;
 import com.facebook.drawee.drawable.ScalingUtils;
@@ -25,6 +32,7 @@ import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.facebook.imagepipeline.cache.DefaultCacheKeyFactory;
+import com.facebook.imagepipeline.common.ResizeOptions;
 import com.facebook.imagepipeline.core.ImagePipeline;
 import com.facebook.imagepipeline.core.ImagePipelineFactory;
 import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
@@ -32,6 +40,8 @@ import com.facebook.imagepipeline.image.CloseableImage;
 import com.facebook.imagepipeline.image.ImageInfo;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
+import com.xycode.xylibrary.instance.FrescoLoader;
+import com.xycode.xylibrary.interfaces.Interfaces;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -366,7 +376,7 @@ public class ImageUtils {
         int maxSide = Math.max(info.outWidth, info.outHeight);
         int minSide = Math.min(info.outWidth, info.outHeight);
         L.d("sideLength outWidth:" + "(" + info.outWidth + ") outHeight:" + "(" + info.outHeight + ") ...:" + (1.0 * maxSide) / targetMaxSide);
-        int scaleSsize = targetMaxSide > maxSide ? 1 : (int) (Math.floor((1.0 * maxSide) / targetMaxSide));
+        int scaleSsize = targetMaxSide >= maxSide ? 1 : (int) (Math.floor((1.0 * maxSide) / targetMaxSide));
         int nowMinSide = minSide / scaleSsize;
         if (scaleSsize > 1 && nowMinSide <= targetMiniSide) {
             scaleSsize = (int) Math.floor(scaleSsize * ((1.0f * nowMinSide) / targetMiniSide));
@@ -667,7 +677,13 @@ public class ImageUtils {
     public static void loadBitmapFromFresco(Context context, Uri uri, final IGetFrescoBitmap iGetFrescoBitmap) {
         File localFile = getCachedImageOnFresco(uri);
         if (localFile != null) {
-            iGetFrescoBitmap.afterGotBitmap(getBitmapFromFile(localFile));
+
+            ResizeOptions ro = FrescoLoader.getResizeOptions(uri.toString());
+            if (ro != null) {
+                iGetFrescoBitmap.afterGotBitmap(resizeToBitmap(localFile.getAbsolutePath(), ro.width, ro.height));
+            } else {
+                iGetFrescoBitmap.afterGotBitmap(getBitmapFromFile(localFile));
+            }
         } else {
             loadBitmapFromFrescoNet(context, uri, iGetFrescoBitmap);
         }
@@ -675,9 +691,14 @@ public class ImageUtils {
 
     public static void loadBitmapFromFrescoNet(Context context, Uri uri, final IGetFrescoBitmap iGetFrescoBitmap) {
         if (uri == null) return;
-        ImageRequest imageRequest = ImageRequestBuilder.newBuilderWithSource(uri).setAutoRotateEnabled(true).build();
+        ImageRequestBuilder imageRequestBuilder = ImageRequestBuilder.newBuilderWithSource(uri).setAutoRotateEnabled(true);
+
+        ResizeOptions ro = FrescoLoader.getResizeOptions(uri.toString());
+        if (ro != null) {
+            imageRequestBuilder.setResizeOptions(ro);
+        }
         ImagePipeline pipeline = Fresco.getImagePipeline();
-        DataSource<CloseableReference<CloseableImage>> dataSource = pipeline.fetchDecodedImage(imageRequest, context);
+        DataSource<CloseableReference<CloseableImage>> dataSource = pipeline.fetchDecodedImage(imageRequestBuilder.build(), context);
         dataSource.subscribe(new BaseBitmapDataSubscriber() {
             @Override
             protected void onNewResultImpl(Bitmap bitmap) {
@@ -703,9 +724,13 @@ public class ImageUtils {
             }
             return;
         }
-        ImageRequest request = ImageRequestBuilder.newBuilderWithSource(uri)
-                .setProgressiveRenderingEnabled(true)
-                .build();
+        ImageRequestBuilder imageRequestBuilder = ImageRequestBuilder.newBuilderWithSource(uri)
+                .setProgressiveRenderingEnabled(true);
+
+        ResizeOptions ro = FrescoLoader.getResizeOptions(uri.toString());
+        if (ro != null) {
+            imageRequestBuilder.setResizeOptions(ro);
+        }
         PipelineDraweeControllerBuilder builder = Fresco.newDraweeControllerBuilder()
                 .setControllerListener(new ControllerListener<ImageInfo>() {
                     boolean showFinalImageInfo = true;
@@ -746,7 +771,7 @@ public class ImageUtils {
 
                     }
                 })
-                .setImageRequest(request);
+                .setImageRequest(imageRequestBuilder.build());
         if (previewUri != null) builder.setLowResImageRequest(ImageRequest.fromUri(previewUri));
         builder.setOldController(imageView.getController());
         DraweeController controller = builder.build();
@@ -754,26 +779,53 @@ public class ImageUtils {
     }
 
     public static void setImageUriWithGif(SimpleDraweeView simpleDraweeView, String uri) {
-        setImageUriWithPreview(simpleDraweeView, Uri.parse(uri), null);
+        setImageUriWithPreview(simpleDraweeView, Uri.parse(uri), null, null);
+    }
+
+    public static void setImageUriWithGif(SimpleDraweeView simpleDraweeView, String uri, ResizeOptions resizeOptions) {
+        setImageUriWithPreview(simpleDraweeView, Uri.parse(uri), null, resizeOptions);
     }
 
     public static void setImageUriWithPreview(SimpleDraweeView simpleDraweeView, String uri, String previewUri) {
-        setImageUriWithPreview(simpleDraweeView, Uri.parse(uri), previewUri == null ? null : Uri.parse(previewUri));
+        setImageUriWithPreview(simpleDraweeView, Uri.parse(uri), previewUri == null ? null : Uri.parse(previewUri), null);
     }
 
-    public static void setImageUriWithPreview(SimpleDraweeView simpleDraweeView, Uri uri, Uri previewUri) {
+    public static void setImageUriWithPreview(SimpleDraweeView simpleDraweeView, String uri, String previewUri, ResizeOptions resizeOptions) {
+        setImageUriWithPreview(simpleDraweeView, Uri.parse(uri), previewUri == null ? null : Uri.parse(previewUri), resizeOptions);
+    }
+
+    public static void setImageUriWithPreview(SimpleDraweeView simpleDraweeView, Uri uri, Uri previewUri, ResizeOptions resizeOptions) {
         if (uri == null) {
             simpleDraweeView.setImageURI(null);
             return;
-        } else if (previewUri == null) {
-            simpleDraweeView.setImageURI(uri);
-            return;
         }
+        ImageRequest request;
         PipelineDraweeControllerBuilder builder = Fresco.newDraweeControllerBuilder()
-                .setImageRequest(ImageRequest.fromUri(uri))
                 .setOldController(simpleDraweeView.getController())
                 .setAutoPlayAnimations(true)
                 .setLowResImageRequest(ImageRequest.fromUri(previewUri));
+        if (resizeOptions != null) {
+            request = ImageRequestBuilder.newBuilderWithSource(uri)
+                    .setResizeOptions(resizeOptions)
+//                    .setImageType(resizeOptions.width < 400 ? ImageRequest.ImageType.SMALL : ImageRequest.ImageType.DEFAULT)
+                    .setAutoRotateEnabled(true)
+                    .build();
+        } else {
+            ResizeOptions ro = FrescoLoader.getResizeOptions(uri.toString());
+            if (ro != null) {
+                request = ImageRequestBuilder.newBuilderWithSource(uri)
+                        .setResizeOptions(ro)
+//                        .setImageType(ImageRequest.ImageType.DEFAULT)
+                        .setAutoRotateEnabled(true)
+                        .build();
+            } else {
+                request = ImageRequest.fromUri(uri);
+            }
+        }
+        if (previewUri != null) {
+            builder.setLowResImageRequest(ImageRequest.fromUri(previewUri));
+        }
+        builder.setImageRequest(request);
         DraweeController controller = builder.build();
         simpleDraweeView.setController(controller);
     }
@@ -831,6 +883,87 @@ public class ImageUtils {
 
     public interface IGetFrescoImageInfo {
         void afterGotImageInfo(ImageInfo imageInfo, float ratio);
+    }
+
+    /**
+     * HTML TextView
+     *
+     * @param activity
+     * @param htmlText
+     * @param holder
+     * @param cbSaved
+     */
+    public static void saveHtmlPicToLocal(Activity activity, String htmlText, Drawable holder, String serverAddress, Interfaces.CB cbSaved) {
+        Html.fromHtml(htmlText, source -> {
+            File file = Tools.checkFile(Tools.getFileDir(activity).getAbsolutePath(), source);
+            if (!file.exists()) {
+                String path = source;
+                if (!path.startsWith("http")) {
+                    if (!path.startsWith("/")) {
+                        path = "/" + path;
+                    }
+                    path = serverAddress + path;
+                }
+                ImageUtils.loadBitmapFromFresco(activity, Uri.parse(path), bitmap -> {
+                    ImageUtils.saveBitmapToFile(activity, file, bitmap);
+                    cbSaved.go(null);
+                });
+            }
+            return holder;
+        }, null);
+    }
+
+    private static final int DRAWABLE_SIZE = -1;
+    private static final int SCREEN_SIZE = 0;
+
+    /**
+     * 加载包含HTML的文本（从本地加载图片）
+     * @param activity
+     * @param htmlText
+     * @param picFitScreen true:屏幕等宽， false:图片默认尺寸
+     * @return
+     */
+    public static Spanned getHtmlTextWithLocalPic(Activity activity, String htmlText, boolean picFitScreen) {
+        return getHtmlTextWithLocalPic(activity, htmlText, picFitScreen ? SCREEN_SIZE : DRAWABLE_SIZE);
+    }
+
+    /**
+     * 加载包含HTML的文本（从本地加载图片）
+     * @param activity
+     * @param htmlText
+     * @param drawableWidth 图片的显示尺寸
+     * @return
+     */
+    public static Spanned getHtmlTextWithLocalPic(Activity activity, String htmlText, int drawableWidth) {
+        return getHtmlTextWithLocalPicBase(activity, htmlText, drawableWidth);
+    }
+
+    private static Spanned getHtmlTextWithLocalPicBase(Activity activity, String htmlText, int drawableWidth) {
+        return Html.fromHtml(htmlText, s -> {
+            File f = Tools.checkFile(Tools.getFileDir(activity).getAbsolutePath(), s);
+            if (!f.exists()) {
+                return null;
+            }
+            Bitmap bmp = ImageUtils.getBitmapFromFile(f);
+            BitmapDrawable d = new BitmapDrawable(bmp);
+//                            drawable.addLevel(1, 1, d);
+            if (bmp != null) {
+                if (drawableWidth == SCREEN_SIZE) {
+                    long newHeight = 0;
+                    int newWidth = Tools.getScreenSize(activity).x;
+                    newHeight = (newWidth * bmp.getHeight()) / bmp.getWidth();
+                    d.setBounds(0, 0, newWidth, (int) newHeight);
+                } else if (drawableWidth == DRAWABLE_SIZE) {
+                    d.setBounds(0, 0, bmp.getWidth(), bmp.getHeight());
+                } else {
+                    long newHeight = 0;
+                    newHeight = (drawableWidth * bmp.getHeight()) / bmp.getWidth();
+                    d.setBounds(0, 0, drawableWidth, (int) newHeight);
+                }
+                d.setLevel(1);
+            }
+            return d;
+        }, null);
     }
 
 }

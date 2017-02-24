@@ -352,7 +352,7 @@ public class MultiImageView<T> extends LinearLayout {
             if (imageLoadListener != null) {
                 previewUri = imageLoadListener.setPreviewUri(i);
             }
-            ImageUtils.setImageUriWithPreview(imageView, Uri.parse(url), previewUri);
+            ImageUtils.setImageUriWithPreview(imageView, Uri.parse(url), previewUri, null);
             imageView.setTag(url);
         }
     }

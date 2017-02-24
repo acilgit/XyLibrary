@@ -4,7 +4,7 @@ apply plugin: 'me.tatarka.retrolambda'
 
 android {
     compileSdkVersion 24
-    buildToolsVersion '24.0.1'
+    buildToolsVersion '24.0.2'
     resourcePrefix "resourcePrefix"
     defaultConfig {
         minSdkVersion 15
@@ -60,7 +60,9 @@ dependencies {
     compile 'com.yalantis:ucrop:2.1.2'
     compile 'com.squareup.okhttp3:okhttp:3.4.0'
     compile 'com.facebook.fresco:fresco:0.10.0'
+    compile "com.facebook.fresco:imagepipeline-okhttp3:0.10.0"
     compile 'org.greenrobot:eventbus:3.0.0'
+//    compile 'com.theartofdev.edmodo:android-image-cropper:2.3.1'
     //    compile 'com.facebook.fresco:animated-gif:0.12.0'
     //    compile 'com.facebook.fresco:animated-webp:0.12.0'
     //    compile 'com.facebook.fresco:webpsupport:0.12.0'
@@ -80,7 +82,7 @@ ext {
     siteUrl = 'https://github.com/acilgit/XyLibrary'
     gitUrl = 'https://github.com/acilgit/XyLibrary.git'
 
-    libraryVersion = '0.3.33'
+    libraryVersion = '0.3.60'
 
     developerId = 'acil'
     developerName = 'acil-fong'
@@ -91,14 +93,17 @@ ext {
     allLicenses = ["Apache-2.0"]
 }
 
-/*javadoc {
-    options{
-        encoding "UTF-8"
-        charSet 'UTF-8'
-        author true
-        version true
-        links "http://docs.oracle.com/javase/7/docs/api"
+tasks.withType(Javadoc) {
+    javadoc {
+        options {
+            encoding "UTF-8"
+            charSet 'UTF-8'
+            author true
+            version true
+            links "http://docs.oracle.com/javase/7/docs/api"
+            failOnError false
+        }
     }
-}*/
+}
 apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
 apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'

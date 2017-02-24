@@ -155,6 +155,7 @@ public class AdLoopView extends BaseLoopView {
 
     @Override
     protected void setOnPageChangeListener() {
+        viewPager.clearOnPageChangeListeners();
         viewPager.addOnPageChangeListener(new OnPageChangeListener() {
 
             @Override

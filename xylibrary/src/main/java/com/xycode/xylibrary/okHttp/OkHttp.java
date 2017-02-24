@@ -9,11 +9,17 @@ import com.alibaba.fastjson.JSONObject;
 import com.xycode.xylibrary.base.BaseActivity;
 import com.xycode.xylibrary.utils.L;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
+import javax.net.ssl.SSLSocketFactory;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -51,6 +57,7 @@ public class OkHttp {
 
     private static OkHttpClient client;
     private static IOkInit okInit;
+    private static OkHttp.OkOptions okOptions;
 
     private static OkHttp instance;
     private static Application application;
@@ -76,6 +83,7 @@ public class OkHttp {
         if (okInit == null) {
             application = app;
             okInit = iOkInit;
+            OkHttp.okOptions = okOptions;
         }
     }
 
@@ -86,11 +94,15 @@ public class OkHttp {
     public static OkHttpClient getClient() {
         synchronized (lock) {
             if (client == null) {
-                client = new OkHttpClient.Builder()
+                OkHttpClient.Builder builder = new OkHttpClient.Builder()
                         .readTimeout(OkOptions.readTimeout, TimeUnit.SECONDS)
                         .connectTimeout(OkOptions.connectTimeout, TimeUnit.SECONDS)
-                        .writeTimeout(OkOptions.writeTimeout, TimeUnit.SECONDS)
-                        .build();
+                        .writeTimeout(OkOptions.writeTimeout, TimeUnit.SECONDS);
+                if (okOptions != null) {
+                    // 添加证书 或处理Builder
+                    okOptions.setOkHttpBuilder(builder);
+                }
+                client = builder.build();
             }
             return client;
         }
@@ -114,23 +126,23 @@ public class OkHttp {
         return builder.build();
     }
 
-    public static  Call get(Activity activity, String url, boolean addDefaultHeader, OkResponseListener okResponseListener) {
+    public static Call get(Activity activity, String url, boolean addDefaultHeader, OkResponseListener okResponseListener) {
         return get(activity, url, null, addDefaultHeader, okResponseListener);
     }
 
-    public static  Call get(Activity activity, String url, Header header, boolean addDefaultHeader, final OkResponseListener okResponseListener) {
+    public static Call get(Activity activity, String url, Header header, boolean addDefaultHeader, final OkResponseListener okResponseListener) {
         return postOrGet(activity, url, null, header, addDefaultHeader, okResponseListener);
     }
 
-    public static  Call postForm(Activity activity, String url, @NonNull RequestBody body, OkResponseListener okResponseListener) {
+    public static Call postForm(Activity activity, String url, @NonNull RequestBody body, OkResponseListener okResponseListener) {
         return postForm(activity, url, body, null, true, okResponseListener);
     }
 
-    public static  Call postForm(Activity activity, String url, @NonNull RequestBody body, boolean addDefaultHeader, OkResponseListener okResponseListener) {
+    public static Call postForm(Activity activity, String url, @NonNull RequestBody body, boolean addDefaultHeader, OkResponseListener okResponseListener) {
         return postForm(activity, url, body, null, addDefaultHeader, okResponseListener);
     }
 
-    public static  Call postForm(Activity activity, String url, @NonNull RequestBody body, Header header, boolean addDefaultHeader, OkResponseListener okResponseListener) {
+    public static Call postForm(Activity activity, String url, @NonNull RequestBody body, Header header, boolean addDefaultHeader, OkResponseListener okResponseListener) {
         return postOrGet(activity, url, body, header, addDefaultHeader, okResponseListener);
     }
 
@@ -139,15 +151,14 @@ public class OkHttp {
     }*/
 
     /**
-     *
      * @param url
-     * @param body  when body isNull will use GET
+     * @param body               when body isNull will use GET
      * @param header
      * @param addDefaultHeader
      * @param okResponseListener
      * @return
      */
-    private static  Call postOrGet(final Activity activity, String url, final RequestBody body, final Header header, boolean addDefaultHeader, final OkResponseListener okResponseListener) {
+    private static Call postOrGet(final Activity activity, String url, final RequestBody body, final Header header, boolean addDefaultHeader, final OkResponseListener okResponseListener) {
         final Request.Builder builder = new Request.Builder().url(url);
 
         if (body != null) {
@@ -172,22 +183,22 @@ public class OkHttp {
         final Request request = builder.build();
         final Call call = getClient().newCall(request);
 
-            new Thread(() -> {
-                try {
-                    final Response response = call.execute();
-                    L.e("call cancel --> " + call.isCanceled());
-                    if (response != null) {
-                        responseResult(response, call, okResponseListener, activity);
-                        response.close();
-                    } else {
-                        responseResultFailure(call, okResponseListener, activity);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
+        new Thread(() -> {
+            try {
+                final Response response = call.execute();
+                L.e("call cancel --> " + call.isCanceled());
+                if (response != null) {
+                    responseResult(response, call, okResponseListener, activity);
+                    response.close();
+                } else {
                     responseResultFailure(call, okResponseListener, activity);
-                } finally {
                 }
-            }).start();
+            } catch (IOException e) {
+                e.printStackTrace();
+                responseResultFailure(call, okResponseListener, activity);
+            } finally {
+            }
+        }).start();
 
         return call;
     }
@@ -267,46 +278,46 @@ public class OkHttp {
                     BaseActivity.dismissLoadingDialogByManualState();
                     return;
                 }
-                if(call.isCanceled()) return;
+                if (call.isCanceled()) return;
                 activity.runOnUiThread(() -> {
                     switch (resultCode) {
                         case RESULT_SUCCESS:
-                                L.e(call.request().url().url().toString() + " [Success] --> " + strResult);
-                                try {
-                                    okResponseListener.handleJsonSuccess(call, response, jsonObject);
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
+                            L.e(call.request().url().url().toString() + " [Success] --> " + strResult);
+                            try {
+                                okResponseListener.handleJsonSuccess(call, response, jsonObject);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
 
                             break;
                         case RESULT_ERROR:
-                                L.e(call.request().url().url().toString() + " [Error] --> " + strResult);
-                                try {
-                                    okResponseListener.handleJsonError(call, response, jsonObject);
-                                    okResponseListener.handleAllFailureSituation(call, resultCode);
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
+                            L.e(call.request().url().url().toString() + " [Error] --> " + strResult);
+                            try {
+                                okResponseListener.handleJsonError(call, response, jsonObject);
+                                okResponseListener.handleAllFailureSituation(call, resultCode);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
 
                             break;
                         case RESULT_VERIFY_ERROR:
-                                L.e(call.request().url().url().toString() + " [VerifyError] --> " + strResult);
-                                try {
-                                    okResponseListener.handleJsonVerifyError(call, response, jsonObject);
-                                    okResponseListener.handleAllFailureSituation(call, resultCode);
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
+                            L.e(call.request().url().url().toString() + " [VerifyError] --> " + strResult);
+                            try {
+                                okResponseListener.handleJsonVerifyError(call, response, jsonObject);
+                                okResponseListener.handleAllFailureSituation(call, resultCode);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
 
                             break;
                         default:
-                                L.e(call.request().url().url().toString() + " [OtherResultCode] --> " + strResult);
-                                try {
-                                    okResponseListener.handleJsonOther(call, response, jsonObject);
-                                    okResponseListener.handleAllFailureSituation(call, resultCode);
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
+                            L.e(call.request().url().url().toString() + " [OtherResultCode] --> " + strResult);
+                            try {
+                                okResponseListener.handleJsonOther(call, response, jsonObject);
+                                okResponseListener.handleAllFailureSituation(call, resultCode);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
 
                             break;
                     }
@@ -316,7 +327,7 @@ public class OkHttp {
                 final String parseErrorResult = responseStr;
                 L.e(call.request().url().url().toString() + " [JsonParseFailed] --> " + e.getMessage() + "\nResult: " + responseStr);
                 okInit.judgeResultParseResponseFailed(call, parseErrorResult, e);
-                if(call.isCanceled()) return;
+                if (call.isCanceled()) return;
                 activity.runOnUiThread(() -> {
                     try {
                         okResponseListener.handleParseError(call, parseErrorResult);
@@ -330,7 +341,7 @@ public class OkHttp {
         } else {
             L.e(call.request().url().url().toString() + " [NetworkErrorCode] --> " + response.code());
             okInit.receivedNetworkErrorCode(call, response);
-            if(call.isCanceled()) return;
+            if (call.isCanceled()) return;
             activity.runOnUiThread(() -> {
                 try {
                     okResponseListener.handleResponseFailure(call, response);
@@ -353,8 +364,8 @@ public class OkHttp {
         okInit.networkError(call, call.isCanceled());
         L.e(call.request().url().url().toString() + " [networkError] --> ");
         BaseActivity.dismissLoadingDialogByManualState();
-        if (okResponseListener != null && activity!= null) {
-            if(call.isCanceled()) return;
+        if (okResponseListener != null && activity != null) {
+            if (call.isCanceled()) return;
             activity.runOnUiThread(() -> {
                 try {
                     okResponseListener.handleNoServerNetwork(call, call.isCanceled());
@@ -485,6 +496,9 @@ public class OkHttp {
     }
 
 
+    /**
+     * okHttp属性设置
+     */
     public static class OkOptions {
 
         public static long readTimeout = 60;
@@ -499,9 +513,19 @@ public class OkHttp {
             OkOptions.writeTimeout = writeTimeout;
         }
 
+        /**
+         * 设置 Builder
+         * @param builder
+         */
+        public void setOkHttpBuilder(OkHttpClient.Builder builder) {
+
+        }
+
         public static void setMediaType(MediaType mediaType) {
             OkOptions.mediaType = mediaType;
         }
+
+
     }
 
 }

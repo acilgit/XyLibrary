@@ -141,7 +141,6 @@ public class NiceSpinner<T> extends TextView {
         textColor = typedArray.getColor(R.styleable.NiceSpinner_textTint, -1);
         setTextColor(textColor);
 
-
         listView = new ListView(context);
         // Set the spinner's id into the listview to make it pretend to be the right parent in
         // onItemClick
@@ -349,6 +348,10 @@ public class NiceSpinner<T> extends TextView {
             animateArrow(true);
         }
         popupWindow.showAsDropDown(this);
+    }
+
+    public boolean isDropDownShowing() {
+        return popupWindow != null && popupWindow.isShowing();
     }
 
     public void setTintColor(@ColorRes int resId) {

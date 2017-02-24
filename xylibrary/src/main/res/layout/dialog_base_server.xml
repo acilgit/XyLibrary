@@ -15,6 +15,8 @@
         android:hint="address">
 
         <EditText
+            android:textSize="18dp"
+            android:textColor="@color/grayDark"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textEmailAddress" />

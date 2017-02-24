@@ -126,6 +126,10 @@ public abstract class BaseActivity extends AppCompatActivity {
         this.startActivityForResult(intent, requestCode);
     }
 
+    protected static List<Activity> getActivities() {
+        return activities;
+    }
+
     public boolean isLoadingDialogShowing() {
         return loadingDialog != null && loadingDialog.isShowing();
     }
@@ -305,7 +309,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     public static Activity getActivityByClassName(String className) {
         for (Activity activity : activities) {
-            if (activity.getClass().getName().equals(className)) {
+            if (activity.getClass().getName().contains(className)) {
                 Log.e("ActivityClassName ", activity.getClass().getName());
                 return activity;
             }

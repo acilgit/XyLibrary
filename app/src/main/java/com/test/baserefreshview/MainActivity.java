@@ -1,11 +1,18 @@
 package com.test.baserefreshview;
 
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LevelListDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
+import android.text.Spanned;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,16 +20,20 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.facebook.drawee.drawable.ScalingUtils;
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.facebook.imagepipeline.common.ResizeOptions;
 import com.test.baserefreshview.ListBean.Content.ContentBean;
 import com.xycode.xylibrary.adapter.XAdapter;
 import com.xycode.xylibrary.base.BaseActivity;
 import com.xycode.xylibrary.annotation.SaveState;
+import com.xycode.xylibrary.base.PhotoSelectBaseActivity;
 import com.xycode.xylibrary.interfaces.Interfaces;
+import com.xycode.xylibrary.okHttp.OkHttp;
 import com.xycode.xylibrary.okHttp.Param;
 import com.xycode.xylibrary.uiKit.views.MultiImageView;
 import com.xycode.xylibrary.uiKit.views.loopview.AdLoopView;
@@ -45,6 +56,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.ButterKnife;
+import okhttp3.Call;
+import okhttp3.Response;
+
+import static android.R.attr.bitmap;
 
 
 /**
@@ -65,6 +80,9 @@ public class MainActivity extends ABaseActivity {
     @SaveState
     List<String> list;
 
+    String content = "<p>\r\n\t<img src=\"http://ww4.sinaimg.cn/bmiddle/483b2741jw1fawazpne7yj20qo0zkgtx.jpg\" /><img src=\"http://ww3.sinaimg.cn/bmiddle/483b2741jw1fawazxtqglj20qo0zkwlx.jpg\" />\r\n</p>\r\n<p>\r\n\thjfgsdiohfksdhcsjdhcfiduhfjkhiewhfjsda.n\r\n</p>";
+    private XAdapter<ContentBean> adapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,7 +100,6 @@ public class MainActivity extends ABaseActivity {
         mBean.setMessage("ddddddd");
         mBean.setResultCode(1);
 //        spinner.attachDataSource(Arrays.asList(R.array.test_array));
-
         /*
         spinner.attachDataSource(new ArrayList<StringData>());
         spinner.getStringData().getObject()
@@ -105,7 +122,16 @@ public class MainActivity extends ABaseActivity {
 
         ImageUtils.setFrescoViewUri(siv, uri, null);
 
-        XAdapter<ContentBean> adapter = new XAdapter<ContentBean>(this, new ArrayList<>()) {
+        //                        .setImageUrl(R.id.siv, item.getCoverPicture(), new ResizeOptions(getResources().getDimensionPixelSize(R.dimen.imageSelectorFolderCoverSize)))
+//                            ImageUtils.setFrescoViewUri(holder.getView(R.id.siv), null, nu);
+/*+"!"+ (int)(60*ratio)+ "!60"*///                        mvItem.setList(list);
+//                            drawable.addLevel(1, 1, d);
+/**
+ * 适配图片大小 <br/>
+ * 默认大小：bitmap.getWidth(), bitmap.getHeight()<br/>
+ * 适配屏幕：getDrawableAdapter
+ */
+        adapter = new XAdapter<ContentBean>(this, new ArrayList<>()) {
             @Override
             protected ViewTypeUnit getViewTypeUnitForLayout(ContentBean item) {
                 switch (item.getId()) {
@@ -149,7 +175,6 @@ public class MainActivity extends ABaseActivity {
 
             @Override
             protected void handleItemViewClick(CustomHolder holder, ContentBean item, int viewId, ViewTypeUnit viewTypeUnit) {
-
                 switch (viewId) {
                     case R.id.tvName:
                         TS.show(" YES tvName " + viewId);
@@ -169,16 +194,33 @@ public class MainActivity extends ABaseActivity {
                 switch (getLayoutId(item.getId())) {
                     case R.layout.item_house:
                         holder.setText(R.id.tvName, item.getTitle())
-//                        .setImageUrl(R.id.sdvItem, item.getCoverPicture())
+//                        .setImageUrl(R.id.siv, item.getCoverPicture(), new ResizeOptions(getResources().getDimensionPixelSize(R.dimen.imageSelectorFolderCoverSize)))
                                 .setText(R.id.tvText, pos + "");
                         MultiImageView mvItem = holder.getView(R.id.mvItem);
+//                            ImageUtils.setFrescoViewUri(holder.getView(R.id.siv), null, nu);
 
                         final List<UrlData> list = new ArrayList<>();
                         for (int i = 0; i <= pos; i++) {
                             list.add(new UrlData(item.getCoverPicture() /*+"!"+ (int)(60*ratio)+ "!60"*/));
                         }
-                        mvItem.setList(list);
+//                        mvItem.setList(list);
 
+                        TextView tv = holder.getView(R.id.tvText);
+
+                        Html.fromHtml(content, source -> {
+                            File file = Tools.checkFile(Tools.getFileDir(getThis()).getAbsolutePath(), source);
+                            if (!file.exists()) {
+                                ImageUtils.loadBitmapFromFresco(getThis(), Uri.parse(source), bitmap -> {
+                                        ImageUtils.saveBitmapToFile(getThis(), file, bitmap);
+                                        getThis().runOnUiThread(() -> {
+                                            setHtmlText(tv);
+                                            adapter.notifyDataSetChanged();
+                                        });
+                                });
+                            }
+                            return null;
+                        }, null);
+                        setHtmlText(tv);
                         break;
                     default:
                         break;
@@ -237,12 +279,23 @@ public class MainActivity extends ABaseActivity {
             }
         };
 
-        adapter.addHeader(3, R.layout.layout_recyclerview);
+//        adapter.addHeader(3, R.layout.layout_recyclerview);
         adapter.addHeader(2, R.layout.layout_banner);
-        adapter.addHeader(4, R.layout.layout_recyclerview);
+//        adapter.addHeader(4, R.layout.layout_recyclerview);
 //        adapter.setFooter(R.layout.footer);
 
         xRefresher.setup(this, adapter, true, () -> {
+            postForm("https://www.taichi-tiger.com:8080/append/app_poster/selectAllPosters", new Param(), false, new OkHttp.OkResponseListener() {
+                @Override
+                public void handleJsonSuccess(Call call, Response response, JSONObject json) throws Exception {
+                    TS.show("OK");
+                }
+
+                @Override
+                public void handleJsonError(Call call, Response response, JSONObject json) throws Exception {
+                    TS.show("NO");
+                }
+            });
 
         }, new XRefresher.RefreshRequest<ContentBean>() {
             @Override
@@ -264,7 +317,7 @@ public class MainActivity extends ABaseActivity {
         }, 3);
         xRefresher.setRecyclerViewDivider(android.R.color.holo_orange_light, R.dimen.margin32, R.dimen.sideMargin, R.dimen.sideMargin);
 //        xRefresher.refreshList();
-        CompulsiveHelperActivity.update(getThis(), new CompulsiveHelperActivity.CancelCallBack() {
+       /* CompulsiveHelperActivity.update(getThis(), new CompulsiveHelperActivity.CancelCallBack() {
             @Override
             public void onCancel(boolean must) {
                 if (must) ;
@@ -285,8 +338,29 @@ public class MainActivity extends ABaseActivity {
 
             }
         }, new Param().add(CompulsiveHelperActivity.URL, "down_url")
-                .add(CompulsiveHelperActivity.IsMust, String.valueOf(1)).add(CompulsiveHelperActivity.Illustration, "关系说明"));
+                .add(CompulsiveHelperActivity.IsMust, String.valueOf(1)).add(CompulsiveHelperActivity.Illustration, "关系说明"));*/
 
+    }
+
+    private void setHtmlText(TextView tv) {
+        Spanned spanned = Html.fromHtml(content, s -> {
+            File f = Tools.checkFile(Tools.getFileDir(getThis()).getAbsolutePath(), s);
+            if (!f.exists()) {
+                return null;
+            }
+            Bitmap bmp = ImageUtils.getBitmapFromFile(f);
+            BitmapDrawable d = new BitmapDrawable(bmp);
+//                            drawable.addLevel(1, 1, d);
+            if (bmp != null) {
+                long newHeight = 0;// 未知数
+                int newWidth = Tools.getScreenSize(getThis()).x;// 默认屏幕宽
+                newHeight = (newWidth * bmp.getHeight()) / bmp.getWidth();
+                d.setBounds(0, 0, newWidth, (int) newHeight);
+                d.setLevel(1);
+            }
+            return d;
+        }, null);
+        tv.setText(spanned);
     }
 
     @Override
@@ -335,7 +409,7 @@ public class MainActivity extends ABaseActivity {
 //                list.add("或在在要在");
 //                list.add("要");
 //                tags.setDataList(list);
-//                PhotoSelectActivity.startForResult(getThis(), PhotoSelectActivity.class, new PhotoSelectBaseActivity.CropParam());
+                PhotoSelectActivity.startForResult(getThis(), PhotoSelectActivity.class, new PhotoSelectBaseActivity.CropParam());
 //            TS.show("count " + xRefresher.getAdapter().getItemCount());
 
             RelativeLayout rl = new RelativeLayout(getThis());
@@ -398,4 +472,5 @@ public class MainActivity extends ABaseActivity {
             xRefresher.refresh();
         }
     }
+
 }
