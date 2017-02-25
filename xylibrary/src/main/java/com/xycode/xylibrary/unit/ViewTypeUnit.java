@@ -9,6 +9,7 @@ public class ViewTypeUnit {
 
     private String mark;
     private  @LayoutRes int layoutId = 0;
+    private boolean fullSpan = false;
 
     public ViewTypeUnit(String mark, int layoutId) {
         this.mark = mark;
@@ -25,6 +26,11 @@ public class ViewTypeUnit {
         this.layoutId = layoutId;
     }
 
+    public ViewTypeUnit setFullSpan(boolean fullSpan) {
+        this.fullSpan = fullSpan;
+        return this;
+    }
+
     public String getMark() {
         return mark;
     }
@@ -39,6 +45,10 @@ public class ViewTypeUnit {
 
     public void setMark(long mark) {
         this.mark = mark+"";
+    }
+
+    public boolean isFullSpan() {
+        return fullSpan;
     }
 
     public int getLayoutId() {

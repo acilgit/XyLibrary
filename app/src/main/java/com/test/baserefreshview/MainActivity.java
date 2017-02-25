@@ -8,9 +8,11 @@ import android.graphics.drawable.LevelListDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.SparseArray;
@@ -29,6 +31,7 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import com.facebook.imagepipeline.common.ResizeOptions;
 import com.test.baserefreshview.ListBean.Content.ContentBean;
 import com.xycode.xylibrary.adapter.XAdapter;
+import com.xycode.xylibrary.animation.SlideInRightAnimation;
 import com.xycode.xylibrary.base.BaseActivity;
 import com.xycode.xylibrary.annotation.SaveState;
 import com.xycode.xylibrary.base.PhotoSelectBaseActivity;
@@ -55,7 +58,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.ButterKnife;
 import okhttp3.Call;
 import okhttp3.Response;
 
@@ -89,7 +91,6 @@ public class MainActivity extends ABaseActivity {
         super.onCreate(savedInstanceState);
         setWindowMode(WindowMode.INPUT_ADJUST);
         setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
 //        start(TestA.class);
         xRefresher = (XRefresher) findViewById(R.id.xRefresher);
         siv = (SimpleDraweeView) findViewById(R.id.siv);
@@ -142,7 +143,12 @@ public class MainActivity extends ABaseActivity {
                         break;
                 }
 
-                return new ViewTypeUnit(item.getId(), R.layout.item_house);
+//                return new ViewTypeUnit(item.getId(), R.layout.item_house);
+                if (item.getTitle().length()==8) {
+                    return new ViewTypeUnit(2, R.layout.list_item_text).setFullSpan(true);
+
+                }
+                return new ViewTypeUnit(1, R.layout.list_item_text);
             }
 
             @Override
@@ -168,6 +174,9 @@ public class MainActivity extends ABaseActivity {
                             TS.show(getThis(), "wh:" + wh.width + " h:" + wh.height + " r:" + wh.getAspectRatio());
                         });
                         break;
+                    case R.layout.list_item_text:
+                        holder.setClick(R.id.item);
+                        break;
                     default:
                         break;
                 }
@@ -178,6 +187,10 @@ public class MainActivity extends ABaseActivity {
                 switch (viewId) {
                     case R.id.tvName:
                         TS.show(" YES tvName " + viewId);
+                        break;
+                    case R.id.item:
+                        TS.show(" YES tvName " + viewId);
+                        adapter.setDataList(new ArrayList<>());
                         break;
                     case R.id.tvText:
                         TS.show(" YES text " + viewId);
@@ -222,6 +235,9 @@ public class MainActivity extends ABaseActivity {
                         }, null);
                         setHtmlText(tv);
                         break;
+                    case R.layout.list_item_text:
+                        holder.setText(R.id.tvName, item.getTitle());
+                        break;
                     default:
                         break;
                 }
@@ -233,13 +249,12 @@ public class MainActivity extends ABaseActivity {
                     case 2:
                         AdLoopView bannerView = holder.getView(R.id.banner);
                         setBanner(bannerView);
-                        ImageUtils.loadBitmapFromFresco(getThis(), Uri.parse("http://mxycsku.qiniucdn.com/group5/M00/5B/0C/wKgBfVXdYkqAEzl0AAL6ZFMAdKk401.jpg"), new ImageUtils.IGetFrescoBitmap() {
-                            @Override
-                            public void afterGotBitmap(Bitmap bitmap) {
-                                Bitmap bmp = ImageUtils.doGaussianBlur(bitmap, 30, false);
-                                holder.setImageBitmap(R.id.iv, bmp);
-                            }
+                        ImageUtils.loadBitmapFromFresco(getThis(), Uri.parse("http://mxycsku.qiniucdn.com/group5/M00/5B/0C/wKgBfVXdYkqAEzl0AAL6ZFMAdKk401.jpg"), bitmap1 -> {
+                            Bitmap bmp = ImageUtils.doGaussianBlur(bitmap1, 30, false);
+                            holder.setImageBitmap(R.id.iv, bmp);
                         });
+
+                        holder.getRootView().setLayoutParams(new DrawerLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
                         break;
                     case 3:
                     case 4:
@@ -278,12 +293,14 @@ public class MainActivity extends ABaseActivity {
                 }
             }
         };
+        adapter.openLoadAnimation(new SlideInRightAnimation());
 
 //        adapter.addHeader(3, R.layout.layout_recyclerview);
         adapter.addHeader(2, R.layout.layout_banner);
 //        adapter.addHeader(4, R.layout.layout_recyclerview);
 //        adapter.setFooter(R.layout.footer);
 
+//        xRefresher.setStaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         xRefresher.setup(this, adapter, true, () -> {
             postForm("https://www.taichi-tiger.com:8080/append/app_poster/selectAllPosters", new Param(), false, new OkHttp.OkResponseListener() {
                 @Override
@@ -314,8 +331,8 @@ public class MainActivity extends ABaseActivity {
             protected boolean ignoreSameItem(ContentBean newItem, ContentBean listItem) {
                 return newItem.getId().equals(listItem.getId());
             }
-        }, 3);
-        xRefresher.setRecyclerViewDivider(android.R.color.holo_orange_light, R.dimen.margin32, R.dimen.sideMargin, R.dimen.sideMargin);
+        }, 10);
+//        xRefresher.setRecyclerViewDivider(android.R.color.holo_orange_light, R.dimen.margin32, R.dimen.sideMargin, R.dimen.sideMargin);
 //        xRefresher.refreshList();
        /* CompulsiveHelperActivity.update(getThis(), new CompulsiveHelperActivity.CancelCallBack() {
             @Override

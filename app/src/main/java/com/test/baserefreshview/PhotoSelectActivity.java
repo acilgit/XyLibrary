@@ -10,6 +10,7 @@ import com.xycode.xylibrary.utils.TS;
 import com.yalantis.ucrop.UCrop;
 
 import butterknife.Bind;
+//import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 

@@ -12,8 +12,10 @@ import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -87,6 +89,8 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
 
     @SaveState
     private BaseActivity activity;
+
+    private RecyclerView.LayoutManager layoutManager;
 
     private RefreshState state;
     private XAdapter<T> adapter;
@@ -185,7 +189,8 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
     }
 
     private void init(BaseActivity activity, XAdapter<T> adapter, boolean loadMore, final OnSwipeListener swipeListener, final RefreshRequest refreshRequest, int refreshPageSize) {
-        recyclerView.setLayoutManager(new LinearLayoutManager(activity));
+        layoutManager = layoutManager == null ? new LinearLayoutManager(activity) : layoutManager;
+        recyclerView.setLayoutManager(layoutManager);
         this.loadMore = loadMore;
         this.activity = activity;
         this.refreshRequest = refreshRequest;
@@ -206,6 +211,16 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
         if (refreshRequest == null) {
             textView.setVisibility(GONE);
         }
+    }
+
+    /**
+     * 可使用布流式布局
+     * @param spanCount
+     * @param orientation
+     */
+    public XRefresher setStaggeredGridLayoutManager(int spanCount, int orientation) {
+        this.layoutManager = new StaggeredGridLayoutManager(spanCount, orientation);
+        return this;
     }
 
     private void setLoadMoreListener() {
@@ -241,7 +256,15 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
                     noScrolled = false;
                 }
                 swipeMore = dy > 0;
-                lastVisibleItem = ((LinearLayoutManager) recyclerView.getLayoutManager()).findLastVisibleItemPosition();
+                if (layoutManager instanceof StaggeredGridLayoutManager) {
+                    int[] lastVisibleItemPositions = ((StaggeredGridLayoutManager) layoutManager).findLastVisibleItemPositions(null);
+                    lastVisibleItem = lastVisibleItemPositions[0];
+                } else  if (layoutManager instanceof GridLayoutManager) {
+                    lastVisibleItem = ((GridLayoutManager) layoutManager).findLastVisibleItemPosition();
+                } else {
+                    lastVisibleItem = ((LinearLayoutManager) layoutManager).findLastVisibleItemPosition();
+
+                }
             }
         });
     }

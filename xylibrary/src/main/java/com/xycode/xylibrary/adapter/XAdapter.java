@@ -1,5 +1,6 @@
 package com.xycode.xylibrary.adapter;
 
+import android.animation.Animator;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -7,17 +8,22 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.StringRes;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.text.TextUtils;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Interpolator;
+import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.facebook.imagepipeline.common.ResizeOptions;
 import com.xycode.xylibrary.R;
+import com.xycode.xylibrary.animation.BaseAnimation;
+import com.xycode.xylibrary.animation.SlideInBottomAnimation;
 import com.xycode.xylibrary.base.BaseItemView;
 import com.xycode.xylibrary.instance.FrescoLoader;
 import com.xycode.xylibrary.uiKit.views.MultiImageView;
@@ -50,11 +56,20 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
     private Context context;
     private SparseArray<Integer> headerLayoutIdList;
     private Map<Integer, ViewTypeUnit> multiLayoutMap;
+    private int footerLayout = 0;
     // item long click on long click Listener
 //    private OnItemClickListener onItemClickListener;
 //    private OnItemLongClickListener onItemLongClickListener;
 
-    private int footerLayout = 0;
+    /**
+     * 此动画部分参考https://github.com/CymChad/BaseRecyclerViewAdapterHelper
+     */
+    private boolean openAnimationEnable = false;
+    private Interpolator animationInterpolator = new LinearInterpolator();
+    private int animationDuration = 300;
+    private int lastVisibleItemPos = -1;
+    private BaseAnimation customAnimation;
+    private BaseAnimation selectAnimation = new SlideInBottomAnimation();
 
     /**
      * use single Layout
@@ -159,7 +174,91 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
             return;
         }
         bindingHolder(((CustomHolder) holder), dataList, position - headerLayoutIdList.size());
+        addAnimation(holder);
     }
+
+    /**
+     *  Called when a view created by this adapter has been attached to a window.
+     *  simple to solve item will layout using all
+     *  {@link #setFullSpan(RecyclerView.ViewHolder)}
+     * @param holder
+     */
+    @Override
+    public void onViewAttachedToWindow(RecyclerView.ViewHolder holder) {
+        super.onViewAttachedToWindow(holder);
+        int type = holder.getItemViewType();
+        if (type == LAYOUT_FOOTER || headerLayoutIdList.indexOfKey(type)>=0) {
+            setFullSpan(holder);
+        } else {
+            ViewTypeUnit viewTypeUnit = multiLayoutMap.get(type);
+            if (viewTypeUnit != null && viewTypeUnit.isFullSpan()) {
+                setFullSpan(holder);
+            }
+        }
+    }
+
+    /**
+     * When set to true, the item will layout using all span area. That means, if orientation
+     * is vertical, the view will have full width; if orientation is horizontal, the view will
+     * have full height.
+     * if the hold view use StaggeredGridLayoutManager they should using all span area
+     * @param holder True if this item should traverse all spans.
+     */
+    protected void setFullSpan(RecyclerView.ViewHolder holder) {
+        if (holder.itemView.getLayoutParams() instanceof StaggeredGridLayoutManager.LayoutParams) {
+            StaggeredGridLayoutManager.LayoutParams params = (StaggeredGridLayoutManager.LayoutParams) holder.itemView.getLayoutParams();
+            params.setFullSpan(true);
+        }
+    }
+
+    /**
+     * add animation when you want to show time
+     * @param holder
+     */
+    private void addAnimation(RecyclerView.ViewHolder holder) {
+        if (openAnimationEnable) {
+            if (holder.getLayoutPosition() > lastVisibleItemPos) {
+                BaseAnimation animation = null;
+                if (customAnimation != null) {
+                    animation = customAnimation;
+                } else {
+                    animation = selectAnimation;
+                }
+                startItemAnimation(animation, holder);
+                lastVisibleItemPos = holder.getLayoutPosition();
+            }
+        }
+    }
+
+    /**
+     * set anim to start when loading
+     * @param animation
+     * @param holder
+     */
+    protected void startItemAnimation(BaseAnimation animation, RecyclerView.ViewHolder holder) {
+        for (Animator anim : animation.getAnimators(holder.itemView)) {
+            anim.setDuration(animationDuration).start();
+            anim.setInterpolator(animationInterpolator);
+        }
+    }
+
+    /**
+     * Set Custom ObjectAnimator
+     *
+     * @param animation ObjectAnimator
+     */
+    public void openLoadAnimation(BaseAnimation animation) {
+        this.openAnimationEnable = true;
+        this.customAnimation = animation;
+    }
+
+    /**
+     * To open the animation when loading
+     */
+    public void openLoadAnimation() {
+        this.openAnimationEnable = true;
+    }
+
 
     /**
      * 创建Holder时执行，只执行一次或被销毁后再次会被执行
@@ -260,6 +359,14 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
         return null;
     }
 
+    public void setAnimationDuration(int animationDuration) {
+        this.animationDuration = animationDuration;
+    }
+
+    public void setAnimationInterpolator(Interpolator animationInterpolator) {
+        this.animationInterpolator = animationInterpolator;
+    }
+
     public boolean hasFooter() {
         return footerLayout != 0;
     }
@@ -295,12 +402,14 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
         mainList.addAll(dataList);
         this.dataList.clear();
         this.dataList.addAll(setFilterForAdapter(mainList));
+        lastVisibleItemPos = -1;
         notifyDataSetChanged();
     }
 
     public void resetDataList() {
         this.dataList.clear();
         this.dataList.addAll(setFilterForAdapter(mainList));
+        lastVisibleItemPos = -1;
         notifyDataSetChanged();
     }
 
