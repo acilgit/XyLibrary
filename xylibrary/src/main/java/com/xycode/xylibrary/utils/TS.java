@@ -19,6 +19,9 @@ public class TS {
     private static Toast toast;
     private static IToastLayoutSetter toastSetter;
 
+    /**
+     * 自定义Toast Layout
+     */
     private static int toastLayoutId = -1;
 
     public static void init(@LayoutRes int toastLayoutId, Context defaultContext, IToastLayoutSetter toastSetter) {
@@ -33,27 +36,38 @@ public class TS {
 
     public static void show(int resText) {
         String text = TS.context.getString(resText);
-        show(TS.context, text);
+        show(TS.context, text, null);
     }
 
     public static void show(String text) {
-        show(TS.context, text);
+        show(TS.context, text, null);
     }
 
-    public static void show(final Context context, final int resText) {
-        show(context, TS.context.getString(resText));
+    public static void show(int resText, Object obj) {
+        String text = TS.context.getString(resText);
+        show(TS.context, text, obj);
     }
 
-    public static void show(final Context context, final String text) {
+    public static void show(String text, Object obj) {
+        show(TS.context, text, obj);
+    }
+
+    public static void show(final Context context, final int resText, Object obj) {
+        show(context, TS.context.getString(resText), obj);
+    }
+
+    /**
+     * 显示Toast
+     *
+     * @param context
+     * @param text
+     * @param obj     传递给IToastLayoutSetter做操作
+     */
+    public static void show(final Context context, final String text, Object obj) {
         if (Looper.myLooper() == Looper.getMainLooper()) {
-            doShow(context, text);
+            doShow(context, text, obj);
         } else {
-            uiHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    doShow(context, text);
-                }
-            });
+            uiHandler.post(() -> doShow(context, text, obj));
         }
     }
 
@@ -61,21 +75,16 @@ public class TS {
         if (Looper.myLooper() == Looper.getMainLooper()) {
             doCancel();
         } else {
-            uiHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    doCancel();
-                }
-            });
+            uiHandler.post(() -> doCancel());
         }
     }
 
     private static void doCancel() {
-        if(toast != null)
-        toast.cancel();
+        if (toast != null)
+            toast.cancel();
     }
 
-    private static void doShow(Context context, String text) {
+    private static void doShow(Context context, String text, Object object) {
         //取消显示上一个Toast
         doCancel();
 
@@ -85,7 +94,7 @@ public class TS {
 //		toast.setGravity(Gravity.TOP, 0, context.getResources().getDimensionPixelOffset(R.dimen.toast_margin_top));
             toast.setView(view);
             toast.setDuration(Toast.LENGTH_SHORT);
-            if (toastSetter != null) toastSetter.onToastLayout(view, toast);
+            if (toastSetter != null) toastSetter.onToastLayout(view, toast, object);
         } else {
             toast = Toast.makeText(context, text, Toast.LENGTH_SHORT);
         }
@@ -106,7 +115,7 @@ public class TS {
     }*/
 
     public interface IToastLayoutSetter {
-        void onToastLayout(View root, Toast toast);
+        void onToastLayout(View root, Toast toast, Object object);
     }
 
 }

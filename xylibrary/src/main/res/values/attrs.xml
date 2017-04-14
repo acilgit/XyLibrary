@@ -52,6 +52,10 @@
         </attr>
     </declare-styleable>
 
+    <declare-styleable name="XScrollView">
+        <attr name="maxHeight" format="dimension" />
+    </declare-styleable>
+
     <declare-styleable name="XTextView">
         <attr name="leftHeight" format="dimension" />
         <attr name="leftWidth" format="dimension" />

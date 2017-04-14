@@ -50,9 +50,12 @@ public abstract class BaseItemView extends RelativeLayout {
     @SaveState protected int itemVisible;
     @SaveState protected int itemChildVisible;
     @SaveState protected int itemIndex;
+    @SaveState protected long itemDateTime;
+    @SaveState protected long itemLong;
     @SaveState protected boolean itemBool;
     @SaveState protected boolean itemCheck;
     @SaveState protected float itemFloat;
+    @SaveState protected double itemDouble;
     @SaveState protected String itemName;
     @SaveState protected String itemHint;
     @SaveState protected String itemTitle;
@@ -416,8 +419,8 @@ public abstract class BaseItemView extends RelativeLayout {
         return R.styleable.BaseItemView;
     }
 
-    public interface OnViewSenseListener {
-        void onClick(View view, Object object);
+    public interface OnViewSenseListener<T> {
+        void sense(View view, T obj);
     }
 
 }

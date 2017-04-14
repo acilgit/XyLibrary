@@ -1,6 +1,13 @@
 package com.xycode.xylibrary.utils;
 
-        import android.util.Log;
+import android.util.Log;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.RandomAccessFile;
 
 /**
  * Log
@@ -11,6 +18,7 @@ public class L {
     private static boolean isDebug = true;
     private static String TAG = " Debug ";
     private static boolean isLong = true;
+    private static File outputFile = null;
 
     public static void setDebugMode(boolean isDebug) {
         L.isDebug = isDebug;
@@ -89,6 +97,36 @@ public class L {
             } else {
                 Log.e(tag, longString);
             }
+            if(outputFile!=null) writeLogToOutputFile(longString);
         }
     }
+
+    public static void setLogOutputFile(File file) {
+        String fileName = file.getName();
+    }
+
+    private static void writeLogToOutputFile(String content) {
+        if (!outputFile.exists()) {
+            return;
+        }
+        try {
+            RandomAccessFile accessFile = new RandomAccessFile(outputFile, "rw");
+            String s = DateUtils.formatDateTime("yyyy-MM-dd HH:mm:ss:zzz ->\n", System.currentTimeMillis()) + content + "\r\n\r\n";
+            accessFile.seek(0);
+            accessFile.writeChars(s);
+            accessFile.close();
+        } catch (java.io.IOException e) {
+            e.printStackTrace();
+        }
+        /*try {
+            OutputStream outputStream = new FileOutputStream(outputFile);
+            OutputStreamWriter out = new OutputStreamWriter(outputStream);
+            out.write(DateUtils.formatDateTime("yyyy-MM-dd HH:mm:ss:zzz ->\n", System.currentTimeMillis()) + content + "\r\n\r\n");
+            out.close();
+        } catch (java.io.IOException e) {
+            e.printStackTrace();
+        }*/
+    }
+
+
 }

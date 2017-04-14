@@ -10,10 +10,13 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.xycode.xylibrary.R;
+import com.xycode.xylibrary.interfaces.Interfaces;
 import com.xycode.xylibrary.okHttp.Param;
 import com.xycode.xylibrary.utils.TS;
 
@@ -24,13 +27,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.util.HashMap;
 
 import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 /**
  * Created by Administrator on 2016/10/22 0022.
@@ -55,20 +54,15 @@ public class CompulsiveHelperActivity extends Activity {
     String confirm = "";
     String errorTips = "";
     String contacts_way = "";
-    TextView mTitle;
-    TextView mIllustration;
-
-    TextView mUpdateProgress;
-
-    TextView mDownFileLength;
-
-    TextView mFileLength;
-
-    TextView mConfirm;
-
-    TextView mCancel;
-
-    ProgressBar mProgress;
+    private TextView tvTitle;
+    private TextView tvIllustration;
+    private TextView tvUpdateProgress;
+    private TextView tvDownFileLength;
+    private TextView tvFileLength;
+    private TextView tvConfirm;
+    private TextView tvCancel;
+    private ProgressBar progressBar;
+    private TextView tvIgnore;
 
     public interface CancelCallBack {
 
@@ -80,6 +74,8 @@ public class CompulsiveHelperActivity extends Activity {
 
         void onDownLoad(int downLength, int fileLength);
 
+        void onAbortUpdate();
+
     }
 
     int fileLength = 0;
@@ -87,26 +83,26 @@ public class CompulsiveHelperActivity extends Activity {
     private String downloadFileUrl = "";
     private String tempDownloadFileName = "tempDownloadFileName.apk";
     private InputStream inputStream;
-    static CancelCallBack mCancelCallBack;
+    static CancelCallBack cancelCallBack;
+    static Interfaces.CB ignoreCallback;
     private static int defaultDownloadFileSize = 1024 * 1024 * 20;
     private OutputStream outputStream;
     private boolean cancelDownload;
     private boolean noFileLength = false;
 
-    private Options options;
+//    private Options options;
 
     private Handler downloadHandler;
 
     /**
-     *
      * @param context
      * @param cancelCallback
-     * @param builder   must contain url
+     * @param builder        must contain url
      */
     @Deprecated
     public static void update(Context context, CancelCallBack cancelCallback, Param builder) {
         Intent intent = new Intent(context, CompulsiveHelperActivity.class);
-        mCancelCallBack = cancelCallback;
+        cancelCallBack = cancelCallback;
         if (builder.getKey(URL) == null) {
             TS.show(context.getString(R.string.tips_get_dowload_url_fail));
             return;
@@ -117,7 +113,8 @@ public class CompulsiveHelperActivity extends Activity {
 
     public static void update(Context context, CancelCallBack cancelCallback, Options options) {
         Intent intent = new Intent(context, CompulsiveHelperActivity.class);
-        mCancelCallBack = cancelCallback;
+        cancelCallBack = cancelCallback;
+        ignoreCallback = options.getIgnoreCallback();
 
         Param builder = new Param()
                 .add(Title, options.title)
@@ -137,102 +134,24 @@ public class CompulsiveHelperActivity extends Activity {
         context.startActivity(intent);
     }
 
-    public static class Options {
-        private String title;
-        private String illustration;
-        private String cancel;
-        private String confirm;
-        private boolean isMust;
-        private String downloadFileUrl;
-        private String errorTips;
-        private String contacts_way;
-
-        public Options(String downloadFileUrl) {
-            this.downloadFileUrl = downloadFileUrl;
-        }
-
-        public String getTitle() {
-            return title;
-        }
-
-        public void setTitle(String title) {
-            this.title = title;
-        }
-
-        public String getIllustration() {
-            return illustration;
-        }
-
-        public void setIllustration(String illustration) {
-            this.illustration = illustration;
-        }
-
-        public String getCancel() {
-            return cancel;
-        }
-
-        public void setCancel(String cancel) {
-            this.cancel = cancel;
-        }
-
-        public String getConfirm() {
-            return confirm;
-        }
-
-        public void setConfirm(String confirm) {
-            this.confirm = confirm;
-        }
-
-        public boolean isMust() {
-            return isMust;
-        }
-
-        public void setMust(boolean must) {
-            isMust = must;
-        }
-
-        public String getDownloadFileUrl() {
-            return downloadFileUrl;
-        }
-
-        public void setDownloadFileUrl(String downloadFileUrl) {
-            this.downloadFileUrl = downloadFileUrl;
-        }
-
-        public String getErrorTips() {
-            return errorTips;
-        }
-
-        public void setErrorTips(String errorTips) {
-            this.errorTips = errorTips;
-        }
-
-        public String getContacts_way() {
-            return contacts_way;
-        }
-
-        public void setContacts_way(String contacts_way) {
-            this.contacts_way = contacts_way;
-        }
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.dialog_compulsive_update);
+        setContentView(R.layout.activity_compulsive_update);
         initView();
         init();
     }
 
     private void initView() {
-        mTitle = (TextView) findViewById(R.id.tv_title);
-        mIllustration = (TextView) findViewById(R.id.tv_illustration);
-        mUpdateProgress = (TextView) findViewById(R.id.tv_update_progress);
-        mDownFileLength = (TextView) findViewById(R.id.tv_downFileLength);
-        mFileLength = (TextView) findViewById(R.id.tv_fileLength);
-        mConfirm = (TextView) findViewById(R.id.confirm);
-        mCancel = (TextView) findViewById(R.id.cancel);
-        mProgress = (ProgressBar) findViewById(R.id.pb_update_progress);
+        tvTitle = (TextView) findViewById(R.id.tv_title);
+        tvIllustration = (TextView) findViewById(R.id.tv_illustration);
+        tvUpdateProgress = (TextView) findViewById(R.id.tv_update_progress);
+        tvDownFileLength = (TextView) findViewById(R.id.tv_downFileLength);
+        tvFileLength = (TextView) findViewById(R.id.tv_fileLength);
+        tvConfirm = (TextView) findViewById(R.id.confirm);
+        tvCancel = (TextView) findViewById(R.id.cancel);
+        tvIgnore = (TextView) findViewById(R.id.tvIgnore);
+        progressBar = (ProgressBar) findViewById(R.id.pb_update_progress);
     }
 
     private void init() {
@@ -248,23 +167,23 @@ public class CompulsiveHelperActivity extends Activity {
             contacts_way = builder.get(ContactsWay);
         }
         if (!TextUtils.isEmpty(title)) {
-            mTitle.setText(title);
+            tvTitle.setText(title);
         }
         if (!TextUtils.isEmpty(illustration)) {
-            mIllustration.setText(illustration);
+            tvIllustration.setText(illustration);
         }
         if (!TextUtils.isEmpty(cancel)) {
-            mCancel.setText(cancel);
+            tvCancel.setText(cancel);
         }
         if (!TextUtils.isEmpty(confirm)) {
-            mConfirm.setText(confirm);
+            tvConfirm.setText(confirm);
         }
 
 
         //if is not must ,show the cancel button
-        if (!isMust()) {
-            mCancel.setVisibility(View.VISIBLE);
-        }
+        tvCancel.setVisibility(isMust() ? View.GONE : View.VISIBLE);
+        tvIgnore.setVisibility(ignoreCallback == null ? View.GONE : View.VISIBLE);
+
         if (downloadHandler == null) {
             downloadHandler = new Handler() {
                 int fileLength = 0;
@@ -279,21 +198,23 @@ public class CompulsiveHelperActivity extends Activity {
                             if (fileLength <= 0) {
                                 fileLength = defaultDownloadFileSize;
                             }
-                            mFileLength.setText(String.valueOf(fileLength / 1024));
+                            tvFileLength.setText(String.valueOf(fileLength / 1024));
                             break;
                         case 1: // fileDownloadLength
-                            mConfirm.setSelected(true);
-                            mConfirm.setText(R.string.text_cancel_update);
+                            tvConfirm.setSelected(true);
+                            tvConfirm.setText(R.string.text_cancel_update);
                             if (noFileLength && msg.arg1 * 1.05f >= fileLength) {
                                 fileLength = (int) (fileLength * 1.2f);
-                                mFileLength.setText(String.valueOf(fileLength / 1024));
+                                tvFileLength.setText(String.valueOf(fileLength / 1024));
                             }
-                            mCancel.setVisibility(View.GONE);
-                            mDownFileLength.setText(String.valueOf(msg.arg1 / 1024));
-                            mProgress.setProgress(msg.arg1 * 100 / fileLength);
-                            mUpdateProgress.setText(String.format(getString(R.string.percent), String.valueOf(msg.arg1 * 100 / fileLength)));
-                            if (mCancelCallBack != null) {
-                                mCancelCallBack.onDownLoad(msg.arg1, fileLength);
+                            tvCancel.setVisibility(View.GONE);
+                            tvIgnore.setVisibility(View.GONE);
+                            tvDownFileLength.setText(String.valueOf(msg.arg1 / 1024));
+                            int progress = (int) ((100.0d * msg.arg1) / fileLength);
+                            progressBar.setProgress(progress);
+                            tvUpdateProgress.setText(String.format(getString(R.string.percent), String.valueOf(progress)));
+                            if (cancelCallBack != null) {
+                                cancelCallBack.onDownLoad(msg.arg1, fileLength);
                             }
                             break;
                         case 2: // finish
@@ -303,25 +224,25 @@ public class CompulsiveHelperActivity extends Activity {
                             intent.setDataAndType(Uri.fromFile(new File(getDownloadTempFileName())),
                                     "application/vnd.android.package-archive");
                             startActivity(intent);
-                            if (mCancelCallBack != null) {
-                                mCancelCallBack.onFinish(isMust());
+                            if (cancelCallBack != null) {
+                                cancelCallBack.onFinish(isMust());
                             }
                             break;
                         default: // failed
                             if (cancelDownload) {
-                                if (mCancelCallBack != null) {
-                                    mCancelCallBack.onCancel(isMust());
+                                if (cancelCallBack != null) {
+                                    cancelCallBack.onCancel(isMust());
                                 }
                                 finish();
                             } else {
-                                mIllustration.setText(TextUtils.isEmpty(errorTips) ?
+                                tvIllustration.setText(TextUtils.isEmpty(errorTips) ?
                                         getString(R.string.update_error_tips) : errorTips + "\n" + msg.obj + "\n" +
                                         contacts_way);
-                                mIllustration.setVisibility(View.VISIBLE);
-                                mConfirm.setSelected(false);
-                                mConfirm.setText(TextUtils.isEmpty(confirm) ? getString(R.string.update_now) : confirm);
+                                tvIllustration.setVisibility(View.VISIBLE);
+                                tvConfirm.setSelected(false);
+                                tvConfirm.setText(TextUtils.isEmpty(confirm) ? getString(R.string.update_now) : confirm);
                                 if (!isMust()) {
-                                    mCancel.setVisibility(View.VISIBLE);
+                                    tvCancel.setVisibility(View.VISIBLE);
                                 }
                             }
                             break;
@@ -330,29 +251,38 @@ public class CompulsiveHelperActivity extends Activity {
             };
         }
         //when update click
-        mConfirm.setOnClickListener((v) -> {
+        tvConfirm.setOnClickListener((v) -> {
             //is updating
-            if (mConfirm.isSelected() && Integer.valueOf(mDownFileLength.getText().toString().trim()) > 0) {
-                mConfirm.setSelected(false);
+            if (tvConfirm.isSelected() && Integer.valueOf(tvDownFileLength.getText().toString().trim()) > 0) {
+                tvConfirm.setSelected(false);
                 cancelDownload = true;
             } else {
-                mIllustration.setVisibility(View.GONE);
-                mCancel.setVisibility(View.GONE);
+                tvIllustration.setVisibility(View.GONE);
+                tvCancel.setVisibility(View.GONE);
+                tvIgnore.setVisibility(View.GONE);
                 new Thread(CompulsiveHelperActivity.this::downFile).start();
-                mConfirm.setText(R.string.update_connecting);
-                mConfirm.setSelected(true);
+                tvConfirm.setText(R.string.update_connecting);
+                tvConfirm.setSelected(true);
             }
         });
 
         //can only visible on update not must
-        mCancel.setOnClickListener(v -> finish());
+        tvCancel.setOnClickListener(v -> {
+            cancelCallBack.onAbortUpdate();
+            finish();
+        });
+        tvIgnore.setOnClickListener(v -> {
+            if(ignoreCallback != null) ignoreCallback.go(null);
+            cancelCallBack.onAbortUpdate();
+            finish();
+        });
     }
 
     @Override
     public void onBackPressed() {
         cancelDownload = true;
-        if (mCancelCallBack != null) {
-            mCancelCallBack.onCancel(isMust());
+        if (cancelCallBack != null) {
+            cancelCallBack.onCancel(isMust());
         }
         finish();
     }
@@ -486,7 +416,104 @@ public class CompulsiveHelperActivity extends Activity {
 
     @Override
     public void finish() {
-        mCancelCallBack = null;
+        cancelCallBack = null;
         super.finish();
+    }
+
+    public static class Options {
+        private String title;
+        private String illustration;
+        private String cancel;
+        private String confirm;
+        private boolean isMust;
+        private String downloadFileUrl;
+        private String errorTips;
+        private String contacts_way;
+        private Interfaces.CB ignoreCallback = null;
+
+        public Options(String downloadFileUrl) {
+            this.downloadFileUrl = downloadFileUrl;
+        }
+
+        public Interfaces.CB getIgnoreCallback() {
+            return ignoreCallback;
+        }
+
+        public Options setIgnoreCallback(Interfaces.CB ignoreCallback) {
+            this.ignoreCallback = ignoreCallback;
+            return this;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public Options setTitle(String title) {
+            this.title = title;
+            return this;
+        }
+
+        public String getIllustration() {
+            return illustration;
+        }
+
+        public Options setIllustration(String illustration) {
+            this.illustration = illustration;
+            return this;
+        }
+
+        public String getCancel() {
+            return cancel;
+        }
+
+        public Options setCancel(String cancel) {
+            this.cancel = cancel;
+            return this;
+        }
+
+        public String getConfirm() {
+            return confirm;
+        }
+
+        public Options setConfirm(String confirm) {
+            this.confirm = confirm;
+            return this;
+        }
+
+        public boolean isMust() {
+            return isMust;
+        }
+
+        public Options setMust(boolean must) {
+            isMust = must;
+            return this;
+        }
+
+        public String getDownloadFileUrl() {
+            return downloadFileUrl;
+        }
+
+        public Options setDownloadFileUrl(String downloadFileUrl) {
+            this.downloadFileUrl = downloadFileUrl;
+            return this;
+        }
+
+        public String getErrorTips() {
+            return errorTips;
+        }
+
+        public Options setErrorTips(String errorTips) {
+            this.errorTips = errorTips;
+            return this;
+        }
+
+        public String getContacts_way() {
+            return contacts_way;
+        }
+
+        public Options setContacts_way(String contacts_way) {
+            this.contacts_way = contacts_way;
+            return this;
+        }
     }
 }

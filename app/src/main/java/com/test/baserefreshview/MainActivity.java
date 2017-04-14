@@ -34,6 +34,7 @@ import com.xycode.xylibrary.adapter.XAdapter;
 import com.xycode.xylibrary.animation.SlideInRightAnimation;
 import com.xycode.xylibrary.base.BaseActivity;
 import com.xycode.xylibrary.annotation.SaveState;
+import com.xycode.xylibrary.base.BaseItemView;
 import com.xycode.xylibrary.base.PhotoSelectBaseActivity;
 import com.xycode.xylibrary.interfaces.Interfaces;
 import com.xycode.xylibrary.okHttp.OkHttp;
@@ -107,6 +108,14 @@ public class MainActivity extends ABaseActivity {
         */
 
         findViewById(R.id.li).setOnClickListener(null);
+        ListItem item = new ListItem(getThis());
+        item.setOnViewSenseListener(new BaseItemView.OnViewSenseListener<String>() {
+
+            @Override
+            public void sense(View view, String obj) {
+
+            }
+        });
 
         List<String> list = new ArrayList<>();
 //        list.add("或在在要要在");
@@ -143,12 +152,12 @@ public class MainActivity extends ABaseActivity {
                         break;
                 }
 
-//                return new ViewTypeUnit(item.getId(), R.layout.item_house);
-                if (item.getTitle().length()==8) {
-                    return new ViewTypeUnit(2, R.layout.list_item_text).setFullSpan(true);
-
-                }
-                return new ViewTypeUnit(1, R.layout.list_item_text);
+                return new ViewTypeUnit(item.getId(), R.layout.item_house);
+//                if (item.getTitle().length()==8) {
+//                    return new ViewTypeUnit(2, R.layout.list_item_text).setFullSpan(true);
+//
+//                }
+//                return new ViewTypeUnit(1, R.layout.list_item_text);
             }
 
             @Override
@@ -171,7 +180,7 @@ public class MainActivity extends ABaseActivity {
                         });
                         mvItem.setOnItemClickListener((view, position, urlData) -> {
                             WH wh = Tools.getWidthHeightFromFilename(dataList.get(holder.getAdapterPosition()).getCoverPicture(), "_wh", "x");
-                            TS.show(getThis(), "wh:" + wh.width + " h:" + wh.height + " r:" + wh.getAspectRatio());
+                            TS.show(getThis(), "wh:" + wh.width + " h:" + wh.height + " r:" + wh.getAspectRatio(), null);
                         });
                         break;
                     case R.layout.list_item_text:
@@ -214,11 +223,15 @@ public class MainActivity extends ABaseActivity {
 
                         final List<UrlData> list = new ArrayList<>();
                         for (int i = 0; i <= pos; i++) {
-                            list.add(new UrlData(item.getCoverPicture() /*+"!"+ (int)(60*ratio)+ "!60"*/));
+                            if (i == 3) {
+                                list.add(new UrlData("abd" +item.getCoverPicture() /*+"!"+ (int)(60*ratio)+ "!60"*/));
+                            } else {
+                                list.add(new UrlData(item.getCoverPicture() /*+"!"+ (int)(60*ratio)+ "!60"*/));
+                            }
                         }
-//                        mvItem.setList(list);
+                        mvItem.setList(list);
 
-                        TextView tv = holder.getView(R.id.tvText);
+                       /* TextView tv = holder.getView(R.id.tvText);
 
                         Html.fromHtml(content, source -> {
                             File file = Tools.checkFile(Tools.getFileDir(getThis()).getAbsolutePath(), source);
@@ -233,7 +246,7 @@ public class MainActivity extends ABaseActivity {
                             }
                             return null;
                         }, null);
-                        setHtmlText(tv);
+                        setHtmlText(tv);*/
                         break;
                     case R.layout.list_item_text:
                         holder.setText(R.id.tvName, item.getTitle());
@@ -483,7 +496,7 @@ public class MainActivity extends ABaseActivity {
     @Override
     public void onEvent(MsgEvent event) {
         if (event.getEventName().equals("anEventName")) {
-            TS.show(getThis(), event.getString());
+            TS.show(getThis(), event.getString(), null);
             Object o = event.getFeedBack().go("Event " + event.getString());
             L.e("object: " + o);
             xRefresher.refresh();

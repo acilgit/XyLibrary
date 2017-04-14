@@ -389,11 +389,19 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
         return 0;
     }
 
-    public List<T> getDataList() {
+    /**
+     * 适配器中的所有数据，包括被过滤掉的数据
+     * @return
+     */
+    public List<T> getNoFilteredDataList() {
         return mainList;
     }
 
-    public List<T> getFilteredList() {
+    /**
+     * 取得下在展示的数据集合
+     * @return
+     */
+    public List<T> getShowingList() {
         return dataList;
     }
 
@@ -403,6 +411,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
         this.dataList.clear();
         this.dataList.addAll(setFilterForAdapter(mainList));
         lastVisibleItemPos = -1;
+        beforeSetDataList(this.dataList);
         notifyDataSetChanged();
     }
 
@@ -410,6 +419,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
         this.dataList.clear();
         this.dataList.addAll(setFilterForAdapter(mainList));
         lastVisibleItemPos = -1;
+        beforeSetDataList(this.dataList);
         notifyDataSetChanged();
     }
 
@@ -481,6 +491,10 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
     }
 
     protected void bindingFooter(CustomHolder holder) {
+
+    }
+
+    protected void beforeSetDataList(List<T> dataList) {
 
     }
 
@@ -606,6 +620,14 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
             View v = getView(textViewId);
             if (v != null && v instanceof TextView) {
                 return (TextView) v;
+            }
+            return null;
+        }
+
+        public String getText(int textViewId) {
+            View v = getView(textViewId);
+            if (v != null && v instanceof TextView) {
+                return ((TextView) v).getText().toString();
             }
             return null;
         }
@@ -742,6 +764,14 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
             View view = getView(viewId);
             if (view != null) {
                 view.setOnClickListener(onClickListener);
+            }
+            return this;
+        }
+
+        public CustomHolder setClick(int viewId, View.OnClickListener clickListener) {
+            View view = getView(viewId);
+            if (view != null) {
+                view.setOnClickListener(clickListener);
             }
             return this;
         }

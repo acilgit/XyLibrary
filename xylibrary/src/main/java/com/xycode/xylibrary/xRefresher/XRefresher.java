@@ -19,8 +19,6 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
-import android.view.View;
 import android.widget.TextView;
 
 import com.alibaba.fastjson.JSONObject;
@@ -239,7 +237,7 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
                         getDataByRefresh(state.pageIndex + 1, state.pageDefaultSize);
                     }
                 } else if (newState == RecyclerView.SCROLL_STATE_IDLE && lastVisibleItem > 0
-                        && adapter.getDataList().size() > 0
+                        && adapter.getNoFilteredDataList().size() > 0
                         && noScrolled
                         && lastVisibleItem + 2 >= getAdapter().getItemCount()) {
                     if ((!state.lastPage) && loadMoreState == LOADER_MORE) {
@@ -311,7 +309,7 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
                         if (state.pageIndex == 0) state.pageIndex++;
                         break;
                     default:
-                        list.addAll(getAdapter().getDataList());
+                        list.addAll(getAdapter().getNoFilteredDataList());
                         state.pageIndex++;
                         break;
                 }
@@ -333,7 +331,7 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
                     getAdapter().setDataList(list);
                 }
                 if (onLastPageListener != null) onLastPageListener.receivedList(state.lastPage);
-                textView.setVisibility(getAdapter().getDataList().size() == 0 ? VISIBLE : GONE);
+                textView.setVisibility(getAdapter().getNoFilteredDataList().size() == 0 ? VISIBLE : GONE);
             }
 
             @Override
@@ -391,13 +389,21 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
     private void refreshList(boolean showDialog) {
         if (refreshRequest != null) {
 //            swipe.setRefreshing(true);
-            if (getAdapter().getDataList().size() > 0) {
-                getDataByRefresh(getAdapter().getDataList().size());
+            if (getAdapter().getNoFilteredDataList().size() > 0) {
+                getDataByRefresh(getAdapter().getNoFilteredDataList().size());
             } else {
                 getDataByRefresh(state.pageDefaultSize);
                 swipe.setRefreshing(false);
             }
         }
+    }
+
+    public void setLastPage(int page) {
+        this.state.pageIndex =page;
+    }
+
+    public void resetLastPage() {
+        this.state.pageIndex =FIRST_PAGE;
     }
 
     public XAdapter<T> getAdapter() {

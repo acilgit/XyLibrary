@@ -28,6 +28,7 @@
             app:itemSameSize="false"
             app:singleImageSize="full"
             app:holderImageScaleType="fit_xy"
+            app:onFailureImage="@mipmap/ic_ball"
             app:pressedOverlayImage="@drawable/more_images"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>

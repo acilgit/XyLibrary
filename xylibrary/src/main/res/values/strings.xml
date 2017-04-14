@@ -19,6 +19,7 @@
     <string name="text_today">"今天 "</string>
     <string name="text_yestoday">"昨天 "</string>
     <string name="text_before_yestoday">"前天 "</string>
+    <string name="ignoreThisVersion">忽略此版本</string>
     <string name="update_now">现在更新</string>
     <string name="new_version">新版本</string>
     <string name="text_update_next_time">暂不更新</string>

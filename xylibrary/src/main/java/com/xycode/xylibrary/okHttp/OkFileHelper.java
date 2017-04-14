@@ -97,7 +97,7 @@ public class OkFileHelper {
                         contentLength = contentLength();
                     }
                     bytesWritten += byteCount;
-                    int percent = (int) ((100.0f*bytesWritten) / contentLength);
+                    int percent = (int) ((100.0d*bytesWritten) / contentLength);
 
                     // callback
                     if (fileProgressListener != null) {
