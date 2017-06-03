@@ -18,6 +18,11 @@
             android:textColor="#999"
             android:textSize="25dp" />
 
+        <CheckBox
+            android:id="@+id/cb"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
         <com.xycode.xylibrary.uiKit.views.MultiImageView
             android:visibility="visible"
             android:id="@+id/mvItem"
@@ -38,5 +43,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text=""
+            android:padding="12dp"
             android:textSize="15dp" />
 </LinearLayout>

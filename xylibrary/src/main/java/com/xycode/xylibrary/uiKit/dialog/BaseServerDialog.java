@@ -14,6 +14,7 @@ import android.widget.LinearLayout;
 
 import com.alibaba.fastjson.JSONArray;
 import com.xycode.xylibrary.R;
+import com.xycode.xylibrary.adapter.CustomHolder;
 import com.xycode.xylibrary.adapter.XAdapter;
 import com.xycode.xylibrary.unit.ViewTypeUnit;
 import com.xycode.xylibrary.utils.ShareStorage;

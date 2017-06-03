@@ -275,6 +275,7 @@ public class OkHttp {
                 final JSONObject jsonObject = JSON.parseObject(strResult);
                 final int resultCode = okInit.judgeResultWhenFirstReceivedResponse(call, response, jsonObject);
                 if (okInit.resultSuccessByJudge(call, response, jsonObject, resultCode)) {
+                    L.e(call.request().url().url().toString() + " [resultJudgeFailed] --> " + strResult);
                     BaseActivity.dismissLoadingDialogByManualState();
                     return;
                 }

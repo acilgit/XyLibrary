@@ -9,162 +9,164 @@ import java.util.List;
 public class ListBean implements Serializable {
 
     /**
-     * resultCode : 1
-     * message : 二手房列表
-     * content : {"content":[{"id":"5bfea27f-2798-411c-bf12-6f3f6e741f77","villageName":"陈锐东的小区","title":"1","secondTitle":"1","price":1,"address":"","houseSize":100,"houseShape":null,"tags":"精品房","coverPicture":"http://192.168.1.222:9000/upload/image/20160707/1467884769053068717.jpg"},{"id":"a20eb416-d018-4c48-85e4-90f54007a8a2","villageName":"新基地","title":"100","secondTitle":"100","price":100,"address":"东莞南城","houseSize":100,"houseShape":"三室一厅","tags":"学期房","coverPicture":""},{"id":"57316be2-cd2c-4097-85d4-1363deb69a01","villageName":"未来世界花园","title":"有房出售","secondTitle":"出售","price":100,"address":"未来花园","houseSize":1,"houseShape":null,"tags":"学区房,精品房","coverPicture":"http://localhost:8082/upload/image/20160705/1467712586557091084.jpg"},{"id":"28801fc9-7d1a-429a-9747-b007f12cdaff","villageName":"未来世界花园","title":"未来世界花园急售","secondTitle":"急售","price":10000,"address":"东莞市南城新机电","houseSize":120,"houseShape":"四室二厅","tags":"精品房,学区房,电梯房,学期房","coverPicture":"http://192.168.1.233:9000/upload/image/20160705/1467707503209032491.jpg"},{"id":"323bcb9f-6639-4591-81c1-5c3b6c8ce18c","villageName":"未来世界花园","title":"三房两厅","secondTitle":"舒适宜人","price":11160,"address":"东莞市南城区石竹宏图大道科技大道三元路","houseSize":112,"houseShape":"三室二厅","tags":"精品房","coverPicture":"http://192.168.1.233:9000/upload/image/20160704/1467616920219062420.jpg"},{"id":"bd343f6d-6dff-4fa2-b976-d327fb8f9f64","villageName":"未来世界花园","title":"采光好","secondTitle":"户型极佳","price":16666,"address":"东莞市凤冈镇凤平大道华侨中学旁","houseSize":75,"houseShape":"二室一厅","tags":"电梯房","coverPicture":"http://192.168.1.233:9000/upload/image/20160704/1467616705001021495.jpg"},{"id":"7e68431c-e5df-43e1-9317-5670c34acdd8","villageName":"未来世界花园","title":"全新装修","secondTitle":"送车位","price":14136,"address":"东莞市长安镇河东二路71号","houseSize":133,"houseShape":"三室二厅","tags":"电梯房","coverPicture":"http://192.168.1.233:9000/upload/image/20160704/1467616456818091723.jpg"},{"id":"70c860e5-8637-4a51-846f-741fa29cb8e9","villageName":"测试","title":"东城地铁房","secondTitle":"精品房","price":13541,"address":"东莞市东城区环成东路交汇处","houseSize":96,"houseShape":"三室二厅","tags":"精品房,学期房","coverPicture":"http://192.168.1.233:9000/upload/image/20160704/1467616154176065582.jpg"},{"id":"04285a94-5a4d-4809-8b26-4a50826a52e9","villageName":"未来世界花园","title":"首付5万","secondTitle":"名校在旁","price":9107,"address":"东莞市南城区东坑骏达中路","houseSize":56,"houseShape":"二室二厅","tags":"学区房","coverPicture":"http://192.168.1.233:9000/upload/image/20160704/1467615702343040703.jpg"},{"id":"cf5e1b64-70fa-4b3a-baf2-eec712b48238","villageName":"未来世界花园","title":"精装3房","secondTitle":"送车位","price":11363,"address":"东莞市万江区莞穗大道318号","houseSize":132,"houseShape":"三室一厅","tags":"精品房","coverPicture":"http://192.168.1.233:9000/upload/image/20160704/1467615480981007316.jpg"},{"id":"242c8817-0611-4b5e-a451-fcb87518cd5c","villageName":"未来世界花园","title":"11","secondTitle":"11","price":11,"address":"","houseSize":1,"houseShape":null,"tags":"精品房","coverPicture":""}],"number":0,"size":200,"sort":null,"numberOfElements":11,"totalPages":1,"lastPage":true,"firstPage":true,"totalElements":11}
+     * status : 1
+     * msg : 查询完成
+     * content : [{"id":"f8d307ce-4182-4fdd-b7a9-f7f5fb0f2868","posterNo":"201611280212050570","posterPositionId":101301,"posterTitle":"欢迎来到太极虎","posterImage":"6151851434425193459717772","posterUrl":"http://sports.qq.com/nba/?ptag=baidu.ald.sc.nba","posterSort":1,"posterImg":[{"id":"8dcec547-1ac6-4436-bc8d-cea1ca1c44e3","fileId":"6151851434425193459717772","fileUrl":"https://www.taichi-tiger.com:8080/upload/image/20161128/1480313629491081848_wh700x467.jpg"}],"posterPositionTitle":"首页轮播"},{"id":"04a5f8fe-67fd-42a5-a2a6-06656da13ef1","posterNo":"201611280212290309","posterPositionId":101301,"posterTitle":"太极虎","posterImage":"2292425215145736979341455","posterUrl":"http://sports.qq.com/nba/?ptag=baidu.ald.sc.nba","posterSort":2,"posterImg":[{"id":"705b022c-82e4-43fb-9874-4eb8072a91d9","fileId":"2292425215145736979341455","fileUrl":"https://www.taichi-tiger.com:8080/upload/image/20161128/1480313695157096187_wh1000x770.jpg"}],"posterPositionTitle":"首页轮播"},{"id":"39fdf538-5f92-4445-8f47-13e565eaaa2f","posterNo":"201611280212440171","posterPositionId":101301,"posterTitle":"太极虎","posterImage":"4232432779926932129532166","posterUrl":"http://www.dg116.com","posterSort":3,"posterImg":[{"id":"93868cea-b86f-48f1-a3ad-587daedd3af2","fileId":"4232432779926932129532166","fileUrl":"https://www.taichi-tiger.com:8080/upload/image/20161128/1480313780485019565_wh800x542.jpg"}],"posterPositionTitle":"首页轮播"},{"id":"694af255-1227-4d10-b087-00813106872a","posterNo":"201611280227260506","posterPositionId":101302,"posterTitle":"精选","posterImage":"7114353417933496784923915","posterUrl":"https://www.tmall.com/?ali_trackid=2:mm_26632258_3504122_55934697:1480314482_261_185650658&upsid=d6373243ba78cdc5bcedc7fa0faa3619&clk1=d6373243ba78cdc5bcedc7fa0faa3619","posterSort":1,"posterImg":[{"id":"fa75ba09-a0c1-4498-a07b-f6d0dd2550e2","fileId":"7114353417933496784923915","fileUrl":"https://www.taichi-tiger.com:8080/upload/image/20161128/1480314410357023298_wh1075x720.jpg"}],"posterPositionTitle":"首页精选"},{"id":"992c0e18-37f5-4810-a6f0-b72b9e853503","posterNo":"201611280227430563","posterPositionId":101302,"posterTitle":"精选","posterImage":"1214419292557673522216323","posterUrl":"https://www.tmall.com/?ali_trackid=2:mm_26632258_3504122_55934697:1480314482_261_185650658&upsid=d6373243ba78cdc5bcedc7fa0faa3619&clk1=d6373243ba78cdc5bcedc7fa0faa3619","posterSort":2,"posterImg":[{"id":"38b268fa-a31d-4f0f-ad0b-50c155e989a4","fileId":"1214419292557673522216323","fileUrl":"https://www.taichi-tiger.com:8080/upload/image/20161128/1480314459890007724_wh600x381.jpg"}],"posterPositionTitle":"首页精选"},{"id":"ccfcd216-7de6-44c2-9948-2bf636529f87","posterNo":"201611280227570975","posterPositionId":101302,"posterTitle":"精选","posterImage":"4346238545429879529447569","posterUrl":"https://www.tmall.com/?ali_trackid=2:mm_26632258_3504122_55934697:1480314482_261_185650658&upsid=d6373243ba78cdc5bcedc7fa0faa3619&clk1=d6373243ba78cdc5bcedc7fa0faa3619","posterSort":3,"posterImg":[{"id":"c4076a29-2794-497e-934f-558cccfb0a04","fileId":"4346238545429879529447569","fileUrl":"https://www.taichi-tiger.com:8080/upload/image/20161128/1480314472996084453_wh580x435.jpg"}],"posterPositionTitle":"首页精选"},{"id":"30634d48-0846-455b-bbc0-15666de6623b","posterNo":"201611280228120005","posterPositionId":101302,"posterTitle":"精选","posterImage":"4621634722774271163465664","posterUrl":"http://www.dg116.com","posterSort":4,"posterImg":[{"id":"5f46d7c3-d90d-46e4-bcc4-40305257d6a5","fileId":"4621634722774271163465664","fileUrl":"https://www.taichi-tiger.com:8080/upload/image/20161128/1480314485937004435_wh600x399.jpg"}],"posterPositionTitle":"首页精选"},{"id":"ae7c6ad6-d85b-4288-901e-c8b764c73005","posterNo":"201611280216530159","posterPositionId":101303,"posterTitle":"组团打球吧","posterImage":"1923117274246544629955539","posterUrl":"http://sports.qq.com/nba/?ptag=baidu.ald.sc.nba","posterSort":1,"posterImg":[{"id":"49d3ec6f-f948-499e-9447-8a6c8e3a87ef","fileId":"1923117274246544629955539","fileUrl":"https://www.taichi-tiger.com:8080/upload/image/20161128/1480314224815042855_wh600x381.jpg"}],"posterPositionTitle":"组团轮播"},{"id":"c3283032-a2b5-421c-9a3a-34d0629b78dd","posterNo":"201611280217120129","posterPositionId":101303,"posterTitle":"打球吧","posterImage":"6621371315445236142122184","posterUrl":"http://sports.qq.com/nba/?ptag=baidu.ald.sc.nba","posterSort":2,"posterImg":[{"id":"29aec1e4-c1a6-48c2-a6ad-c7e56cda7d95","fileId":"6621371315445236142122184","fileUrl":"https://www.taichi-tiger.com:8080/upload/image/20161128/1480313827201001130_wh600x381.jpg"}],"posterPositionTitle":"组团轮播"},{"id":"e420913d-967f-4897-9aed-a35901d631a6","posterNo":"201611280217270539","posterPositionId":101303,"posterTitle":"打球吧","posterImage":"6114151537242426122221542","posterUrl":"http://sports.qq.com/nba/?ptag=baidu.ald.sc.nba","posterSort":3,"posterImg":[{"id":"ac1217e0-d8d1-4ada-8339-f57e7accd1f5","fileId":"6114151537242426122221542","fileUrl":"https://www.taichi-tiger.com:8080/upload/image/20161128/1480313846136052808_wh580x435.jpg"}],"posterPositionTitle":"组团轮播"},{"id":"cecc503f-5e3a-45c6-b177-fa114d8da0c5","posterNo":"201611280217410620","posterPositionId":101303,"posterTitle":"打球吧","posterImage":"9136539129713273417452399","posterUrl":"http://sports.qq.com/nba/?ptag=baidu.ald.sc.nba","posterSort":4,"posterImg":[{"id":"1d11f05d-763c-4810-83fe-91d472c96944","fileId":"9136539129713273417452399","fileUrl":"https://www.taichi-tiger.com:8080/upload/image/20161128/1480313857561043012_wh600x399.jpg"}],"posterPositionTitle":"组团轮播"}]
+     * success : true
      */
 
-    private int resultCode;
-    private String message;
-    /**
-     * content : [{"id":"5bfea27f-2798-411c-bf12-6f3f6e741f77","villageName":"陈锐东的小区","title":"1","secondTitle":"1","price":1,"address":"","houseSize":100,"houseShape":null,"tags":"精品房","coverPicture":"http://192.168.1.222:9000/upload/image/20160707/1467884769053068717.jpg"},{"id":"a20eb416-d018-4c48-85e4-90f54007a8a2","villageName":"新基地","title":"100","secondTitle":"100","price":100,"address":"东莞南城","houseSize":100,"houseShape":"三室一厅","tags":"学期房","coverPicture":""},{"id":"57316be2-cd2c-4097-85d4-1363deb69a01","villageName":"未来世界花园","title":"有房出售","secondTitle":"出售","price":100,"address":"未来花园","houseSize":1,"houseShape":null,"tags":"学区房,精品房","coverPicture":"http://localhost:8082/upload/image/20160705/1467712586557091084.jpg"},{"id":"28801fc9-7d1a-429a-9747-b007f12cdaff","villageName":"未来世界花园","title":"未来世界花园急售","secondTitle":"急售","price":10000,"address":"东莞市南城新机电","houseSize":120,"houseShape":"四室二厅","tags":"精品房,学区房,电梯房,学期房","coverPicture":"http://192.168.1.233:9000/upload/image/20160705/1467707503209032491.jpg"},{"id":"323bcb9f-6639-4591-81c1-5c3b6c8ce18c","villageName":"未来世界花园","title":"三房两厅","secondTitle":"舒适宜人","price":11160,"address":"东莞市南城区石竹宏图大道科技大道三元路","houseSize":112,"houseShape":"三室二厅","tags":"精品房","coverPicture":"http://192.168.1.233:9000/upload/image/20160704/1467616920219062420.jpg"},{"id":"bd343f6d-6dff-4fa2-b976-d327fb8f9f64","villageName":"未来世界花园","title":"采光好","secondTitle":"户型极佳","price":16666,"address":"东莞市凤冈镇凤平大道华侨中学旁","houseSize":75,"houseShape":"二室一厅","tags":"电梯房","coverPicture":"http://192.168.1.233:9000/upload/image/20160704/1467616705001021495.jpg"},{"id":"7e68431c-e5df-43e1-9317-5670c34acdd8","villageName":"未来世界花园","title":"全新装修","secondTitle":"送车位","price":14136,"address":"东莞市长安镇河东二路71号","houseSize":133,"houseShape":"三室二厅","tags":"电梯房","coverPicture":"http://192.168.1.233:9000/upload/image/20160704/1467616456818091723.jpg"},{"id":"70c860e5-8637-4a51-846f-741fa29cb8e9","villageName":"测试","title":"东城地铁房","secondTitle":"精品房","price":13541,"address":"东莞市东城区环成东路交汇处","houseSize":96,"houseShape":"三室二厅","tags":"精品房,学期房","coverPicture":"http://192.168.1.233:9000/upload/image/20160704/1467616154176065582.jpg"},{"id":"04285a94-5a4d-4809-8b26-4a50826a52e9","villageName":"未来世界花园","title":"首付5万","secondTitle":"名校在旁","price":9107,"address":"东莞市南城区东坑骏达中路","houseSize":56,"houseShape":"二室二厅","tags":"学区房","coverPicture":"http://192.168.1.233:9000/upload/image/20160704/1467615702343040703.jpg"},{"id":"cf5e1b64-70fa-4b3a-baf2-eec712b48238","villageName":"未来世界花园","title":"精装3房","secondTitle":"送车位","price":11363,"address":"东莞市万江区莞穗大道318号","houseSize":132,"houseShape":"三室一厅","tags":"精品房","coverPicture":"http://192.168.1.233:9000/upload/image/20160704/1467615480981007316.jpg"},{"id":"242c8817-0611-4b5e-a451-fcb87518cd5c","villageName":"未来世界花园","title":"11","secondTitle":"11","price":11,"address":"","houseSize":1,"houseShape":null,"tags":"精品房","coverPicture":""}]
-     * number : 0
-     * size : 200
-     * sort : null
-     * numberOfElements : 11
-     * totalPages : 1
-     * lastPage : true
-     * firstPage : true
-     * totalElements : 11
-     */
+    private int status;
+    private String msg;
+    private boolean success;
+    private List<ContentBean> content;
 
-    private Content content;
-
-    public int getResultCode() {
-        return resultCode;
+    public int getStatus() {
+        return status;
     }
 
-    public void setResultCode(int resultCode) {
-        this.resultCode = resultCode;
+    public void setStatus(int status) {
+        this.status = status;
     }
 
-    public String getMessage() {
-        return message;
+    public String getMsg() {
+        return msg;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setMsg(String msg) {
+        this.msg = msg;
     }
 
-    public Content getContent() {
+    public boolean isSuccess() {
+        return success;
+    }
+
+    public void setSuccess(boolean success) {
+        this.success = success;
+    }
+
+    public List<ContentBean> getContent() {
         return content;
     }
 
-    public void setContent(Content content) {
+    public void setContent(List<ContentBean> content) {
         this.content = content;
     }
 
-    public static class Content {
-        private int number;
-        private int size;
-        private Object sort;
-        private int numberOfElements;
-        private int totalPages;
-        private boolean lastPage;
-        private boolean firstPage;
-        private int totalElements;
+    public static class ContentBean {
         /**
-         * id : 5bfea27f-2798-411c-bf12-6f3f6e741f77
-         * villageName : 陈锐东的小区
-         * title : 1
-         * secondTitle : 1
-         * price : 1.0
-         * address :
-         * houseSize : 100.0
-         * houseShape : null
-         * tags : 精品房
-         * coverPicture : http://192.168.1.222:9000/upload/image/20160707/1467884769053068717.jpg
+         * id : f8d307ce-4182-4fdd-b7a9-f7f5fb0f2868
+         * posterNo : 201611280212050570
+         * posterPositionId : 101301
+         * posterTitle : 欢迎来到太极虎
+         * posterImage : 6151851434425193459717772
+         * posterUrl : http://sports.qq.com/nba/?ptag=baidu.ald.sc.nba
+         * posterSort : 1
+         * posterImg : [{"id":"8dcec547-1ac6-4436-bc8d-cea1ca1c44e3","fileId":"6151851434425193459717772","fileUrl":"https://www.taichi-tiger.com:8080/upload/image/20161128/1480313629491081848_wh700x467.jpg"}]
+         * posterPositionTitle : 首页轮播
          */
 
-        private List<ContentBean> content;
+        private String id;
+        private String posterNo;
+        private int posterPositionId;
+        private String posterTitle;
+        private String posterImage;
+        private String posterUrl;
+        private int posterSort;
+        private String posterPositionTitle;
+        private List<PosterImgBean> posterImg;
 
-        public int getNumber() {
-            return number;
+        private boolean expanded = false;
+
+        public boolean isExpanded() {
+            return expanded;
         }
 
-        public void setNumber(int number) {
-            this.number = number;
+        public void setExpanded(boolean expanded) {
+            this.expanded = expanded;
         }
 
-        public int getSize() {
-            return size;
+        public String getId() {
+            return id;
         }
 
-        public void setSize(int size) {
-            this.size = size;
+        public void setId(String id) {
+            this.id = id;
         }
 
-        public Object getSort() {
-            return sort;
+        public String getPosterNo() {
+            return posterNo;
         }
 
-        public void setSort(Object sort) {
-            this.sort = sort;
+        public void setPosterNo(String posterNo) {
+            this.posterNo = posterNo;
         }
 
-        public int getNumberOfElements() {
-            return numberOfElements;
+        public int getPosterPositionId() {
+            return posterPositionId;
         }
 
-        public void setNumberOfElements(int numberOfElements) {
-            this.numberOfElements = numberOfElements;
+        public void setPosterPositionId(int posterPositionId) {
+            this.posterPositionId = posterPositionId;
         }
 
-        public int getTotalPages() {
-            return totalPages;
+        public String getPosterTitle() {
+            return posterTitle;
         }
 
-        public void setTotalPages(int totalPages) {
-            this.totalPages = totalPages;
+        public void setPosterTitle(String posterTitle) {
+            this.posterTitle = posterTitle;
         }
 
-        public boolean isLastPage() {
-            return lastPage;
+        public String getPosterImage() {
+            return posterImage;
         }
 
-        public void setLastPage(boolean lastPage) {
-            this.lastPage = lastPage;
+        public void setPosterImage(String posterImage) {
+            this.posterImage = posterImage;
         }
 
-        public boolean isFirstPage() {
-            return firstPage;
+        public String getPosterUrl() {
+            return posterUrl;
         }
 
-        public void setFirstPage(boolean firstPage) {
-            this.firstPage = firstPage;
+        public void setPosterUrl(String posterUrl) {
+            this.posterUrl = posterUrl;
         }
 
-        public int getTotalElements() {
-            return totalElements;
+        public int getPosterSort() {
+            return posterSort;
         }
 
-        public void setTotalElements(int totalElements) {
-            this.totalElements = totalElements;
+        public void setPosterSort(int posterSort) {
+            this.posterSort = posterSort;
         }
 
-        public List<ContentBean> getContent() {
-            return content;
+        public String getPosterPositionTitle() {
+            return posterPositionTitle;
         }
 
-        public void setContent(List<ContentBean> content) {
-            this.content = content;
+        public void setPosterPositionTitle(String posterPositionTitle) {
+            this.posterPositionTitle = posterPositionTitle;
         }
 
-        public static class ContentBean {
+        public List<PosterImgBean> getPosterImg() {
+            return posterImg;
+        }
+
+        public void setPosterImg(List<PosterImgBean> posterImg) {
+            this.posterImg = posterImg;
+        }
+
+        public static class PosterImgBean {
+            /**
+             * id : 8dcec547-1ac6-4436-bc8d-cea1ca1c44e3
+             * fileId : 6151851434425193459717772
+             * fileUrl : https://www.taichi-tiger.com:8080/upload/image/20161128/1480313629491081848_wh700x467.jpg
+             */
+
             private String id;
-            private String villageName;
-            private String title;
-            private String secondTitle;
-            private double price;
-            private String address;
-            private double houseSize;
-            private Object houseShape;
-            private String tags;
-            private String coverPicture;
-
-            public Double compare() {
-                return price;
-            }
+            private String fileId;
+            private String fileUrl;
 
             public String getId() {
                 return id;
@@ -174,76 +176,20 @@ public class ListBean implements Serializable {
                 this.id = id;
             }
 
-            public String getVillageName() {
-                return villageName;
+            public String getFileId() {
+                return fileId;
             }
 
-            public void setVillageName(String villageName) {
-                this.villageName = villageName;
+            public void setFileId(String fileId) {
+                this.fileId = fileId;
             }
 
-            public String getTitle() {
-                return title;
+            public String getFileUrl() {
+                return fileUrl;
             }
 
-            public void setTitle(String title) {
-                this.title = title;
-            }
-
-            public String getSecondTitle() {
-                return secondTitle;
-            }
-
-            public void setSecondTitle(String secondTitle) {
-                this.secondTitle = secondTitle;
-            }
-
-            public double getPrice() {
-                return price;
-            }
-
-            public void setPrice(double price) {
-                this.price = price;
-            }
-
-            public String getAddress() {
-                return address;
-            }
-
-            public void setAddress(String address) {
-                this.address = address;
-            }
-
-            public double getHouseSize() {
-                return houseSize;
-            }
-
-            public void setHouseSize(double houseSize) {
-                this.houseSize = houseSize;
-            }
-
-            public Object getHouseShape() {
-                return houseShape;
-            }
-
-            public void setHouseShape(Object houseShape) {
-                this.houseShape = houseShape;
-            }
-
-            public String getTags() {
-                return tags;
-            }
-
-            public void setTags(String tags) {
-                this.tags = tags;
-            }
-
-            public String getCoverPicture() {
-                return coverPicture;
-            }
-
-            public void setCoverPicture(String coverPicture) {
-                this.coverPicture = coverPicture;
+            public void setFileUrl(String fileUrl) {
+                this.fileUrl = fileUrl;
             }
         }
     }

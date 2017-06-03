@@ -6,6 +6,8 @@ import android.graphics.Point;
 import android.support.v7.app.AlertDialog;
 
 import com.alibaba.fastjson.JSONObject;
+import com.antfortune.freeline.FreelineCore;
+import com.antfortune.freeline.IDynamic;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.facebook.imagepipeline.backends.okhttp3.OkHttpImagePipelineConfigFactory;
@@ -23,6 +25,8 @@ import com.xycode.xylibrary.utils.TS;
 import com.xycode.xylibrary.utils.Tools;
 import com.xycode.xylibrary.utils.downloadHelper.DownloadHelper;
 import com.xycode.xylibrary.xRefresher.XRefresher;
+
+import java.util.HashMap;
 
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
@@ -59,7 +63,28 @@ public class App extends Application {
         });*/
 
         TS.init(this);
+        L.setDebugMode(true);
+        L.setCrashLog(this);
 //        Fresco.initialize(this);
+
+        FreelineCore.init(this, new IDynamic() {
+            @Override
+            public boolean applyDynamicRes(HashMap<String, String> hashMap) {
+                return false;
+            }
+
+            @Override
+            public String getOriginResPath(String s) {
+                return null;
+            }
+
+            @Override
+            public void clearResourcesCache() {
+
+            }
+        });
+
+
 
 
         OkHttp.OkOptions okOptions = new OkHttp.OkOptions(1,1,1){
@@ -73,7 +98,7 @@ public class App extends Application {
         OkHttp.init(this, new OkHttp.IOkInit() {
            @Override
             public int judgeResultWhenFirstReceivedResponse(Call call, Response response, JSONObject json) {
-                String resultCode = json.getString("resultCode");
+                String resultCode = json.getString("status");
                 if ("1".equals(resultCode)) {
                     return OkHttp.RESULT_SUCCESS;
                 } else if ("0".equals(resultCode)) {

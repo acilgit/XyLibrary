@@ -2,35 +2,20 @@ package com.xycode.xylibrary.adapter;
 
 import android.animation.Animator;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.net.Uri;
-import android.support.annotation.DrawableRes;
 import android.support.annotation.LayoutRes;
-import android.support.annotation.StringRes;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.text.TextUtils;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
-import android.widget.ImageView;
-import android.widget.TextView;
 
-import com.facebook.drawee.view.SimpleDraweeView;
-import com.facebook.imagepipeline.common.ResizeOptions;
 import com.xycode.xylibrary.R;
 import com.xycode.xylibrary.animation.BaseAnimation;
 import com.xycode.xylibrary.animation.SlideInBottomAnimation;
-import com.xycode.xylibrary.base.BaseItemView;
-import com.xycode.xylibrary.instance.FrescoLoader;
-import com.xycode.xylibrary.uiKit.views.MultiImageView;
-import com.xycode.xylibrary.uiKit.views.nicespinner.NiceSpinner;
 import com.xycode.xylibrary.unit.ViewTypeUnit;
-import com.xycode.xylibrary.utils.DateUtils;
-import com.xycode.xylibrary.utils.ImageUtils;
 import com.xycode.xylibrary.xRefresher.XRefresher;
 
 import java.util.ArrayList;
@@ -51,9 +36,10 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
     private List<T> mainList;
     /**
      * 显示的数据
+     * useFilter() == true 时使用
      */
     private List<T> dataList;
-    private Context context;
+    protected Context context;
     private SparseArray<Integer> headerLayoutIdList;
     private Map<Integer, ViewTypeUnit> multiLayoutMap;
     private int footerLayout = 0;
@@ -75,20 +61,28 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
      * use single Layout
      *
      * @param context
-     * @param dataList
      */
+    public XAdapter(Context context) {
+        init(context, null);
+    }
+
     public XAdapter(Context context, List<T> dataList) {
         init(context, dataList);
     }
 
     private void init(Context context, List<T> dataList) {
         this.context = context;
-        if (dataList == null) {
-            dataList = new ArrayList<>();
+        if (useFilter()) {
+            if (dataList == null) {
+                dataList = new ArrayList<>();
+            }
+            this.dataList = new ArrayList<>();
+            this.mainList = dataList;
+            this.dataList.addAll(setFilterForAdapter(mainList));
+        } else {
+            this.mainList = dataList;
+            this.dataList = dataList;
         }
-        this.dataList = new ArrayList<>();
-        this.mainList = dataList;
-        this.dataList.addAll(setFilterForAdapter(mainList));
         this.headerLayoutIdList = new SparseArray<>();
         this.multiLayoutMap = new HashMap<>();
     }
@@ -110,8 +104,8 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
             final CustomHolder holder = new CustomHolder(itemView) {
                 @Override
                 protected void createHolder(final CustomHolder holder) {
-                    holder.onClickListener = v -> handleItemViewClick(holder, null, v.getId(), new ViewTypeUnit(viewType, footerLayout));
-                    holder.onLongClickListener = v -> handleItemViewLongClick(holder, null, v.getId(), new ViewTypeUnit(viewType, footerLayout));
+                    holder.setOnClickListener(v -> handleItemViewClick(holder, null, v.getId(), new ViewTypeUnit(viewType, footerLayout)));
+                    holder.setOnLongClickListener(v -> handleItemViewLongClick(holder, null, v.getId(), new ViewTypeUnit(viewType, footerLayout)));
                     creatingFooter(holder);
                 }
             };
@@ -125,9 +119,9 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
                     final CustomHolder holder = new CustomHolder(itemView) {
                         @Override
                         protected void createHolder(final CustomHolder holder) {
-                            holder.onClickListener = v -> handleItemViewClick(holder, null, v.getId(), new ViewTypeUnit(headerKey, headerLayoutIdList.get(headerKey)));
+                            holder.setOnClickListener(v -> handleItemViewClick(holder, null, v.getId(), new ViewTypeUnit(headerKey, headerLayoutIdList.get(headerKey))));
 
-                            holder.onLongClickListener = v -> handleItemViewLongClick(holder, null, v.getId(), new ViewTypeUnit(headerKey, headerLayoutIdList.get(headerKey)));
+                            holder.setOnLongClickListener(v -> handleItemViewLongClick(holder, null, v.getId(), new ViewTypeUnit(headerKey, headerLayoutIdList.get(headerKey))));
                             creatingHeader(holder, headerKey);
                         }
                     };
@@ -144,9 +138,9 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
             final CustomHolder holder = new CustomHolder(itemView) {
                 @Override
                 protected void createHolder(final CustomHolder holder) {
-                    holder.onClickListener = v -> handleItemViewClick(holder, dataList.get(holder.getAdapterPosition() - getHeaderCount()), v.getId(), viewTypeUnit);
+                    holder.setOnClickListener(v -> handleItemViewClick(holder, dataList.get(holder.getAdapterPosition() - getHeaderCount()), v.getId(), viewTypeUnit));
 
-                    holder.onLongClickListener = v -> handleItemViewLongClick(holder, dataList.get(holder.getAdapterPosition() - getHeaderCount()), v.getId(), viewTypeUnit);
+                    holder.setOnLongClickListener(v -> handleItemViewLongClick(holder, dataList.get(holder.getAdapterPosition() - getHeaderCount()), v.getId(), viewTypeUnit));
                     creatingHolder(holder, dataList, viewTypeUnit);
                 }
             };
@@ -406,18 +400,28 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
     }
 
     public void setDataList(List<T> dataList) {
-        mainList.clear();
-        mainList.addAll(dataList);
-        this.dataList.clear();
-        this.dataList.addAll(setFilterForAdapter(mainList));
+        if (useFilter()) {
+            mainList.clear();
+            mainList.addAll(dataList);
+            this.dataList.clear();
+            this.dataList.addAll(setFilterForAdapter(mainList));
+        } else {
+            mainList = dataList;
+            this.dataList = dataList;
+        }
         lastVisibleItemPos = -1;
         beforeSetDataList(this.dataList);
         notifyDataSetChanged();
     }
 
+    /**
+     * useFilter() == true 时有效果
+     */
     public void resetDataList() {
-        this.dataList.clear();
-        this.dataList.addAll(setFilterForAdapter(mainList));
+        if (useFilter()) {
+            this.dataList.clear();
+            this.dataList.addAll(setFilterForAdapter(mainList));
+        }
         lastVisibleItemPos = -1;
         beforeSetDataList(this.dataList);
         notifyDataSetChanged();
@@ -425,8 +429,12 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
 
     public void removeItem(int pos) {
         T item = dataList.get(pos);
-        mainList.remove(item);
-        dataList.remove(pos);
+        if (useFilter()) {
+            mainList.remove(item);
+            dataList.remove(pos);
+        } else {
+            dataList.remove(pos);
+        }
         notifyItemRemoved(headerLayoutIdList.size() + pos);
     }
 
@@ -437,22 +445,34 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
      * @param item
      */
     public void addItemNoFilter(int pos, T item) {
-        dataList.add(pos, item);
-        mainList.add(pos, item);
+        if (useFilter()) {
+            dataList.add(pos, item);
+            mainList.add(pos, item);
+        } else {
+            dataList.add(pos, item);
+        }
         notifyItemInserted(headerLayoutIdList.size() + pos);
     }
 
     public void updateItem(int pos, T item) {
         T itemOld = dataList.get(pos);
-        int mainPos = mainList.indexOf(itemOld);
-        mainList.set(mainPos, item);
-        dataList.set(pos, item);
+        if (useFilter()) {
+            int mainPos = mainList.indexOf(itemOld);
+            mainList.set(mainPos, item);
+            dataList.set(pos, item);
+        } else {
+            dataList.set(pos, item);
+        }
         notifyItemChanged(headerLayoutIdList.size() + pos);
     }
 
     public void addItem(T item) {
-        dataList.add(item);
-        mainList.add(item);
+        if (useFilter()) {
+            dataList.add(item);
+            mainList.add(item);
+        } else {
+            dataList.add(item);
+        }
         notifyItemInserted(getItemCount() - (footerLayout == 0 ? 1 : 2));
     }
 
@@ -516,7 +536,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
 
     /**
      * filter local main data list, it can use any time, it won't change the main data list.
-     *
+     * 列表过滤器
      * @param mainList
      * @return
      */
@@ -524,6 +544,14 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
         List<T> list = new ArrayList<>();
         list.addAll(mainList);
         return list;
+    }
+
+    /**
+     * 是否使用过滤列表
+     * @return
+     */
+    protected boolean useFilter() {
+        return false;
     }
 
   /*  *//**
@@ -541,280 +569,5 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
     public interface OnItemLongClickListener<T> {
         void onItemLongClick(CustomHolder holder, T item);
     }*/
-
-    /**
-     * 自定义Holder
-     * 可用于不同的View中
-     */
-    public static class CustomHolder extends RecyclerView.ViewHolder {
-
-        private SparseArray<View> viewList;
-        private View itemView;
-        private View.OnClickListener onClickListener;
-        private View.OnLongClickListener onLongClickListener;
-
-        public CustomHolder(View view) {
-            super(view);
-            this.itemView = view;
-            viewList = new SparseArray<>();
-            createHolder(this);
-        }
-
-        /**
-         * 创建时执行
-         * @param holder
-         */
-        protected void createHolder(CustomHolder holder){
-
-        }
-
-        public <T extends View> T getView(int viewId) {
-            View view = viewList.get(viewId);
-            if (view == null) {
-                view = itemView.findViewById(viewId);
-                viewList.put(viewId, view);
-            }
-            return (T) view;
-        }
-
-        public View getRootView() {
-            return itemView;
-        }
-
-        public XAdapter getRecyclerViewXAdapter(int recyclerViewId) {
-            RecyclerView rv = getView(recyclerViewId);
-            if (rv != null) {
-                RecyclerView.Adapter adapter = rv.getAdapter();
-                if (adapter != null && adapter instanceof XAdapter) {
-                    return (XAdapter) adapter;
-                }
-            }
-            return null;
-        }
-
-        public RecyclerView getRecyclerView(int recyclerViewId) {
-            View rv = getView(recyclerViewId);
-            if (rv != null && rv instanceof RecyclerView) {
-                return (RecyclerView) rv;
-            }
-            return null;
-        }
-
-        public MultiImageView getMultiImageView(int multiImageViewId) {
-            View v = getView(multiImageViewId);
-            if (v != null && v instanceof MultiImageView) {
-                return (MultiImageView) v;
-            }
-            return null;
-        }
-
-        public NiceSpinner getNiceSpinner(int niceSpinnerId) {
-            View v = getView(niceSpinnerId);
-            if (v != null && v instanceof NiceSpinner) {
-                return (NiceSpinner) v;
-            }
-            return null;
-        }
-
-        public TextView getTextView(int textViewId) {
-            View v = getView(textViewId);
-            if (v != null && v instanceof TextView) {
-                return (TextView) v;
-            }
-            return null;
-        }
-
-        public String getText(int textViewId) {
-            View v = getView(textViewId);
-            if (v != null && v instanceof TextView) {
-                return ((TextView) v).getText().toString();
-            }
-            return null;
-        }
-
-        public SimpleDraweeView getSimpleDraweeView(int draweeViewId) {
-            View v = getView(draweeViewId);
-            if (v != null && v instanceof SimpleDraweeView) {
-                return (SimpleDraweeView) v;
-            }
-            return null;
-        }
-
-        public BaseItemView getXItem(int viewId) {
-            View rv = getView(viewId);
-            if (rv != null && rv instanceof BaseItemView) {
-                return (BaseItemView) rv;
-            }
-            return null;
-        }
-
-        public CustomHolder setText(int viewId, @StringRes int resText) {
-            setTextForView(viewId, itemView.getResources().getString(resText));
-            return this;
-        }
-
-        public CustomHolder setText(int viewId, Object text) {
-            String string;
-            if (text == null) {
-                string = "";
-            } else if (text instanceof String) {
-                string = (String) text;
-            } else {
-                string = String.valueOf(text);
-            }
-            setTextForView(viewId, string);
-            return this;
-        }
-
-        public CustomHolder setFormat(int viewId, int formatRes, Object... objects) {
-            setTextForView(viewId, String.format(itemView.getContext().getString(formatRes), objects));
-            return this;
-        }
-
-        public CustomHolder setDate(int viewId, String dateFormat, long dateTime) {
-            setTextForView(viewId, DateUtils.formatDateTime(dateFormat, dateTime));
-            return this;
-        }
-
-        private CustomHolder setTextForView(int viewId, String text) {
-            View view = getView(viewId);
-            if (view != null) {
-               /* if (view instanceof EditText) {
-                    ((EditText) view).setText(text);
-                } else if (view instanceof Button) {
-                    ((Button) view).setText(text);
-                } else*/
-                if (view instanceof TextView) {
-                    ((TextView) view).setText(TextUtils.isEmpty(text) ? "" : text);
-                }
-            }
-            return this;
-        }
-
-        public CustomHolder setTextColor(int viewId, int textColor) {
-            View view = getView(viewId);
-            if (view != null) {
-                if (view instanceof TextView) {
-                    ((TextView) view).setTextColor(textColor);
-                }
-            }
-            return this;
-        }
-
-        public CustomHolder setImageUrl(int viewId, String url, ResizeOptions resizeOptions) {
-            View view = getView(viewId);
-            if (view != null) {
-                if (view instanceof SimpleDraweeView) {
-                    ImageUtils.setImageUriWithPreview((SimpleDraweeView) view, url, FrescoLoader.getPreviewUri(url), resizeOptions);
-                } else if (view instanceof ImageView) {
-                    ((ImageView) view).setImageURI(Uri.parse(url));
-                }
-
-            }
-            return this;
-        }
-
-        public CustomHolder setImageURI(int viewId, String url) {
-            return setImageUrl(viewId, url);
-        }
-
-        public CustomHolder setImageUrl(int viewId, String url) {
-            return setImageUrl(viewId, url, null);
-        }
-
-        private CustomHolder setImageURI(int viewId, Uri uri) {
-            View view = getView(viewId);
-            if (view != null) {
-                if (view instanceof SimpleDraweeView) {
-                    ((SimpleDraweeView) view).setImageURI(uri);
-//                    ImageUtils.setImageUriWithPreview((SimpleDraweeView) view, uri, FrescoLoader.getPreviewUri(uri.));
-                } else if (view instanceof ImageView) {
-                    ((ImageView) view).setImageURI(uri);
-                }
-            }
-            return this;
-        }
-
-        public CustomHolder setImageBitmap(int viewId, Bitmap bitmap) {
-            View view = getView(viewId);
-            if (view != null) {
-                if (view instanceof ImageView) {
-                    ((ImageView) view).setImageBitmap(bitmap);
-                }
-            }
-            return this;
-        }
-
-        public CustomHolder setImageRes(int viewId, @DrawableRes int drawableRes) {
-            View view = getView(viewId);
-            if (view != null) {
-                if (view instanceof ImageView) {
-                    ((ImageView) view).setImageResource(drawableRes);
-                }
-            }
-            return this;
-        }
-
-        public CustomHolder setClick() {
-            itemView.setOnClickListener(onClickListener);
-            return this;
-        }
-
-        public CustomHolder setClick(int viewId) {
-            View view = getView(viewId);
-            if (view != null) {
-                view.setOnClickListener(onClickListener);
-            }
-            return this;
-        }
-
-        public CustomHolder setClick(int viewId, View.OnClickListener clickListener) {
-            View view = getView(viewId);
-            if (view != null) {
-                view.setOnClickListener(clickListener);
-            }
-            return this;
-        }
-
-        public CustomHolder setLongClick(int viewId) {
-            View view = getView(viewId);
-            if (view != null) {
-                view.setOnLongClickListener(onLongClickListener);
-            }
-            return this;
-        }
-
-        public CustomHolder setEnable(int viewId, boolean enable) {
-            View view = getView(viewId);
-            if (view != null) {
-                view.setEnabled(enable);
-            }
-            return this;
-        }
-
-        public CustomHolder setSelected(int viewId, boolean selected) {
-            View view = getView(viewId);
-            if (view != null) {
-                view.setSelected(selected);
-            }
-            return this;
-        }
-
-        public CustomHolder setVisibility(int viewId, int visibility) {
-            View view = getView(viewId);
-            if (view != null) {
-                view.setVisibility(visibility);
-            }
-            return this;
-        }
-
-        public CustomHolder hideView(int viewId, boolean isHidden) {
-            return setVisibility(viewId, isHidden ? View.GONE : View.VISIBLE);
-        }
-
-        public CustomHolder showView(int viewId) {
-            return setVisibility(viewId, View.VISIBLE);
-        }
-    }
 
 }

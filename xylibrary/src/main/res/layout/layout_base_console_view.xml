@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="false"
+    android:orientation="vertical"
+    android:paddingTop="24dp"
+    tools:ignore="ResourceName">
+
+    <LinearLayout
+        android:id="@+id/llLog"
+        android:background="@color/transparentBlackSuperDark"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="true"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="36dp"
+            android:padding="2dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvTop"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/selector_item_white"
+                android:gravity="center"
+                android:textColor="@color/grayDark"
+                android:text="GoTop" />
+
+            <TextView
+                android:id="@+id/tvBottom"
+                android:layout_marginLeft="4dp"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/selector_item_white"
+                android:gravity="center"
+                android:textColor="@color/grayDark"
+                android:text="GoBottom" />
+
+            <ImageView
+                android:id="@+id/ivHide"
+                android:visibility="gone"
+                android:layout_marginLeft="4dp"
+                android:layout_width="36dp"
+                android:layout_height="match_parent"
+                android:background="@drawable/selector_item_white"
+                android:gravity="center"
+                android:src="@mipmap/text_indicator" />
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scrollbarAlwaysDrawHorizontalTrack="true"
+                android:scrollbars="vertical" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <View
+        android:id="@+id/vTouch"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</RelativeLayout>
+

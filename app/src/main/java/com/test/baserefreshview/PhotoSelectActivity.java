@@ -9,20 +9,20 @@ import com.xycode.xylibrary.base.PhotoSelectBaseActivity;
 import com.xycode.xylibrary.utils.TS;
 import com.yalantis.ucrop.UCrop;
 
-import butterknife.Bind;
-//import butterknife.BindView;
+//import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class PhotoSelectActivity extends PhotoSelectBaseActivity {
 
-    @Bind(R.id.btnCamera)
+    @BindView(R.id.btnCamera)
     Button btnCamera;
-    @Bind(R.id.btnAlbum)
+    @BindView(R.id.btnAlbum)
     Button btnAlbum;
-    @Bind(R.id.btnCancel)
+    @BindView(R.id.btnCancel)
     Button btnCancel;
-    @Bind(R.id.rlMain)
+    @BindView(R.id.rlMain)
     RelativeLayout rlMain;
 
     @Override

@@ -23,6 +23,7 @@ import android.widget.TextView;
 
 import com.alibaba.fastjson.JSONObject;
 import com.xycode.xylibrary.R;
+import com.xycode.xylibrary.adapter.CustomHolder;
 import com.xycode.xylibrary.adapter.XAdapter;
 import com.xycode.xylibrary.annotation.SaveState;
 import com.xycode.xylibrary.base.BaseActivity;
@@ -450,22 +451,22 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
     }
 
 
-    public XAdapter.CustomHolder getHeader() {
+    public CustomHolder getHeader() {
         return getHeader(HEADER_ONE);
     }
 
-    public XAdapter.CustomHolder getHeader(int headerKey) {
+    public CustomHolder getHeader(int headerKey) {
         int headerPos = adapter.getHeaderPos(headerKey);
         if (headerPos < 0) {
             return null;
         }
-        XAdapter.CustomHolder holder = (XAdapter.CustomHolder) getRecyclerView().getChildViewHolder(getRecyclerView().getChildAt(headerPos));
+        CustomHolder holder = (CustomHolder) getRecyclerView().getChildViewHolder(getRecyclerView().getChildAt(headerPos));
         return holder;
     }
 
-    public XAdapter.CustomHolder getFooter() {
+    public CustomHolder getFooter() {
         if (!getAdapter().hasFooter()) return null;
-        XAdapter.CustomHolder holder = (XAdapter.CustomHolder) getRecyclerView().getChildViewHolder(getRecyclerView().getChildAt(adapter.getItemCount() - 1));
+        CustomHolder holder = (CustomHolder) getRecyclerView().getChildViewHolder(getRecyclerView().getChildAt(adapter.getItemCount() - 1));
         return holder;
     }
 

@@ -16,15 +16,19 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.LinearLayout;
 
 import com.xycode.xylibrary.annotation.annotationHelper.StateBinder;
 import com.xycode.xylibrary.interfaces.Interfaces;
 import com.xycode.xylibrary.okHttp.Header;
 import com.xycode.xylibrary.okHttp.OkHttp;
 import com.xycode.xylibrary.okHttp.Param;
+import com.xycode.xylibrary.uiKit.views.LogLayout;
 import com.xycode.xylibrary.unit.MsgEvent;
+import com.xycode.xylibrary.utils.L;
 import com.xycode.xylibrary.utils.Tools;
 
 import org.greenrobot.eventbus.EventBus;
@@ -60,6 +64,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     private BaseActivity thisActivity;
 
     public static final String ACTION_FINISH_ACTIVITY = "FinishBaseActivity";
+    private LogLayout logLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +94,10 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        if(L.isDebug() && logLayout == null) {
+            logLayout = new LogLayout(this);
+            ((ViewGroup) getWindow().getDecorView().getRootView()).addView(logLayout.getView());
+        }
     }
 
     @Override
@@ -344,7 +353,9 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(MsgEvent event) {
-
+        if (logLayout != null && event.getEventName().equals(L.EVENT_LOG)) {
+            logLayout.refreshData();
+        }
     }
 
     @Subscribe

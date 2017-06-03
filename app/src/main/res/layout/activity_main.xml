@@ -68,4 +68,50 @@
             app:failureImage="@color/colorAccent"
             app:placeholderImage="@color/colorAccent" />
     </LinearLayout>
+
+    <View
+        android:id="@+id/v"
+        android:visibility="gone"
+        android:layout_marginTop="100dp"
+        android:background="@color/transparentBlackLite"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </View>
+
+   <!-- <android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="100dp"
+        android:layout_marginLeft="0dp"
+        android:id="@+id/dl"
+        android:clickable="false"
+        tools:ignore="ResourceName">
+
+        <RelativeLayout
+            android:id="@+id/rlRight"
+            android:background="@color/transparentBlackLite"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="right">
+
+
+            <com.xycode.xylibrary.xRefresher.XRefresher
+                android:layout_marginTop="60dp"
+                android:layout_width="match_parent"
+                android:layout_height="200dp" />
+
+            <TextView
+                android:id="@+id/tvLogs"
+                android:text="Logs"
+                android:textSize="30dp"
+                android:textColor="@color/black"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </RelativeLayout>
+
+    </android.support.v4.widget.DrawerLayout>-->
+
 </android.support.design.widget.CoordinatorLayout>
