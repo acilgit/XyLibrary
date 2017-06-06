@@ -12,6 +12,11 @@
     <color name="grayBgLiteB" >#BBBBBB</color>
     <color name="grayBgPress" >#CCC</color>
     <color name="transparent" >#00000000</color>
+    <color name="bgBlue" >#dd263f86</color>
+    <color name="logTextGolden" >#fdd383</color>
+    <color name="logTextDebug">#239fd9</color>
+    <color name="logTextInfo">#aaa</color>
+    <color name="logTextNomal">#eee</color>
     <color name="transparentWhiteLite" >#33FFFFFF</color>
     <color name="transparentWhiteDark" >#DEFFFFFF</color>
     <color name="transparentBlackLite" >#33000000</color>

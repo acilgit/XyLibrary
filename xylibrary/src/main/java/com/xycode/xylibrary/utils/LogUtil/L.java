@@ -1,11 +1,13 @@
-package com.xycode.xylibrary.utils;
+package com.xycode.xylibrary.utils.LogUtil;
 
 import android.content.Context;
-import android.os.Environment;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.xycode.xylibrary.R;
 import com.xycode.xylibrary.unit.MsgEvent;
+import com.xycode.xylibrary.utils.DateUtils;
+import com.xycode.xylibrary.utils.Tools;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -14,8 +16,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
@@ -42,14 +42,26 @@ public class L {
     private static List<LogItem> logList;
 
     public static List<LogItem> getLogList() {
-        if(logList == null) {
+        if (logList == null) {
             logList = new ArrayList<>();
         }
         return logList;
     }
 
+    public static void setLogList(List<LogItem> logList) {
+        L.logList = logList;
+    }
+
     public static void addLogItem(String msg) {
-        getLogList().add(new LogItem(DateUtils.formatDateTime("yyyy-M-d HH:mm:ss:SSS",DateUtils.getNow()), msg));
+        addLogItem(null, msg, LOG_TYPE_E);
+    }
+
+    public static void addLogItem(String title, String msg) {
+        addLogItem(title, msg, LOG_TYPE_E);
+
+    }
+    public static void addLogItem(String title, String msg, int type) {
+        getLogList().add(new LogItem(DateUtils.formatDateTime("yyyy-M-d HH:mm:ss:SSS", DateUtils.getNow()), title, msg, type));
         EventBus.getDefault().post(new MsgEvent(EVENT_LOG, null, null));
     }
 
@@ -71,82 +83,60 @@ public class L {
 
     public static void i(String msg) {
         if (isDebug()) {
-            addLogItem(msg);
+            addLogItem(null, msg, LOG_TYPE_I);
             Log.i(TAG, msg);
         }
     }
 
     public static void i(int msg) {
-        if (isDebug()) {
-            addLogItem(msg+"");
-            Log.i(TAG, msg + "");
-        }
+       i(msg +"");
     }
 
     public static void d(String msg) {
         if (isDebug()) {
-            addLogItem(msg);
+            addLogItem(null, msg, LOG_TYPE_D);
             Log.d(TAG, msg);
         }
     }
 
-    public static void e(String msg) {
-        e(TAG, msg);
-    }
-
     public static void v(String msg) {
         if (isDebug()) {
-            addLogItem(msg);
+            addLogItem(null, msg, LOG_TYPE_I);
             Log.v(TAG, msg);
         }
     }
 
-    public static void i(String tag, String msg) {
-        if (isDebug()) {
-            addLogItem(msg);
-            Log.i(tag, msg);
-        }
+    public static void e(String msg) {
+        e(null, msg);
     }
 
-    public static void d(String tag, String msg) {
-        if (isDebug()) {
-            addLogItem(msg);
-            Log.i(tag, msg);
-        }
-    }
 
-    public static void e(String tag, String msg) {
-        if (isDebug())
+    public static void e(String title, String msg) {
+        if (isDebug()) {
             if (isLong) {
-                eLong(tag, msg);
+                eLong(title, msg);
             } else {
-                addLogItem(msg);
-                Log.i(tag, msg);
+                Log.e(TAG, TextUtils.isEmpty(title) ? msg : title + "\n" + msg);
             }
-    }
-
-    public static void v(String tag, String msg) {
-        if (isDebug()) {
-            Log.i(tag, msg);
-            addLogItem(msg);
+            addLogItem(title, msg);
         }
     }
 
-    private static void eLong(String tag, String longString) {
+    private static void eLong(String title, String longString) {
         if (isDebug()) {
             int maxLogSize = 1000;
-            if (longString.length() > maxLogSize) {
-                for (int i = 0; i <= longString.length() / maxLogSize; i++) {
+            String content = TextUtils.isEmpty(title) ? longString : title + "\n" + longString;
+            if (content.length() > maxLogSize) {
+                for (int i = 0; i <= content.length() / maxLogSize; i++) {
                     int start = i * maxLogSize;
                     int end = (i + 1) * maxLogSize;
-                    end = end > longString.length() ? longString.length() : end;
-                    Log.e(tag, longString.substring(start, end));
+                    end = end > content.length() ? content.length() : end;
+                    Log.e(TAG, content.substring(start, end));
                 }
             } else {
-                Log.e(tag, longString);
+                Log.e(TAG, content);
             }
-            addLogItem(longString);
-            if(outputFile!=null) writeLogToOutputFile(longString);
+            if (outputFile != null) writeLogToOutputFile(content);
         }
     }
 
@@ -175,55 +165,6 @@ public class L {
         } catch (java.io.IOException e) {
             e.printStackTrace();
         }*/
-    }
-
-    private static ShareStorage storage;
-    private static final String crashSP = "crashSP";
-    private static final String CRASH_LOG = "crashLog";
-    private static final String CRASH_TIME = "crashTime";
-
-    private static ShareStorage getStorage(Context context) {
-        if (storage == null) {
-            storage = new ShareStorage(context, crashSP);
-        }
-        return storage;
-    }
-
-    public static void setCrashLog(Context context) {
-        if (!getStorage(context).getString(CRASH_TIME).isEmpty()) {
-            getLogList().add(new LogItem(getStorage(context).getString(CRASH_TIME), getStorage(context).getString(CRASH_LOG), 1));
-        }
-        Thread.setDefaultUncaughtExceptionHandler((t, ex) -> {
-            ByteArrayOutputStream baos = null;
-            PrintStream printStream = null;
-            try {
-                String info = null;
-                baos = new ByteArrayOutputStream();
-                printStream = new PrintStream(baos);
-                ex.printStackTrace(printStream);
-                byte[] data = baos.toByteArray();
-                info = new String(data);
-                data = null;
-                getStorage(context).put(CRASH_LOG, info);
-                getStorage(context).put(CRASH_TIME, DateUtils.formatDateTime("yyyy-M-d HH:mm:ss:SSS",DateUtils.getNow()));
-                getLogList().add(new LogItem(getStorage(context).getString(CRASH_TIME), getStorage(context).getString(CRASH_LOG), 1));
-                EventBus.getDefault().post(new MsgEvent(EVENT_LOG, null, null));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            try {
-                throw ex;
-            } catch (Throwable throwable) {
-                throwable.printStackTrace();
-            }
-            // 杀死该应用进程
-            try {
-                Thread.sleep(300);
-                android.os.Process.killProcess(android.os.Process.myPid());
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        });
     }
 
     private static void writeLog(Context context, Throwable ex) {
@@ -274,7 +215,7 @@ public class L {
      * layout: item_log.xml
      */
 
-    public static enum LogType{
+    public static enum LogType {
         Error(0, android.R.color.holo_red_light),
         Info(1, R.color.white),
         Debug(2, android.R.color.holo_blue_light);
@@ -283,10 +224,26 @@ public class L {
 
         }
     }
+
+    public static final int LOG_TYPE_E = 0;
+    public static final int LOG_TYPE_CRASH = 1;
+    public static final int LOG_TYPE_I = 2;
+    public static final int LOG_TYPE_D = 3;
+
     public static class LogItem {
         private String dateTime;
+        private String title;
         private String content;
+        /**
+         * 0: e         white
+         * 1: crash     red
+         * 2: i         gray
+         * 3: d         blue
+         */
         private int type = 0;
+
+        public LogItem() {
+        }
 
         public LogItem(String dateTime, String content) {
             this.dateTime = dateTime;
@@ -299,12 +256,33 @@ public class L {
             this.type = type;
         }
 
+        public LogItem(String dateTime, String title, String content) {
+            this.dateTime = dateTime;
+            this.title = title;
+            this.content = content;
+        }
+
+        public LogItem(String dateTime, String title, String content, int type) {
+            this.dateTime = dateTime;
+            this.title = title;
+            this.content = content;
+            this.type = type;
+        }
+
         public String getDateTime() {
             return dateTime;
         }
 
         public void setDateTime(String dateTime) {
             this.dateTime = dateTime;
+        }
+
+        public String getTitle() {
+            return title == null ? "" : title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
         }
 
         public String getContent() {

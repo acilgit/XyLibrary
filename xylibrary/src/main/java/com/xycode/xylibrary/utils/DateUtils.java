@@ -170,7 +170,7 @@ public class DateUtils {
         c2.setTimeInMillis(datePassed);
         months = c1.get(Calendar.MONTH) - c2.get(Calendar.MONTH);
         days = c1.get(Calendar.DAY_OF_MONTH) - c2.get(Calendar.DAY_OF_MONTH);
-        L.e("months" + "(" + c1.get(Calendar.MONTH) + ")" + c2.get(Calendar.MONTH));
+//        L.e("months" + "(" + c1.get(Calendar.MONTH) + ")" + c2.get(Calendar.MONTH));
         if (months < 0) {
             months = 12 + months;
         }

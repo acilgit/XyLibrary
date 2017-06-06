@@ -13,15 +13,9 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.SparseArray;
-import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.view.animation.LinearInterpolator;
 import android.widget.CheckBox;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -37,9 +31,7 @@ import com.xycode.xylibrary.annotation.SaveState;
 import com.xycode.xylibrary.base.BaseActivity;
 import com.xycode.xylibrary.base.BaseItemView;
 import com.xycode.xylibrary.base.PhotoSelectBaseActivity;
-import com.xycode.xylibrary.okHttp.OkHttp;
 import com.xycode.xylibrary.okHttp.Param;
-import com.xycode.xylibrary.uiKit.recyclerview.FloatingBarItemDecoration;
 import com.xycode.xylibrary.uiKit.views.MultiImageView;
 import com.xycode.xylibrary.uiKit.views.loopview.AdLoopView;
 import com.xycode.xylibrary.uiKit.views.nicespinner.NiceSpinner;
@@ -48,7 +40,7 @@ import com.xycode.xylibrary.unit.UrlData;
 import com.xycode.xylibrary.unit.ViewTypeUnit;
 import com.xycode.xylibrary.unit.WH;
 import com.xycode.xylibrary.utils.ImageUtils;
-import com.xycode.xylibrary.utils.L;
+import com.xycode.xylibrary.utils.LogUtil.L;
 import com.xycode.xylibrary.utils.TS;
 import com.xycode.xylibrary.utils.Tools;
 import com.xycode.xylibrary.xRefresher.XRefresher;
@@ -57,9 +49,6 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-
-import okhttp3.Call;
-import okhttp3.Response;
 
 
 /**
@@ -73,7 +62,7 @@ public class MainActivity extends ABaseActivity {
     @SaveState
     private int iii;
     NiceSpinner spinner;
-    @SaveState(SaveState.JSON_OBJECT)
+    @SaveState
     private ListBean mBean = new ListBean();
     @SaveState(SaveState.VIEW_SPARSEARRAY)
     private SparseArray<View> viewSparseArray = new SparseArray<>();
@@ -125,6 +114,7 @@ public class MainActivity extends ABaseActivity {
         spinner.attachDataSource(new ArrayList<StringData>());
         spinner.getStringData().getObject()
         */
+
 
 //        DrawerLayout drawerLayout = (DrawerLayout) getLayoutInflater().inflate(com.xycode.xylibrary.R.layout.layout_base_console_view, null);
 //        DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.dl);
@@ -360,7 +350,7 @@ public class MainActivity extends ABaseActivity {
 
 //        xRefresher.setStaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         xRefresher.setup(this, adapter, true, () -> {
-            postForm("https://www.taichi-tiger.com:8080/append/app_poster/selectAllPosters", new Param(), false, new OkHttp.OkResponseListener() {
+           /* postForm("https://www.taichi-tiger.com:8080/append/app_poster/selectAllPosters", new Param(), false, new OkHttp.OkResponseListener() {
                 @Override
                 public void handleJsonSuccess(Call call, Response response, JSONObject json) throws Exception {
                     TS.show("OK");
@@ -370,12 +360,15 @@ public class MainActivity extends ABaseActivity {
                 public void handleJsonError(Call call, Response response, JSONObject json) throws Exception {
                     TS.show("NO");
                 }
-            });
+            });*/
 
         }, new XRefresher.RefreshRequest<ContentBean>() {
             @Override
             public String setRequestParamsReturnUrl(Param params) {
-//                params.add("a", "b");
+                L.d("http://mxycsku.qiniucdn.com/group6/M00/98/E9/wKgBjVXdGPiAUmMHAALfY_C7_7U637.jpg");
+                L.i("http://mxycsku.qiniucdn.com/group6/M00/98/E9/wKgBjVXdGPiAUmMHAALfY_C7_7U637.jpg");
+                L.v("http://mxycsku.qiniucdn.com/group6/M00/98/E9/wKgBjVXdGPiAUmMHAALfY_C7_7U637.jpg,http://mxycsku.qiniucdn.com/group6/M00/98/E9/wKgBjVXdGPiAUmMHAALfY_C7_7U637.jpg,http://mxycsku.qiniucdn.com/group6/M00/98/E9/wKgBjVXdGPiAUmMHAALfY_C7_7U637.jpg");
+                params.add("aasdfasfsassa", "asfafasfasdfasfasfasfasfasfasdfasfdasdfadsfasdfsadfas");
 //                return "http://zhijia51.com/append/store_recommend/sell_house_page";
 //                return "http://www.zhijia51.com/append/store_recommend/sell_house_page";
                 return "https://www.taichi-tiger.com:8080/append/app_poster/selectAllPosters";

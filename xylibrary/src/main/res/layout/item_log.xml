@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:padding="8dp"
+    android:id="@+id/llItem"
     android:orientation="vertical"
      android:layout_height="wrap_content"
     android:layout_width="match_parent">
@@ -10,17 +11,27 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="0dp"
+        android:layout_marginBottom="2dp"
         android:text="DateTime"
         android:textSize="10dp"
         android:textColor="@color/grayLite" />
 
     <TextView
-        android:id="@+id/tvContent"
-        android:text="Content"
-        android:layout_marginTop="4dp"
+        android:id="@+id/tvTitle"
+        android:text="Title"
+        android:layout_marginTop="0dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="12dp"
-        android:textColor="@android:color/white" />
+        android:textColor="@color/logTextGolden" />
+
+    <TextView
+        android:id="@+id/tvContent"
+        android:text="Content"
+        android:layout_marginTop="0dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="12dp"
+        android:textColor="@color/logTextDebug" />
 
 </LinearLayout>

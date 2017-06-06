@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".utils.crashUtil.CrashActivity">
+
+    <TextView
+        android:text="程序运行中出现了下面的状况，请向我们反映，感谢！"
+        android:textColor="@color/grayDark"
+        android:padding="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <ScrollView
+        android:fillViewport="true"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
+
+        <TextView
+            android:id="@+id/tv"
+            android:textColor="@color/gray"
+            android:textSize="12dp"
+            android:padding="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </ScrollView>
+
+    <Button
+        android:id="@+id/btn"
+        android:text="关闭"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>

@@ -15,7 +15,6 @@ import android.provider.MediaStore;
 import android.text.Html;
 import android.text.Spanned;
 import android.view.View;
-import android.widget.TextView;
 
 import com.facebook.binaryresource.BinaryResource;
 import com.facebook.binaryresource.FileBinaryResource;
@@ -24,7 +23,6 @@ import com.facebook.common.executors.CallerThreadExecutor;
 import com.facebook.common.references.CloseableReference;
 import com.facebook.datasource.DataSource;
 import com.facebook.drawee.backends.pipeline.Fresco;
-import com.facebook.drawee.backends.pipeline.PipelineDraweeController;
 import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder;
 import com.facebook.drawee.controller.ControllerListener;
 import com.facebook.drawee.drawable.ScalingUtils;
@@ -42,6 +40,7 @@ import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.xycode.xylibrary.instance.FrescoLoader;
 import com.xycode.xylibrary.interfaces.Interfaces;
+import com.xycode.xylibrary.utils.LogUtil.L;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -260,7 +259,7 @@ public class ImageUtils {
     public static ByteArrayOutputStream compressBitmapToStream(Bitmap bitmap, int jpegQuality) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, jpegQuality, baos);
-        L.e("------quality-- after " + "  ------" + baos.toByteArray().length / 1024f);
+        L.i("------quality-- after " + "  ------" + baos.toByteArray().length / 1024f);
         return baos;
     }
 
@@ -268,7 +267,7 @@ public class ImageUtils {
         Bitmap bitmap = resizeToBitmap(filePath, targetMaxSide, targetMiniSide);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, jpegQuality, baos);
-        L.e("------quality-- after " + "  ------" + baos.toByteArray().length / 1024f);
+        L.i("("+filePath+")------quality-- after " + "  ------" + baos.toByteArray().length / 1024f);
         return baos;
     }
 
@@ -283,7 +282,7 @@ public class ImageUtils {
             bitmap.compress(Bitmap.CompressFormat.JPEG, jpegQuality, outputStream);
             outputStream.flush();
             outputStream.close();
-            L.d("saveBitmapToFile localFile" + "(" + targetFile.getPath() + ") -- (" + targetFile.length() / 1024 + "K)");
+            L.i("saveBitmapToFile localFile" + "(" + targetFile.getPath() + ") -- (" + targetFile.length() / 1024 + "K)");
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -313,11 +312,11 @@ public class ImageUtils {
             BitmapFactory.decodeByteArray(data, 0, data.length, info);
 
             int dim = Math.max(info.outWidth, info.outHeight);
-            L.e("pic Width: " + dim + "pic outHeight: " + info.outHeight);
+//            L.e("pic Width: " + dim + "pic outHeight: " + info.outHeight);
 //            if (!width) dim = Math.max(dim, info.outHeight);
 //            int ssize = sampleSize(dim, targetPix);
             int ssize = (targetPix > dim ? 1 : dim / targetPix);
-            L.d("pic Width: " + ssize);
+//            L.d("pic Width: " + ssize);
 
             options = new BitmapFactory.Options();
             options.inSampleSize = ssize;
@@ -345,10 +344,10 @@ public class ImageUtils {
 
         int min = Math.min(info.outWidth, info.outHeight);
         int max = Math.max(info.outWidth, info.outHeight);
-        L.e("pic Width: " + info.outWidth + "pic outHeight: " + info.outHeight);
+//        L.e("pic Width: " + info.outWidth + "pic outHeight: " + info.outHeight);
 
         int scaleSize = (minSide > min ? 1 : (minSide / min));
-        L.d("pic scaleSize: " + scaleSize);
+//        L.d("pic scaleSize: " + scaleSize);
 
         options = new BitmapFactory.Options();
         options.inSampleSize = scaleSize;
@@ -375,7 +374,7 @@ public class ImageUtils {
         BitmapFactory.decodeFile(filePath, info);
         int maxSide = Math.max(info.outWidth, info.outHeight);
         int minSide = Math.min(info.outWidth, info.outHeight);
-        L.d("sideLength outWidth:" + "(" + info.outWidth + ") outHeight:" + "(" + info.outHeight + ") ...:" + (1.0 * maxSide) / targetMaxSide);
+        L.i("sideLength outWidth:" + "(" + info.outWidth + ") outHeight:" + "(" + info.outHeight + ") ...:" + (1.0 * maxSide) / targetMaxSide);
         int scaleSsize = targetMaxSide >= maxSide ? 1 : (int) (Math.floor((1.0 * maxSide) / targetMaxSide));
         int nowMinSide = minSide / scaleSsize;
         if (scaleSsize > 1 && nowMinSide <= targetMiniSide) {
@@ -396,7 +395,7 @@ public class ImageUtils {
         int min = targetMiniSide;
         int newMaxSide = Math.max(h, w);
         int newMinSide = Math.min(h, w);
-        L.e("sideLength w:" + "(" + w + ") h:" + "(" + h + ") scaleSize:" + scaleSsize);
+//        L.e("sideLength w:" + "(" + w + ") h:" + "(" + h + ") scaleSize:" + scaleSsize);
         if (max >= newMaxSide || min >= newMinSide) {
         } else {
             float ratioMax = (1.0f * max / newMaxSide);
@@ -841,7 +840,7 @@ public class ImageUtils {
             outputStream.flush();
             outputStream.close();
             scanPhotoPath(context, file.getPath());
-            L.d("saveBitmapToFile localFile" + "(" + file.getPath() + ") -- (" + file.length() / 1024 + "K)");
+            L.i("saveBitmapToFile localFile" + "(" + file.getPath() + ") -- (" + file.length() / 1024 + "K)");
         } catch (Exception e) {
             e.printStackTrace();
             return false;

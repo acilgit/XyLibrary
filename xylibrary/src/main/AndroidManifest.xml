@@ -15,6 +15,9 @@
             android:name=".utils.cropUtils.CropActivity"
             android:screenOrientation="nosensor" />
         <activity
+            android:name=".utils.crashUtil.CrashActivity"
+            android:screenOrientation="nosensor" />
+        <activity
             android:name=".utils.downloadHelper.CompulsiveHelperActivity"
             android:theme="@style/UpdateDialogTheme"
             android:screenOrientation="nosensor" />

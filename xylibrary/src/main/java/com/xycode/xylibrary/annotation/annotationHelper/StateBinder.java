@@ -10,7 +10,7 @@ import com.alibaba.fastjson.JSON;
 import com.xycode.xylibrary.annotation.SaveState;
 import com.xycode.xylibrary.annotation.SerializableMap;
 import com.xycode.xylibrary.annotation.Sparsekey;
-import com.xycode.xylibrary.utils.L;
+import com.xycode.xylibrary.utils.LogUtil.L;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -19,7 +19,6 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Administrator on 2016/8/8.
@@ -53,36 +52,36 @@ public class StateBinder {
                                  */
                                 if (fieldClazz.isPrimitive()) {
                                     if (data.getClass() == Byte.class) {
-                                        L.d(field.getName() + " is byte");
+//                                        L.d(field.getName() + " is byte");
                                         bundle.putByte(field.getName(), (Byte) data);
                                     }
                                     if (data.getClass() == Short.class) {
-                                        L.d(field.getName() + " is short");
+//                                        L.d(field.getName() + " is short");
                                         bundle.putShort(field.getName(), (Short) data);
                                     }
                                     if (data.getClass() == Integer.class) {
-                                        L.d(field.getName() + " is int");
+//                                        L.d(field.getName() + " is int");
                                         bundle.putInt(field.getName(), (Integer) data);
                                     }
                                     if (data.getClass() == Long.class) {
-                                        L.d(field.getName() + " is long");
+//                                        L.d(field.getName() + " is long");
                                         bundle.putLong(field.getName(), (Long) data);
                                     }
                                     if (data.getClass() == Float.class) {
-                                        L.d(field.getName() + " is float");
+//                                        L.d(field.getName() + " is float");
                                         bundle.putFloat(field.getName(), (Float) data);
                                     }
                                     if (data.getClass() == Double.class) {
-                                        L.d(field.getName() + " is double");
+//                                        L.d(field.getName() + " is double");
                                         bundle.putDouble(field.getName(), (Double) data);
                                     }
 
                                     if (data.getClass() == Character.class) {
-                                        L.d(field.getName() + " is char");
+//                                        L.d(field.getName() + " is char");
                                         bundle.putChar(field.getName(), (Character) data);
                                     }
                                     if (data.getClass() == Boolean.class) {
-                                        L.d(field.getName() + " is boolean");
+//                                        L.d(field.getName() + " is boolean");
                                         bundle.putBoolean(field.getName(), (Boolean) data);
                                     }
                                 } else {
@@ -92,13 +91,13 @@ public class StateBinder {
                                     if (statue.value() == SaveState.NORMAL_OBJECT) {
                                         //String
                                         if (data.getClass() == String.class) {
-                                            L.d(field.getName() + " is String");
+//                                            L.d(field.getName() + " is String");
                                             bundle.putString(field.getName(), (String) data);
                                         } else if (!fieldClazz.isArray() && isImplementTarget(fieldClazz, Serializable.class)) {
-                                            L.d(field.getName() + " is Serializable");
+//                                            L.d(field.getName() + " is Serializable");
                                             bundle.putSerializable(field.getName(), (Serializable) data);
                                         } else if (!fieldClazz.isArray() && isImplementTarget(fieldClazz, Parcelable.class)) {
-                                            L.d(field.getName() + " is Parcelable");
+//                                            L.d(field.getName() + " is Parcelable");
                                             bundle.putParcelable(field.getName(), (Parcelable) data);
                                         } else if (data.getClass() == List.class) {
                                             Type fc = field.getGenericType();
@@ -107,14 +106,14 @@ public class StateBinder {
                                                     ParameterizedType pt = (ParameterizedType) fc;
                                                     Class genericClazz = (Class) pt.getActualTypeArguments()[0];
                                                     if (isImplementTarget(genericClazz, Parcelable.class)) {
-                                                        L.d(field.getName() + " is ParcelableList");
+//                                                        L.d(field.getName() + " is ParcelableList");
                                                         bundle.putParcelableArrayList(field.getName(), (ArrayList<? extends Parcelable>) data);
                                                     }
                                                 }
                                             }
                                         } else if (fieldClazz.isArray()) {
                                             if (isImplementTarget(fieldClazz.getComponentType(), Parcelable.class))
-                                                L.d(field.getName() + " is Parcelable array");
+//                                                L.d(field.getName() + " is Parcelable array");
                                             bundle.putParcelableArray(field.getName(), (Parcelable[]) data);
                                         } else if (fieldClazz == SparseArray.class) {
                                             boolean parcelable = false;
@@ -128,7 +127,7 @@ public class StateBinder {
                                                 }
                                             }
                                             if (parcelable) {
-                                                L.d(field.getName() + " is Parcelable sparseArray");
+//                                                L.d(field.getName() + " is Parcelable sparseArray");
                                                 bundle.putSparseParcelableArray(field.getName(), (SparseArray<? extends Parcelable>) data);
                                             } else {
                                                 switch (statue.value()) {
@@ -150,7 +149,7 @@ public class StateBinder {
                                     } else {
                                         switch (statue.value()) {
                                             case SaveState.JSON_OBJECT:
-                                                L.e(field.getName() + "'s json type");
+//                                                L.e(field.getName() + "'s json type");
                                                 if (data != null)
                                                     bundle.putString(field.getName(), JSON.toJSONString(data));
                                                 break;
@@ -184,36 +183,36 @@ public class StateBinder {
                                 Class fieldClazz = field.getType();
                                 if (fieldClazz.isPrimitive()) {
                                     if (data.getClass() == Byte.class) {
-                                        L.d(field.getName() + " is byte");
+//                                        L.d(field.getName() + " is byte");
                                         bundle.putByte(field.getName(), (Byte) data);
                                     }
                                     if (data.getClass() == Short.class) {
-                                        L.d(field.getName() + " is short");
+//                                        L.d(field.getName() + " is short");
                                         bundle.putShort(field.getName(), (Short) data);
                                     }
                                     if (data.getClass() == Integer.class) {
-                                        L.d(field.getName() + " is int");
+//                                        L.d(field.getName() + " is int");
                                         bundle.putInt(field.getName(), (Integer) data);
                                     }
                                     if (data.getClass() == Long.class) {
-                                        L.d(field.getName() + " is long");
+//                                        L.d(field.getName() + " is long");
                                         bundle.putLong(field.getName(), (Long) data);
                                     }
                                     if (data.getClass() == Float.class) {
-                                        L.d(field.getName() + " is float");
+//                                        L.d(field.getName() + " is float");
                                         bundle.putFloat(field.getName(), (Float) data);
                                     }
                                     if (data.getClass() == Double.class) {
-                                        L.d(field.getName() + " is double");
+//                                        L.d(field.getName() + " is double");
                                         bundle.putDouble(field.getName(), (Double) data);
                                     }
 
                                     if (data.getClass() == Character.class) {
-                                        L.d(field.getName() + " is char");
+//                                        L.d(field.getName() + " is char");
                                         bundle.putChar(field.getName(), (Character) data);
                                     }
                                     if (data.getClass() == Boolean.class) {
-                                        L.d(field.getName() + " is boolean");
+//                                        L.d(field.getName() + " is boolean");
                                         bundle.putBoolean(field.getName(), (Boolean) data);
                                     }
                                 } else {
@@ -221,13 +220,13 @@ public class StateBinder {
                                     if (statue.value() == SaveState.NORMAL_OBJECT) {
                                         //String
                                         if (data.getClass() == String.class) {
-                                            L.d(field.getName() + " is String");
+//                                            L.d(field.getName() + " is String");
                                             bundle.putString(field.getName(), (String) data);
                                         } else if (!fieldClazz.isArray() && isImplementTarget(fieldClazz, Serializable.class)) {
-                                            L.d(field.getName() + " is Serializable");
+//                                            L.d(field.getName() + " is Serializable");
                                             bundle.putSerializable(field.getName(), (Serializable) data);
                                         } else if (!fieldClazz.isArray() && isImplementTarget(fieldClazz, Parcelable.class)) {
-                                            L.d(field.getName() + " is Parcelable");
+//                                            L.d(field.getName() + " is Parcelable");
                                             bundle.putParcelable(field.getName(), (Parcelable) data);
                                         } else if (data.getClass() == List.class) {
                                             Type fc = field.getGenericType();
@@ -236,14 +235,14 @@ public class StateBinder {
                                                     ParameterizedType pt = (ParameterizedType) fc;
                                                     Class genericClazz = (Class) pt.getActualTypeArguments()[0];
                                                     if (isImplementTarget(genericClazz, Parcelable.class)) {
-                                                        L.d(field.getName() + " is ParcelableList");
+//                                                        L.d(field.getName() + " is ParcelableList");
                                                         bundle.putParcelableArrayList(field.getName(), (ArrayList<? extends Parcelable>) data);
                                                     }
                                                 }
                                             }
                                         } else if (fieldClazz.isArray()) {
                                             if (isImplementTarget(fieldClazz.getComponentType(), Parcelable.class))
-                                                L.d(field.getName() + " is Parcelable array");
+//                                                L.d(field.getName() + " is Parcelable array");
                                             bundle.putParcelableArray(field.getName(), (Parcelable[]) data);
                                         } else if (fieldClazz == SparseArray.class) {
                                             boolean parcelable = false;
@@ -257,7 +256,7 @@ public class StateBinder {
                                                 }
                                             }
                                             if (parcelable) {
-                                                L.d(field.getName() + " is Parcelable sparseArray");
+//                                                L.d(field.getName() + " is Parcelable sparseArray");
                                                 bundle.putSparseParcelableArray(field.getName(), (SparseArray<? extends Parcelable>) data);
                                             } else {
                                                 switch (statue.value()) {
@@ -279,7 +278,7 @@ public class StateBinder {
                                     } else {
                                         switch (statue.value()) {
                                             case SaveState.JSON_OBJECT:
-                                                L.e(field.getName() + "'s json type");
+//                                                L.e(field.getName() + "'s json type");
                                                 if (data != null)
                                                     bundle.putString(field.getName(), JSON.toJSONString(data));
                                                 break;

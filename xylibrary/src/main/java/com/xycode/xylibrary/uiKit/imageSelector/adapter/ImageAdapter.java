@@ -17,7 +17,7 @@ import com.xycode.xylibrary.uiKit.imageSelector.MultiImageSelectorActivity;
 import com.xycode.xylibrary.uiKit.imageSelector.MultiImageSelectorFragment;
 import com.xycode.xylibrary.uiKit.imageSelector.bean.ImageBean;
 import com.xycode.xylibrary.uiKit.imageSelector.utils.ImageSelectorUtils;
-import com.xycode.xylibrary.utils.L;
+import com.xycode.xylibrary.utils.LogUtil.L;
 
 import java.io.File;
 import java.util.ArrayList;

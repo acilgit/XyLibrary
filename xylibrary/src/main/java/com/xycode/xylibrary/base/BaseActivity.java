@@ -19,17 +19,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.LinearLayout;
 
 import com.xycode.xylibrary.annotation.annotationHelper.StateBinder;
 import com.xycode.xylibrary.interfaces.Interfaces;
 import com.xycode.xylibrary.okHttp.Header;
 import com.xycode.xylibrary.okHttp.OkHttp;
 import com.xycode.xylibrary.okHttp.Param;
-import com.xycode.xylibrary.uiKit.views.LogLayout;
+import com.xycode.xylibrary.utils.LogUtil.LogLayout;
 import com.xycode.xylibrary.unit.MsgEvent;
-import com.xycode.xylibrary.utils.L;
-import com.xycode.xylibrary.utils.Tools;
+import com.xycode.xylibrary.utils.LogUtil.L;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;

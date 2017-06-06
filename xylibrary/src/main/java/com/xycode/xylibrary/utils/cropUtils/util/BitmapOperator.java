@@ -9,7 +9,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 
-import com.xycode.xylibrary.utils.L;
+import com.xycode.xylibrary.utils.LogUtil.L;
 
 import java.io.File;
 import java.io.FileDescriptor;
@@ -42,14 +42,14 @@ public class BitmapOperator {
         SaveResult saveResult = new SaveResult();
 
         if (outUri == null) {
-            L.e(TAG, "no save uri");
+            L.e("no save uri");
 
             File file = new File(context.getCacheDir() + "/crop" + UUID.randomUUID() + ".png");
             try {
                 file.createNewFile();
             } catch (IOException e) {
                 e.printStackTrace();
-                L.e(TAG, "create file failure");
+                L.e("create file failure");
 
                 saveResult.isOK = false;
                 return saveResult;
@@ -57,7 +57,7 @@ public class BitmapOperator {
             outUri = Uri.fromFile(file);
         }
 
-        L.d(TAG, "save to " + outUri.toString());
+        L.d("save to " + outUri.toString());
 
         Bitmap.CompressFormat outFormat;
         String suffix = UriUtil.getExtensionFromMimeType(context, outUri);

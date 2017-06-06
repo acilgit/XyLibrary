@@ -43,15 +43,27 @@
                 android:textColor="@color/grayDark"
                 android:text="GoBottom" />
 
+            <TextView
+                android:id="@+id/tvClear"
+                android:layout_marginLeft="4dp"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.3"
+                android:background="@drawable/selector_item_white"
+                android:gravity="center"
+                android:textColor="@color/grayDark"
+                android:text="Clear" />
+
             <ImageView
                 android:id="@+id/ivHide"
                 android:visibility="gone"
                 android:layout_marginLeft="4dp"
+                android:padding="4dp"
                 android:layout_width="36dp"
                 android:layout_height="match_parent"
                 android:background="@drawable/selector_item_white"
                 android:gravity="center"
-                android:src="@mipmap/text_indicator" />
+                android:src="@android:drawable/ic_menu_close_clear_cancel" />
 
         </LinearLayout>
 

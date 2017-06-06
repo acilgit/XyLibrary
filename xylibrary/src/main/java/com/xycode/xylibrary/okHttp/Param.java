@@ -24,4 +24,9 @@ public class Param extends HashMap<String, String> {
     public String getKey(String key) {
         return this.get(key) == null ? "" : this.get(key);
     }
+
+    @Override
+    public String toString() {
+        return "[Param]";
+    }
 }

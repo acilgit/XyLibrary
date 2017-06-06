@@ -7,7 +7,7 @@ import android.support.annotation.NonNull;
 
 import com.xycode.xylibrary.R;
 import com.xycode.xylibrary.utils.ImageUtils;
-import com.xycode.xylibrary.utils.L;
+import com.xycode.xylibrary.utils.LogUtil.L;
 
 import java.io.File;
 import java.net.URI;

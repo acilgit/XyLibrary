@@ -5,8 +5,7 @@ import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.Button;
 
-import com.xycode.xylibrary.base.BaseActivity;
-import com.xycode.xylibrary.utils.L;
+import com.xycode.xylibrary.utils.LogUtil.L;
 
 public class New1Activity extends ABaseActivity {
 

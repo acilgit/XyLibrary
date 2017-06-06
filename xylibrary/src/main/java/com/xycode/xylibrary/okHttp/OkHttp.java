@@ -7,19 +7,14 @@ import android.support.annotation.NonNull;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.xycode.xylibrary.base.BaseActivity;
-import com.xycode.xylibrary.utils.L;
+import com.xycode.xylibrary.utils.LogUtil.JsonTool;
+import com.xycode.xylibrary.utils.LogUtil.L;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-
-import javax.net.ssl.SSLSocketFactory;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -30,7 +25,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import okio.BufferedSink;
 
 /**
  * Created by XY on 2016/7/7.
@@ -114,14 +108,32 @@ public class OkHttp {
 
     public static RequestBody setFormBody(Param params, boolean addDefaultParams) {
         FormBody.Builder builder = new FormBody.Builder();
-        for (String key : params.keySet()) {
-            builder.add(key, params.get(key));
-        }
-        if (addDefaultParams) {
-            Param defaultParams = okInit.setDefaultParams(new Param());
-            for (String key : defaultParams.keySet()) {
-                builder.add(key, defaultParams.get(key));
+        try {
+            for (String key : params.keySet()) {
+                builder.add(key, params.get(key));
             }
+            if (addDefaultParams) {
+                Param defaultParams = okInit.setDefaultParams(new Param());
+                for (String key : defaultParams.keySet()) {
+                    builder.add(key, defaultParams.get(key));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            StringBuffer sb = new StringBuffer();
+            for (String key : params.keySet()) {
+                if(sb.length()>0) sb.append("\n");
+                sb.append("  ").append(key).append(": ").append(params.get(key));
+            }
+            if (addDefaultParams) {
+                Param defaultParams = okInit.setDefaultParams(new Param());
+                for (String key : defaultParams.keySet()) {
+                    if(sb.length()>0) sb.append("\n");
+                    sb.append("  ").append(key).append(": ").append(defaultParams.get(key));
+                }
+            }
+            L.e("[Params Error]", sb.toString());
+            throw e;
         }
         return builder.build();
     }
@@ -160,33 +172,51 @@ public class OkHttp {
      */
     private static Call postOrGet(final Activity activity, String url, final RequestBody body, final Header header, boolean addDefaultHeader, final OkResponseListener okResponseListener) {
         final Request.Builder builder = new Request.Builder().url(url);
+        StringBuffer sb = new StringBuffer();
+        String logTitle;
 
         if (body != null) {
             if (OkOptions.mediaType != null) {
 //                body.contentType() =
             }
             builder.post(body);
+            logTitle ="[POST] "+url;
         } else {
             builder.get();
+            logTitle ="[GET] "+url;
         }
+
+        if (body instanceof FormBody) {
+            for (int i = 0; i < ((FormBody) body).size(); i++) {
+                if (i == 0) sb.append("[Params]");
+                sb.append("\n  ").append(((FormBody) body).name(i)).append(": ").append(((FormBody) body).value(i));
+            }
+            if(sb.length()>0) sb.append("\n");
+        }
+        Header defaultHeader = okInit.setDefaultHeader(new Header());
+        if (header != null && header.size() > 0 || (addDefaultHeader && defaultHeader.size() > 0))
+            sb.append("[Headers]");
         if (addDefaultHeader) {
-            Header defaultHeader = okInit.setDefaultHeader(new Header());
             for (String key : defaultHeader.keySet()) {
                 builder.addHeader(key, defaultHeader.get(key));
+                sb.append("\n  ").append(key).append(": ").append(defaultHeader.get(key));
             }
         }
         if (header != null) {
             for (String key : header.keySet()) {
                 builder.addHeader(key, header.get(key));
+                sb.append("\n  ").append(key).append(": ").append(header.get(key));
             }
         }
         final Request request = builder.build();
         final Call call = getClient().newCall(request);
 
+        L.e(logTitle, sb.toString());
+
         new Thread(() -> {
             try {
                 final Response response = call.execute();
-                L.e("call cancel --> " + call.isCanceled());
+                if (call.isCanceled()) L.e("[Call canceled] " + url, "");
                 if (response != null) {
                     responseResult(response, call, okResponseListener, activity);
                     response.close();
@@ -275,15 +305,15 @@ public class OkHttp {
                 final JSONObject jsonObject = JSON.parseObject(strResult);
                 final int resultCode = okInit.judgeResultWhenFirstReceivedResponse(call, response, jsonObject);
                 if (okInit.resultSuccessByJudge(call, response, jsonObject, resultCode)) {
-                    L.e(call.request().url().url().toString() + " [resultJudgeFailed] --> " + strResult);
+                    L.e("[resultJudgeFailed] " + call.request().url().url().toString(), JsonTool.stringToJSON(strResult));
                     BaseActivity.dismissLoadingDialogByManualState();
                     return;
                 }
                 if (call.isCanceled()) return;
-                activity.runOnUiThread(() -> {
+                if (activity != null) activity.runOnUiThread(() -> {
                     switch (resultCode) {
                         case RESULT_SUCCESS:
-                            L.e(call.request().url().url().toString() + " [Success] --> " + strResult);
+                            L.e("[Success] " + call.request().url().url().toString(), JsonTool.stringToJSON(strResult));
                             try {
                                 okResponseListener.handleJsonSuccess(call, response, jsonObject);
                             } catch (Exception e) {
@@ -292,7 +322,7 @@ public class OkHttp {
 
                             break;
                         case RESULT_ERROR:
-                            L.e(call.request().url().url().toString() + " [Error] --> " + strResult);
+                            L.e("[Error] " + call.request().url().url().toString(), strResult);
                             try {
                                 okResponseListener.handleJsonError(call, response, jsonObject);
                                 okResponseListener.handleAllFailureSituation(call, resultCode);
@@ -302,7 +332,7 @@ public class OkHttp {
 
                             break;
                         case RESULT_VERIFY_ERROR:
-                            L.e(call.request().url().url().toString() + " [VerifyError] --> " + strResult);
+                            L.e("[VerifyError] " + call.request().url().url().toString(), strResult);
                             try {
                                 okResponseListener.handleJsonVerifyError(call, response, jsonObject);
                                 okResponseListener.handleAllFailureSituation(call, resultCode);
@@ -312,7 +342,7 @@ public class OkHttp {
 
                             break;
                         default:
-                            L.e(call.request().url().url().toString() + " [OtherResultCode] --> " + strResult);
+                            L.e("[OtherResultCode: "+resultCode+"] " + call.request().url().url().toString() , strResult);
                             try {
                                 okResponseListener.handleJsonOther(call, response, jsonObject);
                                 okResponseListener.handleAllFailureSituation(call, resultCode);
@@ -326,10 +356,10 @@ public class OkHttp {
             } catch (Exception e) {
                 e.printStackTrace();
                 final String parseErrorResult = responseStr;
-                L.e(call.request().url().url().toString() + " [JsonParseFailed] --> " + e.getMessage() + "\nResult: " + responseStr);
+                L.e("[JsonParseFailed] " + call.request().url().url().toString(), "[Error]\n" + e.getMessage() + "\n[Result]\n " + responseStr);
                 okInit.judgeResultParseResponseFailed(call, parseErrorResult, e);
                 if (call.isCanceled()) return;
-                activity.runOnUiThread(() -> {
+                if (activity != null) activity.runOnUiThread(() -> {
                     try {
                         okResponseListener.handleParseError(call, parseErrorResult);
                         okResponseListener.handleAllFailureSituation(call, RESULT_PARSE_FAILED);
@@ -340,10 +370,10 @@ public class OkHttp {
 
             }
         } else {
-            L.e(call.request().url().url().toString() + " [NetworkErrorCode] --> " + response.code());
+            L.e("[NetworkErrorCode: " + response.code() + "] " + call.request().url().url().toString(), "");
             okInit.receivedNetworkErrorCode(call, response);
             if (call.isCanceled()) return;
-            activity.runOnUiThread(() -> {
+            if (activity != null) activity.runOnUiThread(() -> {
                 try {
                     okResponseListener.handleResponseFailure(call, response);
                     okResponseListener.handleAllFailureSituation(call, NETWORK_ERROR_CODE);
@@ -363,7 +393,7 @@ public class OkHttp {
      */
     private static void responseResultFailure(final Call call, final OkResponseListener okResponseListener, Activity activity) {
         okInit.networkError(call, call.isCanceled());
-        L.e(call.request().url().url().toString() + " [networkError] --> ");
+        L.e("[networkError] " + call.request().url().url().toString(), "");
         BaseActivity.dismissLoadingDialogByManualState();
         if (okResponseListener != null && activity != null) {
             if (call.isCanceled()) return;
@@ -516,6 +546,7 @@ public class OkHttp {
 
         /**
          * 设置 Builder
+         *
          * @param builder
          */
         public void setOkHttpBuilder(OkHttpClient.Builder builder) {

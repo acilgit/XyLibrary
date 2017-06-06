@@ -72,10 +72,10 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
 
     private void init(Context context, List<T> dataList) {
         this.context = context;
+        if (dataList == null) {
+            dataList = new ArrayList<>();
+        }
         if (useFilter()) {
-            if (dataList == null) {
-                dataList = new ArrayList<>();
-            }
             this.dataList = new ArrayList<>();
             this.mainList = dataList;
             this.dataList.addAll(setFilterForAdapter(mainList));

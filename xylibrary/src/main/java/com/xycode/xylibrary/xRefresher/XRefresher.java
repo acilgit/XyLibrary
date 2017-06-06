@@ -31,7 +31,6 @@ import com.xycode.xylibrary.okHttp.OkHttp;
 import com.xycode.xylibrary.okHttp.Param;
 import com.xycode.xylibrary.uiKit.recyclerview.FlexibleDividerDecoration;
 import com.xycode.xylibrary.uiKit.recyclerview.HorizontalDividerItemDecoration;
-import com.xycode.xylibrary.utils.L;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -230,7 +229,6 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 int scrollState = recyclerView.getScrollState();
-                L.e("scrollState --> " + scrollState);
                 super.onScrollStateChanged(recyclerView, newState);
                 if (newState == RecyclerView.SCROLL_STATE_IDLE && swipeMore && lastVisibleItem + 2 >= getAdapter().getItemCount()) {
                     if ((!state.lastPage) && loadMoreState == LOADER_MORE) {

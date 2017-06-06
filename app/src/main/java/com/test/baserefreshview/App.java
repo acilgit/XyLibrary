@@ -1,29 +1,25 @@
 package com.test.baserefreshview;
 
-import android.app.Activity;
 import android.app.Application;
 import android.graphics.Point;
-import android.support.v7.app.AlertDialog;
 
 import com.alibaba.fastjson.JSONObject;
 import com.antfortune.freeline.FreelineCore;
 import com.antfortune.freeline.IDynamic;
 import com.facebook.drawee.backends.pipeline.Fresco;
-import com.facebook.drawee.view.SimpleDraweeView;
 import com.facebook.imagepipeline.backends.okhttp3.OkHttpImagePipelineConfigFactory;
 import com.facebook.imagepipeline.common.ResizeOptions;
 import com.facebook.imagepipeline.core.ImagePipelineConfig;
-import com.xycode.xylibrary.adapter.XAdapter;
 import com.xycode.xylibrary.instance.FrescoLoader;
 import com.xycode.xylibrary.okHttp.Header;
 import com.xycode.xylibrary.okHttp.OkHttp;
 import com.xycode.xylibrary.okHttp.Param;
 import com.xycode.xylibrary.okHttp.XSSSocketLFactory;
+import com.xycode.xylibrary.utils.crashUtil.CrashActivity;
 import com.xycode.xylibrary.unit.WH;
-import com.xycode.xylibrary.utils.L;
+import com.xycode.xylibrary.utils.LogUtil.L;
 import com.xycode.xylibrary.utils.TS;
 import com.xycode.xylibrary.utils.Tools;
-import com.xycode.xylibrary.utils.downloadHelper.DownloadHelper;
 import com.xycode.xylibrary.xRefresher.XRefresher;
 
 import java.util.HashMap;
@@ -64,7 +60,43 @@ public class App extends Application {
 
         TS.init(this);
         L.setDebugMode(true);
-        L.setCrashLog(this);
+        CrashActivity.setCrashOperation(this, crashItem -> {
+            L.e(crashItem.toString());
+          /*  OkHttp.postForm(CrashActivity.getInstance(), "https://www.taichi-tiger.com:8080/append/app_poster/selectAllPosters",
+                    OkHttp.setFormBody(new Param("pageSize", "1").add("page", "1")),
+                    false, new OkHttp.OkResponseListener() {
+                        @Override
+                        public void handleJsonSuccess(Call call, Response response, JSONObject json) throws Exception {
+                            TS.show("Ok");
+                        }
+
+                        @Override
+                        public void handleJsonError(Call call, Response response, JSONObject json) throws Exception {
+
+                        }
+
+                        @Override
+                        protected void handleAllFailureSituation(Call call, int resultCode) throws Exception {
+                            TS.show("Ok");
+                        }
+                    });*/
+       /* }, new ICrash() {
+            @Override
+            public int getLayoutId() {
+                return R.layout.activity_new1;
+            }
+
+            @Override
+            public void setViews(Activity activity) {
+                TextView tv = (TextView) activity.findViewById(R.id.tv);
+                tv.setText("heheheheheheheheh \n\n\n");
+
+                Button btn = (Button) activity.findViewById(R.id.btn);
+                btn.setOnClickListener(
+                        v -> TS.show("okok......")
+                );
+            }*/
+        });
 //        Fresco.initialize(this);
 
         FreelineCore.init(this, new IDynamic() {
