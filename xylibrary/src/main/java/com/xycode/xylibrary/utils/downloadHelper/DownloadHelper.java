@@ -23,6 +23,7 @@ import java.net.URL;
 /**
  * Created by XY on 2016-08-06.
  */
+@Deprecated
 public class DownloadHelper {
 
     private static DownloadHelper helper = null;

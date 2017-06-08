@@ -34,6 +34,7 @@ import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.xycode.xylibrary.Xy;
 import com.xycode.xylibrary.base.BaseActivity;
 import com.xycode.xylibrary.interfaces.Interfaces;
 import com.xycode.xylibrary.uiKit.recyclerview.HorizontalDividerItemDecoration;
@@ -65,6 +66,7 @@ import javax.net.ssl.HttpsURLConnection;
 /**
  * Utils
  * Created by Administrator on 2014/7/27.
+ * invoke Xy.init() first init Application
  */
 public class Tools {
 
@@ -83,35 +85,33 @@ public class Tools {
     /**
      * no "/" at the end
      *
-     * @param context
      * @return
      */
-    public static File getCacheDir(Context context) {
-        return context.getCacheDir();
+    public static File getCacheDir() {
+        return Xy.getContext().getCacheDir();
     }
 
-    public static File getFileDir(Context context) {
-        return context.getFilesDir();
+    public static File getFileDir() {
+        return Xy.getContext().getFilesDir();
     }
 
     /**
      * check application can only be invoked once
      *
-     * @param context
      * @return
      */
-    public static boolean isProcessRunning(Context context) {
+    public static boolean isProcessRunning() {
         int pid = android.os.Process.myPid();
-        String processAppName = getAppName(context, pid);
-        if (processAppName == null || !processAppName.equalsIgnoreCase(context.getPackageName())) {
+        String processAppName = getAppName(pid);
+        if (processAppName == null || !processAppName.equalsIgnoreCase(Xy.getContext().getPackageName())) {
             return false;
         }
         return true;
     }
 
-    private static String getAppName(Context context, int pid) {
+    private static String getAppName(int pid) {
         String processName = null;
-        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        ActivityManager activityManager = (ActivityManager) Xy.getContext().getSystemService(Context.ACTIVITY_SERVICE);
         List list = activityManager.getRunningAppProcesses();
         Iterator i = list.iterator();
         while (i.hasNext()) {
@@ -247,8 +247,8 @@ public class Tools {
      *
      * @param content
      */
-    public static void copyToClipboard(String content, Context context) {
-        ClipboardManager cmb = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+    public static void copyToClipboard(String content) {
+        ClipboardManager cmb = (ClipboardManager) Xy.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
         cmb.setText(content);
     }
 
@@ -259,13 +259,13 @@ public class Tools {
         return System.currentTimeMillis() * 10000 + atomicCounter.incrementAndGet();
     }
 
-    public static CharSequence getHtmlDrawableText(final Context context, int drawableId, String text, final int drawableHeightDP) {
+    public static CharSequence getHtmlDrawableText(int drawableId, String text, final int drawableHeightDP) {
         final String html = "<img src='" + drawableId + "'/>&nbsp;" + text;
         CharSequence charSequence = Html.fromHtml(html, new Html.ImageGetter() {
             @Override
             public Drawable getDrawable(String source) {
-                Drawable drawable = context.getResources().getDrawable(Integer.parseInt(source));
-                int dh = Tools.dp2px(context, (float) drawableHeightDP);
+                Drawable drawable = Xy.getContext().getResources().getDrawable(Integer.parseInt(source));
+                int dh = Tools.dp2px((float) drawableHeightDP);
                 drawable.setBounds(0, 0, dh * drawable.getIntrinsicWidth() / drawable.getIntrinsicHeight(), dh);
                 return drawable;
             }
@@ -273,7 +273,7 @@ public class Tools {
         return charSequence;
     }
 
-    public static CharSequence getHtmlDrawableText(final Context context, int drawableId, String text, int textColerRes, final int drawableHeightDP) {
+    public static CharSequence getHtmlDrawableText(int drawableId, String text, int textColerRes, final int drawableHeightDP) {
 
         StringBuffer tc = new StringBuffer("#" + Integer.toHexString(textColerRes));
         if (tc.length() == 9) tc.delete(1, 2);
@@ -287,8 +287,8 @@ public class Tools {
         CharSequence charSequence = Html.fromHtml(html, new Html.ImageGetter() {
             @Override
             public Drawable getDrawable(String source) {
-                Drawable drawable = context.getResources().getDrawable(Integer.parseInt(source));
-                int dh = Tools.dp2px(context, (float) drawableHeightDP);
+                Drawable drawable = Xy.getContext().getResources().getDrawable(Integer.parseInt(source));
+                int dh = Tools.dp2px((float) drawableHeightDP);
                 drawable.setBounds(0, 0, dh * drawable.getIntrinsicWidth() / drawable.getIntrinsicHeight(), dh);
                 return drawable;
             }
@@ -319,14 +319,14 @@ public class Tools {
         return contentUri;
     }
 
-    public static Uri getContentUriFromActivityResult(Activity activity, Intent data) {
+    public static Uri getContentUriFromActivityResult(Intent data) {
         Uri uri = data.getData();
         String type = data.getType();
         if (uri.getScheme().equals("file") && (type.contains("image/"))) {
             String path = uri.getEncodedPath();
             if (path != null) {
                 path = Uri.decode(path);
-                ContentResolver cr = activity.getContentResolver();
+                ContentResolver cr = Xy.getContext().getContentResolver();
                 StringBuffer buff = new StringBuffer();
                 buff.append("(").append(MediaStore.Images.ImageColumns.DATA).append("=")
                         .append("'" + path + "'").append(")");
@@ -353,11 +353,11 @@ public class Tools {
     }
 
     @SuppressLint("NewApi")
-    public static Uri getFilePathByUri(final Context context, final Uri uri) {
+    public static Uri getFilePathByUri(final Uri uri) {
         String uriPath = null;
         final boolean isKitKat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
         // DocumentProvider
-        if (isKitKat && DocumentsContract.isDocumentUri(context, uri)) {
+        if (isKitKat && DocumentsContract.isDocumentUri(Xy.getContext(), uri)) {
             if (isExternalStorageDocument(uri)) {// ExternalStorageProvider
                 final String docId = DocumentsContract.getDocumentId(uri);
                 final String[] split = docId.split(":");
@@ -369,7 +369,7 @@ public class Tools {
                 final String id = DocumentsContract.getDocumentId(uri);
                 final Uri contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"),
                         Long.valueOf(id));
-                uriPath = getDataColumn(context, contentUri, null, null);
+                uriPath = getDataColumn(contentUri, null, null);
             } else if (isMediaDocument(uri)) {// MediaProvider
                 final String docId = DocumentsContract.getDocumentId(uri);
                 final String[] split = docId.split(":");
@@ -384,12 +384,12 @@ public class Tools {
                 }
                 final String selection = "_id=?";
                 final String[] selectionArgs = new String[]{split[1]};
-                uriPath = getDataColumn(context, contentUri, selection, selectionArgs);
+                uriPath = getDataColumn(contentUri, selection, selectionArgs);
             }
         } else if ("content".equalsIgnoreCase(uri.getScheme())) {// MediaStore
             // (and
             // general)
-            uriPath = getDataColumn(context, uri, null, null);
+            uriPath = getDataColumn(uri, null, null);
         } else if ("file".equalsIgnoreCase(uri.getScheme())) {// File
             uriPath = uri.getPath();
         }
@@ -407,18 +407,17 @@ public class Tools {
      * Get the value of the data column for this Uri. This is useful for
      * MediaStore Uris, and other file-based ContentProviders.
      *
-     * @param context       The context.
      * @param uri           The Uri to query.
      * @param selection     (Optional) Filter used in the query.
      * @param selectionArgs (Optional) Selection arguments used in the query.
      * @return The value of the _data column, which is typically a file path.
      */
-    private static String getDataColumn(Context context, Uri uri, String selection, String[] selectionArgs) {
+    private static String getDataColumn(Uri uri, String selection, String[] selectionArgs) {
         Cursor cursor = null;
         final String column = "_data";
         final String[] projection = {column};
         try {
-            cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs, null);
+            cursor = Xy.getContext().getContentResolver().query(uri, projection, selection, selectionArgs, null);
             if (cursor != null && cursor.moveToFirst()) {
                 final int column_index = cursor.getColumnIndexOrThrow(column);
                 return cursor.getString(column_index);
@@ -509,8 +508,8 @@ public class Tools {
      *
      * @return true，false
      */
-    public static boolean isAvailableNetWork(Context context) {
-        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+    public static boolean isAvailableNetWork() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) Xy.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivityManager != null) {
             NetworkInfo[] info = connectivityManager.getAllNetworkInfo();
             if (info != null) {
@@ -529,26 +528,26 @@ public class Tools {
      *
      * @return
      */
-    public static boolean isAppOnForeground(Context context) {
+    public static boolean isAppOnForeground() {
         // Returns a list of application processes that are running on the device
-        List<ActivityManager.RunningAppProcessInfo> appProcesses = ((ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE)).getRunningAppProcesses();
+        List<ActivityManager.RunningAppProcessInfo> appProcesses = ((ActivityManager) Xy.getContext().getSystemService(Context.ACTIVITY_SERVICE)).getRunningAppProcesses();
         if (appProcesses == null) return false;
 
         for (ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
             // The name of the process that this object is associated with.
 
-            if (appProcess.processName.equals(context.getPackageName()) && appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
+            if (appProcess.processName.equals(Xy.getContext().getPackageName()) && appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
                 return true;
             }
         }
         return false;
     }
 
-    public static String getTopActivityClassName(Context context) {
-        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+    public static String getTopActivityClassName() {
+        ActivityManager am = (ActivityManager) Xy.getContext().getSystemService(Context.ACTIVITY_SERVICE);
         List<ActivityManager.RunningTaskInfo> list = am.getRunningTasks(100);
         for (ActivityManager.RunningTaskInfo info : list) {
-            if (info.topActivity.getPackageName().equals(context.getPackageName()) && info.baseActivity.getPackageName().equals(context.getPackageName())) {
+            if (info.topActivity.getPackageName().equals(Xy.getContext().getPackageName()) && info.baseActivity.getPackageName().equals(Xy.getContext().getPackageName())) {
                 return info.topActivity.getClassName();
 //                L.e("baseActivity.getPackageName()"+"("+info.baseActivity.getPackageName()+")"+"baseActivity.getClassName()"+"("+info.baseActivity.getClassName()+")");
 //                break;
@@ -558,12 +557,12 @@ public class Tools {
         return "";
     }
 
-    public static List<String> getActivityClassNames(Context context) {
-        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+    public static List<String> getActivityClassNames() {
+        ActivityManager am = (ActivityManager) Xy.getContext().getSystemService(Context.ACTIVITY_SERVICE);
         List<ActivityManager.RunningTaskInfo> list = am.getRunningTasks(100);
         List<String> stringList = new ArrayList<>();
         for (ActivityManager.RunningTaskInfo info : list) {
-            if (info.baseActivity.getPackageName().equals(context.getPackageName())) {
+            if (info.baseActivity.getPackageName().equals(Xy.getContext().getPackageName())) {
                 stringList.add(info.baseActivity.getClassName());
             }
         }
@@ -698,7 +697,7 @@ public class Tools {
         return null;
     }
 
-    public static String getRealFilePath(final Context context, final Uri uri) {
+    public static String getRealFilePath(final Uri uri) {
         if (null == uri) return null;
         final String scheme = uri.getScheme();
         String data = null;
@@ -707,7 +706,7 @@ public class Tools {
         else if (ContentResolver.SCHEME_FILE.equals(scheme)) {
             data = uri.getPath();
         } else if (ContentResolver.SCHEME_CONTENT.equals(scheme)) {
-            Cursor cursor = context.getContentResolver().query(uri, new String[]{MediaStore.Images.ImageColumns.DATA}, null, null, null);
+            Cursor cursor = Xy.getContext().getContentResolver().query(uri, new String[]{MediaStore.Images.ImageColumns.DATA}, null, null, null);
             if (null != cursor) {
                 if (cursor.moveToFirst()) {
                     int index = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
@@ -724,16 +723,16 @@ public class Tools {
     /**
      * dp to px(pixel)
      */
-    public static int dp2px(Context context, float dpValue) {
-        final float scale = context.getResources().getDisplayMetrics().density;
+    public static int dp2px(float dpValue) {
+        final float scale = Xy.getContext().getResources().getDisplayMetrics().density;
         return (int) (dpValue * scale + 0.5f);
     }
 
     /**
      * px(pixel) to dp
      */
-    public static int px2dp(Context context, float pxValue) {
-        final float scale = context.getResources().getDisplayMetrics().density;
+    public static int px2dp(float pxValue) {
+        final float scale = Xy.getContext().getResources().getDisplayMetrics().density;
         return (int) (pxValue / scale + 0.5f);
     }
 
@@ -771,29 +770,29 @@ public class Tools {
         return loc;
     }
 
-    public static Point getScreenSize(Context context) {
+    public static Point getScreenSize() {
         if (screenSize == null) {
             screenSize = new Point();
-            ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getSize(screenSize);
+            ((WindowManager) Xy.getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getSize(screenSize);
         }
         return screenSize;
     }
 
 
-    public static void dialNumber(Context context, String phoneNo) {
+    public static void dialNumber(Activity activity, String phoneNo) {
         Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + phoneNo));
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(intent);
+        activity.startActivity(intent);
     }
 
-    public static void pickNumber(Activity context) {
+    public static void pickNumber(Activity activity) {
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType(ContactsContract.CommonDataKinds.Phone.CONTENT_TYPE);
-        context.startActivityForResult(intent, BaseActivity.REQUEST_CODE_GOT_PHONE_NUMBER);
+        activity.startActivityForResult(intent, BaseActivity.REQUEST_CODE_GOT_PHONE_NUMBER);
     }
 
-    public static ContactUnit receivedPhoneNumber(Activity context, Intent data) throws Exception{
-        ContentResolver reContentResolver = context.getContentResolver();
+    public static ContactUnit receivedPhoneNumber(Intent data) throws Exception {
+        ContentResolver reContentResolver = Xy.getContext().getContentResolver();
         String phone = "";
         String name = "";
         Cursor cursor = null;
@@ -807,7 +806,7 @@ public class Tools {
         } catch (Exception e) {
             throw e;
         } finally {
-           if(cursor != null) cursor.close();
+            if (cursor != null) cursor.close();
         }
         return new ContactUnit(name, phone);
     }
@@ -823,8 +822,8 @@ public class Tools {
         }
     }
 
-    public static HorizontalDividerItemDecoration getHorizontlDivider(Context context, @ColorRes int dividerColor, @DimenRes int dividerHeight, @DimenRes int marginLeft, @DimenRes int marginRight) {
-        HorizontalDividerItemDecoration.Builder builder = new HorizontalDividerItemDecoration.Builder(context)
+    public static HorizontalDividerItemDecoration getHorizontlDivider(@ColorRes int dividerColor, @DimenRes int dividerHeight, @DimenRes int marginLeft, @DimenRes int marginRight) {
+        HorizontalDividerItemDecoration.Builder builder = new HorizontalDividerItemDecoration.Builder(Xy.getContext())
                 .colorResId(dividerColor).sizeResId(dividerHeight)
                 .marginResId(marginLeft, marginRight);
         return builder.build();

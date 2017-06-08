@@ -11,6 +11,10 @@ public class CrashItem {
     private String manufacturer;
     private String model;
     private String errorMsg;
+    private String errorMsgTitle;
+    private String id;
+    private String user;
+    private String mark;
 
     public CrashItem() {
     }
@@ -71,6 +75,38 @@ public class CrashItem {
         this.errorMsg = errorMsg;
     }
 
+    public String getErrorMsgTitle() {
+        return errorMsgTitle;
+    }
+
+    public void setErrorMsgTitle(String errorMsgTitle) {
+        this.errorMsgTitle = errorMsgTitle;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getUser() {
+        return user;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
+    }
+
+    public String getMark() {
+        return mark;
+    }
+
+    public void setMark(String mark) {
+        this.mark = mark;
+    }
+
     @Override
     public String toString() {
         return "CrashItem{" +
@@ -80,6 +116,10 @@ public class CrashItem {
                 ", sdk=" + sdk +
                 ", manufacturer='" + manufacturer + '\'' +
                 ", model='" + model + '\'' +
+                ", id='" + id + '\'' +
+                ", user='" + user + '\'' +
+                ", mark='" + mark + '\'' +
+                ", errorMsgTitle='" + errorMsgTitle + '\'' +
                 ", errorMsg='" + errorMsg + '\'' +
                 '}';
     }

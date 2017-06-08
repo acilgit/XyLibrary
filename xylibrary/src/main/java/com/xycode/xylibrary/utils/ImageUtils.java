@@ -1,7 +1,5 @@
 package com.xycode.xylibrary.utils;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -38,6 +36,7 @@ import com.facebook.imagepipeline.image.CloseableImage;
 import com.facebook.imagepipeline.image.ImageInfo;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
+import com.xycode.xylibrary.Xy;
 import com.xycode.xylibrary.instance.FrescoLoader;
 import com.xycode.xylibrary.interfaces.Interfaces;
 import com.xycode.xylibrary.utils.LogUtil.L;
@@ -50,6 +49,7 @@ import java.io.IOException;
 
 /**
  * Created by XY on 2016/7/12.
+ * invoke Xy.init() first init Application
  */
 public class ImageUtils {
 
@@ -57,8 +57,8 @@ public class ImageUtils {
     private static final String TEMP_IMAGE_FILE_NAME = "tempImage.jpg";
     private static final String TEMP_CROP_IMAGE_FILE_NAME = "tempCropImage";
 
-    public static Uri getTempImageUri(Context context) {
-        File file = new File(context.getExternalCacheDir(), TEMP_IMAGE_FILE_NAME);
+    public static Uri getTempImageUri() {
+        File file = new File(Xy.getContext().getExternalCacheDir(), TEMP_IMAGE_FILE_NAME);
         if (!file.exists()) {
             try {
                 file.createNewFile();
@@ -70,8 +70,8 @@ public class ImageUtils {
         return Uri.parse("file://" + uri.getPath());
     }
 
-    public static Uri getTempCropImageUri(Context context) {
-        File file = new File(context.getFilesDir(), TEMP_CROP_IMAGE_FILE_NAME + DateUtils.getNow() + ".jpg");
+    public static Uri getTempCropImageUri() {
+        File file = new File(Xy.getContext().getFilesDir(), TEMP_CROP_IMAGE_FILE_NAME + DateUtils.getNow() + ".jpg");
         if (!file.exists()) {
             try {
                 file.createNewFile();
@@ -83,8 +83,8 @@ public class ImageUtils {
         return Uri.parse("file://" + uri.getPath());
     }
 
-    public static Uri getNewTempImageUri(Context context) {
-        File file = new File(context.getFilesDir(), TEMP_FILE_NAME + DateUtils.getNow() + ".jpg");
+    public static Uri getNewTempImageUri() {
+        File file = new File(Xy.getContext().getFilesDir(), TEMP_FILE_NAME + DateUtils.getNow() + ".jpg");
         if (!file.exists()) {
             try {
                 file.createNewFile();
@@ -101,11 +101,11 @@ public class ImageUtils {
         return s.endsWith(".gif");
     }*/
 
-    public static void scanPhotoPath(Context context, String filePath) {
+    public static void scanPhotoPath(String filePath) {
         Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         Uri uri = Uri.fromFile(new File(filePath));
         intent.setData(uri);
-        context.sendBroadcast(intent);
+        Xy.getContext().sendBroadcast(intent);
     }
 
     public static Uri getResUri(int resId) {
@@ -673,7 +673,7 @@ public class ImageUtils {
 
     }
 
-    public static void loadBitmapFromFresco(Context context, Uri uri, final IGetFrescoBitmap iGetFrescoBitmap) {
+    public static void loadBitmapFromFresco(Uri uri, final IGetFrescoBitmap iGetFrescoBitmap) {
         File localFile = getCachedImageOnFresco(uri);
         if (localFile != null) {
 
@@ -684,11 +684,11 @@ public class ImageUtils {
                 iGetFrescoBitmap.afterGotBitmap(getBitmapFromFile(localFile));
             }
         } else {
-            loadBitmapFromFrescoNet(context, uri, iGetFrescoBitmap);
+            loadBitmapFromFrescoNet(uri, iGetFrescoBitmap);
         }
     }
 
-    public static void loadBitmapFromFrescoNet(Context context, Uri uri, final IGetFrescoBitmap iGetFrescoBitmap) {
+    public static void loadBitmapFromFrescoNet(Uri uri, final IGetFrescoBitmap iGetFrescoBitmap) {
         if (uri == null) return;
         ImageRequestBuilder imageRequestBuilder = ImageRequestBuilder.newBuilderWithSource(uri).setAutoRotateEnabled(true);
 
@@ -697,7 +697,7 @@ public class ImageUtils {
             imageRequestBuilder.setResizeOptions(ro);
         }
         ImagePipeline pipeline = Fresco.getImagePipeline();
-        DataSource<CloseableReference<CloseableImage>> dataSource = pipeline.fetchDecodedImage(imageRequestBuilder.build(), context);
+        DataSource<CloseableReference<CloseableImage>> dataSource = pipeline.fetchDecodedImage(imageRequestBuilder.build(), Xy.getContext());
         dataSource.subscribe(new BaseBitmapDataSubscriber() {
             @Override
             protected void onNewResultImpl(Bitmap bitmap) {
@@ -829,7 +829,7 @@ public class ImageUtils {
         simpleDraweeView.setController(controller);
     }
 
-    public static boolean saveBitmapToFile(Context context, File file, Bitmap bitmap) {
+    public static boolean saveBitmapToFile(File file, Bitmap bitmap) {
         File dir = new File(file.getParent());
         if (!dir.exists()) {
             dir.mkdirs();
@@ -839,7 +839,7 @@ public class ImageUtils {
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
             outputStream.flush();
             outputStream.close();
-            scanPhotoPath(context, file.getPath());
+            scanPhotoPath( file.getPath());
             L.i("saveBitmapToFile localFile" + "(" + file.getPath() + ") -- (" + file.length() / 1024 + "K)");
         } catch (Exception e) {
             e.printStackTrace();
@@ -887,14 +887,13 @@ public class ImageUtils {
     /**
      * HTML TextView
      *
-     * @param activity
      * @param htmlText
      * @param holder
      * @param cbSaved
      */
-    public static void saveHtmlPicToLocal(Activity activity, String htmlText, Drawable holder, String serverAddress, Interfaces.CB cbSaved) {
+    public static void saveHtmlPicToLocal(String htmlText, Drawable holder, String serverAddress, Interfaces.CB cbSaved) {
         Html.fromHtml(htmlText, source -> {
-            File file = Tools.checkFile(Tools.getFileDir(activity).getAbsolutePath(), source);
+            File file = Tools.checkFile(Tools.getFileDir().getAbsolutePath(), source);
             if (!file.exists()) {
                 String path = source;
                 if (!path.startsWith("http")) {
@@ -903,8 +902,8 @@ public class ImageUtils {
                     }
                     path = serverAddress + path;
                 }
-                ImageUtils.loadBitmapFromFresco(activity, Uri.parse(path), bitmap -> {
-                    ImageUtils.saveBitmapToFile(activity, file, bitmap);
+                ImageUtils.loadBitmapFromFresco(Uri.parse(path), bitmap -> {
+                    ImageUtils.saveBitmapToFile(file, bitmap);
                     cbSaved.go(null);
                 });
             }
@@ -922,8 +921,8 @@ public class ImageUtils {
      * @param picFitScreen true:屏幕等宽， false:图片默认尺寸
      * @return
      */
-    public static Spanned getHtmlTextWithLocalPic(Activity activity, String htmlText, boolean picFitScreen) {
-        return getHtmlTextWithLocalPic(activity, htmlText, picFitScreen ? SCREEN_SIZE : DRAWABLE_SIZE);
+    public static Spanned getHtmlTextWithLocalPic( String htmlText, boolean picFitScreen) {
+        return getHtmlTextWithLocalPic(htmlText, picFitScreen ? SCREEN_SIZE : DRAWABLE_SIZE);
     }
 
     /**
@@ -933,13 +932,13 @@ public class ImageUtils {
      * @param drawableWidth 图片的显示尺寸
      * @return
      */
-    public static Spanned getHtmlTextWithLocalPic(Activity activity, String htmlText, int drawableWidth) {
-        return getHtmlTextWithLocalPicBase(activity, htmlText, drawableWidth);
+    public static Spanned getHtmlTextWithLocalPic(String htmlText, int drawableWidth) {
+        return getHtmlTextWithLocalPicBase(htmlText, drawableWidth);
     }
 
-    private static Spanned getHtmlTextWithLocalPicBase(Activity activity, String htmlText, int drawableWidth) {
+    private static Spanned getHtmlTextWithLocalPicBase(String htmlText, int drawableWidth) {
         return Html.fromHtml(htmlText, s -> {
-            File f = Tools.checkFile(Tools.getFileDir(activity).getAbsolutePath(), s);
+            File f = Tools.checkFile(Tools.getFileDir().getAbsolutePath(), s);
             if (!f.exists()) {
                 return null;
             }
@@ -949,7 +948,7 @@ public class ImageUtils {
             if (bmp != null) {
                 if (drawableWidth == SCREEN_SIZE) {
                     long newHeight = 0;
-                    int newWidth = Tools.getScreenSize(activity).x;
+                    int newWidth = Tools.getScreenSize().x;
                     newHeight = (newWidth * bmp.getHeight()) / bmp.getWidth();
                     d.setBounds(0, 0, newWidth, (int) newHeight);
                 } else if (drawableWidth == DRAWABLE_SIZE) {

@@ -328,7 +328,7 @@ public class StateBinder {
                                 bindSprareArray(field, map, target, data);
                                 break;
                         }
-                    } catch (IllegalAccessException e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
@@ -354,7 +354,7 @@ public class StateBinder {
                                 bindSprareArray(field, map, target, data);
                                 break;
                         }
-                    } catch (IllegalAccessException e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     } finally {
                         field.setAccessible(false);

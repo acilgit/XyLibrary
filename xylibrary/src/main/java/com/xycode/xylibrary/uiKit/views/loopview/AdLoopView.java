@@ -74,7 +74,7 @@ public class AdLoopView extends BaseLoopView {
         RelativeLayout contentView = new RelativeLayout(getContext());
         int viewWidth = ViewGroup.LayoutParams.MATCH_PARENT;
 //        int viewHeight = ViewGroup.LayoutParams.WRAP_CONTENT;
-        int viewHeight = (int) (1.0f *Tools.getScreenSize(getContext()).x / aspectRatio);
+        int viewHeight = (int) (1.0f *Tools.getScreenSize().x / aspectRatio);
         ViewGroup.LayoutParams viewParams = new ViewGroup.LayoutParams(viewWidth, viewHeight);
         contentView.setLayoutParams(viewParams);
         // 初始化ViewPager

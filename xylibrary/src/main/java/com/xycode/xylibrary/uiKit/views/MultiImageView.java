@@ -87,7 +87,7 @@ public class MultiImageView<T> extends LinearLayout {
 
     public MultiImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        pxImagePadding = (int) Math.ceil(Tools.dp2px(getContext(), 3.0f));
+        pxImagePadding = (int) Math.ceil(Tools.dp2px(3.0f));
         imageViewList = new SparseArray<>();
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.MultiImageView);
 

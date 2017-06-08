@@ -93,17 +93,17 @@ public abstract class BaseLazyFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if(!loaded && loadFailed) tryLoad();
+        if (!loaded && loadFailed) tryLoad();
     }
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        if(isVisibleToUser) {
+        if (isVisibleToUser) {
             tryLoad();
-            if(loaded) onShow();
+            if (loaded) onShow();
         } else {
-            if(loaded) onHide();
+            if (loaded) onHide();
         }
     }
 
@@ -114,10 +114,11 @@ public abstract class BaseLazyFragment extends Fragment {
     /**
      *
      */
-    protected void onShow(){
+    protected void onShow() {
 
     }
-    protected void onHide(){
+
+    protected void onHide() {
 
     }
 
@@ -136,7 +137,7 @@ public abstract class BaseLazyFragment extends Fragment {
         SimpleDraweeView siv = new SimpleDraweeView(getContext());
         siv.getHierarchy().setActualImageScaleType(ScalingUtils.ScaleType.FIT_XY);
         siv.setAspectRatio(1);
-        int side = Tools.dp2px(getContext(), 24);
+        int side = Tools.dp2px(24);
         RelativeLayout.LayoutParams ivParam = new RelativeLayout.LayoutParams(side, side);
         ivParam.addRule(RelativeLayout.CENTER_IN_PARENT);
         siv.setImageURI(ImageUtils.getResUri(R.mipmap.loading));

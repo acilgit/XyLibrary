@@ -3,6 +3,7 @@ package com.xycode.xylibrary.utils;
 import android.content.Context;
 
 import com.xycode.xylibrary.R;
+import com.xycode.xylibrary.Xy;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -185,7 +186,7 @@ public class DateUtils {
         return months;
     }
 
-    public static String getChatTime(Context context, long date) {
+    public static String getChatTime(long date) {
         int offSet = Calendar.getInstance().getTimeZone().getRawOffset();
         long today = (System.currentTimeMillis() + offSet) / 86400000;
         long start = (date + offSet) / 86400000;
@@ -206,11 +207,11 @@ public class DateUtils {
         String mSecond = String.valueOf(calendar.get(Calendar.SECOND));
         String strDes = "";
         if (intervalTime == 0) {
-            strDes = context.getString(R.string.text_today) + mHour + ":" + mMinute;
+            strDes ="今天" + mHour + ":" + mMinute;
         } else if (intervalTime == -1) {
-            strDes = context.getString(R.string.text_yestoday) + mHour + ":" + mMinute;
+            strDes = "昨天" + mHour + ":" + mMinute;
         } else if (intervalTime == -2) {
-            strDes = context.getString(R.string.text_before_yestoday) + mHour + ":" + mMinute;
+            strDes = "前天" + mHour + ":" + mMinute;
         } else if (mYear < mThisYear) {
             strDes = DateUtils.formatDateTime("yy-MM-dd HH:mm", date);
         } else {

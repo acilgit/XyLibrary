@@ -7,15 +7,17 @@ import android.support.annotation.LayoutRes;
 import android.view.View;
 import android.widget.Toast;
 
+import com.xycode.xylibrary.Xy;
+
 /**
  * Toast
  *
  * @author way
+ * invoke Xy.init() first init Application
  */
 public class TS {
 
     private static Handler uiHandler = new Handler(Looper.getMainLooper());
-    private static Context context;
     private static Toast toast;
     private static IToastLayoutSetter toastSetter;
 
@@ -24,36 +26,31 @@ public class TS {
      */
     private static int toastLayoutId = -1;
 
-    public static void init(@LayoutRes int toastLayoutId, Context defaultContext, IToastLayoutSetter toastSetter) {
-        TS.context = defaultContext;
+    public static void init(@LayoutRes int toastLayoutId, IToastLayoutSetter toastSetter) {
         TS.toastLayoutId = toastLayoutId;
         TS.toastSetter = toastSetter;
     }
 
-    public static void init(Context defaultContext) {
-        init(-1, defaultContext, null);
-    }
-
     public static void show(int resText) {
-        String text = TS.context.getString(resText);
-        show(TS.context, text, null);
+        String text = Xy.getContext().getString(resText);
+        show(Xy.getContext(), text, null);
     }
 
     public static void show(String text) {
-        show(TS.context, text, null);
+        show(Xy.getContext(), text, null);
     }
 
     public static void show(int resText, Object obj) {
-        String text = TS.context.getString(resText);
-        show(TS.context, text, obj);
+        String text = Xy.getContext().getString(resText);
+        show(Xy.getContext(), text, obj);
     }
 
     public static void show(String text, Object obj) {
-        show(TS.context, text, obj);
+        show(Xy.getContext(), text, obj);
     }
 
     public static void show(final Context context, final int resText, Object obj) {
-        show(context, TS.context.getString(resText), obj);
+        show(context, Xy.getContext().getString(resText), obj);
     }
 
     /**

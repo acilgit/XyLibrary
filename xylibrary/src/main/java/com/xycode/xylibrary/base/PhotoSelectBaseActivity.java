@@ -71,7 +71,7 @@ public abstract class PhotoSelectBaseActivity extends BaseActivity {
                     @Override
                     public void onGranted() {
                         Intent cameraIntent = new Intent("android.media.action.IMAGE_CAPTURE");
-                        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, ImageUtils.getTempImageUri(getThis()));
+                        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, ImageUtils.getTempImageUri());
                         cameraIntent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 0);
                         startActivityForResult(cameraIntent, REQUEST_CODE_CAMERA);
                     }
@@ -98,7 +98,7 @@ public abstract class PhotoSelectBaseActivity extends BaseActivity {
             final Uri[] resultUri = {null};
             switch (requestCode) {
                 case REQUEST_CODE_CAMERA:
-                    resultUri[0] = ImageUtils.getTempImageUri(getThis());
+                    resultUri[0] = ImageUtils.getTempImageUri();
                     break;
                 case REQUEST_CODE_ALBUM:
                     PermissionsManager.getInstance().requestPermissionsIfNecessaryForResult(getThis(),
@@ -106,7 +106,7 @@ public abstract class PhotoSelectBaseActivity extends BaseActivity {
                             new PermissionsResultAction() {
                                 @Override
                                 public void onGranted() {
-                                    resultUri[0] = Tools.getFilePathByUri(getThis(), data.getData());
+                                    resultUri[0] = Tools.getFilePathByUri(data.getData());
                                 }
 
                                 @Override
@@ -124,7 +124,7 @@ public abstract class PhotoSelectBaseActivity extends BaseActivity {
                     break;
             }
             if (isCrop) {
-                tempCropUri = ImageUtils.getTempCropImageUri(getThis());
+                tempCropUri = ImageUtils.getTempCropImageUri();
                 UCrop uCrop = UCrop.of(resultUri[0], tempCropUri)
                         .withMaxResultSize(cropParam.outWidth, cropParam.outHeight);
                 if (cropParam.aspectRatioX > 0 && cropParam.aspectRatioX > 0)

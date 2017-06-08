@@ -10,5 +10,5 @@ import android.support.annotation.LayoutRes;
 public interface ICrash {
     @LayoutRes int getLayoutId();
 
-    void setViews(Activity activity);
+    void setViews(CrashActivity activity, CrashItem crashItem);
 }

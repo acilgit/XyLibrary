@@ -92,7 +92,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        if(L.isDebug() && logLayout == null) {
+        if (L.isDebug() && logLayout == null) {
             logLayout = new LogLayout(this);
             ((ViewGroup) getWindow().getDecorView().getRootView()).addView(logLayout.getView());
         }
@@ -254,18 +254,22 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (!activities.contains(activity)) {
             activities.add(activity);
         }
-        for (Activity a : activities) {
-            Log.e(" addActivity ", a.getClass().getName());
+        StringBuilder sb = new StringBuilder("addActivity: [");
+        for (int i = 0; i < activities.size(); i++) {
+            sb.append(activities.get(i).getClass().getSimpleName()).append(i < activities.size() - 1 ? ", " : "]");
         }
+        L.i(sb.toString());
     }
 
     public static void removeActivity(Activity activity) {
         if (activities.contains(activity)) {
             activities.remove(activity);
         }
-        for (Activity a : activities) {
-            Log.e(" removeActivity ", a.getClass().getName());
+        StringBuilder sb = new StringBuilder("removeActivity: [");
+        for (int i = 0; i < activities.size(); i++) {
+            sb.append(activities.get(i).getClass().getSimpleName()).append(i < activities.size() - 1 ? ", " : "]");
         }
+        L.i(sb.toString());
     }
 
     public static void finishAllActivity() {
@@ -276,6 +280,11 @@ public abstract class BaseActivity extends AppCompatActivity {
                 activities.remove(activity);
             }
         }
+    }
+
+    public static void exitApplication() {
+        finishAllActivity();
+        android.os.Process.killProcess(android.os.Process.myPid());
     }
 
     /**
@@ -365,16 +374,17 @@ public abstract class BaseActivity extends AppCompatActivity {
      * okHttp request
      */
     public okhttp3.Call postForm(String url, Param param, boolean addDefaultHeader, OkHttp.OkResponseListener okResponseListener) {
-       return OkHttp.postForm(getThis(), url, setFormBody(param), null, addDefaultHeader, okResponseListener);
+        return OkHttp.postForm(getThis(), url, setFormBody(param), null, addDefaultHeader, okResponseListener);
     }
+
     public okhttp3.Call postForm(String url, RequestBody body, Header header, boolean addDefaultHeader, OkHttp.OkResponseListener okResponseListener) {
         okhttp3.Call call = OkHttp.postForm(getThis(), url, body, header, addDefaultHeader, okResponseListener);
         requestList.add(call);
         return call;
     }
 
-    public  RequestBody setFormBody(Param params) {
-       return OkHttp.setFormBody(params, false);
+    public RequestBody setFormBody(Param params) {
+        return OkHttp.setFormBody(params, false);
     }
 
     /**
@@ -406,7 +416,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     protected static class WindowMode {
-       public static int INPUT_ADJUST =  WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE | WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN;
+        public static int INPUT_ADJUST = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE | WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN;
     }
 
 

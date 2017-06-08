@@ -134,7 +134,7 @@ public class MultiImageSelectorFragment extends Fragment {
     }
 
     private void createPopupFolderList() {
-        Point point = Tools.getScreenSize(getActivity());
+        Point point = Tools.getScreenSize();
         int width = point.x;
         int height = (int) (point.y * (4.5f / 8.0f));
         folderPopupWindow = new ListPopupWindow(getActivity());

@@ -172,7 +172,7 @@ public class CropActivity extends BaseActivity {
             @Override
             public void run() {
                 File file = new File(mOutUri.getPath());
-                final boolean saveResult = ImageUtils.saveBitmapToFile(getThis(), file, bitmap);
+                final boolean saveResult = ImageUtils.saveBitmapToFile(file, bitmap);
 //                final BitmapOperator.SaveResult saveResult = BitmapOperator.saveToDisk(CropActivity.this, mOutUri, bitmap);
 
                 mHandler.post(new Runnable() {

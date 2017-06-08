@@ -2,10 +2,12 @@ package com.xycode.xylibrary.okHttp;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.xycode.xylibrary.Xy;
 import com.xycode.xylibrary.base.BaseActivity;
 import com.xycode.xylibrary.utils.LogUtil.JsonTool;
 import com.xycode.xylibrary.utils.LogUtil.L;
@@ -54,7 +56,7 @@ public class OkHttp {
     private static OkHttp.OkOptions okOptions;
 
     private static OkHttp instance;
-    private static Application application;
+    private static Context application;
 
     public static OkHttp getInstance() {
         if (instance == null) {
@@ -66,16 +68,16 @@ public class OkHttp {
     /**
      * init
      */
-    public static void init(Application app, IOkInit iOkInit) {
+    public static void init( IOkInit iOkInit) {
         if (okInit == null) {
-            application = app;
+            application = Xy.getContext();
             okInit = iOkInit;
         }
     }
 
-    public static void init(Application app, IOkInit iOkInit, OkOptions okOptions) {
+    public static void init(IOkInit iOkInit, OkOptions okOptions) {
         if (okInit == null) {
-            application = app;
+            application = Xy.getContext();
             okInit = iOkInit;
             OkHttp.okOptions = okOptions;
         }
@@ -342,7 +344,7 @@ public class OkHttp {
 
                             break;
                         default:
-                            L.e("[OtherResultCode: "+resultCode+"] " + call.request().url().url().toString() , strResult);
+                            L.e("[OtherResultCode: " + resultCode + "] " + call.request().url().url().toString(), JsonTool.stringToJSON(strResult));
                             try {
                                 okResponseListener.handleJsonOther(call, response, jsonObject);
                                 okResponseListener.handleAllFailureSituation(call, resultCode);

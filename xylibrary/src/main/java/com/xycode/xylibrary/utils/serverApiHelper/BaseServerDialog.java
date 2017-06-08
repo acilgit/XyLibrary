@@ -1,4 +1,4 @@
-package com.xycode.xylibrary.uiKit.dialog;
+package com.xycode.xylibrary.utils.serverApiHelper;
 
 import android.app.Activity;
 import android.content.Context;
@@ -32,9 +32,9 @@ public abstract class BaseServerDialog implements View.OnClickListener {
     private static final String serverSP = "serverSP";
     private static final String SERVER_LIST = "serverList";
 
-    private static ShareStorage getStorage(Context context) {
+    private static ShareStorage getStorage() {
         if (storage == null) {
-            storage = new ShareStorage(context, serverSP);
+            storage = new ShareStorage(serverSP);
         }
         return storage;
     }
@@ -57,16 +57,16 @@ public abstract class BaseServerDialog implements View.OnClickListener {
         rv = (RecyclerView) layout.findViewById(R.id.rv);
         rv.setLayoutManager(new LinearLayoutManager(context));
         serverList = new ArrayList<>();
-        String list = getStorage(context).getString(SERVER_LIST);
+        String list = getStorage().getString(SERVER_LIST);
         if (list.isEmpty()) {
             serverList.addAll(defaultServerUrlList());
         } else {
-            serverList = JSONArray.parseArray(getStorage(context).getString(SERVER_LIST), String.class);
+            serverList = JSONArray.parseArray(getStorage().getString(SERVER_LIST), String.class);
         }
 
         rv.setAdapter(new XAdapter<String>(context, serverList) {
             @Override
-            public void creatingHolder(CustomHolder holder, List<String> dataList, ViewTypeUnit viewTypeUnit) {
+            public void creatingHolder(CustomHolder holder, ViewTypeUnit viewTypeUnit) {
                 holder.setClick(R.id.tv);
             }
 
@@ -98,7 +98,7 @@ public abstract class BaseServerDialog implements View.OnClickListener {
                 String url = tl.getEditText().getText().toString();
                 if (!serverList.contains(url)) {
                     serverList.add(0, url);
-                    getStorage(context).put(SERVER_LIST, JSONArray.toJSONString(serverList));
+                    getStorage().put(SERVER_LIST, JSONArray.toJSONString(serverList));
                 }
                 setServerUrl(url);
             }

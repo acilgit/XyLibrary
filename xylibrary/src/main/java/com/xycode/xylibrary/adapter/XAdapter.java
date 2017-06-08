@@ -141,7 +141,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
                     holder.setOnClickListener(v -> handleItemViewClick(holder, dataList.get(holder.getAdapterPosition() - getHeaderCount()), v.getId(), viewTypeUnit));
 
                     holder.setOnLongClickListener(v -> handleItemViewLongClick(holder, dataList.get(holder.getAdapterPosition() - getHeaderCount()), v.getId(), viewTypeUnit));
-                    creatingHolder(holder, dataList, viewTypeUnit);
+                    creatingHolder(holder, viewTypeUnit);
                 }
             };
             return holder;
@@ -258,10 +258,9 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
      * 创建Holder时执行，只执行一次或被销毁后再次会被执行
      *
      * @param holder
-     * @param dataList
      * @param viewTypeUnit
      */
-    public void creatingHolder(CustomHolder holder, List<T> dataList, ViewTypeUnit viewTypeUnit) {
+    public void creatingHolder(CustomHolder holder, ViewTypeUnit viewTypeUnit) {
 
     }
 
@@ -294,7 +293,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
      * @return
      */
     protected ViewTypeUnit getViewTypeUnitForLayout(T item) {
-        return null;
+        return new ViewTypeUnit(0, R.layout.layout_blank);
     }
 
     /**

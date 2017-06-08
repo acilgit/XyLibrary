@@ -75,7 +75,7 @@ public class LogLayout {
             }
 
             @Override
-            public void creatingHolder(CustomHolder holder, List<L.LogItem> dataList, ViewTypeUnit viewTypeUnit) {
+            public void creatingHolder(CustomHolder holder, ViewTypeUnit viewTypeUnit) {
                 holder.setClick(R.id.tvContent, v -> {
                     selectItemPos = selectItemPos == holder.getAdapterPosition() ? -1 : holder.getAdapterPosition();
                     notifyDataSetChanged();
@@ -111,14 +111,14 @@ public class LogLayout {
             }
         };
 
-        screenWidth = Tools.getScreenSize(context).x;
-        screenHeight = Tools.getScreenSize(context).y;
+        screenWidth = Tools.getScreenSize().x;
+        screenHeight = Tools.getScreenSize().y;
         slideLayout(screenWidth);
         LinearLayout llLog = holder.getView(R.id.llLog);
         llLog.setLayoutTransition(new LayoutTransition());
 
         RecyclerView rv = holder.getRecyclerView(R.id.rv);
-        rv.addItemDecoration(Tools.getHorizontlDivider(context, R.color.grayLite, R.dimen.dividerLineHeight, R.dimen.zero, R.dimen.zero));
+        rv.addItemDecoration(Tools.getHorizontlDivider(R.color.grayLite, R.dimen.dividerLineHeight, R.dimen.zero, R.dimen.zero));
         rv.setLayoutManager(new LinearLayoutManager(context));
         rv.setAdapter(adapter);
         holder.setClick(R.id.tvTop, v -> {

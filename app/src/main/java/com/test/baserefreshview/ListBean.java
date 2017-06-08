@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Created by XY on 2016/7/8.
  */
-public class ListBean implements Serializable {
+public class ListBean {
 
     /**
      * status : 1

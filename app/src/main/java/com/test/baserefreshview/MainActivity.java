@@ -62,8 +62,8 @@ public class MainActivity extends ABaseActivity {
     @SaveState
     private int iii;
     NiceSpinner spinner;
-    @SaveState
-    private ListBean mBean = new ListBean();
+    @SaveState(SaveState.JSON_OBJECT)
+    private ListBean bean;
     @SaveState(SaveState.VIEW_SPARSEARRAY)
     private SparseArray<View> viewSparseArray = new SparseArray<>();
     @SaveState
@@ -289,7 +289,7 @@ public class MainActivity extends ABaseActivity {
                     case 2:
                         AdLoopView bannerView = holder.getView(R.id.banner);
                         setBanner(bannerView);
-                        ImageUtils.loadBitmapFromFresco(getThis(), Uri.parse("http://mxycsku.qiniucdn.com/group5/M00/5B/0C/wKgBfVXdYkqAEzl0AAL6ZFMAdKk401.jpg"), bitmap1 -> {
+                        ImageUtils.loadBitmapFromFresco(Uri.parse("http://mxycsku.qiniucdn.com/group5/M00/5B/0C/wKgBfVXdYkqAEzl0AAL6ZFMAdKk401.jpg"), bitmap1 -> {
                             Bitmap bmp = ImageUtils.doGaussianBlur(bitmap1, 30, false);
                             holder.setImageBitmap(R.id.iv, bmp);
                         });
@@ -376,7 +376,8 @@ public class MainActivity extends ABaseActivity {
 
             @Override
             public List<ContentBean> setListData(JSONObject json) {
-                return JSON.parseObject(json.toString(), ListBean.class).getContent();
+                bean = JSON.parseObject(json.toString(), ListBean.class);
+                return bean.getContent();
             }
 
             @Override
@@ -417,7 +418,7 @@ public class MainActivity extends ABaseActivity {
 
     private void setHtmlText(TextView tv) {
         Spanned spanned = Html.fromHtml(content, s -> {
-            File f = Tools.checkFile(Tools.getFileDir(getThis()).getAbsolutePath(), s);
+            File f = Tools.checkFile(Tools.getFileDir().getAbsolutePath(), s);
             if (!f.exists()) {
                 return null;
             }
@@ -426,7 +427,7 @@ public class MainActivity extends ABaseActivity {
 //                            drawable.addLevel(1, 1, d);
             if (bmp != null) {
                 long newHeight = 0;// 未知数
-                int newWidth = Tools.getScreenSize(getThis()).x;// 默认屏幕宽
+                int newWidth = Tools.getScreenSize().x;// 默认屏幕宽
                 newHeight = (newWidth * bmp.getHeight()) / bmp.getWidth();
                 d.setBounds(0, 0, newWidth, (int) newHeight);
                 d.setLevel(1);
@@ -495,7 +496,7 @@ public class MainActivity extends ABaseActivity {
             SimpleDraweeView siv = new SimpleDraweeView(getThis());
             siv.getHierarchy().setActualImageScaleType(ScalingUtils.ScaleType.FIT_XY);
             siv.setAspectRatio(1);
-            int side = Tools.dp2px(getThis(), 16);
+            int side = Tools.dp2px(16);
             RelativeLayout.LayoutParams ivParam = new RelativeLayout.LayoutParams(side, side);
             ivParam.addRule(RelativeLayout.CENTER_IN_PARENT);
             siv.setLayoutParams(ivParam);

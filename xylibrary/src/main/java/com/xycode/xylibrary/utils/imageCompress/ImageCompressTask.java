@@ -19,6 +19,7 @@ import java.util.UUID;
 /**
  * Created by Administrator on 2016/9/23 0023.
  */
+@Deprecated
 public class ImageCompressTask implements Runnable {
     public interface CompressListener {
         void done(List<File> files, List<File> fails, boolean allSuccess);

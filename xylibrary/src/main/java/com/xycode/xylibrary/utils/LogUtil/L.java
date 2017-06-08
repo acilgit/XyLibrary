@@ -168,7 +168,7 @@ public class L {
     }
 
     private static void writeLog(Context context, Throwable ex) {
-        LOG_DIR = Tools.getCacheDir(context) + "/log/";
+        LOG_DIR = Tools.getCacheDir() + "/log/";
         String info = null;
         ByteArrayOutputStream baos = null;
         PrintStream printStream = null;

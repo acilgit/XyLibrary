@@ -1,7 +1,10 @@
 package com.test.baserefreshview;
 
+import android.app.Activity;
 import android.app.Application;
 import android.graphics.Point;
+import android.widget.Button;
+import android.widget.TextView;
 
 import com.alibaba.fastjson.JSONObject;
 import com.antfortune.freeline.FreelineCore;
@@ -10,6 +13,7 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.imagepipeline.backends.okhttp3.OkHttpImagePipelineConfigFactory;
 import com.facebook.imagepipeline.common.ResizeOptions;
 import com.facebook.imagepipeline.core.ImagePipelineConfig;
+import com.xycode.xylibrary.Xy;
 import com.xycode.xylibrary.instance.FrescoLoader;
 import com.xycode.xylibrary.okHttp.Header;
 import com.xycode.xylibrary.okHttp.OkHttp;
@@ -20,6 +24,7 @@ import com.xycode.xylibrary.unit.WH;
 import com.xycode.xylibrary.utils.LogUtil.L;
 import com.xycode.xylibrary.utils.TS;
 import com.xycode.xylibrary.utils.Tools;
+import com.xycode.xylibrary.utils.crashUtil.ICrash;
 import com.xycode.xylibrary.xRefresher.XRefresher;
 
 import java.util.HashMap;
@@ -58,9 +63,9 @@ public class App extends Application {
             }
         });*/
 
-        TS.init(this);
+        Xy.init(this);
         L.setDebugMode(true);
-        CrashActivity.setCrashOperation(this, crashItem -> {
+        CrashActivity.setCrashOperation(crashItem -> {
             L.e(crashItem.toString());
           /*  OkHttp.postForm(CrashActivity.getInstance(), "https://www.taichi-tiger.com:8080/append/app_poster/selectAllPosters",
                     OkHttp.setFormBody(new Param("pageSize", "1").add("page", "1")),
@@ -80,7 +85,7 @@ public class App extends Application {
                             TS.show("Ok");
                         }
                     });*/
-       /* }, new ICrash() {
+        }, new ICrash() {
             @Override
             public int getLayoutId() {
                 return R.layout.activity_new1;
@@ -88,14 +93,11 @@ public class App extends Application {
 
             @Override
             public void setViews(Activity activity) {
-                TextView tv = (TextView) activity.findViewById(R.id.tv);
-                tv.setText("heheheheheheheheh \n\n\n");
-
                 Button btn = (Button) activity.findViewById(R.id.btn);
                 btn.setOnClickListener(
                         v -> TS.show("okok......")
                 );
-            }*/
+            }
         });
 //        Fresco.initialize(this);
 
@@ -127,7 +129,7 @@ public class App extends Application {
                 builder.sslSocketFactory(sslParams.sSLSocketFactory, sslParams.trustManager);
             }
         };
-        OkHttp.init(this, new OkHttp.IOkInit() {
+        OkHttp.init(new OkHttp.IOkInit() {
            @Override
             public int judgeResultWhenFirstReceivedResponse(Call call, Response response, JSONObject json) {
                 String resultCode = json.getString("status");
@@ -179,10 +181,10 @@ public class App extends Application {
         }, okOptions);
         OkHttp.setMaxTransFileCount(2);
 
-        ImagePipelineConfig config = OkHttpImagePipelineConfigFactory
+       /* ImagePipelineConfig config = OkHttpImagePipelineConfigFactory
                 .newBuilder(this, OkHttp.getClient())
                 .build();
-        Fresco.initialize(this, config);
+        Fresco.initialize(this, config);*/
 
         /*DownloadHelper.init("现在更新", "暂不更新", "正在下载中", "取消", new DownloadHelper.OnShowDownloadDialog() {
             @Override
@@ -223,7 +225,7 @@ public class App extends Application {
 //        XRefresher.setDefaultNoDataText("暂无数据", 1);
 
 //        FrescoLoader.init(url ->  null);
-        FrescoLoader.init(getInstance(), new FrescoLoader.OnFrescoListener() {
+        FrescoLoader.init(true, new FrescoLoader.OnFrescoListener() {
                     @Override
                     public String getPreviewUri(String url) {
                         WH wh = Tools.getWidthHeightFromFilename(url, "_wh", "_");
@@ -233,7 +235,7 @@ public class App extends Application {
                     @Override
                     public ResizeOptions getMaxResizeOptions(String url) {
                         WH wh = Tools.getWidthHeightFromFilename(url, "_wh", "_");
-                        Point screenSize = Tools.getScreenSize(getInstance());
+                        Point screenSize = Tools.getScreenSize();
                         int x, y;
                         if (wh.isAvailable() && wh.width> screenSize.x) {
                             x = screenSize.x;

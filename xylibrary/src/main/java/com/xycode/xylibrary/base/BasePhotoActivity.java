@@ -140,9 +140,9 @@ public abstract class BasePhotoActivity extends BaseActivity {
         llIndexContainer.removeAllViews();
         for (int i = 0; i < size; i++) {
             ImageView iv = new ImageView(getBaseContext());
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(Tools.dp2px(getBaseContext(), 5), Tools.dp2px(getBaseContext(), 5));
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(Tools.dp2px( 5), Tools.dp2px( 5));
             if (i != 0) {
-                lp.leftMargin = Tools.dp2px(getBaseContext(), 7);
+                lp.leftMargin = Tools.dp2px( 7);
             }
             iv.setLayoutParams(lp);
             iv.setBackgroundResource(R.drawable.abc_background_indicator);
@@ -199,7 +199,7 @@ public abstract class BasePhotoActivity extends BaseActivity {
             ivPhoto.setOnClickListener(v -> context.finish());
             ivPhoto.setOnLongClickListener(longClickListener);
             if (data.getUrl() != null) {
-                ImageUtils.loadBitmapFromFresco(context, Uri.parse(data.getUrl()), bitmap -> runOnUiThread(() -> {
+                ImageUtils.loadBitmapFromFresco(Uri.parse(data.getUrl()), bitmap -> runOnUiThread(() -> {
                     if (bitmap != null) {
                         float pRatio = (bitmap.getHeight() * 1.0f) / bitmap.getWidth();
                         float ratio = pRatio / 1.6f;

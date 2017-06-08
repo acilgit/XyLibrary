@@ -4,15 +4,32 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 
+import com.xycode.xylibrary.Xy;
+
 /**
  * Created by XY on 2016-07-27.
+ *
  */
 public class ShareStorage {
 
     private SharedPreferences storage;
+    SharedPreferences.OnSharedPreferenceChangeListener onSharedPreferenceChangeListener;
 
-    public ShareStorage(@NonNull Context context, @NonNull String preferenceName) {
-        storage = context.getSharedPreferences(preferenceName, Context.MODE_PRIVATE);
+    public ShareStorage(@NonNull String preferenceName) {
+        storage = Xy.getContext().getSharedPreferences(preferenceName, Context.MODE_PRIVATE);
+    }
+
+    public void setStorageOnChangeListener(SharedPreferences.OnSharedPreferenceChangeListener onSharedPreferenceChangeListener) {
+        if (storage != null) {
+            this.onSharedPreferenceChangeListener = onSharedPreferenceChangeListener;
+            storage.registerOnSharedPreferenceChangeListener(onSharedPreferenceChangeListener);
+        }
+    }
+
+    public void resetStorageOnChangeListene() {
+        if (storage != null && onSharedPreferenceChangeListener != null) {
+            storage.unregisterOnSharedPreferenceChangeListener(onSharedPreferenceChangeListener);
+        }
     }
 
     /**
@@ -80,4 +97,7 @@ public class ShareStorage {
         return storage.getLong(key, defValue);
     }
 
+    public SharedPreferences.Editor getEditor() {
+        return storage.edit();
+    }
 }

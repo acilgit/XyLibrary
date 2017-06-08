@@ -1,7 +1,6 @@
 package com.xycode.xylibrary.utils.crashUtil;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -13,6 +12,7 @@ import android.widget.TextView;
 
 import com.alibaba.fastjson.JSON;
 import com.xycode.xylibrary.R;
+import com.xycode.xylibrary.Xy;
 import com.xycode.xylibrary.base.BaseActivity;
 import com.xycode.xylibrary.interfaces.Interfaces;
 import com.xycode.xylibrary.utils.LogUtil.LogLayout;
@@ -47,7 +47,7 @@ public class CrashActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         CrashActivity.instance = this;
-        String json = getCrashStorage(this).getString(CRASH_LOG);
+        String json = getCrashStorage().getString(CRASH_LOG);
         List<L.LogItem> logItems = JSON.parseArray(json, L.LogItem.class);
         L.setLogList(logItems);
         errorMsg = getIntent().getStringExtra(MSG);
@@ -56,26 +56,22 @@ public class CrashActivity extends Activity {
     }
 
     private void initViews() {
-        if (iCrash != null) {
+        crashItem = getCrashItem();
+        if (cb != null) {
+            cb.go(crashItem);
+        }
+        if (iCrash != null && iCrash.getLayoutId() != 0) {
             setContentView(iCrash.getLayoutId());
-            iCrash.setViews(this);
+            iCrash.setViews(this, crashItem);
         } else {
-            setContentView(R.layout.activity_crash);
+            setContentView(R.layout.activity_base_crash);
 
             TextView tv = (TextView) findViewById(R.id.tv);
-            tv.setText(errorMsg);
+            tv.setText(crashItem != null ? crashItem.toString() : errorMsg);
             Button btn = (Button) findViewById(R.id.btn);
             btn.setOnClickListener(
                     v -> finish()
             );
-        }
-        try {
-            crashItem = getCrashItem();
-            if (cb != null) {
-                cb.go(crashItem);
-            }
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
         }
     }
 
@@ -88,21 +84,21 @@ public class CrashActivity extends Activity {
         }
     }
 
-    private static ShareStorage getCrashStorage(Context context) {
+    private static ShareStorage getCrashStorage() {
         if (storage == null) {
-            storage = new ShareStorage(context, crashSP);
+            storage = new ShareStorage(crashSP);
         }
         return storage;
     }
 
-    public static void setCrashOperation(Context context, Interfaces.CB<CrashItem> catchErrorCallback) {
-        setCrashOperation(context, catchErrorCallback, null);
+    public static void setCrashOperation(Interfaces.CB<CrashItem> catchErrorCallback) {
+        setCrashOperation( catchErrorCallback, null);
     }
+
     /**
-     * @param context
      * @param catchErrorCallback 返回true则执行相关操作，否则直接关闭程序
      */
-    public static void setCrashOperation(Context context, Interfaces.CB<CrashItem> catchErrorCallback, ICrash iCrash) {
+    public static void setCrashOperation(Interfaces.CB<CrashItem> catchErrorCallback, ICrash iCrash) {
         CrashActivity.cb = catchErrorCallback;
         CrashActivity.iCrash = iCrash;
         Thread.setDefaultUncaughtExceptionHandler((t, ex) -> {
@@ -126,39 +122,45 @@ public class CrashActivity extends Activity {
                 throwable.printStackTrace();
             }
             String jsonString = JSON.toJSONString(L.getLogList());
-            getCrashStorage(context).put(CRASH_LOG, jsonString);
-            Intent intent = new Intent(context, CrashActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.putExtra(CrashActivity.MSG, info);
-            context.startActivity(intent);
-
-            // 杀死该应用进程
-            BaseActivity.finishAllActivity();
-            try {
-                Thread.sleep(300);
-                android.os.Process.killProcess(android.os.Process.myPid());
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            if (getCrashStorage().getEditor().putString(CRASH_LOG, jsonString).commit()) {
+                Intent intent = new Intent(Xy.getContext(), CrashActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.putExtra(CrashActivity.MSG, info);
+                Xy.getContext().startActivity(intent);
+                // 杀死该应用进程
+                BaseActivity.exitApplication();
             }
+
         });
     }
 
-    protected CrashItem getCrashItem() throws PackageManager.NameNotFoundException {
-        //应用的版本名称和版本号
-        PackageManager pm = this.getPackageManager();
-        PackageInfo pi = pm.getPackageInfo(this.getPackageName(), PackageManager.GET_ACTIVITIES);
-        CrashItem crashItem = new CrashItem();
-        crashItem.setVersionName(pi.versionName);
-        crashItem.setVersionCode(pi.versionCode);
-        //android版本号
-        crashItem.setRelease(Build.VERSION.RELEASE);
-        crashItem.setSdk(Build.VERSION.SDK_INT);
-        //手机制造商
-        crashItem.setManufacturer(Build.MANUFACTURER);
-        //手机型号
-        crashItem.setModel(Build.MODEL);
-        crashItem.setErrorMsg(errorMsg);
+    protected CrashItem getCrashItem() {
+        CrashItem crashItem = null;
+        try {
+            //应用的版本名称和版本号
+            PackageManager pm = this.getPackageManager();
+            PackageInfo pi = pm.getPackageInfo(this.getPackageName(), PackageManager.GET_ACTIVITIES);
+            crashItem = new CrashItem();
+            crashItem.setVersionName(pi.versionName);
+            crashItem.setVersionCode(pi.versionCode);
+            //android版本号
+            crashItem.setRelease(Build.VERSION.RELEASE);
+            crashItem.setSdk(Build.VERSION.SDK_INT);
+            //手机制造商
+            crashItem.setManufacturer(Build.MANUFACTURER);
+            //手机型号
+            crashItem.setModel(Build.MODEL);
+            crashItem.setErrorMsg(errorMsg);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
         return crashItem;
     }
 
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        L.getLogList().clear();
+    }
 }
