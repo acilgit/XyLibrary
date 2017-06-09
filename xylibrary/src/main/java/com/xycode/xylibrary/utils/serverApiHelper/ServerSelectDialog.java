@@ -1,7 +1,5 @@
 package com.xycode.xylibrary.utils.serverApiHelper;
 
-import android.app.Activity;
-import android.content.Context;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,61 +8,46 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 
-import com.alibaba.fastjson.JSONArray;
 import com.xycode.xylibrary.R;
 import com.xycode.xylibrary.adapter.CustomHolder;
 import com.xycode.xylibrary.adapter.XAdapter;
 import com.xycode.xylibrary.unit.ViewTypeUnit;
-import com.xycode.xylibrary.utils.ShareStorage;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Administrator on 2016/9/6 0006.
  *
  */
-public abstract class BaseServerDialog implements View.OnClickListener {
+public class ServerSelectDialog implements View.OnClickListener {
 
-    private static ShareStorage storage;
-    private static final String serverSP = "serverSP";
-    private static final String SERVER_LIST = "serverList";
-
-    private static ShareStorage getStorage() {
-        if (storage == null) {
-            storage = new ShareStorage(serverSP);
-        }
-        return storage;
-    }
-
-    private Activity context;
+    private ServerControllerActivity activity;
     private AlertDialog.Builder builder;
     private AlertDialog dialog;
     private LinearLayout layout;
-    private TextInputLayout tl;
+    private EditText et;
+    //    private TextInputLayout tl;
     private RecyclerView rv;
     private List<String> serverList;
+    private final ApiHelper api;
 
-    public BaseServerDialog(Activity context) {
-        this.context = context;
-        builder = new AlertDialog.Builder(context);
-        layout = (LinearLayout) LayoutInflater.from(context).inflate(R.layout.dialog_base_server, null);
-        tl = (TextInputLayout) layout.findViewById(R.id.tl);
-        tl.getEditText().setText(getServerUrl());
-
+    public ServerSelectDialog(ServerControllerActivity activity) {
+        this.activity = activity;
+        api = activity.getApi();
+        builder = new AlertDialog.Builder(activity);
+         layout = (LinearLayout) LayoutInflater.from(activity).inflate(R.layout.dialog_base_server, null);
+//        tl = (TextInputLayout) layout.findViewById(R.id.tl);
+//        tl.getEditText().setText(api.getServer());
+        et = (EditText) layout.findViewById(R.id.et);
+        et.setText(api.getServer());
         rv = (RecyclerView) layout.findViewById(R.id.rv);
-        rv.setLayoutManager(new LinearLayoutManager(context));
-        serverList = new ArrayList<>();
-        String list = getStorage().getString(SERVER_LIST);
-        if (list.isEmpty()) {
-            serverList.addAll(defaultServerUrlList());
-        } else {
-            serverList = JSONArray.parseArray(getStorage().getString(SERVER_LIST), String.class);
-        }
+        rv.setLayoutManager(new LinearLayoutManager(activity));
+        serverList = api.getStoredServerList();
 
-        rv.setAdapter(new XAdapter<String>(context, serverList) {
+        rv.setAdapter(new XAdapter<String>(activity, serverList) {
             @Override
             public void creatingHolder(CustomHolder holder, ViewTypeUnit viewTypeUnit) {
                 holder.setClick(R.id.tv);
@@ -82,28 +65,29 @@ public abstract class BaseServerDialog implements View.OnClickListener {
 
             @Override
             protected void handleItemViewClick(CustomHolder holder, String item, int viewId, ViewTypeUnit viewTypeUnit) {
-                setServerUrl(item);
+                api.setServerUrl(item);
                 dismiss();
+                activity.finish();
             }
         });
-        Button btnNext = (Button) layout.findViewById(R.id.btn);
-        btnNext.setOnClickListener(this);
+        Button btn = (Button) layout.findViewById(R.id.btn);
+        btn.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View view) {
         if (view.getId() == R.id.btn) {
-            String string = tl.getEditText().getText().toString();
+            String string = et.getText().toString();
             if (!string.isEmpty()) {
-                String url = tl.getEditText().getText().toString();
+                String url = et.getText().toString();
+                api.setServerUrl(url);
                 if (!serverList.contains(url)) {
-                    serverList.add(0, url);
-                    getStorage().put(SERVER_LIST, JSONArray.toJSONString(serverList));
+                    serverList.add(url);
+                    api.setStoredServerList(serverList);
                 }
-                setServerUrl(url);
             }
             dismiss();
-
+            activity.finish();
         }
     }
 
@@ -127,9 +111,4 @@ public abstract class BaseServerDialog implements View.OnClickListener {
         }
     }
 
-    protected abstract void setServerUrl(String selectedUrl);
-
-    protected abstract String getServerUrl();
-
-    protected abstract List<String> defaultServerUrlList();
 }

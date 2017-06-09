@@ -21,6 +21,10 @@
             android:name=".utils.downloadHelper.CompulsiveHelperActivity"
             android:theme="@style/UpdateDialogTheme"
             android:screenOrientation="nosensor" />
+        <activity
+            android:name=".utils.serverApiHelper.ServerControllerActivity"
+            android:theme="@style/ServerControllerTheme"
+            android:screenOrientation="nosensor" />
     </application>
 
 </manifest>

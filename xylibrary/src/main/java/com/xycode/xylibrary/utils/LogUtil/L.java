@@ -4,7 +4,7 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.xycode.xylibrary.R;
+import com.xycode.xylibrary.Xy;
 import com.xycode.xylibrary.unit.MsgEvent;
 import com.xycode.xylibrary.utils.DateUtils;
 import com.xycode.xylibrary.utils.Tools;
@@ -23,17 +23,19 @@ import java.util.List;
 
 /**
  * Log
- *
- * @author way
+ * Debug模式下，才会输出到logcat
+ * 任何模式下Log都会输出到logList
+ * 可把logList在CrashActivity发送到服务器
  */
 public class L {
-    public static String EVENT_LOG = "EVENT_LOG";
+    public static final String SHOW_LOG = "SHOW_LOG_FOR_XY";
+    public static final String EVENT_LOG = "EVENT_LOG";
+    public static int MAX_LOG_LIST_SIZE_IN_RELEASE_MODE = 20;
 
-    private static boolean isDebug = true;
+    private static boolean showLog = true;
     private static String TAG = " Debug ";
     private static boolean isLong = true;
     private static File outputFile = null;
-
 
     private static String LOG_DIR;
     private static final String LOG_NAME = "CrashLog.txt";
@@ -53,24 +55,29 @@ public class L {
     }
 
     public static void addLogItem(String msg) {
-        addLogItem(null, msg, LOG_TYPE_E);
+        addLogItem(null, msg, LogItem.LOG_TYPE_E);
     }
 
     public static void addLogItem(String title, String msg) {
-        addLogItem(title, msg, LOG_TYPE_E);
+        addLogItem(title, msg, LogItem.LOG_TYPE_E);
 
     }
+
     public static void addLogItem(String title, String msg, int type) {
         getLogList().add(new LogItem(DateUtils.formatDateTime("yyyy-M-d HH:mm:ss:SSS", DateUtils.getNow()), title, msg, type));
+        if (!showLog() && getLogList().size() > MAX_LOG_LIST_SIZE_IN_RELEASE_MODE) {
+            getLogList().remove(0);
+        }
         EventBus.getDefault().post(new MsgEvent(EVENT_LOG, null, null));
     }
 
-    public static void setDebugMode(boolean isDebug) {
-        L.isDebug = isDebug;
+    public static void setShowLog(boolean showLog) {
+        L.showLog = showLog;
+        Xy.getStorage().getEditor().putBoolean(SHOW_LOG, showLog).commit();
     }
 
-    public static boolean isDebug() {
-        return isDebug;
+    public static boolean showLog() {
+        return showLog;
     }
 
     public static void setShowLongErrorMode(boolean isLong) {
@@ -82,28 +89,28 @@ public class L {
     }
 
     public static void i(String msg) {
-        if (isDebug()) {
-            addLogItem(null, msg, LOG_TYPE_I);
+        if (showLog()) {
             Log.i(TAG, msg);
         }
+        addLogItem(null, msg, LogItem.LOG_TYPE_I);
     }
 
     public static void i(int msg) {
-       i(msg +"");
+        i(msg + "");
     }
 
     public static void d(String msg) {
-        if (isDebug()) {
-            addLogItem(null, msg, LOG_TYPE_D);
+        if (showLog()) {
             Log.d(TAG, msg);
         }
+        addLogItem(null, msg, LogItem.LOG_TYPE_D);
     }
 
     public static void v(String msg) {
-        if (isDebug()) {
-            addLogItem(null, msg, LOG_TYPE_I);
+        if (showLog()) {
             Log.v(TAG, msg);
         }
+        addLogItem(null, msg, LogItem.LOG_TYPE_I);
     }
 
     public static void e(String msg) {
@@ -112,18 +119,18 @@ public class L {
 
 
     public static void e(String title, String msg) {
-        if (isDebug()) {
+        if (showLog()) {
             if (isLong) {
                 eLong(title, msg);
             } else {
                 Log.e(TAG, TextUtils.isEmpty(title) ? msg : title + "\n" + msg);
             }
-            addLogItem(title, msg);
         }
+        addLogItem(title, msg);
     }
 
     private static void eLong(String title, String longString) {
-        if (isDebug()) {
+        if (showLog()) {
             int maxLogSize = 1000;
             String content = TextUtils.isEmpty(title) ? longString : title + "\n" + longString;
             if (content.length() > maxLogSize) {
@@ -211,96 +218,11 @@ public class L {
     }
 
 
+    public static void setMaxLogListSizeInReleaseMode(int maxLogListSizeInReleaseMode) {
+        MAX_LOG_LIST_SIZE_IN_RELEASE_MODE = maxLogListSizeInReleaseMode;
+    }
+
     /**
      * layout: item_log.xml
      */
-
-    public static enum LogType {
-        Error(0, android.R.color.holo_red_light),
-        Info(1, R.color.white),
-        Debug(2, android.R.color.holo_blue_light);
-
-        LogType(int i, int color) {
-
-        }
-    }
-
-    public static final int LOG_TYPE_E = 0;
-    public static final int LOG_TYPE_CRASH = 1;
-    public static final int LOG_TYPE_I = 2;
-    public static final int LOG_TYPE_D = 3;
-
-    public static class LogItem {
-        private String dateTime;
-        private String title;
-        private String content;
-        /**
-         * 0: e         white
-         * 1: crash     red
-         * 2: i         gray
-         * 3: d         blue
-         */
-        private int type = 0;
-
-        public LogItem() {
-        }
-
-        public LogItem(String dateTime, String content) {
-            this.dateTime = dateTime;
-            this.content = content;
-        }
-
-        public LogItem(String dateTime, String content, int type) {
-            this.dateTime = dateTime;
-            this.content = content;
-            this.type = type;
-        }
-
-        public LogItem(String dateTime, String title, String content) {
-            this.dateTime = dateTime;
-            this.title = title;
-            this.content = content;
-        }
-
-        public LogItem(String dateTime, String title, String content, int type) {
-            this.dateTime = dateTime;
-            this.title = title;
-            this.content = content;
-            this.type = type;
-        }
-
-        public String getDateTime() {
-            return dateTime;
-        }
-
-        public void setDateTime(String dateTime) {
-            this.dateTime = dateTime;
-        }
-
-        public String getTitle() {
-            return title == null ? "" : title;
-        }
-
-        public void setTitle(String title) {
-            this.title = title;
-        }
-
-        public String getContent() {
-            return content;
-        }
-
-        public void setContent(String content) {
-            this.content = content;
-        }
-
-        public int getType() {
-            return type;
-        }
-
-        public void setType(int type) {
-            this.type = type;
-        }
-    }
-
-
 }

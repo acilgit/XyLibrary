@@ -1,6 +1,7 @@
 package com.xycode.xylibrary.utils.LogUtil;
 
 import android.animation.LayoutTransition;
+import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
@@ -10,6 +11,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
@@ -34,7 +36,7 @@ public class LogLayout {
 
     private final Context context;
     private RelativeLayout rootView;
-    private XAdapter<L.LogItem> adapter;
+    private XAdapter<LogItem> adapter;
     private int screenWidth;
     private int screenHeight;
     private CustomHolder holder;
@@ -68,9 +70,9 @@ public class LogLayout {
         rootView.setOnTouchListener(rootViewTouchListener);
         holder = new CustomHolder(rootView);
         holder.getView(R.id.vTouch).setOnTouchListener(slideBackTouchListener);
-        adapter = new XAdapter<L.LogItem>(context, L.getLogList()) {
+        adapter = new XAdapter<LogItem>(context, L.getLogList()) {
             @Override
-            protected ViewTypeUnit getViewTypeUnitForLayout(L.LogItem item) {
+            protected ViewTypeUnit getViewTypeUnitForLayout(LogItem item) {
                 return new ViewTypeUnit(0, R.layout.item_log);
             }
 
@@ -83,17 +85,17 @@ public class LogLayout {
             }
 
             @Override
-            public void bindingHolder(CustomHolder holder, List<L.LogItem> dataList, int pos) {
-                L.LogItem item = dataList.get(pos);
+            public void bindingHolder(CustomHolder holder, List<LogItem> dataList, int pos) {
+                LogItem item = dataList.get(pos);
                 int contentColor;
                 switch (item.getType()) {
-                    case L.LOG_TYPE_CRASH:
+                    case LogItem.LOG_TYPE_CRASH:
                         contentColor = android.R.color.holo_red_light;
                         break;
-                    case L.LOG_TYPE_D:
+                    case LogItem.LOG_TYPE_D:
                         contentColor = R.color.logTextDebug;
                         break;
-                    case L.LOG_TYPE_I:
+                    case LogItem.LOG_TYPE_I:
                         contentColor = R.color.logTextInfo;
                         break;
                     default:
@@ -261,13 +263,23 @@ public class LogLayout {
             Message newMsg = new Message();
             newMsg.what = 1;
             newMsg.obj = isHide ? x + step * i : x - step * i;
-            handler.sendMessageDelayed(newMsg, 5 * i);
+            handler.sendMessageDelayed(newMsg, 3 * i);
         }
         Message newMsg = new Message();
         newMsg.what = 1;
         newMsg.obj = isHide ? screenWidth : 0;
-        handler.sendMessageDelayed(newMsg, 5 * 39);
+        handler.sendMessageDelayed(newMsg, 3 * 39);
 
     }
 
+    /**
+     * 直接绑定到Activity
+     * @param activity
+     * @return
+     */
+    public static LogLayout attachLogLayoutToActivity(Activity activity) {
+        LogLayout logLayout = new LogLayout(activity);
+        ((ViewGroup) activity.getWindow().getDecorView().getRootView()).addView(logLayout.getView());
+        return logLayout;
+    }
 }

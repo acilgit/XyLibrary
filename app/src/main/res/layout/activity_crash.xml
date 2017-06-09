@@ -21,7 +21,7 @@
 
         <TextView
             android:layout_margin="24dp"
-            android:text="App在操作过程中遇到了问题，我们已接收到了，并会加紧处理。为您带来不便深感抱歉！"
+            android:text="App在操作过程中遇到了问题，为您带来不便深感抱歉！"
             android:textSize="14dp"
             android:layout_gravity="center_horizontal"
             android:layout_width="wrap_content"
@@ -33,6 +33,5 @@
         android:id="@+id/btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="关闭"
-        android:theme="@style/btnCommitFull" />
+        android:text="关闭" />
 </LinearLayout>

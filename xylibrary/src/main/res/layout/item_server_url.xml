@@ -8,6 +8,7 @@
             android:id="@+id/tv"
             android:text=""
             android:textSize="13dp"
+            android:textColor="@color/grayDark"
             android:padding="12dp"
             android:background="@drawable/selector_item_white"
             android:layout_width="match_parent"

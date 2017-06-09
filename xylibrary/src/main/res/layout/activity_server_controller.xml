@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tvClose"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/selector_item_transparent"
+        android:padding="8dp"
+        android:layout_gravity="right"
+        android:text="关闭"
+        android:textColor="@color/grayLite"
+        android:textSize="12dp" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvServer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:text="当前服务器地址："
+            android:textColor="@color/grayLite"
+            android:textSize="12dp" />
+
+        <Switch
+            android:id="@+id/swLog"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="显示操作日志: "
+            android:textColor="@color/grayLite" />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnReleaseServer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="0dp"
+        android:layout_marginTop="0dp"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp"
+        android:text="设为正式服务器"
+        android:textSize="13dp" />
+
+    <Button
+        android:id="@+id/btnDebugServer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="0dp"
+        android:layout_marginTop="2dp"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp"
+        android:text="设为测试服务器"
+        android:textSize="13dp" />
+
+    <Button
+        android:id="@+id/btnOptionServer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="0dp"
+        android:layout_marginTop="2dp"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp"
+        android:text="手动设置服务器"
+        android:textSize="13dp" />
+</LinearLayout>

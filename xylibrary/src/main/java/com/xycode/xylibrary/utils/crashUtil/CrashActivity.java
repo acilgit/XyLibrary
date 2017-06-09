@@ -15,10 +15,10 @@ import com.xycode.xylibrary.R;
 import com.xycode.xylibrary.Xy;
 import com.xycode.xylibrary.base.BaseActivity;
 import com.xycode.xylibrary.interfaces.Interfaces;
+import com.xycode.xylibrary.utils.LogUtil.LogItem;
 import com.xycode.xylibrary.utils.LogUtil.LogLayout;
 import com.xycode.xylibrary.utils.DateUtils;
 import com.xycode.xylibrary.utils.LogUtil.L;
-import com.xycode.xylibrary.utils.ShareStorage;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -29,8 +29,8 @@ public class CrashActivity extends Activity {
     public static ICrash iCrash;
     public static Interfaces.CB<CrashItem> cb;
     public static final String MSG = "msg";
-    private static ShareStorage storage;
-    private static final String crashSP = "crashSP";
+/*    private static ShareStorage storage;
+    private static final String CRASH_SP = "xyCrashSP";*/
     public static final String CRASH_LOG = "crashLog";
 
     private LogLayout logLayout;
@@ -47,8 +47,8 @@ public class CrashActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         CrashActivity.instance = this;
-        String json = getCrashStorage().getString(CRASH_LOG);
-        List<L.LogItem> logItems = JSON.parseArray(json, L.LogItem.class);
+        String json = Xy.getStorage().getString(CRASH_LOG);
+        List<LogItem> logItems = JSON.parseArray(json, LogItem.class);
         L.setLogList(logItems);
         errorMsg = getIntent().getStringExtra(MSG);
 
@@ -78,17 +78,10 @@ public class CrashActivity extends Activity {
     @Override
     protected void onStart() {
         super.onStart();
-        if (L.isDebug() && logLayout == null) {
+        if (L.showLog() && logLayout == null) {
             logLayout = new LogLayout(this);
             ((ViewGroup) getWindow().getDecorView().getRootView()).addView(logLayout.getView());
         }
-    }
-
-    private static ShareStorage getCrashStorage() {
-        if (storage == null) {
-            storage = new ShareStorage(crashSP);
-        }
-        return storage;
     }
 
     public static void setCrashOperation(Interfaces.CB<CrashItem> catchErrorCallback) {
@@ -112,7 +105,7 @@ public class CrashActivity extends Activity {
                 byte[] data = baos.toByteArray();
                 info = new String(data);
                 data = null;
-                L.getLogList().add(new L.LogItem(DateUtils.formatDateTime("yyyy-M-d HH:mm:ss:SSS", DateUtils.getNow()), info, L.LOG_TYPE_CRASH));
+                L.getLogList().add(new LogItem(DateUtils.formatDateTime("yyyy-M-d HH:mm:ss:SSS", DateUtils.getNow()), info, LogItem.LOG_TYPE_CRASH));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -122,7 +115,7 @@ public class CrashActivity extends Activity {
                 throwable.printStackTrace();
             }
             String jsonString = JSON.toJSONString(L.getLogList());
-            if (getCrashStorage().getEditor().putString(CRASH_LOG, jsonString).commit()) {
+            if (Xy.getStorage().getEditor().putString(CRASH_LOG, jsonString).commit()) {
                 Intent intent = new Intent(Xy.getContext(), CrashActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.putExtra(CrashActivity.MSG, info);

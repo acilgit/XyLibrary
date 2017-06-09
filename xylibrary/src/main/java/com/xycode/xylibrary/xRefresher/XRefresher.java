@@ -54,14 +54,6 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
 
     private static final int REFRESH = 1;
     private static final int LOAD = 2;
-    private static int FIRST_PAGE = 1;
-    private static String PAGE = "page";
-    private static String PAGE_SIZE = "pageSize";
-
-    private static String defaultNoDataText = "";
-
-    private static int defaultBackgroundNoData = 1;
-    private static int[] loadingColorRes = null;
 
     private static InitRefresher initRefresher = null;
 
@@ -111,10 +103,11 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
     private CoordinatorLayout rlMain;
     private OnSwipeListener swipeListener;
 
-    public static void setCustomerLoadMoreView(@LayoutRes int footerLayout) {
-//        XRefresher.loaderLayout = footerLayout;
+    private static Options options;
+
+   /* public static void setCustomerLoadMoreView(@LayoutRes int footerLayout) {
         LoadMoreView.setLayoutId(footerLayout);
-    }
+    }*/
 
     public XRefresher(Context context) {
         super(context, null);
@@ -136,8 +129,8 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
         backgroundNoData = typedArray.getColor(R.styleable.XRefresher_bgNoData, 1);
         if (backgroundNoData == 1) {
             backgroundNoData = typedArray.getResourceId(R.styleable.XRefresher_bgNoData, 1);
-            if (defaultBackgroundNoData != 1 && backgroundNoData == 1)
-                backgroundNoData = defaultBackgroundNoData;
+            if (options.defaultBackgroundColorNoData != 0 && backgroundNoData == 1)
+                backgroundNoData = options.defaultBackgroundColorNoData;
             backgroundNoDataIsRes = backgroundNoData != 1;
         }
         if (hint == null) hint = "";
@@ -154,7 +147,7 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
         loadMoreView = (LoadMoreView) findViewById(R.id.loadMoreView);
         textView = (TextView) findViewById(R.id.tvMain);
 
-        textView.setText(hint.isEmpty() ? defaultNoDataText : hint);
+        textView.setText(hint.isEmpty() ? options.defaultNoDataText : hint);
         if (hintSize != 1) textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, hintSize);
         if (hintColor != 1) textView.setTextColor(hintColor);
         if (backgroundIsRes) {
@@ -203,8 +196,8 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
         if (loadMore) {
             setLoadMoreListener();
         }
-        if (loadingColorRes != null) {
-            swipe.setColorSchemeResources(loadingColorRes);
+        if (options.loadingRefreshingArrowColorRes != null) {
+            swipe.setColorSchemeResources(options.loadingRefreshingArrowColorRes);
         }
         if (refreshRequest == null) {
             textView.setVisibility(GONE);
@@ -213,6 +206,7 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
 
     /**
      * 可使用布流式布局
+     *
      * @param spanCount
      * @param orientation
      */
@@ -256,7 +250,7 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
                 if (layoutManager instanceof StaggeredGridLayoutManager) {
                     int[] lastVisibleItemPositions = ((StaggeredGridLayoutManager) layoutManager).findLastVisibleItemPositions(null);
                     lastVisibleItem = lastVisibleItemPositions[0];
-                } else  if (layoutManager instanceof GridLayoutManager) {
+                } else if (layoutManager instanceof GridLayoutManager) {
                     lastVisibleItem = ((GridLayoutManager) layoutManager).findLastVisibleItemPosition();
                 } else {
                     lastVisibleItem = ((LinearLayoutManager) layoutManager).findLastVisibleItemPosition();
@@ -280,9 +274,9 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
     private void getDataByRefresh(final int page, final int pageSize, final int refreshType) {
         Param params = new Param();
         final int postPageSize = (pageSize < state.pageDefaultSize) ? state.pageDefaultSize : pageSize;
-        final int actualPage = refreshType == REFRESH ? FIRST_PAGE : page;
-        params.put(PAGE, String.valueOf(actualPage));
-        params.put(PAGE_SIZE, String.valueOf(postPageSize));
+        final int actualPage = refreshType == REFRESH ? options.firstPage : page;
+        params.put(options.page, String.valueOf(actualPage));
+        params.put(options.pageSize, String.valueOf(postPageSize));
         String url = refreshRequest.setRequestParamsReturnUrl(params);
         boolean addDefaultParam = false;
         boolean addDefaultHeader = true;
@@ -398,11 +392,11 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
     }
 
     public void setLastPage(int page) {
-        this.state.pageIndex =page;
+        this.state.pageIndex = page;
     }
 
     public void resetLastPage() {
-        this.state.pageIndex =FIRST_PAGE;
+        this.state.pageIndex = options.firstPage;
     }
 
     public XAdapter<T> getAdapter() {
@@ -441,13 +435,6 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
         recyclerView.addItemDecoration(horizontalDividerItemDecoration);
     }
 
-    public static void setLoadingArrowColor(@ColorRes int... loadingColorRes) {
-        XRefresher.loadingColorRes = new int[loadingColorRes.length];
-        for (int i = 0; i < loadingColorRes.length; i++) {
-            XRefresher.loadingColorRes[i] = loadingColorRes[i];
-        }
-    }
-
 
     public CustomHolder getHeader() {
         return getHeader(HEADER_ONE);
@@ -468,16 +455,11 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
         return holder;
     }
 
-    public static void resetPageParamsNames(String page, String pageSize, int firstPage) {
+   /* public static void resetPageParamsNames(String page, String pageSize, int firstPage) {
         XRefresher.PAGE = page;
         XRefresher.PAGE_SIZE = pageSize;
         XRefresher.FIRST_PAGE = firstPage;
-    }
-
-    public static void setDefaultNoDataText(String hint, @ColorRes int bgColor) {
-        XRefresher.defaultNoDataText = hint;
-        XRefresher.defaultBackgroundNoData = bgColor;
-    }
+    }*/
 
     public void setOnLastPageListener(OnLastPageListener onLastPageListener) {
         this.onLastPageListener = onLastPageListener;
@@ -519,132 +501,16 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
         return dividerSize;
     }
 
-    public static abstract class RefreshRequest<T> implements IRefreshRequest<T> {
-
-        /**
-         * ignore the same item in the list，use return newItem.getId().equals(listItem.getId());
-         * if not,  don't override it;
-         *
-         * @param newItem
-         * @param listItem
-         * @return
-         */
-        protected boolean ignoreSameItem(T newItem, T listItem) {
-            return false;
-        }
-
-        /**
-         * reorder the list，returns:
-         * -1 large to small
-         * 1 small to large
-         * 0 same
-         * eg: long Long.compareTo(), item0:item1,default result is 1;
-         * if no use, don't override if.
-         *
-         * @param item0
-         * @param item1
-         * @return
-         */
-        protected int compareTo(T item0, T item1) {
-            return 0;
-        }
-
-        /**
-         * 返回错误判断的时候会调用此方法，如果返回结果是true则不执行InitRefresher的handleError()方法
-         *
-         * @param call
-         * @param json
-         * @return if true to stop InitRefresher.handleError()
-         */
-        protected boolean handleError(Call call, JSONObject json) {
-            return false;
-        }
-
-        /**
-         * 返回错误判断的时候会调用此方法，如果返回结果是true则不执行InitRefresher的handleError()方法
-         *
-         * @param call
-         * @param resultCode
-         * @return if true to stop InitRefresher.handleAllFailureSituation()
-         */
-        protected boolean handleAllFailureSituation(Call call, int resultCode) {
-            return false;
-        }
-    }
-
-    private interface IRefreshRequest<T> {
-        /**
-         * return the url you need to post, and set the params in the method;
-         *
-         * @param params
-         * @return
-         */
-        String setRequestParamsReturnUrl(Param params);
-
-        /**
-         * handle the JSON and get the List from the json, then return it.
-         *
-         * @param json
-         * @return
-         */
-        List<T> setListData(JSONObject json);
-    }
-
-    /**
-     * 刷新监听
-     */
-    public interface OnSwipeListener {
-        /**
-         * Refresh
-         */
-        void onRefresh();
-    }
-
-    /**
-     * 最后一页
-     */
-    public interface OnLastPageListener {
-        void receivedList(boolean isLastPage);
-    }
-
-    /**
-     * 设置Refresher的默认选项
-     */
-    public interface InitRefresher {
-
-        /**
-         * 默认的结果出错操作，例如toast
-         *
-         * @param call
-         * @param json
-         */
-        void handleError(Call call, JSONObject json);
-
-        /**
-         * 默认的所有出错的操作，例如 关闭LoadingDialog显示
-         *
-         * @param call
-         * @param resultCode 结果值
-         */
-        void handleAllFailureSituation(Call call, int resultCode);
-
-        /**
-         * 设置默认的Header
-         *
-         * @return
-         */
-        boolean addDefaultHeader();
-
-        /**
-         * 设置默认的参数
-         *
-         * @return
-         */
-        boolean addDefaultParam();
-    }
-
     public static void init(InitRefresher initRefresher) {
+        init(initRefresher, new Options());
+    }
+
+    public static void init(InitRefresher initRefresher, Options options) {
         XRefresher.initRefresher = initRefresher;
+        XRefresher.options = options;
+        if (options.loadMoreLayoutId != 0) {
+            LoadMoreView.setLayoutId(options.loadMoreLayoutId);
+        }
     }
 
     public static class RefreshState implements Serializable {
@@ -660,4 +526,82 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
             this.lastPage = lastPage;
         }
     }
+
+    public static class Options {
+        String page = "page";
+        String pageSize = "pageSize";
+        int firstPage = 1;
+        @LayoutRes
+        int loadMoreLayoutId = 0;
+        @ColorRes
+        int[] loadingRefreshingArrowColorRes = null;
+        @ColorRes
+        int defaultBackgroundColorNoData = 0;
+        String defaultNoDataText = "";
+
+        public String getPage() {
+            return page;
+        }
+
+        public Options setPage(String page) {
+            this.page = page;
+            return this;
+        }
+
+        public String getPageSize() {
+            return pageSize;
+        }
+
+        public Options setPageSize(String pageSize) {
+            this.pageSize = pageSize;
+            return this;
+        }
+
+        public int getFirstPage() {
+            return firstPage;
+        }
+
+        public Options setFirstPage(int firstPage) {
+            this.firstPage = firstPage;
+            return this;
+        }
+
+        public int getLoadMoreLayoutId() {
+            return loadMoreLayoutId;
+        }
+
+        public Options setLoadMoreLayoutId(int loadMoreLayoutId) {
+            this.loadMoreLayoutId = loadMoreLayoutId;
+            return this;
+        }
+
+        public int[] getLoadingRefreshingArrowColorRes() {
+            return loadingRefreshingArrowColorRes;
+        }
+
+        public Options setLoadingRefreshingArrowColorRes(int[] loadingRefreshingArrowColorRes) {
+            this.loadingRefreshingArrowColorRes = loadingRefreshingArrowColorRes;
+            return this;
+        }
+
+        public int getDefaultBackgroundColorNoData() {
+            return defaultBackgroundColorNoData;
+        }
+
+        public Options setDefaultBackgroundColorNoData(int defaultBackgroundColorNoData) {
+            this.defaultBackgroundColorNoData = defaultBackgroundColorNoData;
+            return this;
+        }
+
+        public String getDefaultNoDataText() {
+            return defaultNoDataText;
+        }
+
+        public Options setDefaultNoDataText(String defaultNoDataText) {
+            this.defaultNoDataText = defaultNoDataText;
+            return this;
+        }
+    }
+
+
 }

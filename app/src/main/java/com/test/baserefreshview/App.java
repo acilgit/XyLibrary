@@ -24,7 +24,9 @@ import com.xycode.xylibrary.unit.WH;
 import com.xycode.xylibrary.utils.LogUtil.L;
 import com.xycode.xylibrary.utils.TS;
 import com.xycode.xylibrary.utils.Tools;
+import com.xycode.xylibrary.utils.crashUtil.CrashItem;
 import com.xycode.xylibrary.utils.crashUtil.ICrash;
+import com.xycode.xylibrary.xRefresher.InitRefresher;
 import com.xycode.xylibrary.xRefresher.XRefresher;
 
 import java.util.HashMap;
@@ -63,8 +65,7 @@ public class App extends Application {
             }
         });*/
 
-        Xy.init(this);
-        L.setDebugMode(true);
+        Xy.init(this, false);
         CrashActivity.setCrashOperation(crashItem -> {
             L.e(crashItem.toString());
           /*  OkHttp.postForm(CrashActivity.getInstance(), "https://www.taichi-tiger.com:8080/append/app_poster/selectAllPosters",
@@ -92,7 +93,8 @@ public class App extends Application {
             }
 
             @Override
-            public void setViews(Activity activity) {
+            public void setViews(CrashActivity activity, CrashItem crashItem) {
+
                 Button btn = (Button) activity.findViewById(R.id.btn);
                 btn.setOnClickListener(
                         v -> TS.show("okok......")
@@ -221,7 +223,13 @@ public class App extends Application {
             }
         });*/
 
-        XRefresher.setCustomerLoadMoreView(R.layout.layout_load_more);
+//        XRefresher.setCustomerLoadMoreView(R.layout.layout_load_more);
+        XRefresher.init(null, new XRefresher.Options()
+                .setLoadMoreLayoutId(R.layout.layout_load_more)
+                .setDefaultBackgroundColorNoData(android.R.color.white)
+                .setDefaultNoDataText("ha\n\n\nhahn\n\n\n\n\na\n\n\nha")
+                .setLoadingRefreshingArrowColorRes(new int[]{android.R.color.holo_purple})
+        );
 //        XRefresher.setDefaultNoDataText("暂无数据", 1);
 
 //        FrescoLoader.init(url ->  null);

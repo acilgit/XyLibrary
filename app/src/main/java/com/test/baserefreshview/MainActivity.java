@@ -33,6 +33,7 @@ import com.xycode.xylibrary.base.BaseItemView;
 import com.xycode.xylibrary.base.PhotoSelectBaseActivity;
 import com.xycode.xylibrary.okHttp.Param;
 import com.xycode.xylibrary.uiKit.views.MultiImageView;
+import com.xycode.xylibrary.uiKit.views.XTextView;
 import com.xycode.xylibrary.uiKit.views.loopview.AdLoopView;
 import com.xycode.xylibrary.uiKit.views.nicespinner.NiceSpinner;
 import com.xycode.xylibrary.unit.MsgEvent;
@@ -43,12 +44,19 @@ import com.xycode.xylibrary.utils.ImageUtils;
 import com.xycode.xylibrary.utils.LogUtil.L;
 import com.xycode.xylibrary.utils.TS;
 import com.xycode.xylibrary.utils.Tools;
+import com.xycode.xylibrary.utils.serverApiHelper.ServerControllerActivity;
+import com.xycode.xylibrary.xRefresher.RefreshRequest;
 import com.xycode.xylibrary.xRefresher.XRefresher;
 
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+import static com.test.baserefreshview.api.Api.api;
 
 
 /**
@@ -72,7 +80,7 @@ public class MainActivity extends ABaseActivity {
     String content = "<p>\r\n\t<img src=\"http://ww4.sinaimg.cn/bmiddle/483b2741jw1fawazpne7yj20qo0zkgtx.jpg\" /><img src=\"http://ww3.sinaimg.cn/bmiddle/483b2741jw1fawazxtqglj20qo0zkwlx.jpg\" />\r\n</p>\r\n<p>\r\n\thjfgsdiohfksdhcsjdhcfiduhfjkhiewhfjsda.n\r\n</p>";
     private XAdapter<ContentBean> adapter;
 
-    private void setDrawerLeftEdgeSize (BaseActivity activity, DrawerLayout drawerLayout, float displayWidthPercentage) {
+    private void setDrawerLeftEdgeSize(BaseActivity activity, DrawerLayout drawerLayout, float displayWidthPercentage) {
         if (activity == null || drawerLayout == null) return;
         try {
             // 找到 ViewDragHelper 并设置 Accessible 为true
@@ -100,6 +108,7 @@ public class MainActivity extends ABaseActivity {
         super.onCreate(savedInstanceState);
         setWindowMode(WindowMode.INPUT_ADJUST);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
 //        start(TestA.class);
         xRefresher = (XRefresher) findViewById(R.id.xRefresher);
         siv = (SimpleDraweeView) findViewById(R.id.siv);
@@ -107,6 +116,13 @@ public class MainActivity extends ABaseActivity {
         spinner = (NiceSpinner) findViewById(R.id.nice_spinner);
         viewSparseArray.put(1, tags);
         viewSparseArray.put(2, spinner);
+        findViewById(R.id.xtv).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ServerControllerActivity.startThis(getThis(), api());
+            }
+        });
+
 //        mBean.setMessage("ddddddd");
 //        mBean.setResultCode(1);
 //        spinner.attachDataSource(Arrays.asList(R.array.test_array));
@@ -183,7 +199,7 @@ public class MainActivity extends ABaseActivity {
             }
 
             @Override
-            public void creatingHolder(final CustomHolder holder, final List<ContentBean> dataList, ViewTypeUnit viewType) {
+            public void creatingHolder(final CustomHolder holder, ViewTypeUnit viewType) {
                 switch (viewType.getLayoutId()) {
                     case R.layout.item_house:
                         holder.setExpandViewId(R.id.tvText);
@@ -202,7 +218,7 @@ public class MainActivity extends ABaseActivity {
                             return null;
                         });
                         mvItem.setOnItemClickListener((view, position, urlData) -> {
-                            WH wh = Tools.getWidthHeightFromFilename(dataList.get(holder.getAdapterPosition()).getPosterImage(), "_wh", "x");
+                            WH wh = Tools.getWidthHeightFromFilename(getShowingList().get(holder.getAdapterPosition()).getPosterImage(), "_wh", "x");
                             TS.show(getThis(), "wh:" + wh.width + " h:" + wh.height + " r:" + wh.getAspectRatio(), null);
                         });
                         break;
@@ -220,7 +236,7 @@ public class MainActivity extends ABaseActivity {
                     case R.id.tvName:
                         TS.show(" YES tvNameas " + viewId);
                         item.setExpanded(!item.isExpanded());
-                        holder.setExpand(item.isExpanded(), true, obj ->  notifyDataSetChanged());
+                        holder.setExpand(item.isExpanded(), true, obj -> notifyDataSetChanged());
                         break;
                     case R.id.item:
                         TS.show(" YES tvName " + viewId);
@@ -362,7 +378,7 @@ public class MainActivity extends ABaseActivity {
                 }
             });*/
 
-        }, new XRefresher.RefreshRequest<ContentBean>() {
+        }, new RefreshRequest<ContentBean>() {
             @Override
             public String setRequestParamsReturnUrl(Param params) {
                 L.d("http://mxycsku.qiniucdn.com/group6/M00/98/E9/wKgBjVXdGPiAUmMHAALfY_C7_7U637.jpg");
@@ -371,7 +387,7 @@ public class MainActivity extends ABaseActivity {
                 params.add("aasdfasfsassa", "asfafasfasdfasfasfasfasfasfasdfasfdasdfadsfasdfsadfas");
 //                return "http://zhijia51.com/append/store_recommend/sell_house_page";
 //                return "http://www.zhijia51.com/append/store_recommend/sell_house_page";
-                return "https://www.taichi-tiger.com:8080/append/app_poster/selectAllPosters";
+                return api().getSomeAddress;
             }
 
             @Override
@@ -411,7 +427,7 @@ public class MainActivity extends ABaseActivity {
             public void onDownLoad(int downLength, int fileLength) {
 
             }
-        }, new Param().add(CompulsiveHelperActivity.URL, "down_url")
+        }, new Param().add(CompulsiveHelperActivity.Api, "down_url")
                 .add(CompulsiveHelperActivity.IsMust, String.valueOf(1)).add(CompulsiveHelperActivity.Illustration, "关系说明"));*/
 
     }
