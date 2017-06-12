@@ -29,8 +29,6 @@ public class CrashActivity extends Activity {
     public static ICrash iCrash;
     public static Interfaces.CB<CrashItem> cb;
     public static final String MSG = "msg";
-/*    private static ShareStorage storage;
-    private static final String CRASH_SP = "xyCrashSP";*/
     public static final String CRASH_LOG = "crashLog";
 
     private LogLayout logLayout;

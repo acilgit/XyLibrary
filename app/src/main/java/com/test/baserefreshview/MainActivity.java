@@ -164,7 +164,8 @@ public class MainActivity extends ABaseActivity {
         tags.setDataList(list);
         tags.setTagCheckedMode(TagLayout.FLOW_TAG_CHECKED_SINGLE);
         tags.setOnTagSelectListener((childViewList, dataList, selectedStateList, clickPos) -> {
-            start(New1Activity.class);
+//            start(New1Activity.class);
+            adapter.notifyDataSetChanged();
         });
         Uri uri = Uri.parse("http://mxycsku.qiniucdn.com/group5/M00/5B/0C/wKgBfVXdYkqAEzl0AAL6ZFMAdKk401.jpg");
 //        siv.setImageURI();
@@ -180,7 +181,7 @@ public class MainActivity extends ABaseActivity {
  * 默认大小：bitmap.getWidth(), bitmap.getHeight()<br/>
  * 适配屏幕：getDrawableAdapter
  */
-        adapter = new XAdapter<ContentBean>(this, new ArrayList<>()) {
+        adapter = new XAdapter<ContentBean>(this) {
             @Override
             protected ViewTypeUnit getViewTypeUnitForLayout(ContentBean item) {
                 switch (item.getId()) {
@@ -357,6 +358,10 @@ public class MainActivity extends ABaseActivity {
                 super.beforeSetDataList(dataList);
             }
         };
+        L.d("http://mxycsku.qiniucdn.com/group6/M00/98/E9/wKgBjVXdGPiAUmMHAALfY_C7_7U637.jpg");
+        L.i("http://mxycsku.qiniucdn.com/group6/M00/98/E9/wKgBjVXdGPiAUmMHAALfY_C7_7U637.jpg");
+        L.v("http://mxycsku.qiniucdn.com/group6/M00/98/E9/wKgBjVXdGPiAUmMHAALfY_C7_7U637.jpg,http://mxycsku.qiniucdn.com/group6/M00/98/E9/wKgBjVXdGPiAUmMHAALfY_C7_7U637.jpg,http://mxycsku.qiniucdn.com/group6/M00/98/E9/wKgBjVXdGPiAUmMHAALfY_C7_7U637.jpg");
+
         adapter.openLoadAnimation(new SlideInRightAnimation());
 
 //        adapter.addHeader(3, R.layout.layout_recyclerview);
@@ -381,10 +386,7 @@ public class MainActivity extends ABaseActivity {
         }, new RefreshRequest<ContentBean>() {
             @Override
             public String setRequestParamsReturnUrl(Param params) {
-                L.d("http://mxycsku.qiniucdn.com/group6/M00/98/E9/wKgBjVXdGPiAUmMHAALfY_C7_7U637.jpg");
-                L.i("http://mxycsku.qiniucdn.com/group6/M00/98/E9/wKgBjVXdGPiAUmMHAALfY_C7_7U637.jpg");
-                L.v("http://mxycsku.qiniucdn.com/group6/M00/98/E9/wKgBjVXdGPiAUmMHAALfY_C7_7U637.jpg,http://mxycsku.qiniucdn.com/group6/M00/98/E9/wKgBjVXdGPiAUmMHAALfY_C7_7U637.jpg,http://mxycsku.qiniucdn.com/group6/M00/98/E9/wKgBjVXdGPiAUmMHAALfY_C7_7U637.jpg");
-                params.add("aasdfasfsassa", "asfafasfasdfasfasfasfasfasfasdfasfdasdfadsfasdfsadfas");
+             params.add("aasdfasfsassa", "asfafasfasdfasfasfasfasfasfasdfasfdasdfadsfasdfsadfas");
 //                return "http://zhijia51.com/append/store_recommend/sell_house_page";
 //                return "http://www.zhijia51.com/append/store_recommend/sell_house_page";
                 return api().getSomeAddress;
@@ -400,7 +402,6 @@ public class MainActivity extends ABaseActivity {
             protected boolean ignoreSameItem(ContentBean newItem, ContentBean listItem) {
                 return newItem.getId().equals(listItem.getId());
             }
-
 
         }, 10);
 //        new FloatingBarItemDecoration(getThis(), )
@@ -456,6 +457,9 @@ public class MainActivity extends ABaseActivity {
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
+        if (bean != null) {
+            adapter.setDataList(bean.getContent());
+        }
     }
 
     @Override

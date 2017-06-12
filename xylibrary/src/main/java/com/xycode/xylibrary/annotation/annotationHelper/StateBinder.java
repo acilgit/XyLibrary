@@ -318,7 +318,7 @@ public class StateBinder {
                     try {
                         switch (statue.value()) {
                             case SaveState.JSON_OBJECT:
-                                field.set(target, JSON.parseObject((String) data, field.getClass()));
+                                field.set(target, JSON.parseObject((String) data, field.getType()));
                                 break;
                             case SaveState.NORMAL_OBJECT:
                                 field.set(target, data);
@@ -344,7 +344,7 @@ public class StateBinder {
                     try {
                         switch (statue.value()) {
                             case SaveState.JSON_OBJECT:
-                                field.set(target, JSON.parseObject((String) data, field.getClass()));
+                                field.set(target, JSON.parseObject((String) data, field.getType()));
                                 break;
                             case SaveState.NORMAL_OBJECT:
                                 field.set(target, data);

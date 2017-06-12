@@ -13,33 +13,23 @@ import java.util.List;
 /**
  * Created by XY on 2017-06-07.
  * 必须重写getApi()方法
- * <p>
- * <p>
- * public static Api api() {
- * if (api == null) {
- * api = new Api();
- * }
- * return (Api) api;
- * }
  */
-
+/*
+    public static Api api() {
+         if (api == null) {
+            api = new Api();
+         }
+     return (Api) api;
+   }
+*/
 public abstract class ApiHelper {
 
     protected static ApiHelper api;
 
     private static final String SERVER = "SERVER";
     private static final String SERVER_LIST = "SERVER_LIST";
-/*    private static ShareStorage storage;
-    private static final String SERVER_SP = "xyServerApiHelper";*/
 
     private static String server;
-
-/*    private static ShareStorage getUrlStorage() {
-        if (storage == null) {
-            storage = new ShareStorage(SERVER_SP);
-        }
-        return storage;
-    }*/
 
     public String getServer() {
         return getServer(null);
@@ -47,17 +37,17 @@ public abstract class ApiHelper {
 
     public String getServer(String apiAddress) {
         String url = TextUtils.isEmpty(apiAddress) ? "" : apiAddress;
-        if (server == null) {
-            String tempServer = Xy.getStorage().getString(SERVER);
-            if (!TextUtils.isEmpty(tempServer)) {
-                server = tempServer;
-                return Xy.getStorage().getString(SERVER) + url;
+        if (Xy.isRelease()) {
+            server = getReleaseUrl();
+        } else {
+            if (server == null) {
+                String tempServer = Xy.getStorage().getString(SERVER);
+                if (!TextUtils.isEmpty(tempServer)) {
+                    server = tempServer;
+                    return Xy.getStorage().getString(SERVER) + url;
+                }
             }
-            if (Xy.isRelease()) {
-                server = getReleaseUrl();
-            } else {
-                server = getDebugUrl();
-            }
+            server = getDebugUrl();
         }
         url = server + url;
         return url;

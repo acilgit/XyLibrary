@@ -15,6 +15,7 @@ import com.xycode.xylibrary.utils.LogUtil.L;
 
 /**
  * 服务器地址摄制页面
+ * Release 版本不可调用此页面
  */
 public class ServerControllerActivity extends AppCompatActivity implements View.OnClickListener{
 

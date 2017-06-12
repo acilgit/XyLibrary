@@ -11,24 +11,24 @@ import com.xycode.xylibrary.Xy;
  * invoke Xy.init() first init Application
  */
 public class VersionUtils {
-    public static String getVersionName(){
+    public static String getVersionName(Context context){
         String versionName = "";
-        PackageManager pm = Xy.getContext().getPackageManager();
+        PackageManager pm = context.getPackageManager();
         PackageInfo pi;
         try {
-            pi = pm.getPackageInfo(Xy.getContext().getPackageName(), 0);
+            pi = pm.getPackageInfo(context.getPackageName(), 0);
             versionName = pi.versionName;
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
         return versionName;
     }
-    public static int getVersionCode(){
+    public static int getVersionCode(Context context){
         int versionCode = 0 ;
-        PackageManager pm = Xy.getContext().getPackageManager();
+        PackageManager pm = context.getPackageManager();
         PackageInfo pi;
         try {
-            pi = pm.getPackageInfo(Xy.getContext().getPackageName(), 0);
+            pi = pm.getPackageInfo(context.getPackageName(), 0);
             versionCode = pi.versionCode;
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();

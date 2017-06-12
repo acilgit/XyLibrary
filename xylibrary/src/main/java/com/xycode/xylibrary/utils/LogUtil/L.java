@@ -23,14 +23,17 @@ import java.util.List;
 
 /**
  * Log
- * Debug模式下，才会输出到logcat
+ * showLog模式下，才会输出到logcat
  * 任何模式下Log都会输出到logList
  * 可把logList在CrashActivity发送到服务器
  */
 public class L {
     public static final String SHOW_LOG = "SHOW_LOG_FOR_XY";
     public static final String EVENT_LOG = "EVENT_LOG";
-    public static int MAX_LOG_LIST_SIZE_IN_RELEASE_MODE = 20;
+    /**
+     * -1时不限数量
+     */
+    private static int MAX_LOG_LIST_SIZE_IN_RELEASE_MODE = 20;
 
     private static boolean showLog = true;
     private static String TAG = " Debug ";
@@ -60,12 +63,11 @@ public class L {
 
     public static void addLogItem(String title, String msg) {
         addLogItem(title, msg, LogItem.LOG_TYPE_E);
-
     }
 
     public static void addLogItem(String title, String msg, int type) {
         getLogList().add(new LogItem(DateUtils.formatDateTime("yyyy-M-d HH:mm:ss:SSS", DateUtils.getNow()), title, msg, type));
-        if (!showLog() && getLogList().size() > MAX_LOG_LIST_SIZE_IN_RELEASE_MODE) {
+        if (!showLog() && MAX_LOG_LIST_SIZE_IN_RELEASE_MODE != -1 && getLogList().size() > MAX_LOG_LIST_SIZE_IN_RELEASE_MODE) {
             getLogList().remove(0);
         }
         EventBus.getDefault().post(new MsgEvent(EVENT_LOG, null, null));

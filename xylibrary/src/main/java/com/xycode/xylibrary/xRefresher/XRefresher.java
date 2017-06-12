@@ -6,6 +6,7 @@ package com.xycode.xylibrary.xRefresher;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.os.Parcelable;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DimenRes;
 import android.support.annotation.LayoutRes;
@@ -603,5 +604,9 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
         }
     }
 
+    @Override
+    protected void onRestoreInstanceState(Parcelable state) {
+        super.onRestoreInstanceState(state);
 
+    }
 }

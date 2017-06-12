@@ -93,8 +93,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         if (L.showLog() && logLayout == null) {
-            logLayout = new LogLayout(this);
-            ((ViewGroup) getWindow().getDecorView().getRootView()).addView(logLayout.getView());
+            logLayout = LogLayout.attachLogLayoutToActivity(getThis());
         }
     }
 

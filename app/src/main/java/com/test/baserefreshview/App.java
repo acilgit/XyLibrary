@@ -89,7 +89,7 @@ public class App extends Application {
         }, new ICrash() {
             @Override
             public int getLayoutId() {
-                return R.layout.activity_new1;
+                return R.layout.activity_crash;
             }
 
             @Override
@@ -102,26 +102,6 @@ public class App extends Application {
             }
         });
 //        Fresco.initialize(this);
-
-        FreelineCore.init(this, new IDynamic() {
-            @Override
-            public boolean applyDynamicRes(HashMap<String, String> hashMap) {
-                return false;
-            }
-
-            @Override
-            public String getOriginResPath(String s) {
-                return null;
-            }
-
-            @Override
-            public void clearResourcesCache() {
-
-            }
-        });
-
-
-
 
         OkHttp.OkOptions okOptions = new OkHttp.OkOptions(1,1,1){
             @Override
