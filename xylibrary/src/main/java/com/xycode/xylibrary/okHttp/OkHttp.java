@@ -312,6 +312,11 @@ public class OkHttp {
                     return;
                 }
                 if (call.isCanceled()) return;
+                try {
+                   if(call.request().url().url().toString().endsWith("selectAllPosters")) Thread.currentThread().sleep(200);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 if (activity != null) activity.runOnUiThread(() -> {
                     switch (resultCode) {
                         case RESULT_SUCCESS:

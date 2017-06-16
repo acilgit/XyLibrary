@@ -47,7 +47,7 @@ public class ServerSelectDialog implements View.OnClickListener {
         rv.setLayoutManager(new LinearLayoutManager(activity));
         serverList = api.getStoredServerList();
 
-        rv.setAdapter(new XAdapter<String>(activity, serverList) {
+        rv.setAdapter(new XAdapter<String>(activity, ()->serverList) {
             @Override
             public void creatingHolder(CustomHolder holder, ViewTypeUnit viewTypeUnit) {
                 holder.setClick(R.id.tv);

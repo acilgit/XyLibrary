@@ -17,6 +17,7 @@
     <color name="logTextDebug">#239fd9</color>
     <color name="logTextInfo">#aaa</color>
     <color name="logTextNomal">#eee</color>
+    <color name="transparentRedLite" >#33ff1d1d</color>
     <color name="transparentWhiteLite" >#33FFFFFF</color>
     <color name="transparentWhiteDark" >#DEFFFFFF</color>
     <color name="transparentBlackLite" >#33000000</color>

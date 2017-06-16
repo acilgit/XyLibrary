@@ -28,8 +28,30 @@ import java.util.Map;
  */
 public abstract class XAdapter<T> extends RecyclerView.Adapter {
 
+    public static final int LAYOUT_BLANK = -20330;
     public static final int LAYOUT_FOOTER = -20331;
+    public static final int LAYOUT_FOOTER_LOADING = -20332;
+    public static final int LAYOUT_FOOTER_NO_MORE = -20333;
+    public static final int LAYOUT_FOOTER_RETRY = -20344;
 
+    /**
+     * 已加载全部，显示Footer
+     */
+    public static final int LOADER_NO_MORE = 0;
+    /**
+     * 可以加载更多
+     */
+    public static final int LOADER_CAN_LOAD = 1;
+    /**
+     * 正在加载中，等待LoadMoreListener返回结果
+     */
+    public static final int LOADER_LOADING = 2;
+    /**
+     * 加载更多失败
+     */
+    public static final int LOADER_RETRY = 3;
+
+    private int loadMoreState = LOADER_NO_MORE;
     /**
      * 所有数据，包括被过滤的数据
      */
@@ -42,7 +64,16 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
     protected Context context;
     private SparseArray<Integer> headerLayoutIdList;
     private Map<Integer, ViewTypeUnit> multiLayoutMap;
-    private int footerLayout = 0;
+    /**
+     * footerLayout 只有在没有更多数据的时候才会显示
+     */
+    private int footerLayoutId = 0;
+
+    // 以下3个加载项可以有默认LayoutId
+    private int loadingLayoutId = 0;
+    private int noMoreLayoutId = 0;
+    private int loadRetryLayoutId = 0;
+
     // item long click on long click Listener
 //    private OnItemClickListener onItemClickListener;
 //    private OnItemLongClickListener onItemLongClickListener;
@@ -57,6 +88,18 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
     private BaseAnimation customAnimation;
     private BaseAnimation selectAnimation = new SlideInBottomAnimation();
 
+    private OnInitList onInitList;
+    /**
+     * 加载更多监听器
+     */
+    private ILoadMoreListener loadMoreListener;
+
+    /**
+     * 是否使用默认加载Layout
+     * 如果加载的Layout == 0 则使用默认Layout，否则使用当前设置的Layout
+     */
+    private boolean useDefaultLoaderLayout = false;
+
     /**
      * use single Layout
      *
@@ -66,12 +109,21 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
         init(context, null);
     }
 
-    public XAdapter(Context context, List<T> dataList) {
-        init(context, dataList);
+    public XAdapter(Context context, OnInitList initList) {
+        init(context, initList);
     }
 
-    private void init(Context context, List<T> dataList) {
+    private void init(Context context, OnInitList initList) {
         this.context = context;
+        this.onInitList = initList;
+        List<T> dataList = null;
+        if (initList != null) {
+            try {
+                dataList = (List<T>) initList.getList();
+            } catch (Exception e) {
+//                e.printStackTrace();
+            }
+        }
         if (dataList == null) {
             dataList = new ArrayList<>();
         }
@@ -99,64 +151,106 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, final int viewType) {
         // Footer创建
-        if (viewType == LAYOUT_FOOTER) {
-            View itemView = LayoutInflater.from(context).inflate(footerLayout, parent, false);
-            final CustomHolder holder = new CustomHolder(itemView) {
-                @Override
-                protected void createHolder(final CustomHolder holder) {
-                    holder.setOnClickListener(v -> handleItemViewClick(holder, null, v.getId(), new ViewTypeUnit(viewType, footerLayout)));
-                    holder.setOnLongClickListener(v -> handleItemViewLongClick(holder, null, v.getId(), new ViewTypeUnit(viewType, footerLayout)));
-                    creatingFooter(holder);
+        switch (viewType) {
+            case LAYOUT_BLANK:
+                return new CustomHolder(createHolderRootView(R.layout.layout_blank, parent));
+            case LAYOUT_FOOTER:
+                return new CustomHolder(createHolderRootView(footerLayoutId, parent)) {
+                    @Override
+                    protected void createHolder(final CustomHolder holder) {
+                        ViewTypeUnit viewTypeUnit = new ViewTypeUnit(viewType, footerLayoutId);
+                        holder.setOnClickListener(v -> handleItemViewClick(holder, null, v.getId(), viewTypeUnit));
+                        holder.setOnLongClickListener(v -> handleItemViewLongClick(holder, null, v.getId(), viewTypeUnit));
+                        creatingFooter(holder);
+                    }
+                };
+            case LAYOUT_FOOTER_LOADING:
+                return new CustomHolder(createHolderRootView(getLoadingLayoutId(), parent));
+            case LAYOUT_FOOTER_NO_MORE:
+                return new CustomHolder(createHolderRootView(getNoMoreLayoutId(), parent));
+            case LAYOUT_FOOTER_RETRY:
+                CustomHolder holder = new CustomHolder(createHolderRootView(getLoadRetryLayoutId(), parent));
+                if (getLoadRetryLayoutId() == R.layout.layout_base_load_retry) {
+                    holder.setClick(R.id.lMain, v -> {
+                        loadMoreState = LOADER_LOADING;
+                        notifyDataSetChanged();
+                        loadMoreListener.onStartLoadMore();
+                    });
                 }
-            };
-            return holder;
-        } else {
-            // Header创建
-            for (int i = 0; i < headerLayoutIdList.size(); i++) {
-                final int headerKey = headerLayoutIdList.keyAt(i);
-                if (viewType == headerKey) {
-                    View itemView = LayoutInflater.from(context).inflate(headerLayoutIdList.get(headerKey), parent, false);
-                    final CustomHolder holder = new CustomHolder(itemView) {
-                        @Override
-                        protected void createHolder(final CustomHolder holder) {
-                            holder.setOnClickListener(v -> handleItemViewClick(holder, null, v.getId(), new ViewTypeUnit(headerKey, headerLayoutIdList.get(headerKey))));
+                return holder;
+            default:
+                // Header创建
+                for (int i = 0; i < headerLayoutIdList.size(); i++) {
+                    final int headerKey = headerLayoutIdList.keyAt(i);
+                    if (viewType == headerKey) {
+                        View itemView = createHolderRootView(headerLayoutIdList.get(headerKey), parent);
+                        return new CustomHolder(itemView) {
+                            @Override
+                            protected void createHolder(final CustomHolder holder1) {
+                                holder1.setOnClickListener(v -> handleItemViewClick(holder1, null, v.getId(), new ViewTypeUnit(headerKey, headerLayoutIdList.get(headerKey))));
 
-                            holder.setOnLongClickListener(v -> handleItemViewLongClick(holder, null, v.getId(), new ViewTypeUnit(headerKey, headerLayoutIdList.get(headerKey))));
-                            creatingHeader(holder, headerKey);
-                        }
-                    };
-                    return holder;
+                                holder1.setOnLongClickListener(v -> handleItemViewLongClick(holder1, null, v.getId(), new ViewTypeUnit(headerKey, headerLayoutIdList.get(headerKey))));
+                                creatingHeader(holder1, headerKey);
+                            }
+                        };
+                    }
                 }
-            }
-            int l = R.layout.layout_blank;
-            final ViewTypeUnit viewTypeUnit = multiLayoutMap.get(viewType);
-            if (viewTypeUnit != null) {
-                l = viewTypeUnit.getLayoutId();
-            }
-            @LayoutRes int layoutId = l;
-            View itemView = LayoutInflater.from(context).inflate(layoutId, parent, false);
-            final CustomHolder holder = new CustomHolder(itemView) {
-                @Override
-                protected void createHolder(final CustomHolder holder) {
-                    holder.setOnClickListener(v -> handleItemViewClick(holder, dataList.get(holder.getAdapterPosition() - getHeaderCount()), v.getId(), viewTypeUnit));
+                // 默认Item Holder
+                int l = R.layout.layout_blank;
+                final ViewTypeUnit viewTypeUnit = multiLayoutMap.get(viewType);
+                if (viewTypeUnit != null) {
+                    l = viewTypeUnit.getLayoutId();
+                }
+                @LayoutRes int layoutId = l;
+                View itemView = createHolderRootView(layoutId, parent);
+                return new CustomHolder(itemView) {
+                    @Override
+                    protected void createHolder(final CustomHolder holder) {
+                        holder.setOnClickListener(v -> handleItemViewClick(holder, dataList.get(holder.getAdapterPosition() - getHeaderCount()), v.getId(), viewTypeUnit));
 
-                    holder.setOnLongClickListener(v -> handleItemViewLongClick(holder, dataList.get(holder.getAdapterPosition() - getHeaderCount()), v.getId(), viewTypeUnit));
-                    creatingHolder(holder, viewTypeUnit);
-                }
-            };
-            return holder;
+                        holder.setOnLongClickListener(v -> handleItemViewLongClick(holder, dataList.get(holder.getAdapterPosition() - getHeaderCount()), v.getId(), viewTypeUnit));
+                        creatingHolder(holder, viewTypeUnit);
+                    }
+                };
         }
     }
 
     /**
+     * 加载更多
+     */
+   /* private void loadingMore() {
+        if (loadMoreListener!= null) {
+            loadMoreState = LOADER_LOADING;
+//            notifyDataSetChanged();
+            loadMoreListener.onStartLoadMore();
+        }
+    }*/
+    private View createHolderRootView(@LayoutRes int layoutId, ViewGroup parent) {
+        return LayoutInflater.from(context).inflate(layoutId, parent, false);
+    }
+
+    /**
      * 展示
+     *
      * @param holder
      * @param position
      */
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (position == dataList.size() + headerLayoutIdList.size()) {
-            bindingFooter(((CustomHolder) holder));
+            int itemViewType = getItemViewType(position);
+            if (itemViewType == LAYOUT_FOOTER) {
+                bindingFooter(((CustomHolder) holder));
+            } else if (itemViewType != LAYOUT_BLANK) {
+                if (itemViewType == LAYOUT_FOOTER_LOADING) {
+                    if (loadMoreState == LOADER_CAN_LOAD) {
+                        loadMoreState = LOADER_LOADING;
+                        loadMoreListener.onStartLoadMore();
+                    }
+//                } else if (itemViewType == LAYOUT_FOOTER_RETRY) {
+                }
+                bindingFooterLoader((CustomHolder) holder, itemViewType);
+            }
             return;
         } else if (position < headerLayoutIdList.size()) {
             for (int i = 0; i < headerLayoutIdList.size(); i++) {
@@ -172,16 +266,17 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
     }
 
     /**
-     *  Called when a view created by this adapter has been attached to a window.
-     *  simple to solve item will layout using all
-     *  {@link #setFullSpan(RecyclerView.ViewHolder)}
+     * Called when a view created by this adapter has been attached to a window.
+     * simple to solve item will layout using all
+     * {@link #setFullSpan(RecyclerView.ViewHolder)}
+     *
      * @param holder
      */
     @Override
     public void onViewAttachedToWindow(RecyclerView.ViewHolder holder) {
         super.onViewAttachedToWindow(holder);
         int type = holder.getItemViewType();
-        if (type == LAYOUT_FOOTER || headerLayoutIdList.indexOfKey(type)>=0) {
+        if (type == LAYOUT_FOOTER || headerLayoutIdList.indexOfKey(type) >= 0) {
             setFullSpan(holder);
         } else {
             ViewTypeUnit viewTypeUnit = multiLayoutMap.get(type);
@@ -192,10 +287,12 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
     }
 
     /**
+     * thanks for CymChad for this method
      * When set to true, the item will layout using all span area. That means, if orientation
      * is vertical, the view will have full width; if orientation is horizontal, the view will
      * have full height.
      * if the hold view use StaggeredGridLayoutManager they should using all span area
+     *
      * @param holder True if this item should traverse all spans.
      */
     protected void setFullSpan(RecyclerView.ViewHolder holder) {
@@ -207,6 +304,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
 
     /**
      * add animation when you want to show time
+     *
      * @param holder
      */
     private void addAnimation(RecyclerView.ViewHolder holder) {
@@ -226,6 +324,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
 
     /**
      * set anim to start when loading
+     *
      * @param animation
      * @param holder
      */
@@ -309,7 +408,26 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
             return headerLayoutIdList.keyAt(position);
         }
         if (position == dataList.size() + headerCount) {
-            return LAYOUT_FOOTER;
+            switch (loadMoreState) {
+                case LOADER_LOADING:
+                case LOADER_CAN_LOAD:
+                    if (loadMoreListener == null || getLoadingLayoutId() == 0 || getShowingList().size() == 0) {
+                        return LAYOUT_BLANK;
+                    }
+                    return LAYOUT_FOOTER_LOADING;
+                case LOADER_RETRY:
+                    if (loadMoreListener == null || getLoadRetryLayoutId() == 0 || getShowingList().size() == 0) {
+                        return LAYOUT_BLANK;
+                    }
+                    return LAYOUT_FOOTER_RETRY;
+                case LOADER_NO_MORE:
+                default:
+                    if (loadMoreListener != null && footerLayoutId == 0) {
+                        return getNoMoreLayoutId() == 0 ? LAYOUT_BLANK : LAYOUT_FOOTER_NO_MORE;
+                    } else {
+                        return footerLayoutId == 0 ? LAYOUT_BLANK : LAYOUT_FOOTER;
+                    }
+            }
         }
 
         ViewTypeUnit viewTypeUnit = getViewTypeUnitForLayout(dataList.get(position - headerCount));
@@ -337,7 +455,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
      */
     @Override
     public int getItemCount() {
-        int footerCount = footerLayout == 0 ? 0 : 1;
+        int footerCount = 1;
         int headerCount = headerLayoutIdList.size();
         if (dataList != null) {
             return dataList.size() + footerCount + headerCount;
@@ -352,6 +470,10 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
         return null;
     }
 
+    public OnInitList getOnInitList() {
+        return onInitList;
+    }
+
     public void setAnimationDuration(int animationDuration) {
         this.animationDuration = animationDuration;
     }
@@ -361,9 +483,9 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
     }
 
     public boolean hasFooter() {
-        return footerLayout != 0;
+//        return footerLayout != 0;
+        return true;
     }
-
 
     public int getHeaderCount() {
         return headerLayoutIdList.size();
@@ -384,6 +506,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
 
     /**
      * 适配器中的所有数据，包括被过滤掉的数据
+     *
      * @return
      */
     public List<T> getNoFilteredDataList() {
@@ -392,6 +515,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
 
     /**
      * 取得下在展示的数据集合
+     *
      * @return
      */
     public List<T> getShowingList() {
@@ -399,6 +523,9 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
     }
 
     public void setDataList(List<T> dataList) {
+        if (dataList == null) {
+            dataList = new ArrayList<>();
+        }
         if (useFilter()) {
             mainList.clear();
             mainList.addAll(dataList);
@@ -472,7 +599,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
         } else {
             dataList.add(item);
         }
-        notifyItemInserted(getItemCount() - (footerLayout == 0 ? 1 : 2));
+        notifyItemInserted(getItemCount() - 2);
     }
 
   /*  public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
@@ -486,7 +613,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
     }*/
 
     public void setFooter(@LayoutRes int footerLayout) {
-        this.footerLayout = footerLayout;
+        this.footerLayoutId = footerLayout;
     }
 
     public void addHeader(@LayoutRes int headerLayoutId) {
@@ -513,6 +640,10 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
 
     }
 
+    protected void bindingFooterLoader(CustomHolder holder, int viewType) {
+
+    }
+
     protected void beforeSetDataList(List<T> dataList) {
 
     }
@@ -536,6 +667,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
     /**
      * filter local main data list, it can use any time, it won't change the main data list.
      * 列表过滤器
+     *
      * @param mainList
      * @return
      */
@@ -547,13 +679,80 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
 
     /**
      * 是否使用过滤列表
+     *
      * @return
      */
     protected boolean useFilter() {
         return false;
     }
 
-  /*  *//**
+    /**
+     * 加载更多结束
+     *
+     * @param noMoreData true:没有更多的数据了， false:可以再次加载更多
+     */
+    public void loadingMoreEnd(boolean noMoreData) {
+        if (loadMoreListener != null) {
+            loadMoreState = noMoreData ? LOADER_NO_MORE : LOADER_CAN_LOAD;
+        }
+    }
+
+    /**
+     * 加载更多异常
+     * 显示加载重试Footer
+     */
+    public void loadingMoreError() {
+        if (loadMoreListener != null) {
+            loadMoreState = LOADER_RETRY;
+            notifyDataSetChanged();
+        }
+    }
+
+    /**
+     * 加载更多接口
+     */
+    public interface ILoadMoreListener {
+        void onStartLoadMore();
+    }
+
+    public ILoadMoreListener getLoadMoreListener() {
+        return loadMoreListener;
+    }
+
+    public void setLoadMoreListener(ILoadMoreListener loadMoreListener) {
+        this.loadMoreListener = loadMoreListener;
+//        loadMoreState = LOADER_CAN_LOAD;
+    }
+
+    public void setLoadingLayout(@LayoutRes int loadingLayoutId) {
+        this.loadingLayoutId = loadingLayoutId;
+    }
+
+    public int getLoadingLayoutId() {
+        return useDefaultLoaderLayout && loadingLayoutId == 0 ? R.layout.layout_base_loading : loadingLayoutId;
+    }
+
+    private int getNoMoreLayoutId() {
+        return useDefaultLoaderLayout && noMoreLayoutId == 0 ? R.layout.layout_base_no_more : noMoreLayoutId;
+    }
+
+    public void setNoMoreLayoutId(@LayoutRes int noMoreLayoutId) {
+        this.noMoreLayoutId = noMoreLayoutId;
+    }
+
+    public int getLoadRetryLayoutId() {
+        return useDefaultLoaderLayout && loadRetryLayoutId == 0 ? R.layout.layout_base_load_retry : loadRetryLayoutId;
+    }
+
+    public void setLoadRetryLayoutId(int loadRetryLayoutId) {
+        this.loadRetryLayoutId = loadRetryLayoutId;
+    }
+
+    public void setUseDefaultLoaderLayout(boolean useDefaultLoaderLayout) {
+        this.useDefaultLoaderLayout = useDefaultLoaderLayout;
+    }
+
+    /*  *//**
      *
      *//*
     public interface OnItemClickListener<T> {

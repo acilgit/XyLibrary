@@ -1,18 +1,11 @@
 package com.test.baserefreshview;
 
-import android.app.Activity;
 import android.app.Application;
 import android.graphics.Point;
 import android.widget.Button;
-import android.widget.TextView;
 
 import com.alibaba.fastjson.JSONObject;
-import com.antfortune.freeline.FreelineCore;
-import com.antfortune.freeline.IDynamic;
-import com.facebook.drawee.backends.pipeline.Fresco;
-import com.facebook.imagepipeline.backends.okhttp3.OkHttpImagePipelineConfigFactory;
 import com.facebook.imagepipeline.common.ResizeOptions;
-import com.facebook.imagepipeline.core.ImagePipelineConfig;
 import com.xycode.xylibrary.Xy;
 import com.xycode.xylibrary.instance.FrescoLoader;
 import com.xycode.xylibrary.okHttp.Header;
@@ -26,10 +19,7 @@ import com.xycode.xylibrary.utils.TS;
 import com.xycode.xylibrary.utils.Tools;
 import com.xycode.xylibrary.utils.crashUtil.CrashItem;
 import com.xycode.xylibrary.utils.crashUtil.ICrash;
-import com.xycode.xylibrary.xRefresher.InitRefresher;
 import com.xycode.xylibrary.xRefresher.XRefresher;
-
-import java.util.HashMap;
 
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
@@ -203,9 +193,8 @@ public class App extends Application {
             }
         });*/
 
-//        XRefresher.setCustomerLoadMoreView(R.layout.layout_load_more);
+//        XRefresher.setCustomerLoadMoreView(R.layout.layout_base_load_more);
         XRefresher.init(null, new XRefresher.Options()
-                .setLoadMoreLayoutId(R.layout.layout_load_more)
                 .setDefaultBackgroundColorNoData(android.R.color.white)
                 .setDefaultNoDataText("ha\n\n\nhahn\n\n\n\n\na\n\n\nha")
                 .setLoadingRefreshingArrowColorRes(new int[]{android.R.color.holo_purple})
@@ -234,7 +223,7 @@ public class App extends Application {
                     }
                 });
 
-  /*      XRefresher.setCustomerFooterView(R.layout.layout_load_more, new XAdapter.ICustomerLoadMore() {
+  /*      XRefresher.setCustomerFooterView(R.layout.layout_base_load_more, new XAdapter.ICustomerLoadMore() {
             @Override
             public void bindFooter(XAdapter.CustomHolder holder, int footerState) {
                 switch (footerState) {

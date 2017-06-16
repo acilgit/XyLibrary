@@ -178,8 +178,8 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
         StateBinder.bindState(this, savedInstanceState);
+        super.onRestoreInstanceState(savedInstanceState);
     }
 
   /*  public void showLoadingDialog(CharSequence text) {

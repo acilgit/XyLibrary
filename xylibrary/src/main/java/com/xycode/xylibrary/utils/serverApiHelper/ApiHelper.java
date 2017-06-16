@@ -44,10 +44,10 @@ public abstract class ApiHelper {
                 String tempServer = Xy.getStorage().getString(SERVER);
                 if (!TextUtils.isEmpty(tempServer)) {
                     server = tempServer;
-                    return Xy.getStorage().getString(SERVER) + url;
+                    return server + url;
                 }
+                server = getDebugUrl();
             }
-            server = getDebugUrl();
         }
         url = server + url;
         return url;

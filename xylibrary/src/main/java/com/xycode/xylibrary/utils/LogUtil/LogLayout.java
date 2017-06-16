@@ -70,7 +70,7 @@ public class LogLayout {
         rootView.setOnTouchListener(rootViewTouchListener);
         holder = new CustomHolder(rootView);
         holder.getView(R.id.vTouch).setOnTouchListener(slideBackTouchListener);
-        adapter = new XAdapter<LogItem>(context, L.getLogList()) {
+        adapter = new XAdapter<LogItem>(context, ()-> L.getLogList()) {
             @Override
             protected ViewTypeUnit getViewTypeUnitForLayout(LogItem item) {
                 return new ViewTypeUnit(0, R.layout.item_log);

@@ -45,6 +45,7 @@ public class LoadMoreView extends RelativeLayout {
         animationShow.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
+                setVisibility(VISIBLE);
             }
 
             @Override
@@ -70,6 +71,7 @@ public class LoadMoreView extends RelativeLayout {
 
             @Override
             public void onAnimationEnd(Animation animation) {
+                setVisibility(GONE);
                 state = hidden;
             }
 
@@ -99,6 +101,5 @@ public class LoadMoreView extends RelativeLayout {
 
     public static void setLayoutId(int layoutId) {
         LoadMoreView.layoutId = layoutId;
-
     }
 }

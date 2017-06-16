@@ -13,7 +13,6 @@ import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -25,6 +24,7 @@ import android.widget.TextView;
 import com.alibaba.fastjson.JSONObject;
 import com.xycode.xylibrary.R;
 import com.xycode.xylibrary.adapter.CustomHolder;
+import com.xycode.xylibrary.adapter.OnInitList;
 import com.xycode.xylibrary.adapter.XAdapter;
 import com.xycode.xylibrary.annotation.SaveState;
 import com.xycode.xylibrary.base.BaseActivity;
@@ -49,18 +49,18 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
 
     public static final int HEADER_ONE = 0;
 
-    public static final int LOADER_MORE = 0;
-    public static final int LOADER_LOADING = 1;
-    public static final int LOADER_NO_MORE = 2;
+//    public static final int LOADER_MORE = 0;
+//    public static final int LOADER_LOADING = 1;
+//    public static final int LOADER_NO_MORE = 2;
 
     private static final int REFRESH = 1;
     private static final int LOAD = 2;
 
     private static InitRefresher initRefresher = null;
 
-    private int loadMoreState = LOADER_NO_MORE;
+//    private int loadMoreState = XAdapter.LOADER_NO_MORE;
 
-    private LoadMoreView loadMoreView;
+//    private LoadMoreView loadMoreView;
     @SaveState
     private int background;
     @SaveState
@@ -69,7 +69,6 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
     private int backgroundNoData;
     @SaveState
     private boolean backgroundNoDataIsRes = false;
-
 
     @SaveState
     private int hintColor;
@@ -83,6 +82,7 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
 
     private RecyclerView.LayoutManager layoutManager;
 
+    @SaveState
     private RefreshState state;
     private XAdapter<T> adapter;
 
@@ -145,7 +145,7 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
         rlMain = (CoordinatorLayout) findViewById(R.id.rlMain);
         swipe = (SwipeRefreshLayout) findViewById(R.id.swipe);
         recyclerView = (RecyclerView) findViewById(R.id.rvMain);
-        loadMoreView = (LoadMoreView) findViewById(R.id.loadMoreView);
+//        loadMoreView = (LoadMoreView) findViewById(R.id.loadMoreView);
         textView = (TextView) findViewById(R.id.tvMain);
 
         textView.setText(hint.isEmpty() ? options.defaultNoDataText : hint);
@@ -190,12 +190,19 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
         this.state = new RefreshState(refreshPageSize);
         this.adapter = adapter;
         this.recyclerView.setAdapter(adapter);
+        this.adapter.setUseDefaultLoaderLayout(true);
         ((SwipeRefreshLayout) findViewById(R.id.swipe)).setOnRefreshListener(() -> {
             if (swipeListener != null) swipeListener.onRefresh();
             if (refreshRequest != null) refreshList();
         });
         if (loadMore) {
-            setLoadMoreListener();
+            adapter.setLoadingLayout(options.loadMoreLayoutId);
+            adapter.setNoMoreLayoutId(options.noMoreLayoutId);
+            adapter.setNoMoreLayoutId(options.loadRetryLayoutId);
+            adapter.setLoadMoreListener(()->{
+//                setLoadMoreState(XAdapter.LOADER_LOADING);
+                getDataByRefresh(state.pageIndex + 1, state.pageDefaultSize);
+            });
         }
         if (options.loadingRefreshingArrowColorRes != null) {
             swipe.setColorSchemeResources(options.loadingRefreshingArrowColorRes);
@@ -214,51 +221,6 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
     public XRefresher setStaggeredGridLayoutManager(int spanCount, int orientation) {
         this.layoutManager = new StaggeredGridLayoutManager(spanCount, orientation);
         return this;
-    }
-
-    private void setLoadMoreListener() {
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            private boolean swipeMore = false;
-            private boolean noScrolled = true;
-
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                int scrollState = recyclerView.getScrollState();
-                super.onScrollStateChanged(recyclerView, newState);
-                if (newState == RecyclerView.SCROLL_STATE_IDLE && swipeMore && lastVisibleItem + 2 >= getAdapter().getItemCount()) {
-                    if ((!state.lastPage) && loadMoreState == LOADER_MORE) {
-                        setLoadMoreState(LOADER_LOADING);
-                        getDataByRefresh(state.pageIndex + 1, state.pageDefaultSize);
-                    }
-                } else if (newState == RecyclerView.SCROLL_STATE_IDLE && lastVisibleItem > 0
-                        && adapter.getNoFilteredDataList().size() > 0
-                        && noScrolled
-                        && lastVisibleItem + 2 >= getAdapter().getItemCount()) {
-                    if ((!state.lastPage) && loadMoreState == LOADER_MORE) {
-                        setLoadMoreState(LOADER_LOADING);
-                        getDataByRefresh(state.pageIndex + 1, state.pageDefaultSize);
-                    }
-                }
-            }
-
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                if (dy > 0 && noScrolled) {
-                    noScrolled = false;
-                }
-                swipeMore = dy > 0;
-                if (layoutManager instanceof StaggeredGridLayoutManager) {
-                    int[] lastVisibleItemPositions = ((StaggeredGridLayoutManager) layoutManager).findLastVisibleItemPositions(null);
-                    lastVisibleItem = lastVisibleItemPositions[0];
-                } else if (layoutManager instanceof GridLayoutManager) {
-                    lastVisibleItem = ((GridLayoutManager) layoutManager).findLastVisibleItemPosition();
-                } else {
-                    lastVisibleItem = ((LinearLayoutManager) layoutManager).findLastVisibleItemPosition();
-
-                }
-            }
-        });
     }
 
     /**
@@ -307,7 +269,7 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
                         state.pageIndex++;
                         break;
                 }
-                setLoadMoreState(state.lastPage ? LOADER_NO_MORE : LOADER_MORE);
+                adapter.loadingMoreEnd(state.lastPage);
                 if (newList.size() > 0) {
                     for (T newItem : newList) {
                         boolean hasSameItem = false;
@@ -342,7 +304,8 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
                         swipe.setRefreshing(false);
                         break;
                     case LOAD:
-                        setLoadMoreState(state.lastPage ? LOADER_NO_MORE : LOADER_MORE);
+                        adapter.loadingMoreError();
+//                        setLoadMoreState(state.lastPage ? XAdapter.LOADER_NO_MORE : XAdapter.LOADER_CAN_LOAD);
                         break;
                 }
                 if (!refreshRequest.handleAllFailureSituation(call, resultCode) && initRefresher != null) {
@@ -470,17 +433,19 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
         return state.lastPage;
     }
 
-    private void setLoadMoreState(int loadMoreState) {
+  /*  private void setLoadMoreState(int loadMoreState) {
         this.loadMoreState = loadMoreState;
         switch (loadMoreState) {
-            case LOADER_LOADING:
-                loadMoreView.show();
+            case XAdapter.LOADER_LOADING:
+//                adapter.setFooter();
+//                loadMoreView.show();
                 break;
             default:
-                loadMoreView.hide();
+//                adapter.setFooter();
+//                loadMoreView.hide();
                 break;
         }
-    }
+    }*/
 
     @Override
     public boolean shouldHideDivider(int position, RecyclerView parent) {
@@ -534,6 +499,10 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
         int firstPage = 1;
         @LayoutRes
         int loadMoreLayoutId = 0;
+        @LayoutRes
+        int noMoreLayoutId = 0;
+        @LayoutRes
+        int loadRetryLayoutId = 0;
         @ColorRes
         int[] loadingRefreshingArrowColorRes = null;
         @ColorRes
@@ -576,6 +545,22 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
             return this;
         }
 
+        public int getNoMoreLayoutId() {
+            return noMoreLayoutId;
+        }
+
+        public void setNoMoreLayoutId(int noMoreLayoutId) {
+            this.noMoreLayoutId = noMoreLayoutId;
+        }
+
+        public int getLoadRetryLayoutId() {
+            return loadRetryLayoutId;
+        }
+
+        public void setLoadRetryLayoutId(int loadRetryLayoutId) {
+            this.loadRetryLayoutId = loadRetryLayoutId;
+        }
+
         public int[] getLoadingRefreshingArrowColorRes() {
             return loadingRefreshingArrowColorRes;
         }
@@ -607,6 +592,15 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
     @Override
     protected void onRestoreInstanceState(Parcelable state) {
         super.onRestoreInstanceState(state);
-
+        if (adapter!= null) {
+            OnInitList onInitList = adapter.getOnInitList();
+            if (onInitList != null) {
+                try {
+                    adapter.setDataList(onInitList.getList());
+                } catch (Exception e) {
+//                e.printStackTrace();
+                }
+            }
+        }
     }
 }

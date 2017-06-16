@@ -72,8 +72,6 @@ public class MainActivity extends ABaseActivity {
     NiceSpinner spinner;
     @SaveState(SaveState.JSON_OBJECT)
     private ListBean bean;
-    @SaveState(SaveState.VIEW_SPARSEARRAY)
-    private SparseArray<View> viewSparseArray = new SparseArray<>();
     @SaveState
     List<String> list;
 
@@ -114,8 +112,6 @@ public class MainActivity extends ABaseActivity {
         siv = (SimpleDraweeView) findViewById(R.id.siv);
         tags = (TagLayout) findViewById(R.id.tags);
         spinner = (NiceSpinner) findViewById(R.id.nice_spinner);
-        viewSparseArray.put(1, tags);
-        viewSparseArray.put(2, spinner);
         findViewById(R.id.xtv).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -165,7 +161,7 @@ public class MainActivity extends ABaseActivity {
         tags.setTagCheckedMode(TagLayout.FLOW_TAG_CHECKED_SINGLE);
         tags.setOnTagSelectListener((childViewList, dataList, selectedStateList, clickPos) -> {
 //            start(New1Activity.class);
-            adapter.notifyDataSetChanged();
+//            adapter.notifyDataSetChanged();
         });
         Uri uri = Uri.parse("http://mxycsku.qiniucdn.com/group5/M00/5B/0C/wKgBfVXdYkqAEzl0AAL6ZFMAdKk401.jpg");
 //        siv.setImageURI();
@@ -181,7 +177,7 @@ public class MainActivity extends ABaseActivity {
  * 默认大小：bitmap.getWidth(), bitmap.getHeight()<br/>
  * 适配屏幕：getDrawableAdapter
  */
-        adapter = new XAdapter<ContentBean>(this) {
+        adapter = new XAdapter<ContentBean>(this, () -> bean.getContent()) {
             @Override
             protected ViewTypeUnit getViewTypeUnitForLayout(ContentBean item) {
                 switch (item.getId()) {
@@ -336,7 +332,7 @@ public class MainActivity extends ABaseActivity {
                         listStr.add("kasdjfa;sjfallajsdfa2");
                         listStr.add("kasdjfa;sjfallajsdfa3");
                         listStr.add("kasdjfa;地苛标准苛颉在在村苛另。工基本原则栽栽载村落枯塔顶，载栽甄别朝代喉咙暴露口在历史上2日3啥时3虽然3呢日呢是2呢是2国家是");
-                        XAdapter<String> xAdapter = new XAdapter<String>(getThis(), listStr) {
+                        XAdapter<String> xAdapter = new XAdapter<String>(getThis(), () -> listStr) {
                             @Override
                             public void bindingHolder(CustomHolder holder, List<String> dataList, int pos) {
                                 holder.setText(R.id.tv, dataList.get(pos));
@@ -354,9 +350,21 @@ public class MainActivity extends ABaseActivity {
             }
 
             @Override
-            protected void beforeSetDataList(List<ContentBean> dataList) {
-                super.beforeSetDataList(dataList);
+            protected void bindingFooter(CustomHolder holder) {
+                if (getShowingList().size() == 0) {
+                    holder.setText(R.id.tv, "OK");
+                } else {
+                    holder.setText(R.id.tv, "点击我一下")
+                    .setClick(R.id.tv, v-> TS.show("haha"));
+                }
             }
+
+        /*    @Override
+            protected void bindingFooterLoader(CustomHolder holder, int viewType) {
+                if (viewType == XAdapter.LAYOUT_FOOTER_RETRY) {
+                    holder.setText(com.xycode.xylibrary.R.id.tv, "哇哈哈！");
+                }
+            }*/
         };
         L.d("http://mxycsku.qiniucdn.com/group6/M00/98/E9/wKgBjVXdGPiAUmMHAALfY_C7_7U637.jpg");
         L.i("http://mxycsku.qiniucdn.com/group6/M00/98/E9/wKgBjVXdGPiAUmMHAALfY_C7_7U637.jpg");
@@ -364,8 +372,9 @@ public class MainActivity extends ABaseActivity {
 
         adapter.openLoadAnimation(new SlideInRightAnimation());
 
+        adapter.setFooter(R.layout.layout_no_datas);
 //        adapter.addHeader(3, R.layout.layout_recyclerview);
-        adapter.addHeader(2, R.layout.layout_banner);
+//        adapter.addHeader(2, R.layout.layout_banner);
 //        adapter.addHeader(4, R.layout.layout_recyclerview);
 //        adapter.setFooter(R.layout.footer);
 
@@ -386,7 +395,7 @@ public class MainActivity extends ABaseActivity {
         }, new RefreshRequest<ContentBean>() {
             @Override
             public String setRequestParamsReturnUrl(Param params) {
-             params.add("aasdfasfsassa", "asfafasfasdfasfasfasfasfasfasdfasfdasdfadsfasdfsadfas");
+                params.add("aasdfasfsassa", "asfafasfasdfasfasfasfasfasfasdfasfdasdfadsfasdfsadfas");
 //                return "http://zhijia51.com/append/store_recommend/sell_house_page";
 //                return "http://www.zhijia51.com/append/store_recommend/sell_house_page";
                 return api().getSomeAddress;
@@ -395,15 +404,19 @@ public class MainActivity extends ABaseActivity {
             @Override
             public List<ContentBean> setListData(JSONObject json) {
                 bean = JSON.parseObject(json.toString(), ListBean.class);
+                int size = bean.getContent().size();
+                for (int i = 0; i < size-1; i++) {
+                    bean.getContent().remove(0);
+                }
                 return bean.getContent();
             }
 
-            @Override
+           /* @Override
             protected boolean ignoreSameItem(ContentBean newItem, ContentBean listItem) {
                 return newItem.getId().equals(listItem.getId());
-            }
+            }*/
 
-        }, 10);
+        }, 1);
 //        new FloatingBarItemDecoration(getThis(), )
 //        xRefresher.getRecyclerView().addItemDecoration();
 //        xRefresher.setRecyclerViewDivider(android.R.color.holo_orange_light, R.dimen.margin32, R.dimen.sideMargin, R.dimen.sideMargin);
@@ -457,9 +470,6 @@ public class MainActivity extends ABaseActivity {
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        if (bean != null) {
-            adapter.setDataList(bean.getContent());
-        }
     }
 
     @Override
@@ -483,9 +493,6 @@ public class MainActivity extends ABaseActivity {
         bannerList.add(new UrlData("http://mxycsku.qiniucdn.com/group6/M00/96/F7/wKgBjVXbxnCABW_iAAKLH0qKKXo870.jpg"));
 
         bannerView.setOnImageClickListener((parent, view, position, realPosition, urlData) -> {
-            viewSparseArray = new SparseArray<>();
-            viewSparseArray.put(1, spinner);
-            viewSparseArray.put(2, tags);
 
             postEvent("anEventName", "ABC", obj -> {
                 L.e((String) obj);
