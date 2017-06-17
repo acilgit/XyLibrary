@@ -12,7 +12,7 @@ import java.util.List;
 
 /**
  * Created by XY on 2017-06-07.
- * 必须重写getApi()方法
+ * 必须重写api()方法，并通过api()调用
  */
 /*
     public static Api api() {
@@ -73,6 +73,9 @@ public abstract class ApiHelper {
         String listString = Xy.getStorage().getString(SERVER_LIST);
         List<String> list;
         list = setOptionUrlList(new ArrayList<>());
+        if (list == null ) {
+            list = new ArrayList<>();
+        }
         list.add(0, getDebugUrl());
         list.add(0, getReleaseUrl());
         if (!TextUtils.isEmpty(listString)) {

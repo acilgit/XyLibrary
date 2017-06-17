@@ -26,6 +26,7 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import com.test.baserefreshview.ListBean.ContentBean;
 import com.xycode.xylibrary.adapter.CustomHolder;
 import com.xycode.xylibrary.adapter.XAdapter;
+import com.xycode.xylibrary.animation.SlideInBottomAnimation;
 import com.xycode.xylibrary.animation.SlideInRightAnimation;
 import com.xycode.xylibrary.annotation.SaveState;
 import com.xycode.xylibrary.base.BaseActivity;
@@ -52,6 +53,7 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -162,6 +164,7 @@ public class MainActivity extends ABaseActivity {
         tags.setOnTagSelectListener((childViewList, dataList, selectedStateList, clickPos) -> {
 //            start(New1Activity.class);
 //            adapter.notifyDataSetChanged();
+            adapter.setDataList(new ArrayList<>());
         });
         Uri uri = Uri.parse("http://mxycsku.qiniucdn.com/group5/M00/5B/0C/wKgBfVXdYkqAEzl0AAL6ZFMAdKk401.jpg");
 //        siv.setImageURI();
@@ -370,9 +373,10 @@ public class MainActivity extends ABaseActivity {
         L.i("http://mxycsku.qiniucdn.com/group6/M00/98/E9/wKgBjVXdGPiAUmMHAALfY_C7_7U637.jpg");
         L.v("http://mxycsku.qiniucdn.com/group6/M00/98/E9/wKgBjVXdGPiAUmMHAALfY_C7_7U637.jpg,http://mxycsku.qiniucdn.com/group6/M00/98/E9/wKgBjVXdGPiAUmMHAALfY_C7_7U637.jpg,http://mxycsku.qiniucdn.com/group6/M00/98/E9/wKgBjVXdGPiAUmMHAALfY_C7_7U637.jpg");
 
-        adapter.openLoadAnimation(new SlideInRightAnimation());
+        adapter.openLoadAnimation(new SlideInBottomAnimation());
+        adapter.setShowNoDataFooter(true);
 
-        adapter.setFooter(R.layout.layout_no_datas);
+//        adapter.setFooter(R.layout.layout_no_datas);
 //        adapter.addHeader(3, R.layout.layout_recyclerview);
 //        adapter.addHeader(2, R.layout.layout_banner);
 //        adapter.addHeader(4, R.layout.layout_recyclerview);
@@ -405,7 +409,7 @@ public class MainActivity extends ABaseActivity {
             public List<ContentBean> setListData(JSONObject json) {
                 bean = JSON.parseObject(json.toString(), ListBean.class);
                 int size = bean.getContent().size();
-                for (int i = 0; i < size-1; i++) {
+                for (int i = 0; i < size- new Random().nextInt(3); i++) {
                     bean.getContent().remove(0);
                 }
                 return bean.getContent();

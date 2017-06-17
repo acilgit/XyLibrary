@@ -5,8 +5,8 @@
     android:layout_height="50dp">
 
         <TextView
-            android:id="@+id/tvNoMore"
-            android:text="没有更多了"
+            android:id="@+id/tvNoData"
+            android:text="暂无数据"
             android:textColor="@color/gray"
             android:textSize="14dp"
             android:gravity="center"

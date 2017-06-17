@@ -195,8 +195,6 @@ public class App extends Application {
 
 //        XRefresher.setCustomerLoadMoreView(R.layout.layout_base_load_more);
         XRefresher.init(null, new XRefresher.Options()
-                .setDefaultBackgroundColorNoData(android.R.color.white)
-                .setDefaultNoDataText("ha\n\n\nhahn\n\n\n\n\na\n\n\nha")
                 .setLoadingRefreshingArrowColorRes(new int[]{android.R.color.holo_purple})
         );
 //        XRefresher.setDefaultNoDataText("暂无数据", 1);

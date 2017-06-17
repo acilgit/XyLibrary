@@ -12,8 +12,4 @@ import com.xycode.xylibrary.utils.LogUtil.L;
 
 public abstract class ABaseActivity extends BaseActivity {
 
-    @Override
-    protected boolean useEventBus() {
-        return L.showLog();
-    }
 }

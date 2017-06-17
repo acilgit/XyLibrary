@@ -4,42 +4,42 @@ package com.xycode.xylibrary.xRefresher;
  * Created by XY on 2016/6/18.
  */
 
-import android.content.Context;
-import android.content.res.TypedArray;
-import android.os.Parcelable;
-import android.support.annotation.ColorRes;
-import android.support.annotation.DimenRes;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.util.AttributeSet;
-import android.util.TypedValue;
-import android.view.LayoutInflater;
-import android.widget.TextView;
+        import android.content.Context;
+        import android.content.res.TypedArray;
+        import android.os.Parcelable;
+        import android.support.annotation.ColorRes;
+        import android.support.annotation.DimenRes;
+        import android.support.annotation.LayoutRes;
+        import android.support.annotation.NonNull;
+        import android.support.design.widget.CoordinatorLayout;
+        import android.support.v4.widget.SwipeRefreshLayout;
+        import android.support.v7.widget.LinearLayoutManager;
+        import android.support.v7.widget.RecyclerView;
+        import android.support.v7.widget.StaggeredGridLayoutManager;
+        import android.util.AttributeSet;
+        import android.util.TypedValue;
+        import android.view.LayoutInflater;
+        import android.widget.TextView;
 
-import com.alibaba.fastjson.JSONObject;
-import com.xycode.xylibrary.R;
-import com.xycode.xylibrary.adapter.CustomHolder;
-import com.xycode.xylibrary.adapter.OnInitList;
-import com.xycode.xylibrary.adapter.XAdapter;
-import com.xycode.xylibrary.annotation.SaveState;
-import com.xycode.xylibrary.base.BaseActivity;
-import com.xycode.xylibrary.okHttp.OkHttp;
-import com.xycode.xylibrary.okHttp.Param;
-import com.xycode.xylibrary.uiKit.recyclerview.FlexibleDividerDecoration;
-import com.xycode.xylibrary.uiKit.recyclerview.HorizontalDividerItemDecoration;
+        import com.alibaba.fastjson.JSONObject;
+        import com.xycode.xylibrary.R;
+        import com.xycode.xylibrary.adapter.CustomHolder;
+        import com.xycode.xylibrary.adapter.OnInitList;
+        import com.xycode.xylibrary.adapter.XAdapter;
+        import com.xycode.xylibrary.annotation.SaveState;
+        import com.xycode.xylibrary.base.BaseActivity;
+        import com.xycode.xylibrary.okHttp.OkHttp;
+        import com.xycode.xylibrary.okHttp.Param;
+        import com.xycode.xylibrary.uiKit.recyclerview.FlexibleDividerDecoration;
+        import com.xycode.xylibrary.uiKit.recyclerview.HorizontalDividerItemDecoration;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+        import java.io.Serializable;
+        import java.util.ArrayList;
+        import java.util.Collections;
+        import java.util.List;
 
-import okhttp3.Call;
-import okhttp3.Response;
+        import okhttp3.Call;
+        import okhttp3.Response;
 
 /**
  * Created by XY on 2016/6/17.
@@ -60,7 +60,7 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
 
 //    private int loadMoreState = XAdapter.LOADER_NO_MORE;
 
-//    private LoadMoreView loadMoreView;
+    //    private LoadMoreView loadMoreView;
     @SaveState
     private int background;
     @SaveState
@@ -70,12 +70,12 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
     @SaveState
     private boolean backgroundNoDataIsRes = false;
 
-    @SaveState
-    private int hintColor;
-    @SaveState
-    private float hintSize;
-    @SaveState
-    private String hint;
+//    @SaveState
+//    private int hintColor;
+//    @SaveState
+//    private float hintSize;
+//    @SaveState
+//    private String hint;
 
     @SaveState
     private BaseActivity activity;
@@ -119,9 +119,9 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
         LayoutInflater.from(context).inflate(R.layout.layout_refresher, this, true);
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.XRefresher);
 
-        hint = typedArray.getString(R.styleable.XRefresher_hint);
-        hintSize = typedArray.getDimensionPixelSize(R.styleable.XRefresher_hintSize, 1);
-        hintColor = typedArray.getColor(R.styleable.XRefresher_hintColor, 1);
+//        hint = typedArray.getString(R.styleable.XRefresher_hint);
+//        hintSize = typedArray.getDimensionPixelSize(R.styleable.XRefresher_hintSize, 1);
+//        hintColor = typedArray.getColor(R.styleable.XRefresher_hintColor, 1);
         background = typedArray.getColor(R.styleable.XRefresher_bg, 1);
         if (background == 1) {
             background = typedArray.getResourceId(R.styleable.XRefresher_bg, 1);
@@ -134,7 +134,7 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
                 backgroundNoData = options.defaultBackgroundColorNoData;
             backgroundNoDataIsRes = backgroundNoData != 1;
         }
-        if (hint == null) hint = "";
+//        if (hint == null) hint = "";
 
         typedArray.recycle();
     }
@@ -146,11 +146,11 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
         swipe = (SwipeRefreshLayout) findViewById(R.id.swipe);
         recyclerView = (RecyclerView) findViewById(R.id.rvMain);
 //        loadMoreView = (LoadMoreView) findViewById(R.id.loadMoreView);
-        textView = (TextView) findViewById(R.id.tvMain);
+//        textView = (TextView) findViewById(R.id.tvMain);
 
-        textView.setText(hint.isEmpty() ? options.defaultNoDataText : hint);
-        if (hintSize != 1) textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, hintSize);
-        if (hintColor != 1) textView.setTextColor(hintColor);
+//        textView.setText(hint.isEmpty() ? options.defaultNoDataText : hint);
+//        if (hintSize != 1) textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, hintSize);
+//        if (hintColor != 1) textView.setTextColor(hintColor);
         if (backgroundIsRes) {
             rlMain.setBackgroundResource(background);
         } else if (background != 1) {
@@ -287,7 +287,10 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
                     getAdapter().setDataList(list);
                 }
                 if (onLastPageListener != null) onLastPageListener.receivedList(state.lastPage);
-                textView.setVisibility(getAdapter().getNoFilteredDataList().size() == 0 ? VISIBLE : GONE);
+                if (refreshType == REFRESH) {
+                    adapter.refreshedNoData();
+                }
+//                textView.setVisibility(getAdapter().getNoFilteredDataList().size() == 0 ? VISIBLE : GONE);
             }
 
             @Override
@@ -497,41 +500,19 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
         String page = "page";
         String pageSize = "pageSize";
         int firstPage = 1;
-        @LayoutRes
+
         int loadMoreLayoutId = 0;
-        @LayoutRes
         int noMoreLayoutId = 0;
-        @LayoutRes
+        int noDataLayoutId = 0;
         int loadRetryLayoutId = 0;
+
         @ColorRes
         int[] loadingRefreshingArrowColorRes = null;
-        @ColorRes
         int defaultBackgroundColorNoData = 0;
-        String defaultNoDataText = "";
 
-        public String getPage() {
-            return page;
-        }
-
-        public Options setPage(String page) {
+        public Options setPageParams(String page,String pageSize, int firstPage) {
             this.page = page;
-            return this;
-        }
-
-        public String getPageSize() {
-            return pageSize;
-        }
-
-        public Options setPageSize(String pageSize) {
             this.pageSize = pageSize;
-            return this;
-        }
-
-        public int getFirstPage() {
-            return firstPage;
-        }
-
-        public Options setFirstPage(int firstPage) {
             this.firstPage = firstPage;
             return this;
         }
@@ -549,16 +530,27 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
             return noMoreLayoutId;
         }
 
-        public void setNoMoreLayoutId(int noMoreLayoutId) {
+        public Options setNoMoreLayoutId(int noMoreLayoutId) {
             this.noMoreLayoutId = noMoreLayoutId;
+            return this;
+        }
+
+        public int getNoDataLayoutId() {
+            return noDataLayoutId;
+        }
+
+        public Options setNoDataLayoutId(int noDataLayoutId) {
+            this.noDataLayoutId = noDataLayoutId;
+            return this;
         }
 
         public int getLoadRetryLayoutId() {
             return loadRetryLayoutId;
         }
 
-        public void setLoadRetryLayoutId(int loadRetryLayoutId) {
+        public Options setLoadRetryLayoutId(int loadRetryLayoutId) {
             this.loadRetryLayoutId = loadRetryLayoutId;
+            return this;
         }
 
         public int[] getLoadingRefreshingArrowColorRes() {
@@ -570,21 +562,12 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
             return this;
         }
 
-        public int getDefaultBackgroundColorNoData() {
+      /*  public int getDefaultBackgroundColorNoData() {
             return defaultBackgroundColorNoData;
-        }
+        }*/
 
         public Options setDefaultBackgroundColorNoData(int defaultBackgroundColorNoData) {
             this.defaultBackgroundColorNoData = defaultBackgroundColorNoData;
-            return this;
-        }
-
-        public String getDefaultNoDataText() {
-            return defaultNoDataText;
-        }
-
-        public Options setDefaultNoDataText(String defaultNoDataText) {
-            this.defaultNoDataText = defaultNoDataText;
             return this;
         }
     }

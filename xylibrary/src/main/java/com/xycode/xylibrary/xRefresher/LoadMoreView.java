@@ -12,6 +12,7 @@ import com.xycode.xylibrary.R;
 /**
  * Created by XY on 2016-08-12.
  */
+@Deprecated
 public class LoadMoreView extends RelativeLayout {
 
     private static int layoutId = R.layout.layout_blank;

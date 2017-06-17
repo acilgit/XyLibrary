@@ -6,22 +6,14 @@
     android:layout_height="50dp"
     android:orientation="horizontal">
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
         <TextView
-            android:id="@+id/tv"
+            android:id="@+id/tvRetry"
             android:text="网络不给力 点击重试"
-            android:textColor="#888"
-            android:textSize="15dp"
+            android:textColor="@color/grayDark"
+            android:textSize="14dp"
             android:background="@color/transparentRedLite"
             android:gravity="center"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
-
-    </LinearLayout>
 
 </RelativeLayout>

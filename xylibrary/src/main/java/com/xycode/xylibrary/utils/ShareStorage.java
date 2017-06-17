@@ -97,6 +97,11 @@ public class ShareStorage {
         return storage.getLong(key, defValue);
     }
 
+    /**
+     * 请使用Editor时用commit()方法
+     * 可以实现同步保存，但会占用线程时间，请不要保存大量文字
+     * @return
+     */
     public SharedPreferences.Editor getEditor() {
         return storage.edit();
     }

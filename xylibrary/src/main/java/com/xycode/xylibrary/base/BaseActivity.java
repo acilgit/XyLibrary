@@ -335,7 +335,9 @@ public abstract class BaseActivity extends AppCompatActivity {
     /**
      * EventBus
      */
-    protected abstract boolean useEventBus();
+    protected boolean useEventBus() {
+        return logLayout != null;
+    }
 
     public void postEvent(String eventName) {
         postEvent(eventName, null, null);
