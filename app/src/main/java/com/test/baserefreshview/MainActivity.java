@@ -378,7 +378,7 @@ public class MainActivity extends ABaseActivity {
 
 //        adapter.setFooter(R.layout.layout_no_datas);
 //        adapter.addHeader(3, R.layout.layout_recyclerview);
-//        adapter.addHeader(2, R.layout.layout_banner);
+        adapter.addHeader(2, R.layout.layout_banner);
 //        adapter.addHeader(4, R.layout.layout_recyclerview);
 //        adapter.setFooter(R.layout.footer);
 

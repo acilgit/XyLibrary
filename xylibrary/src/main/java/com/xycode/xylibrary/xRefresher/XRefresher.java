@@ -88,7 +88,7 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
 
     private SwipeRefreshLayout swipe;
     private RecyclerView recyclerView;
-    private TextView textView;
+//    private TextView textView;
 
     private RefreshRequest refreshRequest;
     private OnLastPageListener onLastPageListener;
@@ -127,13 +127,13 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
             background = typedArray.getResourceId(R.styleable.XRefresher_bg, 1);
             backgroundIsRes = background != 1;
         }
-        backgroundNoData = typedArray.getColor(R.styleable.XRefresher_bgNoData, 1);
+      /*  backgroundNoData = typedArray.getColor(R.styleable.XRefresher_bgNoData, 1);
         if (backgroundNoData == 1) {
             backgroundNoData = typedArray.getResourceId(R.styleable.XRefresher_bgNoData, 1);
             if (options.defaultBackgroundColorNoData != 0 && backgroundNoData == 1)
                 backgroundNoData = options.defaultBackgroundColorNoData;
             backgroundNoDataIsRes = backgroundNoData != 1;
-        }
+        }*/
 //        if (hint == null) hint = "";
 
         typedArray.recycle();
@@ -156,11 +156,11 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
         } else if (background != 1) {
             rlMain.setBackgroundColor(background);
         }
-        if (backgroundNoDataIsRes) {
+/*        if (backgroundNoDataIsRes) {
             textView.setBackgroundResource(backgroundNoData);
         } else if (backgroundNoData != 1) {
             textView.setBackgroundColor(backgroundNoData);
-        }
+        }*/
 
     }
 
@@ -207,9 +207,9 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
         if (options.loadingRefreshingArrowColorRes != null) {
             swipe.setColorSchemeResources(options.loadingRefreshingArrowColorRes);
         }
-        if (refreshRequest == null) {
+     /*   if (refreshRequest == null) {
             textView.setVisibility(GONE);
-        }
+        }*/
     }
 
     /**
@@ -322,9 +322,9 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
         swipe.setRefreshing(refreshing);
     }
 
-    public void setNoDataHint(String hint) {
+    /*public void setNoDataHint(String hint) {
         textView.setText(hint);
-    }
+    }*/
 
     /**
      * refresh list
@@ -508,7 +508,7 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
 
         @ColorRes
         int[] loadingRefreshingArrowColorRes = null;
-        int defaultBackgroundColorNoData = 0;
+//        int defaultBackgroundColorNoData = 0;
 
         public Options setPageParams(String page,String pageSize, int firstPage) {
             this.page = page;
@@ -566,10 +566,10 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
             return defaultBackgroundColorNoData;
         }*/
 
-        public Options setDefaultBackgroundColorNoData(int defaultBackgroundColorNoData) {
+       /* public Options setDefaultBackgroundColorNoData(int defaultBackgroundColorNoData) {
             this.defaultBackgroundColorNoData = defaultBackgroundColorNoData;
             return this;
-        }
+        }*/
     }
 
     @Override
