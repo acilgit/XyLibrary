@@ -12,7 +12,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.Spanned;
-import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
@@ -27,14 +26,13 @@ import com.test.baserefreshview.ListBean.ContentBean;
 import com.xycode.xylibrary.adapter.CustomHolder;
 import com.xycode.xylibrary.adapter.XAdapter;
 import com.xycode.xylibrary.animation.SlideInBottomAnimation;
-import com.xycode.xylibrary.animation.SlideInRightAnimation;
 import com.xycode.xylibrary.annotation.SaveState;
 import com.xycode.xylibrary.base.BaseActivity;
 import com.xycode.xylibrary.base.BaseItemView;
 import com.xycode.xylibrary.base.PhotoSelectBaseActivity;
+import com.xycode.xylibrary.okHttp.OkHttp;
 import com.xycode.xylibrary.okHttp.Param;
 import com.xycode.xylibrary.uiKit.views.MultiImageView;
-import com.xycode.xylibrary.uiKit.views.XTextView;
 import com.xycode.xylibrary.uiKit.views.loopview.AdLoopView;
 import com.xycode.xylibrary.uiKit.views.nicespinner.NiceSpinner;
 import com.xycode.xylibrary.unit.MsgEvent;
@@ -52,11 +50,14 @@ import com.xycode.xylibrary.xRefresher.XRefresher;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
+import okhttp3.Call;
+import okhttp3.Response;
 
 import static com.test.baserefreshview.api.Api.api;
 
@@ -164,7 +165,24 @@ public class MainActivity extends ABaseActivity {
         tags.setOnTagSelectListener((childViewList, dataList, selectedStateList, clickPos) -> {
 //            start(New1Activity.class);
 //            adapter.notifyDataSetChanged();
-            adapter.setDataList(new ArrayList<>());
+//            adapter.setDataList(new ArrayList<>());
+
+            Map<String, File> photos = new HashMap<>();
+
+            newCall().url(api().uploadFiles)
+                    .files(photos, (bytesRead, contentLength, percent, done) -> {
+
+                    }).call(new OkHttp.OkResponseListener() {
+                        @Override
+                        public void handleJsonSuccess(Call call, Response response, JSONObject json) throws Exception {
+                            TS.show("OK OK");
+                        }
+
+                        @Override
+                        public void handleJsonError(Call call, Response response, JSONObject json) throws Exception {
+
+                        }
+                    });
         });
         Uri uri = Uri.parse("http://mxycsku.qiniucdn.com/group5/M00/5B/0C/wKgBfVXdYkqAEzl0AAL6ZFMAdKk401.jpg");
 //        siv.setImageURI();
@@ -358,7 +376,7 @@ public class MainActivity extends ABaseActivity {
                     holder.setText(R.id.tv, "OK");
                 } else {
                     holder.setText(R.id.tv, "点击我一下")
-                    .setClick(R.id.tv, v-> TS.show("haha"));
+                            .setClick(R.id.tv, v -> TS.show("haha"));
                 }
             }
 
@@ -409,7 +427,7 @@ public class MainActivity extends ABaseActivity {
             public List<ContentBean> setListData(JSONObject json) {
                 bean = JSON.parseObject(json.toString(), ListBean.class);
                 int size = bean.getContent().size();
-                for (int i = 0; i < size- new Random().nextInt(3); i++) {
+                for (int i = 0; i < size - new Random().nextInt(3); i++) {
                     bean.getContent().remove(0);
                 }
                 return bean.getContent();

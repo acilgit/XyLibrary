@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,7 +36,7 @@ import javax.net.ssl.HttpsURLConnection;
  * Created by Administrator on 2016/10/22 0022.
  */
 
-public class CompulsiveHelperActivity extends Activity {
+public class CompulsiveHelperActivity extends AppCompatActivity {
     public static final String Title = "title";
     public static final String Illustration = "illustration";
     public static final String Cancel = "cancel";

@@ -39,4 +39,6 @@ public class Api extends ApiHelper {
      *
      */
     public final String getSomeAddress = getServer("/append/app_poster/selectAllPosters");
+
+    public final String uploadFiles = "http://139.159.219.128:8080" + "/mobile/accident/save";
 }

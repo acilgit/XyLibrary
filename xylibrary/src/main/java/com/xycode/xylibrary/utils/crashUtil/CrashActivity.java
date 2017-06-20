@@ -6,6 +6,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
@@ -24,7 +25,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.List;
 
-public class CrashActivity extends Activity {
+public class CrashActivity extends AppCompatActivity {
 
     public static ICrash iCrash;
     public static Interfaces.CB<CrashItem> cb;
@@ -77,8 +78,7 @@ public class CrashActivity extends Activity {
     protected void onStart() {
         super.onStart();
         if (L.showLog() && logLayout == null) {
-            logLayout = new LogLayout(this);
-            ((ViewGroup) getWindow().getDecorView().getRootView()).addView(logLayout.getView());
+            logLayout = LogLayout.attachLogLayoutToActivity(this);
         }
     }
 

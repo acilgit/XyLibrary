@@ -1,7 +1,6 @@
 package com.xycode.xylibrary.okHttp;
 
 import android.app.Activity;
-import android.app.Application;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
@@ -16,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
@@ -58,6 +58,8 @@ public class OkHttp {
     private static OkHttp instance;
     private static Context application;
 
+    private static Map<String, CallItem> callItems;
+
     public static OkHttp getInstance() {
         if (instance == null) {
             instance = new OkHttp();
@@ -68,7 +70,7 @@ public class OkHttp {
     /**
      * init
      */
-    public static void init( IOkInit iOkInit) {
+    public static void init(IOkInit iOkInit) {
         if (okInit == null) {
             application = Xy.getContext();
             okInit = iOkInit;
@@ -124,13 +126,13 @@ public class OkHttp {
             e.printStackTrace();
             StringBuffer sb = new StringBuffer();
             for (String key : params.keySet()) {
-                if(sb.length()>0) sb.append("\n");
+                if (sb.length() > 0) sb.append("\n");
                 sb.append("  ").append(key).append(": ").append(params.get(key));
             }
             if (addDefaultParams) {
                 Param defaultParams = okInit.setDefaultParams(new Param());
                 for (String key : defaultParams.keySet()) {
-                    if(sb.length()>0) sb.append("\n");
+                    if (sb.length() > 0) sb.append("\n");
                     sb.append("  ").append(key).append(": ").append(defaultParams.get(key));
                 }
             }
@@ -140,7 +142,7 @@ public class OkHttp {
         return builder.build();
     }
 
-    public static Call get(Activity activity, String url, boolean addDefaultHeader, OkResponseListener okResponseListener) {
+   /* public static Call get(Activity activity, String url, boolean addDefaultHeader, OkResponseListener okResponseListener) {
         return get(activity, url, null, addDefaultHeader, okResponseListener);
     }
 
@@ -154,7 +156,7 @@ public class OkHttp {
 
     public static Call postForm(Activity activity, String url, @NonNull RequestBody body, boolean addDefaultHeader, OkResponseListener okResponseListener) {
         return postForm(activity, url, body, null, addDefaultHeader, okResponseListener);
-    }
+    }*/
 
     public static Call postForm(Activity activity, String url, @NonNull RequestBody body, Header header, boolean addDefaultHeader, OkResponseListener okResponseListener) {
         return postOrGet(activity, url, body, header, addDefaultHeader, okResponseListener);
@@ -164,6 +166,28 @@ public class OkHttp {
         return postOrGet(activity, url, body, header, addDefaultHeader, okResponseListener);
     }*/
 
+
+    public static Map<String, CallItem> getCallItems() {
+        if (callItems == null) {
+            callItems = new HashMap<>();
+        } else {
+            for (String key : callItems.keySet()) {
+                if (callItems.get(key) == null) {
+                    callItems.remove(key);
+                }
+            }
+        }
+        return callItems;
+    }
+
+    public static CallItem newCall(Activity activity) {
+        CallItem callItem = new CallItem();
+        callItem.id = String.valueOf(UUID.randomUUID());
+        callItem.activity = activity;
+        getCallItems().put(callItem.id, callItem);
+        return callItem;
+    }
+
     /**
      * @param url
      * @param body               when body isNull will use GET
@@ -172,20 +196,19 @@ public class OkHttp {
      * @param okResponseListener
      * @return
      */
-    private static Call postOrGet(final Activity activity, String url, final RequestBody body, final Header header, boolean addDefaultHeader, final OkResponseListener okResponseListener) {
+    static Call postOrGet(final Activity activity, String url, final RequestBody body, final Header header, boolean addDefaultHeader, final OkResponseListener okResponseListener) {
         final Request.Builder builder = new Request.Builder().url(url);
         StringBuffer sb = new StringBuffer();
         String logTitle;
 
         if (body != null) {
             if (OkOptions.mediaType != null) {
-//                body.contentType() =
             }
             builder.post(body);
-            logTitle ="[POST] "+url;
+            logTitle = "[POST] " + url;
         } else {
             builder.get();
-            logTitle ="[GET] "+url;
+            logTitle = "[GET] " + url;
         }
 
         if (body instanceof FormBody) {
@@ -193,7 +216,7 @@ public class OkHttp {
                 if (i == 0) sb.append("[Params]");
                 sb.append("\n  ").append(((FormBody) body).name(i)).append(": ").append(((FormBody) body).value(i));
             }
-            if(sb.length()>0) sb.append("\n");
+            if (sb.length() > 0) sb.append("\n");
         }
         Header defaultHeader = okInit.setDefaultHeader(new Header());
         if (header != null && header.size() > 0 || (addDefaultHeader && defaultHeader.size() > 0))
@@ -243,33 +266,73 @@ public class OkHttp {
      * @param okResponseListener
      * @param fileProgressListener
      */
-    public static Call uploadFile(Activity activity, String url, String fileKey, File file, Param param, final OkResponseListener okResponseListener, OkFileHelper.FileProgressListener fileProgressListener) {
+    static Call uploadFile(Activity activity, String url, String fileKey, File file, Param param, final OkResponseListener okResponseListener, OkFileHelper.FileProgressListener fileProgressListener) {
         Map<String, File> files = new HashMap<>();
         files.put(fileKey, file);
-        return uploadFiles(activity, url, files, param, okResponseListener, fileProgressListener);
+        return uploadFiles(activity, url, files, param, null, true, true, okResponseListener, fileProgressListener);
     }
 
-    public static Call uploadFiles(final Activity activity, String url, Map<String, File> files, Param param, final OkResponseListener okResponseListener, OkFileHelper.FileProgressListener fileProgressListener) {
-        MultipartBody.Builder builder = new MultipartBody.Builder();
-        builder.setType(MultipartBody.FORM);
+    static Call uploadFiles(final Activity activity, String url, Map<String, File> files, Param param, final Header header, boolean addDefaultHeader, boolean addDefaultParams, final OkResponseListener okResponseListener, OkFileHelper.FileProgressListener fileProgressListener) {
+        StringBuffer sb = new StringBuffer();
+        String logTitle;
+        logTitle = "[UPLOAD] " + url;
+        if (files == null || files.size() == 0) {
+            L.e(logTitle, "[Upload Canceled] fileSize: 0");
+            return null;
+        }
+        MultipartBody.Builder bodyBuilder = new MultipartBody.Builder();
+        bodyBuilder.setType(MultipartBody.FORM);
         if (param != null) {
             for (String key : param.keySet()) {
-                builder.addFormDataPart(key, param.get(key));
+                if (sb.length() == 0) sb.append("[Params]");
+                bodyBuilder.addFormDataPart(key, param.get(key));
+                sb.append("\n  ").append(key).append(": ").append(param.get(key));
             }
         }
-        for (String key : files.keySet()) {
-            builder.addFormDataPart(key, files.get(key).getName(), RequestBody.create(MEDIA_TYPE_MULTI_DATA, files.get(key)));
+        if (addDefaultParams) {
+            Param defaultParams = okInit.setDefaultParams(new Param());
+            for (String key : defaultParams.keySet()) {
+                if (sb.length() == 0) sb.append("[Params]");
+                bodyBuilder.addFormDataPart(key, defaultParams.get(key));
+                sb.append("\n  ").append(key).append(": ").append(defaultParams.get(key));
+            }
         }
-        RequestBody requestBody = builder.build();
-        OkFileHelper.ProgressRequestBody progressRequestBody = new OkFileHelper.ProgressRequestBody(requestBody, fileProgressListener);
-        Request request = new Request.Builder()
-                .url(url)
-                .post(progressRequestBody)
-                .build();
-        Call call = OkHttp.getClient().newCall(request);
-//        final Handler handler = new Handler(Looper.getMainLooper());
-        call.enqueue(new Callback() {
 
+        if (sb.length() > 0) sb.append("\n");
+        sb.append("[Files]");
+        for (String key : files.keySet()) {
+            bodyBuilder.addFormDataPart(key, files.get(key).getName(), RequestBody.create(MEDIA_TYPE_MULTI_DATA, files.get(key)));
+            sb.append("\n  ").append(key).append(": ").append(files.get(key).getName());
+        }
+        RequestBody requestBody = bodyBuilder.build();
+
+        OkFileHelper.ProgressRequestBody progressRequestBody = new OkFileHelper.ProgressRequestBody(requestBody, fileProgressListener);
+        Request.Builder requestBuilder = new Request.Builder()
+                .url(url)
+                .post(progressRequestBody);
+        // 添加Headers
+        Header defaultHeader = okInit.setDefaultHeader(new Header());
+        if (header != null && header.size() > 0 || (addDefaultHeader && defaultHeader != null && defaultHeader.size() > 0)) {
+            sb.append("[Headers]");
+            if (addDefaultHeader) {
+                for (String key : defaultHeader.keySet()) {
+                    requestBuilder.addHeader(key, defaultHeader.get(key));
+                    sb.append("\n  ").append(key).append(": ").append(defaultHeader.get(key));
+                }
+            }
+            if (header != null) {
+                for (String key : header.keySet()) {
+                    requestBuilder.addHeader(key, header.get(key));
+                    sb.append("\n  ").append(key).append(": ").append(header.get(key));
+                }
+            }
+        }
+
+        Request request = requestBuilder.build();
+        Call call = OkHttp.getClient().newCall(request);
+
+        L.e(logTitle, sb.toString());
+        call.enqueue(new Callback() {
             @Override
             public void onResponse(Call call, Response response) {
                 if (response != null) {
@@ -298,7 +361,6 @@ public class OkHttp {
      * @param okResponseListener
      */
     private static void responseResult(final Response response, final Call call, final OkResponseListener okResponseListener, Activity activity) {
-        BaseActivity.dismissLoadingDialogByManualState();
         if (response.isSuccessful()) {
             String responseStr = "";
             try {
@@ -311,84 +373,129 @@ public class OkHttp {
                     BaseActivity.dismissLoadingDialogByManualState();
                     return;
                 }
-                if (call.isCanceled()) return;
+                if (call.isCanceled() || okResponseListener == null) {
+                    BaseActivity.dismissLoadingDialogByManualState();
+                    return;
+                }
                 try {
-                   if(call.request().url().url().toString().endsWith("selectAllPosters")) Thread.currentThread().sleep(200);
-                } catch (InterruptedException e) {
+                    // 先在当前线程中处理
+                    okResponseListener.handleSuccessInBackground(call, jsonObject);
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
-                if (activity != null) activity.runOnUiThread(() -> {
-                    switch (resultCode) {
-                        case RESULT_SUCCESS:
-                            L.e("[Success] " + call.request().url().url().toString(), JsonTool.stringToJSON(strResult));
-                            try {
-                                okResponseListener.handleJsonSuccess(call, response, jsonObject);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-
-                            break;
-                        case RESULT_ERROR:
-                            L.e("[Error] " + call.request().url().url().toString(), strResult);
-                            try {
-                                okResponseListener.handleJsonError(call, response, jsonObject);
-                                okResponseListener.handleAllFailureSituation(call, resultCode);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-
-                            break;
-                        case RESULT_VERIFY_ERROR:
-                            L.e("[VerifyError] " + call.request().url().url().toString(), strResult);
-                            try {
-                                okResponseListener.handleJsonVerifyError(call, response, jsonObject);
-                                okResponseListener.handleAllFailureSituation(call, resultCode);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-
-                            break;
-                        default:
-                            L.e("[OtherResultCode: " + resultCode + "] " + call.request().url().url().toString(), JsonTool.stringToJSON(strResult));
-                            try {
-                                okResponseListener.handleJsonOther(call, response, jsonObject);
-                                okResponseListener.handleAllFailureSituation(call, resultCode);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-
-                            break;
-                    }
-                });
+                BaseActivity.dismissLoadingDialogByManualState();
+                // 如果传入Activity，则在主线程中处理内容
+                if (activity != null) {
+                    activity.runOnUiThread(() -> {
+                        handleResultWithResultCode(response, call, okResponseListener, strResult, jsonObject, resultCode);
+                    });
+                } else {
+                    handleResultWithResultCode(response, call, okResponseListener, strResult, jsonObject, resultCode);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
+                BaseActivity.dismissLoadingDialogByManualState();
                 final String parseErrorResult = responseStr;
                 L.e("[JsonParseFailed] " + call.request().url().url().toString(), "[Error]\n" + e.getMessage() + "\n[Result]\n " + responseStr);
                 okInit.judgeResultParseResponseFailed(call, parseErrorResult, e);
-                if (call.isCanceled()) return;
-                if (activity != null) activity.runOnUiThread(() -> {
+                if (call.isCanceled() || okResponseListener == null) return;
+                // 如果传入Activity，则在主线程中处理内容
+                if (activity != null) {
+                    activity.runOnUiThread(() -> {
+                        try {
+                            okResponseListener.handleParseError(call, parseErrorResult);
+                            okResponseListener.handleAllFailureSituation(call, RESULT_PARSE_FAILED);
+                        } catch (Exception e1) {
+                            e1.printStackTrace();
+                        }
+                    });
+                } else {
                     try {
                         okResponseListener.handleParseError(call, parseErrorResult);
                         okResponseListener.handleAllFailureSituation(call, RESULT_PARSE_FAILED);
                     } catch (Exception e1) {
                         e1.printStackTrace();
                     }
-                });
+                }
 
             }
         } else {
+            BaseActivity.dismissLoadingDialogByManualState();
             L.e("[NetworkErrorCode: " + response.code() + "] " + call.request().url().url().toString(), "");
             okInit.receivedNetworkErrorCode(call, response);
             if (call.isCanceled()) return;
-            if (activity != null) activity.runOnUiThread(() -> {
+            if (activity != null) {
+                activity.runOnUiThread(() -> {
+                    try {
+                        okResponseListener.handleResponseFailure(call, response);
+                        okResponseListener.handleAllFailureSituation(call, NETWORK_ERROR_CODE);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                });
+            } else {
                 try {
                     okResponseListener.handleResponseFailure(call, response);
                     okResponseListener.handleAllFailureSituation(call, NETWORK_ERROR_CODE);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            });
+            }
 
+        }
+    }
+
+    /**
+     * 处理responseResult成功的内容
+     *
+     * @param response
+     * @param call
+     * @param okResponseListener
+     * @param strResult
+     * @param jsonObject
+     * @param resultCode
+     */
+    private static void handleResultWithResultCode(Response response, Call call, OkResponseListener okResponseListener, String strResult, JSONObject jsonObject, int resultCode) {
+        switch (resultCode) {
+            case RESULT_SUCCESS:
+                L.e("[Success] " + call.request().url().url().toString(), JsonTool.stringToJSON(strResult));
+                try {
+                    okResponseListener.handleJsonSuccess(call, response, jsonObject);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                break;
+            case RESULT_ERROR:
+                L.e("[Error] " + call.request().url().url().toString(), strResult);
+                try {
+                    okResponseListener.handleJsonError(call, response, jsonObject);
+                    okResponseListener.handleAllFailureSituation(call, resultCode);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                break;
+            case RESULT_VERIFY_ERROR:
+                L.e("[VerifyError] " + call.request().url().url().toString(), strResult);
+                try {
+                    okResponseListener.handleJsonVerifyError(call, response, jsonObject);
+                    okResponseListener.handleAllFailureSituation(call, resultCode);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                break;
+            default:
+                L.e("[OtherResultCode: " + resultCode + "] " + call.request().url().url().toString(), JsonTool.stringToJSON(strResult));
+                try {
+                    okResponseListener.handleJsonOther(call, response, jsonObject);
+                    okResponseListener.handleAllFailureSituation(call, resultCode);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                break;
         }
     }
 
@@ -441,8 +548,24 @@ public class OkHttp {
         protected void handleAllFailureSituation(Call call, int resultCode) throws Exception {
 
         }
+
+        /**
+         * 成功时，在返回主线程前进行处理操作
+         *
+         * @param call
+         * @param json
+         * @throws Exception
+         */
+        protected void handleSuccessInBackground(Call call, JSONObject json) throws Exception {
+
+        }
+
+
     }
 
+    /**
+     * 在主线程中操作返回的JSON
+     */
     interface IOkResponseListener {
         void handleJsonSuccess(Call call, Response response, JSONObject json) throws Exception;
 
@@ -488,6 +611,7 @@ public class OkHttp {
          * returns ---
          * false: go on callbacks
          * true：interrupt callbacks
+         * 可在此方法保存资料到SQLite
          *
          * @param call
          * @param response

@@ -7,7 +7,7 @@ android {
     buildToolsVersion '25.0.2'
     resourcePrefix "resourcePrefix"
     defaultConfig {
-        minSdkVersion 16
+        minSdkVersion 15
         targetSdkVersion 22
         versionCode 235
         versionName "0.2.35"
@@ -57,6 +57,7 @@ ext {
     bintrayName = 'XyLibrary'
 
     publishedGroupId = 'com.xycode.xylibrary'
+//    publishedGroupId = 'com.xycode'
 
     libraryName = 'XyLibrary'
     artifact = 'xylibrary'
@@ -66,7 +67,7 @@ ext {
     siteUrl = 'https://github.com/acilgit/XyLibrary'
     gitUrl = 'https://github.com/acilgit/XyLibrary.git'
 
-    libraryVersion = '0.4.43'
+    libraryVersion = '0.4.46'
 
     developerId = 'acil'
     developerName = 'acil-fong'

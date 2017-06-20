@@ -9,7 +9,6 @@ package com.xycode.xylibrary.xRefresher;
         import android.os.Parcelable;
         import android.support.annotation.ColorRes;
         import android.support.annotation.DimenRes;
-        import android.support.annotation.LayoutRes;
         import android.support.annotation.NonNull;
         import android.support.design.widget.CoordinatorLayout;
         import android.support.v4.widget.SwipeRefreshLayout;
@@ -17,9 +16,7 @@ package com.xycode.xylibrary.xRefresher;
         import android.support.v7.widget.RecyclerView;
         import android.support.v7.widget.StaggeredGridLayoutManager;
         import android.util.AttributeSet;
-        import android.util.TypedValue;
         import android.view.LayoutInflater;
-        import android.widget.TextView;
 
         import com.alibaba.fastjson.JSONObject;
         import com.xycode.xylibrary.R;
@@ -247,8 +244,13 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
             addDefaultParam = initRefresher.addDefaultParam();
             addDefaultHeader = initRefresher.addDefaultHeader();
         }
-        activity.postForm(url, OkHttp.setFormBody(params, addDefaultParam), null, addDefaultHeader, new OkHttp.OkResponseListener() {
-            @Override
+        activity.newCall().url(url)
+                .body(params)
+                .addDefaultParams(addDefaultParam)
+                .addDefaultHeader(addDefaultHeader)
+                .call(new OkHttp.OkResponseListener() {
+//        activity.postForm(url, OkHttp.setFormBody(params, addDefaultParam), null, addDefaultHeader, new OkHttp.OkResponseListener() {
+        @Override
             public void handleJsonSuccess(Call call, Response response, JSONObject json) {
                 List<T> getList = refreshRequest.setListData(json);
                 final List<T> newList;

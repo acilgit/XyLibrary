@@ -22,6 +22,7 @@ import android.view.inputmethod.InputMethodManager;
 
 import com.xycode.xylibrary.annotation.annotationHelper.StateBinder;
 import com.xycode.xylibrary.interfaces.Interfaces;
+import com.xycode.xylibrary.okHttp.CallItem;
 import com.xycode.xylibrary.okHttp.Header;
 import com.xycode.xylibrary.okHttp.OkHttp;
 import com.xycode.xylibrary.okHttp.Param;
@@ -374,11 +375,23 @@ public abstract class BaseActivity extends AppCompatActivity {
     /**
      * okHttp request
      */
+    public CallItem newCall() {
+        return OkHttp.newCall(getThis());
+    }
+
+    /**
+     * {@link #newCall}
+     */
+    @Deprecated
     public okhttp3.Call postForm(String url, Param param, boolean addDefaultHeader, OkHttp.OkResponseListener okResponseListener) {
         return OkHttp.postForm(getThis(), url, setFormBody(param), null, addDefaultHeader, okResponseListener);
     }
 
-    public okhttp3.Call postForm(String url, RequestBody body, Header header, boolean addDefaultHeader, OkHttp.OkResponseListener okResponseListener) {
+    /**
+     * {@link #newCall}
+     */
+    @Deprecated
+    private okhttp3.Call postForm(String url, RequestBody body, Header header, boolean addDefaultHeader, OkHttp.OkResponseListener okResponseListener) {
         okhttp3.Call call = OkHttp.postForm(getThis(), url, body, header, addDefaultHeader, okResponseListener);
         requestList.add(call);
         return call;
