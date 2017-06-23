@@ -30,6 +30,7 @@ import com.xycode.xylibrary.annotation.SaveState;
 import com.xycode.xylibrary.base.BaseActivity;
 import com.xycode.xylibrary.base.BaseItemView;
 import com.xycode.xylibrary.base.PhotoSelectBaseActivity;
+import com.xycode.xylibrary.okHttp.Header;
 import com.xycode.xylibrary.okHttp.OkHttp;
 import com.xycode.xylibrary.okHttp.Param;
 import com.xycode.xylibrary.uiKit.views.MultiImageView;
@@ -167,12 +168,12 @@ public class MainActivity extends ABaseActivity {
 //            adapter.notifyDataSetChanged();
 //            adapter.setDataList(new ArrayList<>());
 
-            Map<String, File> photos = new HashMap<>();
-
-            newCall().url(api().uploadFiles)
-                    .files(photos, (bytesRead, contentLength, percent, done) -> {
-
-                    }).call(new OkHttp.OkResponseListener() {
+            newCall().url(api().getSomeAddress)
+                    .body(new Param("p", "PPP"))
+                    .addDefaultHeader(true)
+                    .addDefaultParams(true)
+                    .header(new Header("a", "callA"))
+                    .call(new OkHttp.OkResponseListener() {
                         @Override
                         public void handleJsonSuccess(Call call, Response response, JSONObject json) throws Exception {
                             TS.show("OK OK");
@@ -597,4 +598,8 @@ public class MainActivity extends ABaseActivity {
         }
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
 }

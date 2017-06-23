@@ -90,6 +90,8 @@ public class CompulsiveHelperActivity extends AppCompatActivity {
     private OutputStream outputStream;
     private boolean cancelDownload;
     private boolean noFileLength = false;
+    // 是否已经点击操作了，免费多个按键同时按下报Null
+    private boolean keyPressed = false;
 
 //    private Options options;
 
@@ -253,6 +255,10 @@ public class CompulsiveHelperActivity extends AppCompatActivity {
         }
         //when update click
         tvConfirm.setOnClickListener((v) -> {
+            if (keyPressed) {
+                return;
+            }
+            keyPressed = true;
             //is updating
             if (tvConfirm.isSelected() && Integer.valueOf(tvDownFileLength.getText().toString().trim()) > 0) {
                 tvConfirm.setSelected(false);
@@ -269,12 +275,20 @@ public class CompulsiveHelperActivity extends AppCompatActivity {
 
         //can only visible on update not must
         tvCancel.setOnClickListener(v -> {
-            cancelCallBack.onAbortUpdate();
+            if (keyPressed) {
+                return;
+            }
+            keyPressed = true;
+            if(cancelCallBack != null) cancelCallBack.onAbortUpdate();
             finish();
         });
         tvIgnore.setOnClickListener(v -> {
+            if (keyPressed) {
+                return;
+            }
+            keyPressed = true;
             if(ignoreCallback != null) ignoreCallback.go(null);
-            cancelCallBack.onAbortUpdate();
+            if(cancelCallBack != null) cancelCallBack.onAbortUpdate();
             finish();
         });
     }

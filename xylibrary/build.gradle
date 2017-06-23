@@ -57,17 +57,16 @@ ext {
     bintrayName = 'XyLibrary'
 
     publishedGroupId = 'com.xycode.xylibrary'
-//    publishedGroupId = 'com.xycode'
 
     libraryName = 'XyLibrary'
     artifact = 'xylibrary'
 
-    libraryDescription = 'XuHai library for Android'
+    libraryDescription = 'library for Android'
  
     siteUrl = 'https://github.com/acilgit/XyLibrary'
     gitUrl = 'https://github.com/acilgit/XyLibrary.git'
 
-    libraryVersion = '0.4.46'
+    libraryVersion = '0.4.67'
 
     developerId = 'acil'
     developerName = 'acil-fong'

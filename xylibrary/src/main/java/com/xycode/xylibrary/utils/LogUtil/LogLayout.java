@@ -70,7 +70,7 @@ public class LogLayout {
         rootView.setOnTouchListener(rootViewTouchListener);
         holder = new CustomHolder(rootView);
         holder.getView(R.id.vTouch).setOnTouchListener(slideBackTouchListener);
-        adapter = new XAdapter<LogItem>(context, ()-> L.getLogList()) {
+        adapter = new XAdapter<LogItem>(context, () -> L.getLogList()) {
             @Override
             protected ViewTypeUnit getViewTypeUnitForLayout(LogItem item) {
                 return new ViewTypeUnit(0, R.layout.item_log);
@@ -223,7 +223,7 @@ public class LogLayout {
                 case MotionEvent.ACTION_MOVE:
                     touching = true;
                     dx = x - downX;
-                    if (downX > screenWidth - miniSlideWidth && dx < 0 && (sliding || y > screenHeight - (screenHeight / 5))) {
+                    if (downX > screenWidth - miniSlideWidth && dx < 0 && (sliding || y > screenHeight - (screenHeight / (screenWidth > screenHeight ? 2 : 5)))) {
                         sliding = true;
                         slideLayout((int) x);
                     }
@@ -274,6 +274,7 @@ public class LogLayout {
 
     /**
      * 直接绑定到Activity
+     *
      * @param activity
      * @return
      */
@@ -281,5 +282,15 @@ public class LogLayout {
         LogLayout logLayout = new LogLayout(activity);
         ((ViewGroup) activity.getWindow().getDecorView().getRootView()).addView(logLayout.getView());
         return logLayout;
+    }
+
+    public void removeLayout() {
+        if (rootView != null) {
+            try {
+                ((ViewGroup)rootView.getParent()).removeView(rootView);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

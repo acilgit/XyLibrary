@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import okhttp3.Call;
 import okhttp3.RequestBody;
 
 /**
@@ -57,13 +58,13 @@ public abstract class BaseActivity extends AppCompatActivity {
     //    private static AlertDialog loadingDialog;
     private static boolean loadingDialogShowManual = false;
 
-    protected List<okhttp3.Call> requestList = new ArrayList<>();
+    protected List<CallItem> requestList = new ArrayList<>();
 
     private BroadcastReceiver finishReceiver;
     private BaseActivity thisActivity;
 
     public static final String ACTION_FINISH_ACTIVITY = "FinishBaseActivity";
-    private LogLayout logLayout;
+    protected LogLayout logLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,9 +81,9 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (useEventBus()) {
             EventBus.getDefault().unregister(this);
         }
-        for (okhttp3.Call call : requestList) {
-            if (call != null) {
-                call.cancel();
+        for (CallItem call : requestList) {
+            if (call != null && call.getCall() != null) {
+                call.getCall().cancel();
             }
         }
         dismissLoadingDialog();
@@ -101,6 +102,10 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
+        if (logLayout != null) {
+            logLayout.removeLayout();
+            logLayout = null;
+        }
     }
 
     protected BaseActivity getThis() {
@@ -183,33 +188,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         super.onRestoreInstanceState(savedInstanceState);
     }
 
-  /*  public void showLoadingDialog(CharSequence text) {
-        showLoadingDialog(text, false);
-    }
-
-    public void showLoadingDialog(CharSequence text, boolean cancelable) {
-        if (loadingDialog == null) {
-            loadingDialog = new ProgressDialog(this);
-        } else {
-            loadingDialog.dismiss();
-        }
-
-        loadingDialog.setCanceledOnTouchOutside(cancelable);
-        if (cancelable) {
-            loadingDialog.setOnCancelListener(null);
-        } else {
-            loadingDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                @Override
-                public void onCancel(DialogInterface dialog) {
-                    finish();
-                }
-            });
-        }
-
-        loadingDialog.setMessage(text);
-        loadingDialog.show();
-    }*/
-
     public void hideSoftInput() {
         View view = getWindow().peekDecorView();
         if (view != null) {
@@ -217,7 +195,6 @@ public abstract class BaseActivity extends AppCompatActivity {
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
-
 
     protected void registerFinishReceiver() {
         finishReceiver = new BroadcastReceiver() {
@@ -376,29 +353,9 @@ public abstract class BaseActivity extends AppCompatActivity {
      * okHttp request
      */
     public CallItem newCall() {
-        return OkHttp.newCall(getThis());
-    }
-
-    /**
-     * {@link #newCall}
-     */
-    @Deprecated
-    public okhttp3.Call postForm(String url, Param param, boolean addDefaultHeader, OkHttp.OkResponseListener okResponseListener) {
-        return OkHttp.postForm(getThis(), url, setFormBody(param), null, addDefaultHeader, okResponseListener);
-    }
-
-    /**
-     * {@link #newCall}
-     */
-    @Deprecated
-    private okhttp3.Call postForm(String url, RequestBody body, Header header, boolean addDefaultHeader, OkHttp.OkResponseListener okResponseListener) {
-        okhttp3.Call call = OkHttp.postForm(getThis(), url, body, header, addDefaultHeader, okResponseListener);
+        CallItem call = OkHttp.newCall(getThis());
         requestList.add(call);
         return call;
-    }
-
-    public RequestBody setFormBody(Param params) {
-        return OkHttp.setFormBody(params, false);
     }
 
     /**
@@ -425,13 +382,18 @@ public abstract class BaseActivity extends AppCompatActivity {
         return loadingDialog;
     }
 
+
+    protected interface WindowMode {
+        // 输入适应
+        int INPUT_ADJUST = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE | WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN;
+    }
+
+    /**
+     * 设置输入法模式
+     * @param windowMode 在 WindowMode 中选择相应选项，或从WindowManager.LayoutParams中选择
+     */
     protected void setWindowMode(int windowMode) {
         getWindow().setSoftInputMode(windowMode);
     }
-
-    protected static class WindowMode {
-        public static int INPUT_ADJUST = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE | WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN;
-    }
-
 
 }

@@ -141,12 +141,14 @@ public class App extends Application {
 
             @Override
             public Param setDefaultParams(Param defaultParams) {
+                defaultParams.add("p", "defaultP");
                 return defaultParams;
             }
 
             @Override
             public Header setDefaultHeader(Header defaultHeader) {
                 defaultHeader.add("sectionId", "");
+                defaultHeader.add("a", "defaultA");
                 return defaultHeader;
             }
 

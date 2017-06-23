@@ -238,7 +238,7 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
         params.put(options.page, String.valueOf(actualPage));
         params.put(options.pageSize, String.valueOf(postPageSize));
         String url = refreshRequest.setRequestParamsReturnUrl(params);
-        boolean addDefaultParam = false;
+        boolean addDefaultParam = true;
         boolean addDefaultHeader = true;
         if (initRefresher != null) {
             addDefaultParam = initRefresher.addDefaultParam();

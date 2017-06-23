@@ -3,6 +3,7 @@ package com.xycode.xylibrary.okHttp;
 import android.app.Activity;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Map;
 
 import okhttp3.Call;
@@ -30,17 +31,14 @@ public class CallItem {
      *
      * @param okResponseListener
      */
-    public void call(OkHttp.OkResponseListener okResponseListener) {
+    public Call call(OkHttp.OkResponseListener okResponseListener) {
         this.okResponseListener = okResponseListener;
         if (files != null) {
-            OkHttp.uploadFiles(activity, url, files, body, header, addDefaultHeader, addDefaultParams, okResponseListener, fileProgressListener);
+           call = OkHttp.uploadFiles(activity, url, files, body, header, addDefaultHeader, addDefaultParams, okResponseListener, fileProgressListener);
         } else {
-            RequestBody requestBody = null;
-            if (body != null) {
-                requestBody = OkHttp.setFormBody(body, addDefaultParams);
-            }
-            OkHttp.postOrGet(activity, url, requestBody, header, addDefaultHeader, okResponseListener);
+            call = OkHttp.postOrGet(activity, url, body, addDefaultParams, header, addDefaultHeader, okResponseListener);
         }
+        return call;
     }
 
     public CallItem url(String url) {
@@ -64,6 +62,14 @@ public class CallItem {
         return this;
     }
 
+    public CallItem oneFile(String fileKey, File file, OkFileHelper.FileProgressListener fileProgressListener) {
+        HashMap<String, File> files = new HashMap<>();
+        files.put(fileKey, file);
+        this.files = files;
+        this.fileProgressListener = fileProgressListener;
+        return this;
+    }
+
     public CallItem addDefaultParams(boolean addDefaultParams) {
         this.addDefaultParams = addDefaultParams;
         return this;
@@ -74,5 +80,11 @@ public class CallItem {
         return this;
     }
 
-
+    /**
+     * 执行完call()后会返回call，但call也可能为空，请进行判断
+     * @return
+     */
+    public Call getCall() {
+        return call;
+    }
 }

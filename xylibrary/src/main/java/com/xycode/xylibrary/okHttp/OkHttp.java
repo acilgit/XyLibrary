@@ -106,67 +106,6 @@ public class OkHttp {
         }
     }
 
-    public static RequestBody setFormBody(Param params) {
-        return setFormBody(params, true);
-    }
-
-    public static RequestBody setFormBody(Param params, boolean addDefaultParams) {
-        FormBody.Builder builder = new FormBody.Builder();
-        try {
-            for (String key : params.keySet()) {
-                builder.add(key, params.get(key));
-            }
-            if (addDefaultParams) {
-                Param defaultParams = okInit.setDefaultParams(new Param());
-                for (String key : defaultParams.keySet()) {
-                    builder.add(key, defaultParams.get(key));
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            StringBuffer sb = new StringBuffer();
-            for (String key : params.keySet()) {
-                if (sb.length() > 0) sb.append("\n");
-                sb.append("  ").append(key).append(": ").append(params.get(key));
-            }
-            if (addDefaultParams) {
-                Param defaultParams = okInit.setDefaultParams(new Param());
-                for (String key : defaultParams.keySet()) {
-                    if (sb.length() > 0) sb.append("\n");
-                    sb.append("  ").append(key).append(": ").append(defaultParams.get(key));
-                }
-            }
-            L.e("[Params Error]", sb.toString());
-            throw e;
-        }
-        return builder.build();
-    }
-
-   /* public static Call get(Activity activity, String url, boolean addDefaultHeader, OkResponseListener okResponseListener) {
-        return get(activity, url, null, addDefaultHeader, okResponseListener);
-    }
-
-    public static Call get(Activity activity, String url, Header header, boolean addDefaultHeader, final OkResponseListener okResponseListener) {
-        return postOrGet(activity, url, null, header, addDefaultHeader, okResponseListener);
-    }
-
-    public static Call postForm(Activity activity, String url, @NonNull RequestBody body, OkResponseListener okResponseListener) {
-        return postForm(activity, url, body, null, true, okResponseListener);
-    }
-
-    public static Call postForm(Activity activity, String url, @NonNull RequestBody body, boolean addDefaultHeader, OkResponseListener okResponseListener) {
-        return postForm(activity, url, body, null, addDefaultHeader, okResponseListener);
-    }*/
-
-    public static Call postForm(Activity activity, String url, @NonNull RequestBody body, Header header, boolean addDefaultHeader, OkResponseListener okResponseListener) {
-        return postOrGet(activity, url, body, header, addDefaultHeader, okResponseListener);
-    }
-
-  /*  public static  Call postForm(Activity activity, String url, RequestBody body, Header header, boolean addDefaultHeader, final OkResponseListener okResponseListener) {
-        return postOrGet(activity, url, body, header, addDefaultHeader, okResponseListener);
-    }*/
-
-
     public static Map<String, CallItem> getCallItems() {
         if (callItems == null) {
             callItems = new HashMap<>();
@@ -189,21 +128,54 @@ public class OkHttp {
     }
 
     /**
+     * 网络请求命令，只供CallItem调用
+     *
+     * @param activity
      * @param url
-     * @param body               when body isNull will use GET
+     * @param params
+     * @param addDefaultParams
      * @param header
      * @param addDefaultHeader
      * @param okResponseListener
      * @return
      */
-    static Call postOrGet(final Activity activity, String url, final RequestBody body, final Header header, boolean addDefaultHeader, final OkResponseListener okResponseListener) {
+    static Call postOrGet(final Activity activity, String url, Param params, boolean addDefaultParams, Header header, boolean addDefaultHeader, final OkResponseListener okResponseListener) {
         final Request.Builder builder = new Request.Builder().url(url);
         StringBuffer sb = new StringBuffer();
         String logTitle;
 
-        if (body != null) {
-            if (OkOptions.mediaType != null) {
+        FormBody.Builder formBodyBuilder = new FormBody.Builder();
+        try {
+            if (params != null) {
+                for (String key : params.keySet()) {
+                    if (sb.length() == 0) sb.append("[Params]");
+                    sb.append("\n  ").append(key).append(": ").append(params.get(key));
+                    formBodyBuilder.add(key, params.get(key));
+                }
             }
+            if (addDefaultParams) {
+                Param defaultParams = okInit.setDefaultParams(new Param());
+                for (String key : defaultParams.keySet()) {
+                    if (sb.length() == 0) sb.append("[Params]");
+                    sb.append("\n  ").append(key).append(": ").append(defaultParams.get(key));
+                    if (params != null && params.containsKey(key)) {
+                        sb.append(" (ignored)");
+                    } else {
+                        formBodyBuilder.add(key, defaultParams.get(key));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            L.e("[Params Error] " + url, sb.toString());
+            throw e;
+        }
+
+        boolean hasParams = sb.length() > 0;
+
+        FormBody body = formBodyBuilder.build();
+
+        if (hasParams) {
             builder.post(body);
             logTitle = "[POST] " + url;
         } else {
@@ -211,26 +183,25 @@ public class OkHttp {
             logTitle = "[GET] " + url;
         }
 
-        if (body instanceof FormBody) {
-            for (int i = 0; i < ((FormBody) body).size(); i++) {
-                if (i == 0) sb.append("[Params]");
-                sb.append("\n  ").append(((FormBody) body).name(i)).append(": ").append(((FormBody) body).value(i));
-            }
-            if (sb.length() > 0) sb.append("\n");
-        }
         Header defaultHeader = okInit.setDefaultHeader(new Header());
-        if (header != null && header.size() > 0 || (addDefaultHeader && defaultHeader.size() > 0))
+        if (header != null && header.size() > 0 || (addDefaultHeader && defaultHeader.size() > 0)){
+            if (sb.length() > 0) sb.append("\n");
             sb.append("[Headers]");
-        if (addDefaultHeader) {
+        }
+        if (addDefaultHeader && defaultHeader != null) {
             for (String key : defaultHeader.keySet()) {
-                builder.addHeader(key, defaultHeader.get(key));
                 sb.append("\n  ").append(key).append(": ").append(defaultHeader.get(key));
+                if (header != null && header.containsKey(key)) {
+                    sb.append(" (ignored)");
+                } else {
+                    builder.addHeader(key, defaultHeader.get(key));
+                }
             }
         }
         if (header != null) {
             for (String key : header.keySet()) {
-                builder.addHeader(key, header.get(key));
                 sb.append("\n  ").append(key).append(": ").append(header.get(key));
+                builder.addHeader(key, header.get(key));
             }
         }
         final Request request = builder.build();
@@ -254,25 +225,24 @@ public class OkHttp {
             } finally {
             }
         }).start();
-
         return call;
     }
 
     /**
      * upload file，you can setMaxTransFileCount() to set max files upload thread pool size
      *
+     * @param activity
      * @param url
-     * @param file
+     * @param files
+     * @param params
+     * @param header
+     * @param addDefaultHeader
+     * @param addDefaultParams
      * @param okResponseListener
      * @param fileProgressListener
+     * @return
      */
-    static Call uploadFile(Activity activity, String url, String fileKey, File file, Param param, final OkResponseListener okResponseListener, OkFileHelper.FileProgressListener fileProgressListener) {
-        Map<String, File> files = new HashMap<>();
-        files.put(fileKey, file);
-        return uploadFiles(activity, url, files, param, null, true, true, okResponseListener, fileProgressListener);
-    }
-
-    static Call uploadFiles(final Activity activity, String url, Map<String, File> files, Param param, final Header header, boolean addDefaultHeader, boolean addDefaultParams, final OkResponseListener okResponseListener, OkFileHelper.FileProgressListener fileProgressListener) {
+    static Call uploadFiles(final Activity activity, String url, Map<String, File> files, Param params, final Header header, boolean addDefaultHeader, boolean addDefaultParams, final OkResponseListener okResponseListener, OkFileHelper.FileProgressListener fileProgressListener) {
         StringBuffer sb = new StringBuffer();
         String logTitle;
         logTitle = "[UPLOAD] " + url;
@@ -282,27 +252,31 @@ public class OkHttp {
         }
         MultipartBody.Builder bodyBuilder = new MultipartBody.Builder();
         bodyBuilder.setType(MultipartBody.FORM);
-        if (param != null) {
-            for (String key : param.keySet()) {
+        if (params != null) {
+            for (String key : params.keySet()) {
                 if (sb.length() == 0) sb.append("[Params]");
-                bodyBuilder.addFormDataPart(key, param.get(key));
-                sb.append("\n  ").append(key).append(": ").append(param.get(key));
+                sb.append("\n  ").append(key).append(": ").append(params.get(key));
+                bodyBuilder.addFormDataPart(key, params.get(key));
             }
         }
         if (addDefaultParams) {
             Param defaultParams = okInit.setDefaultParams(new Param());
             for (String key : defaultParams.keySet()) {
                 if (sb.length() == 0) sb.append("[Params]");
-                bodyBuilder.addFormDataPart(key, defaultParams.get(key));
                 sb.append("\n  ").append(key).append(": ").append(defaultParams.get(key));
+                if (params != null && params.containsKey(key)) {
+                    sb.append("(ignored)");
+                } else {
+                    bodyBuilder.addFormDataPart(key, defaultParams.get(key));
+                }
             }
         }
 
         if (sb.length() > 0) sb.append("\n");
         sb.append("[Files]");
         for (String key : files.keySet()) {
-            bodyBuilder.addFormDataPart(key, files.get(key).getName(), RequestBody.create(MEDIA_TYPE_MULTI_DATA, files.get(key)));
             sb.append("\n  ").append(key).append(": ").append(files.get(key).getName());
+            bodyBuilder.addFormDataPart(key, files.get(key).getName(), RequestBody.create(MEDIA_TYPE_MULTI_DATA, files.get(key)));
         }
         RequestBody requestBody = bodyBuilder.build();
 
@@ -314,16 +288,20 @@ public class OkHttp {
         Header defaultHeader = okInit.setDefaultHeader(new Header());
         if (header != null && header.size() > 0 || (addDefaultHeader && defaultHeader != null && defaultHeader.size() > 0)) {
             sb.append("[Headers]");
-            if (addDefaultHeader) {
+            if (addDefaultHeader && defaultHeader != null) {
                 for (String key : defaultHeader.keySet()) {
-                    requestBuilder.addHeader(key, defaultHeader.get(key));
                     sb.append("\n  ").append(key).append(": ").append(defaultHeader.get(key));
+                    if (header != null && header.containsKey(key)) {
+                        sb.append("(ignored)");
+                    } else {
+                        requestBuilder.addHeader(key, defaultHeader.get(key));
+                    }
                 }
             }
             if (header != null) {
                 for (String key : header.keySet()) {
-                    requestBuilder.addHeader(key, header.get(key));
                     sb.append("\n  ").append(key).append(": ").append(header.get(key));
+                    requestBuilder.addHeader(key, header.get(key));
                 }
             }
         }

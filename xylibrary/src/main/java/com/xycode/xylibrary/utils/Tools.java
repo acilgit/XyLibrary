@@ -76,8 +76,8 @@ public class Tools {
 
     private static Tools instance = null;
 
-    private static int ScreenWidth = 0;
-    private static Point screenSize = null;
+//    private static int ScreenWidth = 0;
+//    private static Point screenSize = null;
 
     private static AtomicInteger atomicCounter = new AtomicInteger(0);
 
@@ -771,10 +771,10 @@ public class Tools {
     }
 
     public static Point getScreenSize() {
-        if (screenSize == null) {
-            screenSize = new Point();
+//        if (screenSize == null) {
+            Point screenSize = new Point();
             ((WindowManager) Xy.getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getSize(screenSize);
-        }
+//        }
         return screenSize;
     }
 
