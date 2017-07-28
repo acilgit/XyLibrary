@@ -1,8 +1,8 @@
 package com.test.baserefreshview.api;
 
-import com.xycode.xylibrary.utils.serverApiHelper.ApiHelper;
+        import com.xycode.xylibrary.utils.serverApiHelper.ApiHelper;
 
-import java.util.List;
+        import java.util.List;
 
 /**
  * Created by XY on 2017-06-07.

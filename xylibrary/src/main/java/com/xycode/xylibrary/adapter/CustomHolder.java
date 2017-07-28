@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.IdRes;
+import android.support.annotation.RawRes;
 import android.support.annotation.StringRes;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -23,6 +24,7 @@ import com.xycode.xylibrary.uiKit.views.MultiImageView;
 import com.xycode.xylibrary.uiKit.views.nicespinner.NiceSpinner;
 import com.xycode.xylibrary.utils.DateUtils;
 import com.xycode.xylibrary.utils.ImageUtils;
+import com.xycode.xylibrary.utils.LogUtil.L;
 
 
 /**
@@ -50,9 +52,10 @@ public class CustomHolder extends RecyclerView.ViewHolder {
 
     /**
      * 创建时执行
+     *
      * @param holder
      */
-    protected void createHolder(CustomHolder holder){
+    protected void createHolder(CustomHolder holder) {
 
     }
 
@@ -62,6 +65,7 @@ public class CustomHolder extends RecyclerView.ViewHolder {
             view = itemView.findViewById(viewId);
             viewList.put(viewId, view);
         }
+        if (view == null) L.d("getView null id:" + viewId);
         return (T) view;
     }
 
@@ -167,11 +171,6 @@ public class CustomHolder extends RecyclerView.ViewHolder {
     private CustomHolder setTextForView(int viewId, String text) {
         View view = getView(viewId);
         if (view != null) {
-           /* if (view instanceof EditText) {
-                ((EditText) view).setText(text);
-            } else if (view instanceof Button) {
-                ((Button) view).setText(text);
-            } else*/
             if (view instanceof TextView) {
                 ((TextView) view).setText(TextUtils.isEmpty(text) ? "" : text);
             }
@@ -189,6 +188,14 @@ public class CustomHolder extends RecyclerView.ViewHolder {
         return this;
     }
 
+    public CustomHolder setViewBackground(int viewId, int bgRes) {
+        View view = getView(viewId);
+        if (view != null) {
+            (view).setBackgroundResource(bgRes);
+        }
+        return this;
+    }
+
     public CustomHolder setImageUrl(int viewId, String url, ResizeOptions resizeOptions) {
         View view = getView(viewId);
         if (view != null) {
@@ -202,12 +209,19 @@ public class CustomHolder extends RecyclerView.ViewHolder {
         return this;
     }
 
-    public CustomHolder setImageURI(int viewId, String url) {
-        return setImageUrl(viewId, url);
-    }
-
+    /**
+     * SimpleDrawee 请使用此方法
+     * @param viewId
+     * @param url
+     * @return
+     */
     public CustomHolder setImageUrl(int viewId, String url) {
         return setImageUrl(viewId, url, null);
+    }
+
+    @Deprecated
+    public CustomHolder setImageURI(int viewId, String url) {
+        return setImageUrl(viewId, url);
     }
 
     private CustomHolder setImageURI(int viewId, Uri uri) {
@@ -317,6 +331,7 @@ public class CustomHolder extends RecyclerView.ViewHolder {
      * 1、请在creatingHolder时设置 setExpandViewId
      * 2、bindingHolder时，setExpand(animate, false)
      * 3、onClick时，setExpand(animate, true)
+     *
      * @param expandViewId
      */
     public void setExpandViewId(@IdRes int expandViewId) {
@@ -324,15 +339,16 @@ public class CustomHolder extends RecyclerView.ViewHolder {
     }
 
     View getExpandView() {
-        return expandViewId == 0 ? null: getView(expandViewId);
+        return expandViewId == 0 ? null : getView(expandViewId);
     }
 
-    public void setExpand(boolean toExpand, final boolean animate){
+    public void setExpand(boolean toExpand, final boolean animate) {
         setExpand(toExpand, animate, null);
     }
 
     /**
      * 如果在动画结束时需要NotifyDatasetChange可以在onAnimationEndListener中设置
+     *
      * @param toExpand
      * @param animate
      * @param onAnimationEndListener
@@ -350,7 +366,7 @@ public class CustomHolder extends RecyclerView.ViewHolder {
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         super.onAnimationEnd(animation);
-                        if(onAnimationEndListener != null) onAnimationEndListener.go(null);
+                        if (onAnimationEndListener != null) onAnimationEndListener.go(null);
                     }
                 });
                 animator.start();
@@ -366,7 +382,7 @@ public class CustomHolder extends RecyclerView.ViewHolder {
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         expandView.setVisibility(View.GONE);
-                        if(onAnimationEndListener != null) onAnimationEndListener.go(null);
+                        if (onAnimationEndListener != null) onAnimationEndListener.go(null);
                     }
 
                     @Override

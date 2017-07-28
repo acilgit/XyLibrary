@@ -10,26 +10,23 @@ import com.xycode.xylibrary.utils.TS;
 import com.yalantis.ucrop.UCrop;
 
 //import butterknife.Bind;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 public class PhotoSelectActivity extends PhotoSelectBaseActivity {
 
-    @BindView(R.id.btnCamera)
-    Button btnCamera;
-    @BindView(R.id.btnAlbum)
-    Button btnAlbum;
-    @BindView(R.id.btnCancel)
-    Button btnCancel;
-    @BindView(R.id.rlMain)
-    RelativeLayout rlMain;
+//    @BindView(R.id.btnCamera)
+//    Button btnCamera;
+//    @BindView(R.id.btnAlbum)
+//    Button btnAlbum;
+//    @BindView(R.id.btnCancel)
+//    Button btnCancel;
+//    @BindView(R.id.rlMain)
+//    RelativeLayout rlMain;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo_select);
-        ButterKnife.bind(this);
+//        ButterKnife.bind(this);
     }
 
     @Override
@@ -37,7 +34,7 @@ public class PhotoSelectActivity extends PhotoSelectBaseActivity {
         return false;
     }
 
-    @OnClick({R.id.btnCamera, R.id.btnAlbum, R.id.btnCancel, R.id.rlMain})
+//    @OnClick({R.id.btnCamera, R.id.btnAlbum, R.id.btnCancel, R.id.rlMain})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btnCamera:

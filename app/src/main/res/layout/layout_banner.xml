@@ -11,7 +11,13 @@
         android:scaleType="fitCenter"
         android:layout_width="match_parent"
         android:layout_height="120dp"/>
-    <com.xycode.xylibrary.uiKit.views.loopview.AdLoopView
+    <ImageView
+        android:id="@+id/iv2"
+        android:src="@mipmap/photo"
+        android:scaleType="fitCenter"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"/>
+        <com.xycode.xylibrary.uiKit.views.loopview.AdLoopView
         android:id="@+id/banner"
         app:aspectRatio="3"
         android:layout_marginTop="0dp"

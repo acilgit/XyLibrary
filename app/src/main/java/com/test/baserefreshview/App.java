@@ -6,12 +6,16 @@ import android.widget.Button;
 
 import com.alibaba.fastjson.JSONObject;
 import com.facebook.imagepipeline.common.ResizeOptions;
+import com.taobao.sophix.PatchStatus;
+import com.taobao.sophix.SophixManager;
+import com.taobao.sophix.listener.PatchLoadStatusListener;
 import com.xycode.xylibrary.Xy;
 import com.xycode.xylibrary.instance.FrescoLoader;
 import com.xycode.xylibrary.okHttp.Header;
 import com.xycode.xylibrary.okHttp.OkHttp;
 import com.xycode.xylibrary.okHttp.Param;
 import com.xycode.xylibrary.okHttp.XSSSocketLFactory;
+import com.xycode.xylibrary.utils.VersionUtils;
 import com.xycode.xylibrary.utils.crashUtil.CrashActivity;
 import com.xycode.xylibrary.unit.WH;
 import com.xycode.xylibrary.utils.LogUtil.L;
@@ -56,6 +60,7 @@ public class App extends Application {
         });*/
 
         Xy.init(this, false);
+        initHotfix();
         CrashActivity.setCrashOperation(crashItem -> {
             L.e(crashItem.toString());
           /*  OkHttp.postForm(CrashActivity.getInstance(), "https://www.taichi-tiger.com:8080/append/app_poster/selectAllPosters",
@@ -237,5 +242,44 @@ public class App extends Application {
             }
         });*/
     }
+    // 阿里执修复
+    private void initHotfix() {
+        SophixManager.getInstance().setContext(getInstance())
+                .setAppVersion(VersionUtils.getVersionName(this))
+                .setAesKey(null)
+                .setEnableDebug(true)
+                .setPatchLoadStatusStub(new PatchLoadStatusListener() {
+                    @Override
+                    public void onLoad(final int mode, final int code, final String info, final int handlePatchVersion) {
+                        // 补丁加载回调通知
+                        String s = "mode:" + mode + " code:"+ code + "\npatchVersion:" + handlePatchVersion + "\ninfo:" + info;
+                        if (code == PatchStatus.CODE_LOAD_SUCCESS) {
+                            // 表明补丁加载成功
+                            L.e("[Hotfix Success]", s);
+                        } else if (code == PatchStatus.CODE_LOAD_RELAUNCH) {
+                            L.e("[Hotfix CODE_LOAD_RELAUNCH]", s);
+                            TS.show(s);
+                            try {
+                                Thread.sleep(1000);
+                                SophixManager.getInstance().killProcessSafely();
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            // 表明新补丁生效需要重启. 开发者可提示用户或者强制重启;
+                            // 建议: 用户可以监听进入后台事件, 然后应用自杀
+                        } else if (code == PatchStatus.CODE_LOAD_FAIL) {
+                            L.e("[Hotfix CODE_LOAD_FAIL]", s);
+                            // 内部引擎异常, 推荐此时清空本地补丁, 防止失败补丁重复加载
+                            SophixManager.getInstance().cleanPatches();
+                        } else if (code == PatchStatus.CODE_DOWNLOAD_SUCCESS) {
+                            L.e("[Hotfix CODE_DOWNLOAD_SUCCESS]", s);
+                        } else {
+                            // 其它错误信息, 查看PatchStatus类说明
+                            L.e("[Hotfix else]", s);
+                        }
 
+                    }
+                }).initialize();
+        SophixManager.getInstance().queryAndLoadNewPatch();
+    }
 }

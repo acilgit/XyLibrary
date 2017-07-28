@@ -56,7 +56,7 @@ public class OkHttp {
     private static OkHttp.OkOptions okOptions;
 
     private static OkHttp instance;
-    private static Context application;
+//    private static Context application;
 
     private static Map<String, CallItem> callItems;
 
@@ -72,17 +72,25 @@ public class OkHttp {
      */
     public static void init(IOkInit iOkInit) {
         if (okInit == null) {
-            application = Xy.getContext();
             okInit = iOkInit;
         }
     }
 
     public static void init(IOkInit iOkInit, OkOptions okOptions) {
         if (okInit == null) {
-            application = Xy.getContext();
             okInit = iOkInit;
             OkHttp.okOptions = okOptions;
         }
+    }
+
+    /**
+     * when use hotfix, set client in Application on local okHttp jar
+     * @param iOkInit
+     * @param client
+     */
+    public static void init(IOkInit iOkInit, OkHttpClient client) {
+        okInit = iOkInit;
+        OkHttp.client = client;
     }
 
     public static void setMaxTransFileCount(int max) {
@@ -307,6 +315,7 @@ public class OkHttp {
         }
 
         Request request = requestBuilder.build();
+
         Call call = OkHttp.getClient().newCall(request);
 
         L.e(logTitle, sb.toString());

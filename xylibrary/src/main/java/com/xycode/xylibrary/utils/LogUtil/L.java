@@ -33,7 +33,7 @@ public class L {
     /**
      * -1时不限数量
      */
-    private static int MAX_LOG_LIST_SIZE_IN_RELEASE_MODE = 20;
+    private static int MAX_LOG_LIST_SIZE_IN_RELEASE_MODE = 30;
 
     private static boolean showLog = true;
     private static String TAG = " Debug ";
@@ -75,7 +75,7 @@ public class L {
 
     public static void setShowLog(boolean showLog) {
         L.showLog = showLog;
-        Xy.getStorage().getEditor().putBoolean(SHOW_LOG, showLog).commit();
+        Xy.getStorage(Xy.getContext()).getEditor().putBoolean(SHOW_LOG, showLog).commit();
     }
 
     public static boolean showLog() {

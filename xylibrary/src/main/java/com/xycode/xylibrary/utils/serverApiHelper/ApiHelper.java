@@ -41,7 +41,7 @@ public abstract class ApiHelper {
             server = getReleaseUrl();
         } else {
             if (server == null) {
-                String tempServer = Xy.getStorage().getString(SERVER);
+                String tempServer = Xy.getStorage(Xy.getContext()).getString(SERVER);
                 if (!TextUtils.isEmpty(tempServer)) {
                     server = tempServer;
                     return server + url;
@@ -59,18 +59,18 @@ public abstract class ApiHelper {
      * @param selectedUrl
      */
     public void setServerUrl(String selectedUrl) {
-        if (Xy.getStorage().getEditor().putString(SERVER, selectedUrl).commit()) {
+        if (Xy.getStorage(Xy.getContext()).getEditor().putString(SERVER, selectedUrl).commit()) {
             server = selectedUrl;
             api = null;
         }
     }
 
     public boolean setStoredServerList(List<String> newServerList) {
-        return (Xy.getStorage().getEditor().putString(SERVER_LIST, JSONArray.toJSONString(newServerList)).commit());
+        return (Xy.getStorage(Xy.getContext()).getEditor().putString(SERVER_LIST, JSONArray.toJSONString(newServerList)).commit());
     }
 
     public List<String> getStoredServerList() {
-        String listString = Xy.getStorage().getString(SERVER_LIST);
+        String listString = Xy.getStorage(Xy.getContext()).getString(SERVER_LIST);
         List<String> list;
         list = setOptionUrlList(new ArrayList<>());
         if (list == null ) {

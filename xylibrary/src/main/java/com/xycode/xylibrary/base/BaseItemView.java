@@ -28,6 +28,7 @@ import com.xycode.xylibrary.annotation.SaveState;
 import com.xycode.xylibrary.annotation.annotationHelper.StateBinder;
 import com.xycode.xylibrary.utils.DateUtils;
 
+import java.util.Arrays;
 import java.util.Calendar;
 
 import com.xycode.xylibrary.annotation.annotationHelper.StateBinder;
@@ -117,14 +118,13 @@ public abstract class BaseItemView extends RelativeLayout {
         itemDetail = itemDetail == null ? "" : itemDetail;
         itemDescription = itemDescription == null ? "" : itemDescription;
         itemType = a.getInt(R.styleable.BaseItemView_itemType, -1);
-        if (setExtendEnumStyle() != R.styleable.BaseItemView && setItemTypeEnumStyle() != R.styleable.BaseItemView_itemType) {
-            a.recycle();
-            a = context.obtainStyledAttributes(attrs, setExtendEnumStyle());
-            int type = a.getInt(setItemTypeEnumStyle(), -1);
-            if (type != -1) itemType = type;
-        }
-        if (itemType == -1) itemType = 0;
         a.recycle();
+        if (!Arrays.equals(R.styleable.BaseItemView, setExtendEnumStyle()) || setItemTypeEnumStyle() != R.styleable.BaseItemView_itemType) {
+            TypedArray b = getContext().obtainStyledAttributes(attrs, setExtendEnumStyle());
+            int type = b.getInt(setItemTypeEnumStyle(), -1);
+            if (type != -1) itemType = type;
+            b.recycle();
+        }
     }
 
     @Override

@@ -19,6 +19,10 @@ public class ShareStorage {
         storage = Xy.getContext().getSharedPreferences(preferenceName, Context.MODE_PRIVATE);
     }
 
+    public ShareStorage(Context context, @NonNull String preferenceName) {
+        storage = context.getSharedPreferences(preferenceName, Context.MODE_PRIVATE);
+    }
+
     public void setStorageOnChangeListener(SharedPreferences.OnSharedPreferenceChangeListener onSharedPreferenceChangeListener) {
         if (storage != null) {
             this.onSharedPreferenceChangeListener = onSharedPreferenceChangeListener;

@@ -120,7 +120,7 @@ public class LogLayout {
         llLog.setLayoutTransition(new LayoutTransition());
 
         RecyclerView rv = holder.getRecyclerView(R.id.rv);
-        rv.addItemDecoration(Tools.getHorizontlDivider(R.color.grayLite, R.dimen.dividerLineHeight, R.dimen.zero, R.dimen.zero));
+        rv.addItemDecoration(Tools.getHorizontalDivider(R.color.grayLite, R.dimen.dividerLineHeight, R.dimen.zero, R.dimen.zero));
         rv.setLayoutManager(new LinearLayoutManager(context));
         rv.setAdapter(adapter);
         holder.setClick(R.id.tvTop, v -> {

@@ -8,4 +8,20 @@
         </attr>
     </declare-styleable>
 
+    <declare-styleable name="ViewItem">
+        <attr name="viewType" format="enum">
+            <enum name="plusMinerCount" value="0"/>
+            <enum name="titleLeftRightSelector" value="1"/>
+            <enum name="textInputLayout" value="2"/>
+            <enum name="dateSelector" value="3"/>
+            <enum name="textDateTime" value="4"/>
+            <enum name="infoInput" value="5"/>
+            <enum name="selectUserType" value="6"/>
+            <enum name="selectPicture" value="7"/>
+            <enum name="upDownText" value="8"/>
+            <enum name="iconTextSelector" value="9"/>
+            <enum name="visibleSwitch" value="10"/>
+            <enum name="scanPicture" value="11"/>
+        </attr>
+    </declare-styleable>
 </resources>

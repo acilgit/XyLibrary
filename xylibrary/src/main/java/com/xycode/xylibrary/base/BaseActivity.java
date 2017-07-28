@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 
+import com.xycode.xylibrary.adapter.CustomHolder;
 import com.xycode.xylibrary.annotation.annotationHelper.StateBinder;
 import com.xycode.xylibrary.interfaces.Interfaces;
 import com.xycode.xylibrary.okHttp.CallItem;
@@ -66,6 +67,8 @@ public abstract class BaseActivity extends AppCompatActivity {
     public static final String ACTION_FINISH_ACTIVITY = "FinishBaseActivity";
     protected LogLayout logLayout;
 
+    private CustomHolder rootHolder;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,6 +109,13 @@ public abstract class BaseActivity extends AppCompatActivity {
             logLayout.removeLayout();
             logLayout = null;
         }
+    }
+
+    public CustomHolder rootHolder(){
+        if (rootHolder == null) {
+            rootHolder = new CustomHolder(getWindow().getDecorView().getRootView());
+        }
+        return rootHolder;
     }
 
     protected BaseActivity getThis() {

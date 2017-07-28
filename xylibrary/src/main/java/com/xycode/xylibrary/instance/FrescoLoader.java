@@ -12,6 +12,8 @@ import com.xycode.xylibrary.okHttp.OkHttp;
 import com.xycode.xylibrary.unit.WH;
 import com.xycode.xylibrary.utils.ImageUtils;
 
+import okhttp3.OkHttpClient;
+
 /**
  * Created by XY on 2016-09-27.
  */
@@ -33,17 +35,13 @@ public class FrescoLoader {
         if (Xy.getContext() != null) Fresco.initialize(Xy.getContext());
     }
 
-    public static void init(boolean useOkHttp, OnFrescoListener onFrescoListener) {
+    public static void init(OkHttpClient client, OnFrescoListener onFrescoListener) {
         getInstance().onFrescoListener = onFrescoListener;
         if (Xy.getContext() != null) {
-            if (useOkHttp) {
-                ImagePipelineConfig config = OkHttpImagePipelineConfigFactory
-                        .newBuilder(Xy.getContext(), OkHttp.getClient())
-                        .build();
-                Fresco.initialize(Xy.getContext(), config);
-            } else {
-                Fresco.initialize(Xy.getContext());
-            }
+            ImagePipelineConfig config = OkHttpImagePipelineConfigFactory
+                    .newBuilder(Xy.getContext(), client)
+                    .build();
+            Fresco.initialize(Xy.getContext(), config);
         }
     }
 

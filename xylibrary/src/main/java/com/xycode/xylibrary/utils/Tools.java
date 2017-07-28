@@ -260,11 +260,15 @@ public class Tools {
     }
 
     public static CharSequence getHtmlDrawableText(int drawableId, String text, final int drawableHeightDP) {
+        return getHtmlDrawableText(Xy.getContext(), drawableId, text, drawableHeightDP);
+    }
+
+    public static CharSequence getHtmlDrawableText(Context context, int drawableId, String text, final int drawableHeightDP) {
         final String html = "<img src='" + drawableId + "'/>&nbsp;" + text;
         CharSequence charSequence = Html.fromHtml(html, new Html.ImageGetter() {
             @Override
             public Drawable getDrawable(String source) {
-                Drawable drawable = Xy.getContext().getResources().getDrawable(Integer.parseInt(source));
+                Drawable drawable = context.getResources().getDrawable(Integer.parseInt(source));
                 int dh = Tools.dp2px((float) drawableHeightDP);
                 drawable.setBounds(0, 0, dh * drawable.getIntrinsicWidth() / drawable.getIntrinsicHeight(), dh);
                 return drawable;
@@ -274,7 +278,10 @@ public class Tools {
     }
 
     public static CharSequence getHtmlDrawableText(int drawableId, String text, int textColerRes, final int drawableHeightDP) {
+        return getHtmlDrawableText(Xy.getContext(), drawableId, text, textColerRes, drawableHeightDP);
+    }
 
+    public static CharSequence getHtmlDrawableText(Context context, int drawableId, String text, int textColerRes, final int drawableHeightDP) {
         StringBuffer tc = new StringBuffer("#" + Integer.toHexString(textColerRes));
         if (tc.length() == 9) tc.delete(1, 2);
         StringBuffer stringBuffer = new StringBuffer();
@@ -287,7 +294,7 @@ public class Tools {
         CharSequence charSequence = Html.fromHtml(html, new Html.ImageGetter() {
             @Override
             public Drawable getDrawable(String source) {
-                Drawable drawable = Xy.getContext().getResources().getDrawable(Integer.parseInt(source));
+                Drawable drawable = context.getResources().getDrawable(Integer.parseInt(source));
                 int dh = Tools.dp2px((float) drawableHeightDP);
                 drawable.setBounds(0, 0, dh * drawable.getIntrinsicWidth() / drawable.getIntrinsicHeight(), dh);
                 return drawable;
@@ -724,7 +731,11 @@ public class Tools {
      * dp to px(pixel)
      */
     public static int dp2px(float dpValue) {
-        final float scale = Xy.getContext().getResources().getDisplayMetrics().density;
+        return dp2px(Xy.getContext(), dpValue);
+    }
+
+    public static int dp2px(Context context, float dpValue) {
+        final float scale = context.getResources().getDisplayMetrics().density;
         return (int) (dpValue * scale + 0.5f);
     }
 
@@ -732,7 +743,11 @@ public class Tools {
      * px(pixel) to dp
      */
     public static int px2dp(float pxValue) {
-        final float scale = Xy.getContext().getResources().getDisplayMetrics().density;
+        return dp2px(Xy.getContext(), pxValue);
+    }
+
+    public static int px2dp(Context context, float pxValue) {
+        final float scale = context.getResources().getDisplayMetrics().density;
         return (int) (pxValue / scale + 0.5f);
     }
 
@@ -771,10 +786,12 @@ public class Tools {
     }
 
     public static Point getScreenSize() {
-//        if (screenSize == null) {
-            Point screenSize = new Point();
-            ((WindowManager) Xy.getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getSize(screenSize);
-//        }
+        return getScreenSize(Xy.getContext());
+    }
+
+    public static Point getScreenSize(Context context) {
+        Point screenSize = new Point();
+        ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getSize(screenSize);
         return screenSize;
     }
 
@@ -822,7 +839,7 @@ public class Tools {
         }
     }
 
-    public static HorizontalDividerItemDecoration getHorizontlDivider(@ColorRes int dividerColor, @DimenRes int dividerHeight, @DimenRes int marginLeft, @DimenRes int marginRight) {
+    public static HorizontalDividerItemDecoration getHorizontalDivider(@ColorRes int dividerColor, @DimenRes int dividerHeight, @DimenRes int marginLeft, @DimenRes int marginRight) {
         HorizontalDividerItemDecoration.Builder builder = new HorizontalDividerItemDecoration.Builder(Xy.getContext())
                 .colorResId(dividerColor).sizeResId(dividerHeight)
                 .marginResId(marginLeft, marginRight);

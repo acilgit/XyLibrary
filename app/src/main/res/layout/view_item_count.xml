@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:id="@+id/llItem"
+android:layout_width="wrap_content"
+android:layout_height="28dp"
+android:gravity="center_vertical">
+
+<TextView
+    android:id="@+id/tvMinus"
+    android:layout_width="32dp"
+    android:layout_height="match_parent"
+    android:background="@drawable/selector_item_transparent"
+    android:gravity="center"
+    android:text="-"
+    android:textColor="@color/grayLite"
+    android:textSize="18dp"/>
+
+<View
+    android:layout_width="1dp"
+    android:layout_height="match_parent"
+    android:background="@color/grayLite"/>
+
+<EditText
+    android:id="@+id/etAmount"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@null"
+    android:gravity="center"
+    android:inputType="number"
+    android:minWidth="32dp"
+    android:paddingLeft="2dp"
+    android:paddingRight="0dp"
+    android:text="0"
+    android:textColor="@color/gray"
+    android:textSize="15dp"/>
+
+<View
+    android:layout_width="1dp"
+    android:layout_height="match_parent"
+    android:background="@color/grayLite"/>
+
+<TextView
+    android:id="@+id/tvPlus"
+    android:layout_width="32dp"
+    android:layout_height="match_parent"
+    android:background="@drawable/selector_item_transparent"
+    android:gravity="center"
+    android:text="+"
+    android:textColor="@color/bgBlue"
+    android:textSize="18dp"/>
+
+</LinearLayout>

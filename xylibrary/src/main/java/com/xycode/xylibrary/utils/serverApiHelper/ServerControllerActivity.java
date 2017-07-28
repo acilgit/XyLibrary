@@ -69,8 +69,8 @@ public class ServerControllerActivity extends AppCompatActivity implements View.
          findViewById(R.id.btnOptionServer).setOnClickListener(this);
          findViewById(R.id.tvClose).setOnClickListener(this);
 
-        swLog.setChecked(Xy.getStorage().getBoolean(L.SHOW_LOG, false));
-        swLog.setOnCheckedChangeListener((buttonView, isChecked) -> Xy.getStorage().put(L.SHOW_LOG, isChecked));
+        swLog.setChecked(Xy.getStorage(Xy.getContext()).getBoolean(L.SHOW_LOG, false));
+        swLog.setOnCheckedChangeListener((buttonView, isChecked) -> Xy.getStorage(Xy.getContext()).put(L.SHOW_LOG, isChecked));
     }
 
 

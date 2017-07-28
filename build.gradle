@@ -24,6 +24,7 @@ properties.load(project.rootProject.file('local.properties').newDataInputStream(
 allprojects {
     repositories {
         jcenter()
+        maven { url "http://maven.aliyun.com/nexus/content/repositories/releases" }
         maven {
             url "https://jitpack.io"
             'https://maven.google.com'

@@ -42,7 +42,7 @@ dependencies {
     compile 'com.annimon:stream:1.1.2'
     compile 'com.anthonycr.grant:permissions:1.0'
     compile 'com.yalantis:ucrop:2.1.2'
-    compile 'com.squareup.okhttp3:okhttp:3.4.0'
+    compile 'com.squareup.okhttp3:okhttp:3.8.1'
     compile 'com.facebook.fresco:fresco:0.10.0'
     compile "com.facebook.fresco:imagepipeline-okhttp3:0.10.0"
     compile 'org.greenrobot:eventbus:3.0.0'
@@ -66,7 +66,7 @@ ext {
     siteUrl = 'https://github.com/acilgit/XyLibrary'
     gitUrl = 'https://github.com/acilgit/XyLibrary.git'
 
-    libraryVersion = '0.4.67'
+    libraryVersion = '0.4.82'
 
     developerId = 'acil'
     developerName = 'acil-fong'

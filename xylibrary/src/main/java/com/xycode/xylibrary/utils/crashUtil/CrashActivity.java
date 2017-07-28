@@ -46,7 +46,7 @@ public class CrashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         CrashActivity.instance = this;
-        String json = Xy.getStorage().getString(CRASH_LOG);
+        String json = Xy.getStorage(Xy.getContext()).getString(CRASH_LOG);
         List<LogItem> logItems = JSON.parseArray(json, LogItem.class);
         L.setLogList(logItems);
         errorMsg = getIntent().getStringExtra(MSG);
@@ -55,7 +55,7 @@ public class CrashActivity extends AppCompatActivity {
     }
 
     private void initViews() {
-        crashItem = getCrashItem();
+        crashItem = getCrashItem(errorMsg);
         if (cb != null) {
             cb.go(crashItem);
         }
@@ -107,13 +107,9 @@ public class CrashActivity extends AppCompatActivity {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            try {
-                throw ex;
-            } catch (Throwable throwable) {
-                throwable.printStackTrace();
-            }
+            ex.printStackTrace();
             String jsonString = JSON.toJSONString(L.getLogList());
-            if (Xy.getStorage().getEditor().putString(CRASH_LOG, jsonString).commit()) {
+            if (Xy.getStorage(Xy.getContext()).getEditor().putString(CRASH_LOG, jsonString).commit()) {
                 Intent intent = new Intent(Xy.getContext(), CrashActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.putExtra(CrashActivity.MSG, info);
@@ -125,7 +121,7 @@ public class CrashActivity extends AppCompatActivity {
         });
     }
 
-    protected CrashItem getCrashItem() {
+    public CrashItem getCrashItem(String errorMsg) {
         CrashItem crashItem = null;
         try {
             //应用的版本名称和版本号

@@ -13,6 +13,15 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <com.test.baserefreshview.items.ViewItem
+            app:viewType="titleLeftRightSelector"
+            app:itemCount="222222"
+            app:itemName="hahahha"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+
+
         <com.xycode.xylibrary.uiKit.views.XTextView
             android:id="@+id/xtv"
             android:layout_width="wrap_content"

@@ -255,15 +255,15 @@ public class CompulsiveHelperActivity extends AppCompatActivity {
         }
         //when update click
         tvConfirm.setOnClickListener((v) -> {
-            if (keyPressed) {
-                return;
-            }
-            keyPressed = true;
             //is updating
             if (tvConfirm.isSelected() && Integer.valueOf(tvDownFileLength.getText().toString().trim()) > 0) {
                 tvConfirm.setSelected(false);
                 cancelDownload = true;
             } else {
+                if (keyPressed) {
+                    return;
+                }
+                keyPressed = true;
                 tvIllustration.setVisibility(View.GONE);
                 tvCancel.setVisibility(View.GONE);
                 tvIgnore.setVisibility(View.GONE);

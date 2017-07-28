@@ -1,12 +1,10 @@
 package com.test.baserefreshview;
 
 import android.graphics.Bitmap;
-import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v4.widget.ViewDragHelper;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -27,8 +25,6 @@ import com.xycode.xylibrary.adapter.CustomHolder;
 import com.xycode.xylibrary.adapter.XAdapter;
 import com.xycode.xylibrary.animation.SlideInBottomAnimation;
 import com.xycode.xylibrary.annotation.SaveState;
-import com.xycode.xylibrary.base.BaseActivity;
-import com.xycode.xylibrary.base.BaseItemView;
 import com.xycode.xylibrary.base.PhotoSelectBaseActivity;
 import com.xycode.xylibrary.okHttp.Header;
 import com.xycode.xylibrary.okHttp.OkHttp;
@@ -49,14 +45,10 @@ import com.xycode.xylibrary.xRefresher.RefreshRequest;
 import com.xycode.xylibrary.xRefresher.XRefresher;
 
 import java.io.File;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
-import butterknife.ButterKnife;
 import okhttp3.Call;
 import okhttp3.Response;
 
@@ -82,47 +74,17 @@ public class MainActivity extends ABaseActivity {
     String content = "<p>\r\n\t<img src=\"http://ww4.sinaimg.cn/bmiddle/483b2741jw1fawazpne7yj20qo0zkgtx.jpg\" /><img src=\"http://ww3.sinaimg.cn/bmiddle/483b2741jw1fawazxtqglj20qo0zkwlx.jpg\" />\r\n</p>\r\n<p>\r\n\thjfgsdiohfksdhcsjdhcfiduhfjkhiewhfjsda.n\r\n</p>";
     private XAdapter<ContentBean> adapter;
 
-    private void setDrawerLeftEdgeSize(BaseActivity activity, DrawerLayout drawerLayout, float displayWidthPercentage) {
-        if (activity == null || drawerLayout == null) return;
-        try {
-            // 找到 ViewDragHelper 并设置 Accessible 为true
-            Field leftDraggerField = drawerLayout.getClass().getDeclaredField("mLeftDragger");//Right
-            leftDraggerField.setAccessible(true);
-            ViewDragHelper leftDragger = (ViewDragHelper) leftDraggerField.get(drawerLayout);
-
-            // 找到 edgeSizeField 并设置 Accessible 为true
-            Field edgeSizeField = leftDragger.getClass().getDeclaredField("mEdgeSize");
-            edgeSizeField.setAccessible(true);
-            int edgeSize = edgeSizeField.getInt(leftDragger);
-
-            // 设置新的边缘大小
-            Point displaySize = new Point();
-            activity.getWindowManager().getDefaultDisplay().getSize(displaySize);
-            edgeSizeField.setInt(leftDragger, Math.max(edgeSize, (int) (displaySize.x * displayWidthPercentage)));
-        } catch (NoSuchFieldException e) {
-        } catch (IllegalArgumentException e) {
-        } catch (IllegalAccessException e) {
-        }
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setWindowMode(WindowMode.INPUT_ADJUST);
         setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
+//        ButterKnife.bind(this);
 //        start(TestA.class);
         xRefresher = (XRefresher) findViewById(R.id.xRefresher);
         siv = (SimpleDraweeView) findViewById(R.id.siv);
         tags = (TagLayout) findViewById(R.id.tags);
         spinner = (NiceSpinner) findViewById(R.id.nice_spinner);
-        findViewById(R.id.xtv).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ServerControllerActivity.startThis(getThis(), api());
-            }
-        });
-
 //        mBean.setMessage("ddddddd");
 //        mBean.setResultCode(1);
 //        spinner.attachDataSource(Arrays.asList(R.array.test_array));
@@ -131,6 +93,13 @@ public class MainActivity extends ABaseActivity {
         spinner.getStringData().getObject()
         */
 
+
+        findViewById(R.id.xtv).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ServerControllerActivity.startThis(getThis(), api());
+            }
+        });
 
 //        DrawerLayout drawerLayout = (DrawerLayout) getLayoutInflater().inflate(com.xycode.xylibrary.R.layout.layout_base_console_view, null);
 //        DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.dl);
@@ -147,14 +116,14 @@ public class MainActivity extends ABaseActivity {
         mDrawerLayout.addDrawerListener(mToggle);*/
 
         findViewById(R.id.li).setOnClickListener(null);
-        ListItem item = new ListItem(getThis());
+      /*  ListItem item = new ListItem(getThis());
         item.setOnViewSenseListener(new BaseItemView.OnViewSenseListener<String>() {
 
             @Override
             public void sense(View view, String obj) {
 
             }
-        });
+        });*/
 
         List<String> list = new ArrayList<>();
 //        list.add("或在在要要在");
@@ -164,7 +133,6 @@ public class MainActivity extends ABaseActivity {
         tags.setDataList(list);
         tags.setTagCheckedMode(TagLayout.FLOW_TAG_CHECKED_SINGLE);
         tags.setOnTagSelectListener((childViewList, dataList, selectedStateList, clickPos) -> {
-//            start(New1Activity.class);
 //            adapter.notifyDataSetChanged();
 //            adapter.setDataList(new ArrayList<>());
 
@@ -176,7 +144,9 @@ public class MainActivity extends ABaseActivity {
                     .call(new OkHttp.OkResponseListener() {
                         @Override
                         public void handleJsonSuccess(Call call, Response response, JSONObject json) throws Exception {
-                            TS.show("OK OK");
+                            ListBean listBean = JSON.parseObject(null, ListBean.class);
+                            TS.show("OK :) Ha ha :" + listBean.getContent().size());
+//                            start(New1Activity.class);
                         }
 
                         @Override
@@ -331,10 +301,14 @@ public class MainActivity extends ABaseActivity {
                         holder.setClick(R.id.iv, v1 -> {
                             Integer.parseInt("abc");
                         });
+                        holder.setClick(R.id.iv2, v1 -> {
+                            start(New1Activity.class);
+                        });
 
                         holder.getRootView().setLayoutParams(new DrawerLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
                         break;
                     case 3:
+                        break;
                     case 4:
                         RecyclerView rv = holder.getView(R.id.rv);
                         rv.setLayoutManager(new LinearLayoutManager(getThis()));
@@ -348,6 +322,7 @@ public class MainActivity extends ABaseActivity {
             protected void bindingHeader(CustomHolder holder, int headerKey) {
                 switch (headerKey) {
                     case 3:
+                        break;
                     case 4:
                         List<String> listStr = new ArrayList<>();
                         listStr.add("kasdjfa;sjfallajsdfa1");
@@ -398,11 +373,12 @@ public class MainActivity extends ABaseActivity {
 //        adapter.setFooter(R.layout.layout_no_datas);
 //        adapter.addHeader(3, R.layout.layout_recyclerview);
         adapter.addHeader(2, R.layout.layout_banner);
+//        adapter.addHeader(3, R.layout.layout_hotfix);
 //        adapter.addHeader(4, R.layout.layout_recyclerview);
 //        adapter.setFooter(R.layout.footer);
 
 //        xRefresher.setStaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
-        xRefresher.setup(this, adapter, true, () -> {
+        xRefresher.setup(this, adapter).setLoadMore().setOnSwipeListener(() -> {
            /* postForm("https://www.taichi-tiger.com:8080/append/app_poster/selectAllPosters", new Param(), false, new OkHttp.OkResponseListener() {
                 @Override
                 public void handleJsonSuccess(Call call, Response response, JSONObject json) throws Exception {
@@ -415,7 +391,7 @@ public class MainActivity extends ABaseActivity {
                 }
             });*/
 
-        }, new RefreshRequest<ContentBean>() {
+        }).setRefreshRequest(new RefreshRequest<ContentBean>() {
             @Override
             public String setRequestParamsReturnUrl(Param params) {
                 params.add("aasdfasfsassa", "asfafasfasdfasfasfasfasfasfasdfasfdasdfadsfasdfsadfas");
@@ -429,7 +405,7 @@ public class MainActivity extends ABaseActivity {
                 bean = JSON.parseObject(json.toString(), ListBean.class);
                 int size = bean.getContent().size();
                 for (int i = 0; i < size - new Random().nextInt(3); i++) {
-                    bean.getContent().remove(0);
+//                    bean.getContent().remove(0);
                 }
                 return bean.getContent();
             }
@@ -439,7 +415,7 @@ public class MainActivity extends ABaseActivity {
                 return newItem.getId().equals(listItem.getId());
             }*/
 
-        }, 1);
+        }).setRefreshPageSize(6);
 //        new FloatingBarItemDecoration(getThis(), )
 //        xRefresher.getRecyclerView().addItemDecoration();
 //        xRefresher.setRecyclerViewDivider(android.R.color.holo_orange_light, R.dimen.margin32, R.dimen.sideMargin, R.dimen.sideMargin);
