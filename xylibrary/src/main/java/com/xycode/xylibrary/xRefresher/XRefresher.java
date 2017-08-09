@@ -473,7 +473,6 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
 
         @ColorRes
         int[] loadingRefreshingArrowColorRes = null;
-//        int defaultBackgroundColorNoData = 0;
 
         public Options setPageParams(String page, String pageSize, int firstPage) {
             this.page = page;

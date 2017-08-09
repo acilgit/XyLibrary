@@ -207,7 +207,7 @@ public class App extends Application {
 //        XRefresher.setDefaultNoDataText("暂无数据", 1);
 
 //        FrescoLoader.init(url ->  null);
-        FrescoLoader.init(true, new FrescoLoader.OnFrescoListener() {
+        FrescoLoader.init(new FrescoLoader.OnFrescoListener() {
                     @Override
                     public String getPreviewUri(String url) {
                         WH wh = Tools.getWidthHeightFromFilename(url, "_wh", "_");
