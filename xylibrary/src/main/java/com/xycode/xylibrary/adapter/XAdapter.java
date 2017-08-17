@@ -274,7 +274,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
     }
 
     /**
-     * thanks for CymChad for this method
+     * thanks CymChad for this method
      * When set to true, the item will layout using all span area. That means, if orientation
      * is vertical, the view will have full width; if orientation is horizontal, the view will
      * have full height.
@@ -360,15 +360,6 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
     public void bindingHolder(CustomHolder holder, List<T> dataList, int pos) {
 
     }
-
- /*   public int getLoadMoreState() {
-        return loadMoreState;
-    }
-
-    public void setLoadMoreState(int loadMoreState) {
-        this.loadMoreState = loadMoreState;
-        notifyDataSetChanged();
-    }*/
 
     /**
      * 根据Mark确定展示的Layout
@@ -729,7 +720,6 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
 
     public void setLoadMoreListener(ILoadMoreListener loadMoreListener) {
         this.loadMoreListener = loadMoreListener;
-//        loadMoreState = LOADER_CAN_LOAD;
     }
 
     public void setLoadingLayout(@LayoutRes int loadingLayoutId) {

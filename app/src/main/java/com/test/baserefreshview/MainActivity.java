@@ -1,5 +1,6 @@
 package com.test.baserefreshview;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
@@ -26,6 +27,7 @@ import com.xycode.xylibrary.adapter.XAdapter;
 import com.xycode.xylibrary.animation.SlideInBottomAnimation;
 import com.xycode.xylibrary.annotation.SaveState;
 import com.xycode.xylibrary.base.PhotoSelectBaseActivity;
+import com.xycode.xylibrary.instance.FrescoLoader;
 import com.xycode.xylibrary.okHttp.Header;
 import com.xycode.xylibrary.okHttp.OkHttp;
 import com.xycode.xylibrary.okHttp.Param;
@@ -93,6 +95,26 @@ public class MainActivity extends ABaseActivity {
         spinner.getStringData().getObject()
         */
 
+        Intent intent = getIntent();
+
+        String action = intent.getAction();
+        if (Intent.ACTION_VIEW.equals(action)) {
+            Uri uri = intent.getData();
+            if (uri != null) {
+                String host = uri.getHost();
+                String dataString = intent.getDataString();
+                String id = uri.getQueryParameter("id");
+                String path = uri.getPath();
+                String path1 = uri.getEncodedPath();
+                String queryString = uri.getQuery();
+                L.d("host:"+host);
+                L.d("dataString:" + dataString);
+                L.d("id:" + id);
+                L.d("path:" + path);
+                L.d("path1:" + path1);
+                L.d("queryString:" + queryString);
+            }
+        }
 
         findViewById(R.id.xtv).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -157,8 +179,9 @@ public class MainActivity extends ABaseActivity {
         });
         Uri uri = Uri.parse("http://mxycsku.qiniucdn.com/group5/M00/5B/0C/wKgBfVXdYkqAEzl0AAL6ZFMAdKk401.jpg");
 //        siv.setImageURI();
+        FrescoLoader.setImageUrl(siv, "http://47.52.25.198/files//1/image/2017_08_14/7D87ADF7E151063A.gif");
 
-        ImageUtils.setFrescoViewUri(siv, uri, null);
+//        ImageUtils.setFrescoViewUri(siv, uri, null);
 
         //                        .setImageUrl(R.id.siv, item.getCoverPicture(), new ResizeOptions(getResources().getDimensionPixelSize(R.dimen.imageSelectorFolderCoverSize)))
 //                            ImageUtils.setFrescoViewUri(holder.getView(R.id.siv), null, nu);
@@ -195,10 +218,6 @@ public class MainActivity extends ABaseActivity {
                         holder.setClick(R.id.llItem);
                         holder.setClick(R.id.tvName);
                         MultiImageView mvItem = holder.getView(R.id.mvItem);
-                        mvItem.setLoadImageListener(position -> {
-                            WH wh = Tools.getWidthHeightFromFilename(list.get(position), "_wh", "x");
-                            return Uri.parse(list.get(position) + "!" + (wh.getAspectRatio() * 20) + "!20");
-                        });
 
                         mvItem.setOverlayDrawableListener(position -> {
                             if (position == 8) {
@@ -223,7 +242,7 @@ public class MainActivity extends ABaseActivity {
             protected void handleItemViewClick(CustomHolder holder, ContentBean item, int viewId, ViewTypeUnit viewTypeUnit) {
                 switch (viewId) {
                     case R.id.tvName:
-                        TS.show(" YES tvNameas " + viewId);
+                        TS.show(" no tvNameas " + viewId);
                         item.setExpanded(!item.isExpanded());
                         holder.setExpand(item.isExpanded(), true, obj -> notifyDataSetChanged());
                         break;
@@ -557,7 +576,7 @@ public class MainActivity extends ABaseActivity {
             siv.setImageURI(uri);
             CustomHolder holder = xRefresher.getHeader(2);
 //            holder.setImageUrl(R.id.iv, "");
-            holder.setImageURI(R.id.iv, String.valueOf(uri));
+            holder.setImageUrl(R.id.iv, String.valueOf(uri));
         } else {
 
         }

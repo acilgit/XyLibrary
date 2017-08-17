@@ -27,7 +27,6 @@ public abstract class BaseLoopAdapter extends PagerAdapter {
     protected int defaultImgId;
     protected ScalingUtils.ScaleType imageScaleType = ScalingUtils.ScaleType.FIT_XY;
     protected float aspectRatio;
-    protected BaseLoopView.OnPreviewUrlListener onPreviewUrlListener;
 
     public BaseLoopAdapter(Context context, List<UrlData> loopData, ViewPager viewPager) {
         super();
@@ -77,7 +76,7 @@ public abstract class BaseLoopAdapter extends PagerAdapter {
     public Object instantiateItem(ViewGroup container, final int position) {
         final View view;
         final int index = position % loopData.size();
-        String imageUrl = loopData.get(index).getUrl();
+        Object imageUrl = loopData.get(index).getUrl();
 
         view = instantiateItemView(imageUrl, index);
 
@@ -95,19 +94,10 @@ public abstract class BaseLoopAdapter extends PagerAdapter {
         container.removeView(view);
     }
 
-    public abstract View instantiateItemView(String imageUrl, int position);
+    public abstract View instantiateItemView(Object imageUrl, int position);
 
     public void setOnItemClickListener(OnItemClickListener listener) {
         onItemClickListener = listener;
-    }
-
-    /**
-     * use FrescoLoader
-     * @param listener
-     */
-    @Deprecated
-    public void setPreviewUrlListener(BaseLoopView.OnPreviewUrlListener listener) {
-        onPreviewUrlListener = listener;
     }
 
     public void setImageScaleType(ScalingUtils.ScaleType imageScaleType) {

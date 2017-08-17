@@ -44,21 +44,13 @@ android {
         sourceCompatibility 1.8
     }
 }
-//tasks.withType(JavaCompile) {
-//    options.encoding = "UTF-8"
-//}
+
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
-//    compile "com.facebook.fresco:imagepipeline-okhttp3:0.10.0"
+    compile project(path: ':xylibrary')
     compile 'com.androidadvance:topsnackbar:1.0.0'
 //    compile 'com.jakewharton:butterknife:8.4.0'
 //    annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
-    compile project(path: ':xylibrary')
-    //compile project(':multi-image-selector')
-
-    compile 'com.aliyun.ams:alicloud-android-hotfix:3.0.2'
-    /*compile ('com.aliyun.ams:alicloud-android-hotfix:3.0.2') {
-        exclude(module:'alicloud-android-utdid')
-    }*/
+    compile 'com.aliyun.ams:alicloud-android-hotfix:3.0.8'
 }

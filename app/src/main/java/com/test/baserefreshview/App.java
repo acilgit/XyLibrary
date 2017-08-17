@@ -2,6 +2,7 @@ package com.test.baserefreshview;
 
 import android.app.Application;
 import android.graphics.Point;
+import android.net.Uri;
 import android.widget.Button;
 
 import com.alibaba.fastjson.JSONObject;
@@ -208,25 +209,34 @@ public class App extends Application {
 
 //        FrescoLoader.init(url ->  null);
         FrescoLoader.init(new FrescoLoader.OnFrescoListener() {
-                    @Override
-                    public String getPreviewUri(String url) {
-                        WH wh = Tools.getWidthHeightFromFilename(url, "_wh", "_");
-                        return url + "!" + (wh.getAspectRatio() * 40) + "!40";
-                    }
+            @Override
+            public ResizeOptions getMaxResizeOptions(Object urlObject) {
+                WH wh = Tools.getWidthHeightFromFilename((String) urlObject, "_wh", "_");
+                Point screenSize = Tools.getScreenSize();
+                int x, y;
+                if (wh.isAvailable() && wh.width> screenSize.x) {
+                    x = screenSize.x;
+                    y = (int) ((1.0 * x) / wh.getAspectRatio());
+                    return new ResizeOptions(x, y);
+                }
+                return null;
+            }
 
-                    @Override
-                    public ResizeOptions getMaxResizeOptions(String url) {
-                        WH wh = Tools.getWidthHeightFromFilename(url, "_wh", "_");
-                        Point screenSize = Tools.getScreenSize();
-                        int x, y;
-                        if (wh.isAvailable() && wh.width> screenSize.x) {
-                            x = screenSize.x;
-                            y = (int) ((1.0 * x) / wh.getAspectRatio());
-                            return new ResizeOptions(x, y);
-                        }
-                        return null;
-                    }
-                });
+            @Override
+            public String getUrlInObject(Object urlObject) {
+                return null;
+            }
+
+            @Override
+            public String getUrlPreviewInObject(Object urlObject) {
+                if (urlObject instanceof String) {
+                    String url = (String) urlObject;
+                    WH wh = Tools.getWidthHeightFromFilename(url, "_wh", "_");
+                    return url + "!" + (wh.getAspectRatio() * 40) + "!40";
+                }
+                return null;
+            }
+        });
 
   /*      XRefresher.setCustomerFooterView(R.layout.layout_base_load_more, new XAdapter.ICustomerLoadMore() {
             @Override

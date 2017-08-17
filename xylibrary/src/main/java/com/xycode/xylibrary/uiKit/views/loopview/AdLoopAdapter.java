@@ -32,7 +32,7 @@ class AdLoopAdapter extends BaseLoopAdapter {
     /**
      * @param imageUrl
      */
-    public View instantiateItemView(String imageUrl, int position) {
+    public View instantiateItemView(Object imageUrl, int position) {
         SimpleDraweeView imageView = imageViewList.get(position);
         if (imageView == null) {
             imageView = new SimpleDraweeView(context);
@@ -47,14 +47,14 @@ class AdLoopAdapter extends BaseLoopAdapter {
         if (imageView.getTag() != null && imageView.getTag().equals(imageUrl)) {
             return imageView;
         }
-        Uri uri = Uri.parse(imageUrl);
-        if (uri != null) {
-            if (onPreviewUrlListener != null) {
-                ImageUtils.setImageUriWithPreview(imageView, imageUrl, onPreviewUrlListener.getPreviewUrl(imageUrl, position));
-            } else {
-                FrescoLoader.setImageURI(imageView, imageUrl);
-            }
-        }
+//        Uri uri = Uri.parse(imageUrl);
+//        if (uri != null) {
+//            if (onPreviewUrlListener != null) {
+//                ImageUtils.setImageUriWithPreview(imageView, imageUrl, onPreviewUrlListener.getPreviewUrl(imageUrl, position));
+//            } else {
+                FrescoLoader.setImageUrl(imageView, imageUrl);
+//            }
+//        }
         imageView.setTag(imageUrl);
 
         return imageView;

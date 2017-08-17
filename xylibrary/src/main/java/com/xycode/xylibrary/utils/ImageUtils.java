@@ -267,7 +267,7 @@ public class ImageUtils {
         Bitmap bitmap = resizeToBitmap(filePath, targetMaxSide, targetMiniSide);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, jpegQuality, baos);
-        L.i("("+filePath+")------quality-- after " + "  ------" + baos.toByteArray().length / 1024f);
+        L.i("(" + filePath + ")------quality-- after " + "  ------" + baos.toByteArray().length / 1024f);
         return baos;
     }
 
@@ -677,7 +677,7 @@ public class ImageUtils {
         File localFile = getCachedImageOnFresco(uri);
         if (localFile != null) {
 
-            ResizeOptions ro = FrescoLoader.getResizeOptions(uri.toString());
+            ResizeOptions ro = FrescoLoader.getMaxResizeOptions(uri.toString());
             if (ro != null) {
                 iGetFrescoBitmap.afterGotBitmap(resizeToBitmap(localFile.getAbsolutePath(), ro.width, ro.height));
             } else {
@@ -688,11 +688,17 @@ public class ImageUtils {
         }
     }
 
+    /**
+     * 通过Fresco加载图片
+     *
+     * @param uri
+     * @param iGetFrescoBitmap
+     */
     public static void loadBitmapFromFrescoNet(Uri uri, final IGetFrescoBitmap iGetFrescoBitmap) {
         if (uri == null) return;
         ImageRequestBuilder imageRequestBuilder = ImageRequestBuilder.newBuilderWithSource(uri).setAutoRotateEnabled(true);
 
-        ResizeOptions ro = FrescoLoader.getResizeOptions(uri.toString());
+        ResizeOptions ro = FrescoLoader.getMaxResizeOptions(uri.toString());
         if (ro != null) {
             imageRequestBuilder.setResizeOptions(ro);
         }
@@ -726,7 +732,7 @@ public class ImageUtils {
         ImageRequestBuilder imageRequestBuilder = ImageRequestBuilder.newBuilderWithSource(uri)
                 .setProgressiveRenderingEnabled(true);
 
-        ResizeOptions ro = FrescoLoader.getResizeOptions(uri.toString());
+        ResizeOptions ro = FrescoLoader.getMaxResizeOptions(uri.toString());
         if (ro != null) {
             imageRequestBuilder.setResizeOptions(ro);
         }
@@ -777,51 +783,41 @@ public class ImageUtils {
         imageView.setController(controller);
     }
 
-    public static void setImageUriWithGif(SimpleDraweeView simpleDraweeView, String uri) {
-        setImageUriWithPreview(simpleDraweeView, Uri.parse(uri), null, null);
-    }
-
-    public static void setImageUriWithGif(SimpleDraweeView simpleDraweeView, String uri, ResizeOptions resizeOptions) {
-        setImageUriWithPreview(simpleDraweeView, Uri.parse(uri), null, resizeOptions);
-    }
-
-    public static void setImageUriWithPreview(SimpleDraweeView simpleDraweeView, String uri, String previewUri) {
-        setImageUriWithPreview(simpleDraweeView, Uri.parse(uri), previewUri == null ? null : Uri.parse(previewUri), null);
-    }
-
+    /**
+     * Please use {@link FrescoLoader#setImageUrl(android.widget.ImageView, Object)} for this method
+     * @param simpleDraweeView
+     * @param uri
+     * @param previewUri
+     * @param resizeOptions
+     */
     public static void setImageUriWithPreview(SimpleDraweeView simpleDraweeView, String uri, String previewUri, ResizeOptions resizeOptions) {
         setImageUriWithPreview(simpleDraweeView, Uri.parse(uri), previewUri == null ? null : Uri.parse(previewUri), resizeOptions);
     }
 
-    public static void setImageUriWithPreview(SimpleDraweeView simpleDraweeView, Uri uri, Uri previewUri, ResizeOptions resizeOptions) {
+    static void setImageUriWithPreview(SimpleDraweeView simpleDraweeView, Uri uri, Uri previewUri, ResizeOptions resizeOptions) {
         if (uri == null) {
             simpleDraweeView.setImageURI(null);
             return;
         }
+        // 新建加载请求
         ImageRequest request;
         PipelineDraweeControllerBuilder builder = Fresco.newDraweeControllerBuilder()
                 .setOldController(simpleDraweeView.getController())
-                .setAutoPlayAnimations(true)
-                .setLowResImageRequest(ImageRequest.fromUri(previewUri));
+                .setAutoPlayAnimations(true);  // 图片动态展示如GIF
+        // 尺寸转换器 如果图片太大会容易引起OOM，可使用此选项来使图片以更小的尺寸显示
         if (resizeOptions != null) {
             request = ImageRequestBuilder.newBuilderWithSource(uri)
                     .setResizeOptions(resizeOptions)
-//                    .setImageType(resizeOptions.width < 400 ? ImageRequest.ImageType.SMALL : ImageRequest.ImageType.DEFAULT)
-                    .setAutoRotateEnabled(true)
+//                    .setImageType(resizeOptions.width < 400 ? ImageRequest.ImageType.SMALL : ImageRequest.ImageType.DEFAULT) // 当图片小于400时设置小类型
+                    .setAutoRotateEnabled(true)  // 图片自动旋转
                     .build();
         } else {
-            ResizeOptions ro = FrescoLoader.getResizeOptions(uri.toString());
-            if (ro != null) {
-                request = ImageRequestBuilder.newBuilderWithSource(uri)
-                        .setResizeOptions(ro)
-//                        .setImageType(ImageRequest.ImageType.DEFAULT)
-                        .setAutoRotateEnabled(true)
-                        .build();
-            } else {
-                request = ImageRequest.fromUri(uri);
-            }
+            request = ImageRequestBuilder.newBuilderWithSource(uri)
+                    .setAutoRotateEnabled(true)
+                    .build();
         }
         if (previewUri != null) {
+            // 设置图片预览图
             builder.setLowResImageRequest(ImageRequest.fromUri(previewUri));
         }
         builder.setImageRequest(request);
@@ -839,7 +835,7 @@ public class ImageUtils {
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
             outputStream.flush();
             outputStream.close();
-            scanPhotoPath( file.getPath());
+            scanPhotoPath(file.getPath());
             L.i("saveBitmapToFile localFile" + "(" + file.getPath() + ") -- (" + file.length() / 1024 + "K)");
         } catch (Exception e) {
             e.printStackTrace();
@@ -916,17 +912,19 @@ public class ImageUtils {
 
     /**
      * 加载包含HTML的文本（从本地加载图片）
+     *
      * @param activity
      * @param htmlText
      * @param picFitScreen true:屏幕等宽， false:图片默认尺寸
      * @return
      */
-    public static Spanned getHtmlTextWithLocalPic( String htmlText, boolean picFitScreen) {
+    public static Spanned getHtmlTextWithLocalPic(String htmlText, boolean picFitScreen) {
         return getHtmlTextWithLocalPic(htmlText, picFitScreen ? SCREEN_SIZE : DRAWABLE_SIZE);
     }
 
     /**
      * 加载包含HTML的文本（从本地加载图片）
+     *
      * @param activity
      * @param htmlText
      * @param drawableWidth 图片的显示尺寸

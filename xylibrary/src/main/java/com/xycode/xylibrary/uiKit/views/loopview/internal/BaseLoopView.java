@@ -115,12 +115,7 @@ public abstract class BaseLoopView extends RelativeLayout implements ILoopView {
             }
         });
 
-        adapter.setPreviewUrlListener(onPreviewUrlListener);
         adapter.setImageScaleType(actualScale);
-    }
-
-    public void setPreviewUrlListener(OnPreviewUrlListener onPreviewUrlListener) {
-        this.onPreviewUrlListener = onPreviewUrlListener;
     }
 
     /**

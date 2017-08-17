@@ -6,26 +6,26 @@ import java.io.Serializable;
  * Created by XY on 2016-08-22.
  */
 public class UrlData<T> implements Serializable{
-    private String url;
+    private Object url;
     private T data;
 
     public UrlData() {
     }
 
-    public UrlData(String url) {
+    public UrlData(Object url) {
         this.url = url;
     }
 
-    public UrlData(String url, T data) {
+    public UrlData(Object url, T data) {
         this.url = url;
         this.data = data;
     }
 
-    public String getUrl() {
+    public Object getUrl() {
         return url;
     }
 
-    public void setUrl(String url) {
+    public void setUrl(Object url) {
         this.url = url;
     }
 
