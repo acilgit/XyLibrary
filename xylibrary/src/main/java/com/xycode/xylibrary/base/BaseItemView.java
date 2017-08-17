@@ -21,11 +21,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.andexert.library.RippleView;
-import com.facebook.drawee.view.SimpleDraweeView;
 import com.xycode.xylibrary.R;
 import com.xycode.xylibrary.adapter.XAdapter;
 import com.xycode.xylibrary.annotation.SaveState;
 import com.xycode.xylibrary.annotation.annotationHelper.StateBinder;
+import com.xycode.xylibrary.instance.FrescoLoader;
 import com.xycode.xylibrary.utils.DateUtils;
 
 import java.util.Arrays;
@@ -40,42 +40,73 @@ public abstract class BaseItemView extends RelativeLayout {
 
     private SparseArray<View> viewList;
 
-    @SaveState protected int itemType;
-    @SaveState protected int itemIcon;
-    @SaveState protected int itemColor;
-    @SaveState protected int itemChildColor;
-    @SaveState protected int itemBg;
-    @SaveState protected int itemRes;
-    @SaveState protected int itemNum;
-    @SaveState protected int itemCount;
-    @SaveState protected int itemVisible;
-    @SaveState protected int itemChildVisible;
-    @SaveState protected int itemIndex;
-    @SaveState protected long itemDateTime;
-    @SaveState protected long itemLong;
-    @SaveState protected boolean itemBool;
-    @SaveState protected boolean itemCheck;
-    @SaveState protected float itemFloat;
-    @SaveState protected double itemDouble;
-    @SaveState protected String itemName;
-    @SaveState protected String itemHint;
-    @SaveState protected String itemTitle;
-    @SaveState protected String itemContent;
-    @SaveState protected String itemDetail;
-    @SaveState protected String itemDescription;
+    @SaveState
+    protected int itemType;
+    @SaveState
+    protected int itemIcon;
+    @SaveState
+    protected int itemColor;
+    @SaveState
+    protected int itemChildColor;
+    @SaveState
+    protected int itemBg;
+    @SaveState
+    protected int itemRes;
+    @SaveState
+    protected int itemNum;
+    @SaveState
+    protected int itemCount;
+    @SaveState
+    protected int itemVisible;
+    @SaveState
+    protected int itemChildVisible;
+    @SaveState
+    protected int itemIndex;
+    @SaveState
+    protected long itemDateTime;
+    @SaveState
+    protected long itemLong;
+    @SaveState
+    protected boolean itemBool;
+    @SaveState
+    protected boolean itemCheck;
+    @SaveState
+    protected float itemFloat;
+    @SaveState
+    protected double itemDouble;
+    @SaveState
+    protected String itemName;
+    @SaveState
+    protected String itemHint;
+    @SaveState
+    protected String itemTitle;
+    @SaveState
+    protected String itemContent;
+    @SaveState
+    protected String itemDetail;
+    @SaveState
+    protected String itemDescription;
 
-   @SaveState protected int itemInputType;
-   @SaveState protected int itemMin;
-   @SaveState protected int itemMax;
-   @SaveState protected int itemMinLines;
-   @SaveState protected int itemMaxLines;
+    @SaveState
+    protected int itemInputType;
+    @SaveState
+    protected int itemMin;
+    @SaveState
+    protected int itemMax;
+    @SaveState
+    protected int itemMinLines;
+    @SaveState
+    protected int itemMaxLines;
 
-   @SaveState private int[] date = new int[]{0, 0, 0};
-   @SaveState private int[] time = new int[]{0, 0};
+    @SaveState
+    private int[] date = new int[]{0, 0, 0};
+    @SaveState
+    private int[] time = new int[]{0, 0};
 
     protected OnViewSenseListener onViewSenseListener;
 
-    @SaveState protected int layoutId = R.layout.layout_blank;
+    @SaveState
+    protected int layoutId = R.layout.layout_blank;
 
     public BaseItemView(Context context) {
         super(context, null);
@@ -177,6 +208,7 @@ public abstract class BaseItemView extends RelativeLayout {
         setTextForView(viewId, DateUtils.formatDateTime(dateFormat, dateTime));
         return this;
     }
+
     public BaseItemView setText(int viewId, @StringRes int textRes) {
         setText(viewId, getContext().getString(textRes));
         return this;
@@ -199,9 +231,9 @@ public abstract class BaseItemView extends RelativeLayout {
     private BaseItemView setTextForView(int viewId, String text) {
         View view = getView(viewId);
         if (view != null) {
-           if (view instanceof TextView) {
+            if (view instanceof TextView) {
                 ((TextView) view).setText(text);
-           }
+            }
         }
         return this;
     }
@@ -216,26 +248,10 @@ public abstract class BaseItemView extends RelativeLayout {
         return this;
     }
 
-    public BaseItemView setImageUrl(int viewId, String url) {
+    public BaseItemView setImageUrl(int viewId, Object urlObject) {
         View view = getView(viewId);
-        if (view != null) {
-            if (view instanceof SimpleDraweeView) {
-                ((SimpleDraweeView) view).setImageURI(Uri.parse(url));
-            } else if (view instanceof ImageView) {
-                ((ImageView) view).setImageURI(Uri.parse(url));
-            }
-        }
-        return this;
-    }
-
-    public BaseItemView setImageURI(int viewId, Uri uri) {
-        View view = getView(viewId);
-        if (view != null) {
-            if (view instanceof SimpleDraweeView) {
-                ((SimpleDraweeView) view).setImageURI(uri);
-            } else if (view instanceof ImageView) {
-                ((ImageView) view).setImageURI(uri);
-            }
+        if (view != null && view instanceof ImageView) {
+            FrescoLoader.setImageUrl((ImageView) view, urlObject);
         }
         return this;
     }
@@ -316,11 +332,11 @@ public abstract class BaseItemView extends RelativeLayout {
     }
 
     public void setDateTime(int dateTimeViewId, String dateFormat, int... yearMonthDayHourMinute) {
-        date[0] =  yearMonthDayHourMinute[0];
-        date[1] =  yearMonthDayHourMinute[1];
-        date[2] =  yearMonthDayHourMinute[2];
-        time[0] =  yearMonthDayHourMinute[3];
-        time[1] =  yearMonthDayHourMinute[4];
+        date[0] = yearMonthDayHourMinute[0];
+        date[1] = yearMonthDayHourMinute[1];
+        date[2] = yearMonthDayHourMinute[2];
+        time[0] = yearMonthDayHourMinute[3];
+        time[1] = yearMonthDayHourMinute[4];
         Calendar calendar = Calendar.getInstance();
         calendar.set(date[0], date[1], date[2], time[0], time[1]);
         setText(dateTimeViewId, DateUtils.formatDateTime(dateFormat, calendar.getTime()));

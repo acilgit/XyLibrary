@@ -23,7 +23,14 @@
         </activity>
         <activity android:name=".PhotoSelectActivity" />
         <activity android:name=".TestA" />
-        <activity android:name=".New1Activity"></activity>
+        <activity android:name=".New1Activity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="mysxcheme" />
+            </intent-filter>
+        </activity>
         <!--<activity android:name=".New1Activity"></activity>-->
         <activity android:name=".PhotoDemoActivity" />
         <activity

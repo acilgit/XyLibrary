@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.IdRes;
-import android.support.annotation.RawRes;
 import android.support.annotation.StringRes;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -196,43 +195,21 @@ public class CustomHolder extends RecyclerView.ViewHolder {
         return this;
     }
 
-    public CustomHolder setImageUrl(int viewId, String url, ResizeOptions resizeOptions) {
-        View view = getView(viewId);
-        if (view != null) {
-            if (view instanceof SimpleDraweeView) {
-                ImageUtils.setImageUriWithPreview((SimpleDraweeView) view, url, FrescoLoader.getPreviewUri(url), resizeOptions);
-            } else if (view instanceof ImageView) {
-                ((ImageView) view).setImageURI(Uri.parse(url));
-            }
-
-        }
-        return this;
-    }
-
     /**
-     * SimpleDrawee 请使用此方法
+     * 请使用此方法加载图片
+     *
      * @param viewId
-     * @param url
+     * @param urlObject
      * @return
      */
-    public CustomHolder setImageUrl(int viewId, String url) {
-        return setImageUrl(viewId, url, null);
+    public CustomHolder setImageUrl(int viewId, Object urlObject) {
+        return setImageUrl(viewId, urlObject, null);
     }
 
-    @Deprecated
-    public CustomHolder setImageURI(int viewId, String url) {
-        return setImageUrl(viewId, url);
-    }
-
-    private CustomHolder setImageURI(int viewId, Uri uri) {
+    public CustomHolder setImageUrl(int viewId, Object urlObject, ResizeOptions resizeOptions) {
         View view = getView(viewId);
-        if (view != null) {
-            if (view instanceof SimpleDraweeView) {
-                ((SimpleDraweeView) view).setImageURI(uri);
-//                    ImageUtils.setImageUriWithPreview((SimpleDraweeView) view, uri, FrescoLoader.getPreviewUri(uri.));
-            } else if (view instanceof ImageView) {
-                ((ImageView) view).setImageURI(uri);
-            }
+        if (view != null && view instanceof ImageView) {
+            FrescoLoader.setImageUrl((ImageView) view, urlObject, resizeOptions);
         }
         return this;
     }

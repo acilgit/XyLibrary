@@ -21,7 +21,7 @@ public class ViewTypeUnit {
         this.layoutId = layoutId;
     }
 
-    public ViewTypeUnit(long mark, int layoutId) {
+    public ViewTypeUnit(long mark, int layoutId){
         this.mark = mark+"";
         this.layoutId = layoutId;
     }
@@ -32,7 +32,7 @@ public class ViewTypeUnit {
     }
 
     public String getMark() {
-        return mark;
+        return mark == null ? "" : mark;
     }
 
     public void setMark(String mark) {

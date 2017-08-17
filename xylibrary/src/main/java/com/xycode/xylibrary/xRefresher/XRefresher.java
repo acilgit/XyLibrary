@@ -82,6 +82,11 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
     private CoordinatorLayout rlMain;
     private OnSwipeListener swipeListener;
 
+    private boolean defaultHeaderAdded = false;
+    private boolean defaultParamAdded = false;
+   private boolean addDefaultParam = true;
+   private boolean addDefaultHeader = true;
+
     private static Options options;
 
     public XRefresher(Context context) {
@@ -251,10 +256,12 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
             addDefaultParam = initRefresher.addDefaultParam();
             addDefaultHeader = initRefresher.addDefaultHeader();
         }
+        this.addDefaultHeader = defaultHeaderAdded ? this.addDefaultHeader : addDefaultHeader;
+        this.addDefaultParam = defaultParamAdded ? this.addDefaultParam : addDefaultParam;
         activity.newCall().url(url)
                 .body(params)
-                .addDefaultParams(addDefaultParam)
-                .addDefaultHeader(addDefaultHeader)
+                .addDefaultParams(this.addDefaultParam)
+                .addDefaultHeader(this.addDefaultHeader)
                 .call(new OkHttp.OkResponseListener() {
                     @Override
                     public void handleJsonSuccess(Call call, Response response, JSONObject json) {
@@ -299,7 +306,6 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
                         if (refreshType == REFRESH) {
                             adapter.refreshedNoData();
                         }
-//                textView.setVisibility(getAdapter().getNoFilteredDataList().size() == 0 ? VISIBLE : GONE);
                     }
 
                     @Override
@@ -382,6 +388,17 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
 
     public SwipeRefreshLayout getSwipeRefreshLayout() {
         return swipe;
+    }
+
+    public XRefresher addDefaultHeader(boolean addDefaultHeader){
+        defaultHeaderAdded = true;
+        this.addDefaultHeader = addDefaultHeader;
+        return this;
+    }
+    public XRefresher addDefaultParam(boolean addDefaultParam){
+        defaultParamAdded = true;
+        this.addDefaultParam = addDefaultParam;
+        return this;
     }
 
     public CustomHolder getHeader() {

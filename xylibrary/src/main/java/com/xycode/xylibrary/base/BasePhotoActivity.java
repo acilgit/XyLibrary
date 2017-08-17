@@ -199,7 +199,7 @@ public abstract class BasePhotoActivity extends BaseActivity {
             ivPhoto.setOnClickListener(v -> context.finish());
             ivPhoto.setOnLongClickListener(longClickListener);
             if (data.getUrl() != null) {
-                ImageUtils.loadBitmapFromFresco(Uri.parse(data.getUrl()), bitmap -> runOnUiThread(() -> {
+                ImageUtils.loadBitmapFromFresco(Uri.parse((String) data.getUrl()), bitmap -> runOnUiThread(() -> {
                     if (bitmap != null) {
                         float pRatio = (bitmap.getHeight() * 1.0f) / bitmap.getWidth();
                         float ratio = pRatio / 1.6f;
