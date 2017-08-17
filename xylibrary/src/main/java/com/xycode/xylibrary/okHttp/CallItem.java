@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import okhttp3.Call;
-import okhttp3.RequestBody;
 
 /**
  * Created by XY on 2017-06-20.
@@ -19,9 +18,10 @@ public class CallItem {
     String url;
     Param body;
     Header header;
+    int method = OkHttp.POST;
     Map<String, File> files;
     Activity activity;
-    OkHttp.OkResponseListener okResponseListener;
+    OkResponseListener okResponseListener;
     OkFileHelper.FileProgressListener fileProgressListener;
     boolean addDefaultParams = true;
     boolean addDefaultHeader = true;
@@ -31,14 +31,19 @@ public class CallItem {
      *
      * @param okResponseListener
      */
-    public Call call(OkHttp.OkResponseListener okResponseListener) {
+    public Call call(OkResponseListener okResponseListener) {
         this.okResponseListener = okResponseListener;
         if (files != null) {
            call = OkHttp.uploadFiles(activity, url, files, body, header, addDefaultHeader, addDefaultParams, okResponseListener, fileProgressListener);
         } else {
-            call = OkHttp.postOrGet(activity, url, body, addDefaultParams, header, addDefaultHeader, okResponseListener);
+            call = OkHttp.request(method, activity, url, body, addDefaultParams, header, addDefaultHeader, okResponseListener);
         }
         return call;
+    }
+
+    public CallItem get() {
+        this.method = OkHttp.GET;
+        return this;
     }
 
     public CallItem url(String url) {
@@ -46,6 +51,7 @@ public class CallItem {
         return this;
     }
 
+    // get请求中会把Body中的数据拼接成地址
     public CallItem body(Param body) {
         this.body = body;
         return this;

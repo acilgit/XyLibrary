@@ -2,7 +2,6 @@ package com.test.baserefreshview;
 
 import android.app.Application;
 import android.graphics.Point;
-import android.net.Uri;
 import android.widget.Button;
 
 import com.alibaba.fastjson.JSONObject;
@@ -13,6 +12,7 @@ import com.taobao.sophix.listener.PatchLoadStatusListener;
 import com.xycode.xylibrary.Xy;
 import com.xycode.xylibrary.instance.FrescoLoader;
 import com.xycode.xylibrary.okHttp.Header;
+import com.xycode.xylibrary.okHttp.IOkInit;
 import com.xycode.xylibrary.okHttp.OkHttp;
 import com.xycode.xylibrary.okHttp.Param;
 import com.xycode.xylibrary.okHttp.XSSSocketLFactory;
@@ -107,7 +107,7 @@ public class App extends Application {
                 builder.sslSocketFactory(sslParams.sSLSocketFactory, sslParams.trustManager);
             }
         };
-        OkHttp.init(new OkHttp.IOkInit() {
+        OkHttp.init(new IOkInit() {
            @Override
             public int judgeResultWhenFirstReceivedResponse(Call call, Response response, JSONObject json) {
                 String resultCode = json.getString("status");

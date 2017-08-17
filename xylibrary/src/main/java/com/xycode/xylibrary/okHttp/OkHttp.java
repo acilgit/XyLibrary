@@ -1,23 +1,28 @@
 package com.xycode.xylibrary.okHttp;
 
 import android.app.Activity;
-import android.content.Context;
-import android.support.annotation.NonNull;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.xycode.xylibrary.Xy;
 import com.xycode.xylibrary.base.BaseActivity;
 import com.xycode.xylibrary.utils.LogUtil.JsonTool;
 import com.xycode.xylibrary.utils.LogUtil.L;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
@@ -29,7 +34,8 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 /**
- * Created by XY on 2016/7/7.
+ * Created by XY on 2016/7/7
+ * OkHttp3
  */
 public class OkHttp {
 
@@ -38,9 +44,14 @@ public class OkHttp {
     public static final MediaType MEDIA_TYPE_URL_ENCODED = MediaType.parse("application/x-www-form-urlencoded; charset=utf-8");
     public static final MediaType MEDIA_TYPE_MULTI_DATA = MediaType.parse("multipart/form-data; charset=utf-8");
 
+    public static final String UTF8 = "UTF-8";
     public static final String FILE = "file";
     public static final byte[] lock = new byte[0];
 
+    public static final int POST = 0;
+    public static final int GET = 1;
+
+    public static final int RESULT_BLANK = 404; // 还没有对结果进入处理
     public static final int RESULT_ERROR = 0;
     public static final int RESULT_SUCCESS = 1;
     public static final int RESULT_VERIFY_ERROR = -1;
@@ -49,7 +60,6 @@ public class OkHttp {
     public static final int RESULT_PARSE_FAILED = 880;
     public static final int NETWORK_ERROR_CODE = 881;
     public static final int NO_NETWORK = 882;
-
 
     private static OkHttpClient client;
     private static IOkInit okInit;
@@ -84,7 +94,8 @@ public class OkHttp {
     }
 
     /**
-     * when use hotfix, set client in Application on local okHttp jar
+     * you can use client as you like
+     * when use ali hotfix, set client by this method
      * @param iOkInit
      * @param client
      */
@@ -138,27 +149,33 @@ public class OkHttp {
     /**
      * 网络请求命令，只供CallItem调用
      *
-     * @param activity
-     * @param url
-     * @param params
-     * @param addDefaultParams
-     * @param header
-     * @param addDefaultHeader
-     * @param okResponseListener
+     * @param activity           当传入Activity时，或者Activity没有被销毁则运行在主线程，否则运行在IO线程
+     * @param url                请求地址，Get请求只要把拼接参数写进param内则可
+     * @param params             Post或Get的参数
+     * @param addDefaultParams   添加默认参数
+     * @param header             请求头
+     * @param addDefaultHeader   添加默认请求头
+     * @param okResponseListener 回调监听
      * @return
      */
-    static Call postOrGet(final Activity activity, String url, Param params, boolean addDefaultParams, Header header, boolean addDefaultHeader, final OkResponseListener okResponseListener) {
-        final Request.Builder builder = new Request.Builder().url(url);
+    static Call request(int method, final Activity activity, String url, Param params, boolean addDefaultParams, Header header, boolean addDefaultHeader,
+                        final OkResponseListener okResponseListener) {
+        // 参数加默认参数供Get请求处理
+        Param allParam = new Param();
+        // Log内容
         StringBuffer sb = new StringBuffer();
+        // Log标题
         String logTitle;
 
         FormBody.Builder formBodyBuilder = new FormBody.Builder();
+        // 参数处理，并且把参数
         try {
             if (params != null) {
                 for (String key : params.keySet()) {
                     if (sb.length() == 0) sb.append("[Params]");
                     sb.append("\n  ").append(key).append(": ").append(params.get(key));
                     formBodyBuilder.add(key, params.get(key));
+                    allParam.add(key, params.getKey(key));
                 }
             }
             if (addDefaultParams) {
@@ -170,29 +187,43 @@ public class OkHttp {
                         sb.append(" (ignored)");
                     } else {
                         formBodyBuilder.add(key, defaultParams.get(key));
+                        allParam.add(key, defaultParams.getKey(key));
                     }
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
             L.e("[Params Error] " + url, sb.toString());
+            // 参数错误时抛出异常
             throw e;
         }
 
-        boolean hasParams = sb.length() > 0;
-
         FormBody body = formBodyBuilder.build();
-
-        if (hasParams) {
+        final Request.Builder builder;
+        // 处理请求方法
+        if (method == POST) {
+            builder = new Request.Builder().url(url);
             builder.post(body);
             logTitle = "[POST] " + url;
         } else {
+            StringBuilder sbGet = new StringBuilder(url);
+            //迭代Map拼接请求参数
+            try {
+                sbGet.append(allParam.isEmpty() ? "" : "?");
+                for (Map.Entry<String, String> entry : allParam.entrySet()) {
+                    sbGet.append(entry.getKey()).append('=').append(URLEncoder.encode(entry.getValue(), UTF8));
+                }
+                if (!allParam.isEmpty()) sbGet.deleteCharAt(sbGet.length() - 1);
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            builder = new Request.Builder().url(sbGet.toString());
             builder.get();
             logTitle = "[GET] " + url;
         }
-
+        // 请求头处理
         Header defaultHeader = okInit.setDefaultHeader(new Header());
-        if (header != null && header.size() > 0 || (addDefaultHeader && defaultHeader.size() > 0)){
+        if (header != null && header.size() > 0 || (addDefaultHeader && defaultHeader.size() > 0)) {
             if (sb.length() > 0) sb.append("\n");
             sb.append("[Headers]");
         }
@@ -212,29 +243,214 @@ public class OkHttp {
                 builder.addHeader(key, header.get(key));
             }
         }
+        // 新建okHttp请求
         final Request request = builder.build();
         final Call call = getClient().newCall(request);
 
         L.e(logTitle, sb.toString());
 
-        new Thread(() -> {
-            try {
-                final Response response = call.execute();
-                if (call.isCanceled()) L.e("[Call canceled] " + url, "");
-                if (response != null) {
-                    responseResult(response, call, okResponseListener, activity);
-                    response.close();
-                } else {
-                    responseResultFailure(call, okResponseListener, activity);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-                responseResultFailure(call, okResponseListener, activity);
-            } finally {
-            }
-        }).start();
+        // 使用RxJava2进行请求管理
+        Observable.create(
+                (ObservableOnSubscribe<ResponseItem>) observableEmitter -> {
+                    final Response response = call.execute();
+                    if (call.isCanceled()) {
+                        L.e("[Call canceled] " + url, "");
+                    } else {
+                        ResponseItem responseItem = new ResponseItem(response, call, okResponseListener);
+                        if (response != null) {
+                            responseItem = responseResult(responseItem);
+                            response.close();
+                            observableEmitter.onNext(responseItem);
+                        } else {
+                            // 没有返回数据
+                            noResponse(call, okResponseListener);
+                        }
+                    }
+                    // 请求完成
+                    observableEmitter.onComplete();
+                }).subscribeOn(Schedulers.io())
+                // 当传入Activity时，或者Activity没有被销毁则运行在主线程，否则运行在IO线程
+                .observeOn(activity == null ? Schedulers.io() : AndroidSchedulers.mainThread())
+                .subscribe(new Observer<ResponseItem>() {
+                    private Disposable d;
+
+                    @Override
+                    public void onSubscribe(@io.reactivex.annotations.NonNull Disposable disposable) {
+                        d = disposable;
+                    }
+
+                    @Override
+                    public void onNext(@io.reactivex.annotations.NonNull ResponseItem responseItem) {
+                        // 处理返回结果
+                        handleResultWithResultCode(responseItem);
+                    }
+
+                    @Override
+                    public void onError(@io.reactivex.annotations.NonNull Throwable throwable) {
+                        // 处理请求中出现异常
+                        throwable.printStackTrace();
+                        noResponse(call, okResponseListener);
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        // 请求完成，关闭自动关闭的等待对话框
+                        BaseActivity.dismissLoadingDialogByManualState();
+                    }
+                });
         return call;
     }
+
+    /**
+     * when response success
+     *
+     * @param responseItem
+     * @return
+     * @throws Exception
+     */
+    private static ResponseItem responseResult(ResponseItem responseItem) throws Exception {
+        Response response = responseItem.getResponse();
+        OkResponseListener okResponseListener = responseItem.getOkResponseListener();
+        Call call = responseItem.getCall();
+        if (response.isSuccessful()) {
+            String responseStr = "";
+            try {
+                final String strResult = response.body().string();
+                responseStr = strResult;
+                final JSONObject jsonObject = JSON.parseObject(strResult);
+                final int resultCode = okInit.judgeResultWhenFirstReceivedResponse(call, response, jsonObject);
+                responseItem.setResultCode(resultCode);
+                responseItem.setJsonObject(jsonObject);
+                responseItem.setStrResult(responseStr);
+                // 判断返回的ResultCode是否可以继续操作，可以此方法执行后台操作，如集中保存数据到数据库
+                if (okInit.resultSuccessByJudge(call, response, jsonObject, resultCode)) {
+                    L.e("[resultJudgeFailed] " + call.request().url().url().toString(), JsonTool.stringToJSON(strResult));
+                    return null;
+                }
+                if (okResponseListener == null) {
+                    return null;
+                }
+                try {
+                    // 先在当前线程中处理
+                    okResponseListener.handleSuccessInBackground(call, jsonObject);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } catch (Exception e) {
+                // 解释Json错误
+                e.printStackTrace();
+                L.e("[JsonParseFailed] " + call.request().url().url().toString(), "[Error]\n" + e.getMessage() + "\n[Result]\n " + responseStr);
+                okInit.judgeResultParseResponseFailed(call, responseStr, e);
+
+                responseItem.setResultCode(RESULT_PARSE_FAILED);
+                responseItem.setStrResult(responseStr);
+            }
+        } else {
+            // 返回网络错误代码
+            L.e("[NetworkErrorCode: " + response.code() + "] " + call.request().url().url().toString(), "");
+            okInit.receivedNetworkErrorCode(call, response);
+            responseItem.setResultCode(NETWORK_ERROR_CODE);
+        }
+        return responseItem;
+    }
+
+
+    /**
+     * 处理responseResult成功的内容
+     */
+    private static void handleResultWithResultCode(ResponseItem responseItem) {
+        if (responseItem == null) {
+            return;
+        }
+        Call call = responseItem.getCall();
+        String strResult = responseItem.getStrResult();
+        Response response = responseItem.getResponse();
+        OkResponseListener okResponseListener = responseItem.getOkResponseListener();
+        JSONObject jsonObject = responseItem.getJsonObject();
+        int resultCode = responseItem.getResultCode();
+
+        try {
+            switch (resultCode) {
+                case RESULT_SUCCESS:
+                    L.e("[Success] " + call.request().url().url().toString(), JsonTool.stringToJSON(strResult));
+                    okResponseListener.handleJsonSuccess(call, response, jsonObject);
+                    break;
+                case RESULT_ERROR:
+                    L.e("[Error] " + call.request().url().url().toString(), strResult);
+                    okResponseListener.handleJsonError(call, response, jsonObject);
+                    break;
+                case RESULT_BLANK:
+                    L.e("[Blank] " + call.request().url().url().toString(), strResult);
+                    okResponseListener.handleJsonError(call, response, jsonObject);
+                    break;
+                case RESULT_VERIFY_ERROR:
+                    L.e("[VerifyError] " + call.request().url().url().toString(), strResult);
+                    okResponseListener.handleJsonVerifyError(call, response, jsonObject);
+                    break;
+                case RESULT_PARSE_FAILED:
+                    // 已经上在步操作中Log了
+                    okResponseListener.handleParseError(call, strResult);
+                    break;
+                case NETWORK_ERROR_CODE:
+                    // 已经上在步操作中Log了
+                    okResponseListener.handleResponseCodeError(call, response);
+                    break;
+                default:
+                    L.e("[OtherResultCode: " + resultCode + "] " + call.request().url().url().toString(), JsonTool.stringToJSON(strResult));
+                    okResponseListener.handleJsonOther(call, response, jsonObject);
+                    break;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (resultCode != RESULT_SUCCESS) {
+            try {
+                okResponseListener.handleAllFailureSituation(call, resultCode);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * 网络错误，请求失败
+     *
+     * @param call
+     * @param okResponseListener
+     */
+    private static void noResponse(Call call, OkResponseListener okResponseListener) {
+        okInit.networkError(call, call.isCanceled());
+        L.e("[networkError] " + call.request().url().url().toString(), "");
+        if (okResponseListener != null) {
+            if (call.isCanceled()) return;
+            try {
+                okResponseListener.handleNoServerNetwork(call, call.isCanceled());
+                okResponseListener.handleAllFailureSituation(call, NO_NETWORK);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * 返回结果后操作过程错误
+     * @param call
+     * @param e
+     */
+  /*  private static void responseResultFailure(Call call, OkResponseListener okResponseListener, Exception e) {
+        okInit.networkError(call, call.isCanceled());
+        L.e("[Handle Response Error] " + call.request().url().url().toString(), e.getMessage());
+        e.printStackTrace();
+        if (okResponseListener != null) {
+            if (call.isCanceled()) return;
+            try {
+                okResponseListener.handleResponseFailure(call, );
+                okResponseListener.handleAllFailureSituation(call, NO_NETWORK);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }*/
 
     /**
      * upload file，you can setMaxTransFileCount() to set max files upload thread pool size
@@ -250,7 +466,8 @@ public class OkHttp {
      * @param fileProgressListener
      * @return
      */
-    static Call uploadFiles(final Activity activity, String url, Map<String, File> files, Param params, final Header header, boolean addDefaultHeader, boolean addDefaultParams, final OkResponseListener okResponseListener, OkFileHelper.FileProgressListener fileProgressListener) {
+    static Call uploadFiles(final Activity activity, String url, Map<String, File> files, Param params, final Header header, boolean addDefaultHeader,
+                            boolean addDefaultParams, final OkResponseListener okResponseListener, OkFileHelper.FileProgressListener fileProgressListener) {
         StringBuffer sb = new StringBuffer();
         String logTitle;
         logTitle = "[UPLOAD] " + url;
@@ -313,241 +530,59 @@ public class OkHttp {
                 }
             }
         }
-
         Request request = requestBuilder.build();
 
         Call call = OkHttp.getClient().newCall(request);
 
         L.e(logTitle, sb.toString());
+
+        // 使用RxJava2进行请求管理
         call.enqueue(new Callback() {
             @Override
             public void onResponse(Call call, Response response) {
-                if (response != null) {
-                    responseResult(response, call, okResponseListener, activity);
-                    response.close();
-                } else {
-                    responseResultFailure(call, okResponseListener, activity);
-                }
+                Observable.create(
+                        (ObservableOnSubscribe<ResponseItem>) observableEmitter -> {
+                            ResponseItem responseItem = new ResponseItem(response, call, okResponseListener);
+                            responseItem = responseResult(responseItem);
+                            response.close();
+                            observableEmitter.onNext(responseItem);
+                            observableEmitter.onComplete();
+                        })
+                        // 当传入Activity时，或者Activity没有被销毁则运行在主线程，否则运行在IO线程
+                        .observeOn(activity == null ? Schedulers.io() : AndroidSchedulers.mainThread())
+                        .subscribe(new Observer<ResponseItem>() {
+                            private Disposable d;
+
+                            @Override
+                            public void onSubscribe(@io.reactivex.annotations.NonNull Disposable disposable) {
+                                d = disposable;
+                            }
+
+                            @Override
+                            public void onNext(@io.reactivex.annotations.NonNull ResponseItem responseItem) {
+                                handleResultWithResultCode(responseItem);
+                            }
+
+                            @Override
+                            public void onError(@io.reactivex.annotations.NonNull Throwable throwable) {
+                                throwable.printStackTrace();
+                                noResponse(call, okResponseListener);
+                            }
+
+                            @Override
+                            public void onComplete() {
+                                BaseActivity.dismissLoadingDialogByManualState();
+                            }
+                        });
             }
 
             @Override
             public void onFailure(Call call, IOException e) {
-                responseResultFailure(call, okResponseListener, activity);
+                noResponse(call, okResponseListener);
             }
 
         });
         return call;
-    }
-
-
-    /**
-     * when response success
-     *
-     * @param response
-     * @param call
-     * @param okResponseListener
-     */
-    private static void responseResult(final Response response, final Call call, final OkResponseListener okResponseListener, Activity activity) {
-        if (response.isSuccessful()) {
-            String responseStr = "";
-            try {
-                final String strResult = response.body().string();
-                responseStr = strResult;
-                final JSONObject jsonObject = JSON.parseObject(strResult);
-                final int resultCode = okInit.judgeResultWhenFirstReceivedResponse(call, response, jsonObject);
-                if (okInit.resultSuccessByJudge(call, response, jsonObject, resultCode)) {
-                    L.e("[resultJudgeFailed] " + call.request().url().url().toString(), JsonTool.stringToJSON(strResult));
-                    BaseActivity.dismissLoadingDialogByManualState();
-                    return;
-                }
-                if (call.isCanceled() || okResponseListener == null) {
-                    BaseActivity.dismissLoadingDialogByManualState();
-                    return;
-                }
-                try {
-                    // 先在当前线程中处理
-                    okResponseListener.handleSuccessInBackground(call, jsonObject);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                BaseActivity.dismissLoadingDialogByManualState();
-                // 如果传入Activity，则在主线程中处理内容
-                if (activity != null) {
-                    activity.runOnUiThread(() -> {
-                        handleResultWithResultCode(response, call, okResponseListener, strResult, jsonObject, resultCode);
-                    });
-                } else {
-                    handleResultWithResultCode(response, call, okResponseListener, strResult, jsonObject, resultCode);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                BaseActivity.dismissLoadingDialogByManualState();
-                final String parseErrorResult = responseStr;
-                L.e("[JsonParseFailed] " + call.request().url().url().toString(), "[Error]\n" + e.getMessage() + "\n[Result]\n " + responseStr);
-                okInit.judgeResultParseResponseFailed(call, parseErrorResult, e);
-                if (call.isCanceled() || okResponseListener == null) return;
-                // 如果传入Activity，则在主线程中处理内容
-                if (activity != null) {
-                    activity.runOnUiThread(() -> {
-                        try {
-                            okResponseListener.handleParseError(call, parseErrorResult);
-                            okResponseListener.handleAllFailureSituation(call, RESULT_PARSE_FAILED);
-                        } catch (Exception e1) {
-                            e1.printStackTrace();
-                        }
-                    });
-                } else {
-                    try {
-                        okResponseListener.handleParseError(call, parseErrorResult);
-                        okResponseListener.handleAllFailureSituation(call, RESULT_PARSE_FAILED);
-                    } catch (Exception e1) {
-                        e1.printStackTrace();
-                    }
-                }
-
-            }
-        } else {
-            BaseActivity.dismissLoadingDialogByManualState();
-            L.e("[NetworkErrorCode: " + response.code() + "] " + call.request().url().url().toString(), "");
-            okInit.receivedNetworkErrorCode(call, response);
-            if (call.isCanceled()) return;
-            if (activity != null) {
-                activity.runOnUiThread(() -> {
-                    try {
-                        okResponseListener.handleResponseFailure(call, response);
-                        okResponseListener.handleAllFailureSituation(call, NETWORK_ERROR_CODE);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                });
-            } else {
-                try {
-                    okResponseListener.handleResponseFailure(call, response);
-                    okResponseListener.handleAllFailureSituation(call, NETWORK_ERROR_CODE);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
-        }
-    }
-
-    /**
-     * 处理responseResult成功的内容
-     *
-     * @param response
-     * @param call
-     * @param okResponseListener
-     * @param strResult
-     * @param jsonObject
-     * @param resultCode
-     */
-    private static void handleResultWithResultCode(Response response, Call call, OkResponseListener okResponseListener, String strResult, JSONObject jsonObject, int resultCode) {
-        switch (resultCode) {
-            case RESULT_SUCCESS:
-                L.e("[Success] " + call.request().url().url().toString(), JsonTool.stringToJSON(strResult));
-                try {
-                    okResponseListener.handleJsonSuccess(call, response, jsonObject);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-                break;
-            case RESULT_ERROR:
-                L.e("[Error] " + call.request().url().url().toString(), strResult);
-                try {
-                    okResponseListener.handleJsonError(call, response, jsonObject);
-                    okResponseListener.handleAllFailureSituation(call, resultCode);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-                break;
-            case RESULT_VERIFY_ERROR:
-                L.e("[VerifyError] " + call.request().url().url().toString(), strResult);
-                try {
-                    okResponseListener.handleJsonVerifyError(call, response, jsonObject);
-                    okResponseListener.handleAllFailureSituation(call, resultCode);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-                break;
-            default:
-                L.e("[OtherResultCode: " + resultCode + "] " + call.request().url().url().toString(), JsonTool.stringToJSON(strResult));
-                try {
-                    okResponseListener.handleJsonOther(call, response, jsonObject);
-                    okResponseListener.handleAllFailureSituation(call, resultCode);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-                break;
-        }
-    }
-
-    /**
-     * when response failure or call cancel
-     *
-     * @param call
-     * @param okResponseListener
-     */
-    private static void responseResultFailure(final Call call, final OkResponseListener okResponseListener, Activity activity) {
-        okInit.networkError(call, call.isCanceled());
-        L.e("[networkError] " + call.request().url().url().toString(), "");
-        BaseActivity.dismissLoadingDialogByManualState();
-        if (okResponseListener != null && activity != null) {
-            if (call.isCanceled()) return;
-            activity.runOnUiThread(() -> {
-                try {
-                    okResponseListener.handleNoServerNetwork(call, call.isCanceled());
-                    okResponseListener.handleAllFailureSituation(call, NO_NETWORK);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            });
-
-        }
-    }
-
-    public static abstract class OkResponseListener implements IOkResponseListener {
-
-        protected void handleJsonVerifyError(Call call, Response response, JSONObject json) throws Exception {
-
-        }
-
-        protected void handleJsonOther(Call call, Response response, JSONObject json) throws Exception {
-
-        }
-
-        protected void handleParseError(Call call, String responseResult) throws Exception {
-
-        }
-
-        protected void handleNoServerNetwork(Call call, boolean isCanceled) throws Exception {
-
-        }
-
-        protected void handleResponseFailure(Call call, Response response) throws Exception {
-
-        }
-
-        protected void handleAllFailureSituation(Call call, int resultCode) throws Exception {
-
-        }
-
-        /**
-         * 成功时，在返回主线程前进行处理操作
-         *
-         * @param call
-         * @param json
-         * @throws Exception
-         */
-        protected void handleSuccessInBackground(Call call, JSONObject json) throws Exception {
-
-        }
-
-
     }
 
     /**
@@ -557,84 +592,6 @@ public class OkHttp {
         void handleJsonSuccess(Call call, Response response, JSONObject json) throws Exception;
 
         void handleJsonError(Call call, Response response, JSONObject json) throws Exception;
-    }
-
-    public interface IOkInit {
-        /**
-         * the first time the response got from internet
-         * 0：RESULT_ERROR ;
-         * 1：RESULT_SUCCESS ;
-         * -1：RESULT_VERIFY_ERROR;
-         * 2: RESULT_OTHER ;
-         * at IOkResponse interface callback
-         *
-         * @param call
-         * @param response
-         * @param json
-         * @return
-         */
-        int judgeResultWhenFirstReceivedResponse(Call call, Response response, JSONObject json);
-
-        /**
-         * no network or  or call back cancel
-         *
-         * @param call
-         * @param isCanceled
-         */
-        void networkError(Call call, boolean isCanceled);
-
-        /**
-         * after judgeResultWhenFirstReceivedResponse
-         * result code not in  [200...300)
-         *
-         * @param call
-         * @param response
-         */
-        void receivedNetworkErrorCode(Call call, Response response);
-
-        /**
-         * after judgeResultWhenFirstReceivedResponse
-         * result is SUCCESS
-         * returns ---
-         * false: go on callbacks
-         * true：interrupt callbacks
-         * 可在此方法保存资料到SQLite
-         *
-         * @param call
-         * @param response
-         * @param json
-         * @param resultCode
-         * @return
-         */
-        boolean resultSuccessByJudge(Call call, Response response, JSONObject json, int resultCode);
-
-        /**
-         * after judgeResultWhenFirstReceivedResponse
-         * when parse JSON failed
-         *
-         * @param call
-         * @param parseErrorResult
-         */
-        void judgeResultParseResponseFailed(Call call, String parseErrorResult, Exception e);
-
-        /**
-         * add defaultParams in param
-         * when setFormBody requestBody
-         *
-         * @param defaultParams
-         * @return
-         */
-        Param setDefaultParams(Param defaultParams);
-
-        /**
-         * add defaultHeader in header
-         * when new a request
-         *
-         * @param defaultHeader
-         * @return
-         */
-        Header setDefaultHeader(Header defaultHeader);
-
     }
 
     private abstract class XRequestBody extends RequestBody {

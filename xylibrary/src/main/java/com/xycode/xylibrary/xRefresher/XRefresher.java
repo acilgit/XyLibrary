@@ -9,7 +9,6 @@ import android.content.res.TypedArray;
 import android.os.Parcelable;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DimenRes;
-import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -25,7 +24,7 @@ import com.xycode.xylibrary.adapter.OnInitList;
 import com.xycode.xylibrary.adapter.XAdapter;
 import com.xycode.xylibrary.annotation.SaveState;
 import com.xycode.xylibrary.base.BaseActivity;
-import com.xycode.xylibrary.okHttp.OkHttp;
+import com.xycode.xylibrary.okHttp.OkResponseListener;
 import com.xycode.xylibrary.okHttp.Param;
 import com.xycode.xylibrary.uiKit.recyclerview.FlexibleDividerDecoration;
 import com.xycode.xylibrary.uiKit.recyclerview.HorizontalDividerItemDecoration;
@@ -262,7 +261,7 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
                 .body(params)
                 .addDefaultParams(this.addDefaultParam)
                 .addDefaultHeader(this.addDefaultHeader)
-                .call(new OkHttp.OkResponseListener() {
+                .call(new OkResponseListener() {
                     @Override
                     public void handleJsonSuccess(Call call, Response response, JSONObject json) {
                         List<T> getList = refreshRequest.setListData(json);

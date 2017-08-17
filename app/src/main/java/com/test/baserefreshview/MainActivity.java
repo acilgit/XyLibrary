@@ -29,7 +29,7 @@ import com.xycode.xylibrary.annotation.SaveState;
 import com.xycode.xylibrary.base.PhotoSelectBaseActivity;
 import com.xycode.xylibrary.instance.FrescoLoader;
 import com.xycode.xylibrary.okHttp.Header;
-import com.xycode.xylibrary.okHttp.OkHttp;
+import com.xycode.xylibrary.okHttp.OkResponseListener;
 import com.xycode.xylibrary.okHttp.Param;
 import com.xycode.xylibrary.uiKit.views.MultiImageView;
 import com.xycode.xylibrary.uiKit.views.loopview.AdLoopView;
@@ -163,7 +163,7 @@ public class MainActivity extends ABaseActivity {
                     .addDefaultHeader(true)
                     .addDefaultParams(true)
                     .header(new Header("a", "callA"))
-                    .call(new OkHttp.OkResponseListener() {
+                    .call(new OkResponseListener() {
                         @Override
                         public void handleJsonSuccess(Call call, Response response, JSONObject json) throws Exception {
                             ListBean listBean = JSON.parseObject(null, ListBean.class);
