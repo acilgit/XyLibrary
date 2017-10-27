@@ -7,17 +7,21 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.xycode.xylibrary.R;
 import com.xycode.xylibrary.adapter.CustomHolder;
 import com.xycode.xylibrary.adapter.XAdapter;
+import com.xycode.xylibrary.okHttp.OkHttp;
+import com.xycode.xylibrary.uiKit.recyclerview.XLinearLayoutManager;
 import com.xycode.xylibrary.unit.MsgEvent;
 import com.xycode.xylibrary.unit.ViewTypeUnit;
 import com.xycode.xylibrary.utils.Tools;
@@ -30,6 +34,8 @@ import java.util.List;
  * Created by XY on 2017-06-03.
  * 在Debug模式下，用于显示Log的内容
  * 在屏幕右边滑动展开，展开后右滑隐藏
+ *
+ * @author xiuye
  */
 
 public class LogLayout {
@@ -108,8 +114,9 @@ public class LogLayout {
                         .setVisibility(R.id.tvTitle, TextUtils.isEmpty(item.getTitle()) ? View.GONE : View.VISIBLE)
                         .setVisibility(R.id.tvContent, TextUtils.isEmpty(item.getContent()) ? View.GONE : View.VISIBLE)
                         .setText(R.id.tvContent, content)
-                        .setTextColor(R.id.tvContent, context.getResources().getColor(contentColor));
-                holder.getView(R.id.llItem).setBackgroundResource((selectItemPos != pos && item.getContent().length() > maxItemContentLength) ? R.color.bgBlue : 0);
+                        .setTextColor(R.id.tvContent, context.getResources().getColor(contentColor))
+                        .setViewBackground(R.id.llItem, OkHttp.isDebugMode() ? R.color.transparentRedLite : 0);
+                holder.getView(R.id.llBg).setBackgroundResource((selectItemPos != pos && item.getContent().length() > maxItemContentLength) ? R.color.bgBlue : 0);
             }
         };
 
@@ -121,7 +128,7 @@ public class LogLayout {
 
         RecyclerView rv = holder.getRecyclerView(R.id.rv);
         rv.addItemDecoration(Tools.getHorizontalDivider(R.color.grayLite, R.dimen.dividerLineHeight, R.dimen.zero, R.dimen.zero));
-        rv.setLayoutManager(new LinearLayoutManager(context));
+        rv.setLayoutManager(new XLinearLayoutManager(context));
         rv.setAdapter(adapter);
         holder.setClick(R.id.tvTop, v -> {
             if (adapter.getShowingList().size() > 0) {
@@ -133,11 +140,18 @@ public class LogLayout {
                 rv.scrollToPosition(adapter.getShowingList().size() - 1);
             }
         });
-        holder.setClick(R.id.tvClear, v -> {
+       /* holder.setClick(R.id.tvClear, v -> {
             L.getLogList().clear();
             EventBus.getDefault().post(new MsgEvent(L.EVENT_LOG, null, null));
             slideAnimate(0, true);
+        });*/
+        holder.setClick(R.id.tvDebug, v -> {
+            OkHttp.setDebugMode(!OkHttp.isDebugMode());
+            adapter.notifyDataSetChanged();
+//            holder.getTextView(R.id.tvDebug).setTextColor(context.getResources().getColor(OkHttp.isDebugMode() ? R.color.transparentRedLite : R.color.transparent));
         });
+
+//        holder.getView(R.id.vDebug).setBackgroundColor(context.getResources().getColor(OkHttp.isDebugMode() ? R.color.transparentRedLite : R.color.transparent));
     }
 
     public View getView() {
@@ -145,6 +159,7 @@ public class LogLayout {
     }
 
     public void refreshData() {
+        adapter.setDataList(L.getLogList());
         adapter.notifyDataSetChanged();
     }
 
@@ -195,6 +210,7 @@ public class LogLayout {
                     }
                     canMove = false;
                     break;
+                default:
             }
             previousX = x;
             previousY = y;
@@ -243,6 +259,7 @@ public class LogLayout {
                         sliding = false;
                     }
                     break;
+                default:
             }
             previousX = x;
             previousY = y;
@@ -287,7 +304,7 @@ public class LogLayout {
     public void removeLayout() {
         if (rootView != null) {
             try {
-                ((ViewGroup)rootView.getParent()).removeView(rootView);
+                ((ViewGroup) rootView.getParent()).removeView(rootView);
             } catch (Exception e) {
                 e.printStackTrace();
             }

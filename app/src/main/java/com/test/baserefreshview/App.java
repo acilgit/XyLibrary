@@ -24,6 +24,7 @@ import com.xycode.xylibrary.utils.TS;
 import com.xycode.xylibrary.utils.Tools;
 import com.xycode.xylibrary.utils.crashUtil.CrashItem;
 import com.xycode.xylibrary.utils.crashUtil.ICrash;
+import com.xycode.xylibrary.xRefresher.InitRefresher;
 import com.xycode.xylibrary.xRefresher.XRefresher;
 
 import okhttp3.Call;
@@ -142,7 +143,13 @@ public class App extends Application {
 
             @Override
             public void judgeResultParseResponseFailed(Call call, String response, Exception e) {
-                    L.e(e.getMessage());
+//                    L.e(e.getMessage());
+            }
+
+            @Override
+            public Param setParamsHeadersBeforeRequest(Param allParams, Header header) {
+                header.add("aha", "heheh");
+                return allParams;
             }
 
             @Override
@@ -202,8 +209,29 @@ public class App extends Application {
         });*/
 
 //        XRefresher.setCustomerLoadMoreView(R.layout.layout_base_load_more);
-        XRefresher.init(null, new XRefresher.Options()
-                .setLoadingRefreshingArrowColorRes(new int[]{android.R.color.holo_purple})
+        XRefresher.init(new InitRefresher() {
+                            @Override
+                            public void handleError(Call call, JSONObject json) {
+                                TS.show(json.getString("msg"));
+                            }
+
+                            @Override
+                            public void handleAllFailureSituation(Call call, int resultCode) {
+
+                            }
+
+                            @Override
+                            public boolean addDefaultHeader() {
+                                return false;
+                            }
+
+                            @Override
+                            public boolean addDefaultParam() {
+                                return false;
+                            }
+                        }, new XRefresher.Options()
+                        .setLoadingRefreshingArrowColorRes(new int[]{android.R.color.holo_purple})
+
         );
 //        XRefresher.setDefaultNoDataText("暂无数据", 1);
 

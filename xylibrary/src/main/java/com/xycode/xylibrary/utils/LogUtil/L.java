@@ -66,7 +66,10 @@ public class L {
     }
 
     public static void addLogItem(String title, String msg, int type) {
-        getLogList().add(new LogItem(DateUtils.formatDateTime("yyyy-M-d HH:mm:ss:SSS", DateUtils.getNow()), title, msg, type));
+        String addTitle = "", addMsg = "";
+        if(title != null) addTitle = new String(title);
+        if(msg != null) addMsg = new String(msg);
+        getLogList().add(new LogItem(DateUtils.formatDateTime("yyyy-M-d HH:mm:ss:SSS", DateUtils.getNow()), addTitle, addMsg, type));
         if (!showLog() && MAX_LOG_LIST_SIZE_IN_RELEASE_MODE != -1 && getLogList().size() > MAX_LOG_LIST_SIZE_IN_RELEASE_MODE) {
             getLogList().remove(0);
         }

@@ -2,6 +2,8 @@ package com.xycode.xylibrary.okHttp;
 
 import com.alibaba.fastjson.JSONObject;
 
+import java.util.List;
+
 import okhttp3.Call;
 import okhttp3.Response;
 
@@ -65,6 +67,15 @@ public interface IOkInit {
      * @param parseErrorResult
      */
     void judgeResultParseResponseFailed(Call call, String parseErrorResult, Exception e);
+
+    /**
+     * reset all Params in param
+     * when setFormBody requestBody
+     *
+     * @param allParams
+     * @return null 不作任何处理
+     */
+    Param setParamsHeadersBeforeRequest(Param allParams, Header header);
 
     /**
      * add defaultParams in param

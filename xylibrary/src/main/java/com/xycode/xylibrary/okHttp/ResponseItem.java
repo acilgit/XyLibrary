@@ -16,11 +16,14 @@ public class ResponseItem {
     private OkResponseListener okResponseListener;
     private JSONObject jsonObject;
     private String strResult;
+    private String url;
+    private String debugKey;
     private int resultCode = OkHttp.RESULT_BLANK;
 
-    public ResponseItem(Response response, Call call, OkResponseListener okResponseListener) {
+    public ResponseItem(Response response, Call call, String url, OkResponseListener okResponseListener) {
         this.response = response;
         this.call = call;
+        this.url = url;
         this.okResponseListener = okResponseListener;
     }
 
@@ -70,5 +73,21 @@ public class ResponseItem {
 
     public void setResultCode(int resultCode) {
         this.resultCode = resultCode;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getDebugKey() {
+        return debugKey;
+    }
+
+    public void setDebugKey(String debugKey) {
+        this.debugKey = debugKey;
     }
 }

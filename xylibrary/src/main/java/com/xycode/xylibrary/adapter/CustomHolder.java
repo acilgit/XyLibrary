@@ -187,6 +187,7 @@ public class CustomHolder extends RecyclerView.ViewHolder {
         return this;
     }
 
+    @Deprecated
     public CustomHolder setViewBackground(int viewId, int bgRes) {
         View view = getView(viewId);
         if (view != null) {
@@ -224,6 +225,7 @@ public class CustomHolder extends RecyclerView.ViewHolder {
         return this;
     }
 
+    @Deprecated
     public CustomHolder setImageRes(int viewId, @DrawableRes int drawableRes) {
         View view = getView(viewId);
         if (view != null) {

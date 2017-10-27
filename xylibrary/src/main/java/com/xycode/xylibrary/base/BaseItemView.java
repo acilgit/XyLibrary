@@ -59,6 +59,10 @@ public abstract class BaseItemView extends RelativeLayout {
     @SaveState
     protected int itemVisible;
     @SaveState
+    protected int itemHide;
+    @SaveState
+    protected int itemGone;
+    @SaveState
     protected int itemChildVisible;
     @SaveState
     protected int itemIndex;
@@ -66,6 +70,8 @@ public abstract class BaseItemView extends RelativeLayout {
     protected long itemDateTime;
     @SaveState
     protected long itemLong;
+    @SaveState
+    protected long itemLength;
     @SaveState
     protected boolean itemBool;
     @SaveState
@@ -125,6 +131,8 @@ public abstract class BaseItemView extends RelativeLayout {
         itemCheck = a.getBoolean(R.styleable.BaseItemView_itemCheck, false);
         itemVisible = a.getInt(R.styleable.BaseItemView_itemVisible, VISIBLE);
         itemChildVisible = a.getInt(R.styleable.BaseItemView_itemChildVisible, VISIBLE);
+//        itemGone = a.getInt(R.styleable.BaseItemView_itemGone, GONE);
+//        itemHide = a.getInt(R.styleable.BaseItemView_itemHide, INVISIBLE);
         itemFloat = a.getFloat(R.styleable.BaseItemView_itemFloat, 0);
         itemIcon = a.getResourceId(R.styleable.BaseItemView_itemIcon, 0);
         itemColor = a.getResourceId(R.styleable.BaseItemView_itemColor, 0);
@@ -142,6 +150,7 @@ public abstract class BaseItemView extends RelativeLayout {
         itemMaxLines = a.getInt(R.styleable.BaseItemView_android_maxLines, 0);
         itemMin = a.getInt(R.styleable.BaseItemView_itemMin, -1);
         itemMax = a.getInt(R.styleable.BaseItemView_itemMax, -1);
+        itemLength = a.getInt(R.styleable.BaseItemView_itemLength, -1);
         itemName = itemName == null ? "" : itemName;
         itemHint = itemHint == null ? "" : itemHint;
         itemTitle = itemTitle == null ? "" : itemTitle;

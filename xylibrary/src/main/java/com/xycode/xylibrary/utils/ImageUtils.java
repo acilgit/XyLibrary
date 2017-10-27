@@ -407,7 +407,7 @@ public class ImageUtils {
         return bitmap;
     }
 
-    public static Bitmap doGaussianBlur(Bitmap sourceBitmap, int radius, boolean resize) {
+    public static Bitmap doGaussianBlur(Bitmap sourceBitmap, int radius, boolean resize, int minSide) {
 
         // Stack Blur v1.0 from
         // http://www.quasimondo.com/StackBlurForCanvas/StackBlurDemo.html
@@ -439,7 +439,7 @@ public class ImageUtils {
 
         Bitmap bitmap;
         if (resize) {
-            sourceBitmap = resizeToBitmap(320, compressBitmapToStream(sourceBitmap, 50).toByteArray());
+            sourceBitmap = resizeToBitmap(minSide, compressBitmapToStream(sourceBitmap, 30).toByteArray());
         }
 
        /* if (canReuseInBitmap) {
@@ -786,12 +786,12 @@ public class ImageUtils {
     /**
      * Please use {@link FrescoLoader#setImageUrl(android.widget.ImageView, Object)} for this method
      * @param simpleDraweeView
-     * @param uri
+     * @param url
      * @param previewUri
      * @param resizeOptions
      */
-    public static void setImageUriWithPreview(SimpleDraweeView simpleDraweeView, String uri, String previewUri, ResizeOptions resizeOptions) {
-        setImageUriWithPreview(simpleDraweeView, Uri.parse(uri), previewUri == null ? null : Uri.parse(previewUri), resizeOptions);
+    public static void setImageUriWithPreview(SimpleDraweeView simpleDraweeView, String url, String previewUri, ResizeOptions resizeOptions) {
+        setImageUriWithPreview(simpleDraweeView, url == null ? null : Uri.parse(url), previewUri == null ? null : Uri.parse(previewUri), resizeOptions);
     }
 
     static void setImageUriWithPreview(SimpleDraweeView simpleDraweeView, Uri uri, Uri previewUri, ResizeOptions resizeOptions) {

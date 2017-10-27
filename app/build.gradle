@@ -1,6 +1,11 @@
 apply plugin: 'com.android.application'
 apply plugin: 'me.tatarka.retrolambda'
 
+/*gradle.projectsEvaluated {
+    tasks.withType(JavaCompile) {
+        options.compilerArgs << "-Xbootclasspath/a:" + System.properties.get("java.home") + "/lib/rt.jar"
+    }
+}*/
 android {
     compileSdkVersion 25
     buildToolsVersion '25.0.2'
@@ -25,6 +30,9 @@ android {
         targetSdkVersion 22
         versionCode 101
         versionName "1.0.3"
+        /*jackOptions {
+            enabled true
+        }*/
     }
     buildTypes {
         release {
@@ -52,5 +60,5 @@ dependencies {
     compile 'com.androidadvance:topsnackbar:1.0.0'
 //    compile 'com.jakewharton:butterknife:8.4.0'
 //    annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
-    compile 'com.aliyun.ams:alicloud-android-hotfix:3.0.8'
+    compile 'com.aliyun.ams:alicloud-android-hotfix:3.1.1'
 }
