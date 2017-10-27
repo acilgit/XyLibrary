@@ -166,6 +166,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     private void showDialog(boolean manualDismiss) {
         loadingDialogShowManual = manualDismiss;
+        if(loadingDialog!=null) loadingDialog.dismiss();
         loadingDialog = setLoadingDialog();
         if (loadingDialog != null && !loadingDialog.isShowing()) {
             loadingDialog.show();

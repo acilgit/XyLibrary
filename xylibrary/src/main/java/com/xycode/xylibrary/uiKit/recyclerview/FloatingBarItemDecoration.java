@@ -25,6 +25,7 @@ import android.support.annotation.DimenRes;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
 
 
@@ -109,18 +110,27 @@ public class FloatingBarItemDecoration extends RecyclerView.ItemDecoration {
     @Override
     public void onDrawOver(Canvas c, RecyclerView parent, RecyclerView.State state) {
         super.onDrawOver(c, parent, state);
-        final int position = ((LinearLayoutManager) parent.getLayoutManager()).findFirstVisibleItemPosition();
-        if (position == RecyclerView.NO_POSITION) {
+        int[] positions;
+        if (parent.getLayoutManager() instanceof StaggeredGridLayoutManager) {
+            positions = ((StaggeredGridLayoutManager) parent.getLayoutManager()).findFirstVisibleItemPositions(null);
+        } else {
+            positions = new int[1];
+            positions[0] = ((LinearLayoutManager) parent.getLayoutManager()).findFirstVisibleItemPosition();
+        }
+        if (positions[0] == RecyclerView.NO_POSITION) {
             return;
         }
-        View child = parent.findViewHolderForAdapterPosition(position).itemView;
-        String initial = getTag(position);
+/*        if (positions[0] < adapterHeaderCount) {
+            return;
+        }*/
+        View child = parent.findViewHolderForAdapterPosition(positions[0]).itemView;
+        String initial = getTag(positions[0]);
         if (initial == null) {
             return;
         }
 
         boolean flag = false;
-        if (getTag(position + 1) != null && !initial.equals(getTag(position + 1))) {
+        if (getTag(positions[0] + 1) != null && !initial.equals(getTag(positions[0] + 1))) {
             if (child.getHeight() + child.getTop() < mTitleHeight) {
                 c.save();
                 flag = true;
@@ -137,7 +147,6 @@ public class FloatingBarItemDecoration extends RecyclerView.ItemDecoration {
                 child.getPaddingLeft() + mTextStartMargin,
                 parent.getPaddingTop() + mTitleHeight - (mTitleHeight - mTextHeight) / 2 - mTextBaselineOffset,
                 mTextPaint);
-
         if (flag) {
             c.restore();
         }
@@ -155,7 +164,8 @@ public class FloatingBarItemDecoration extends RecyclerView.ItemDecoration {
 
     /**
      * 设置列表
-     * @param list 数据源
+     *
+     * @param list               数据源
      * @param adapterHeaderCount 适配器中的自定义的Header的数量
      */
     public void setList(List list, int adapterHeaderCount) {
@@ -180,6 +190,7 @@ public class FloatingBarItemDecoration extends RecyclerView.ItemDecoration {
 
         /**
          * 设置标题栏的背景颜色
+         *
          * @param backgroundColorRes
          * @return
          */
@@ -190,6 +201,7 @@ public class FloatingBarItemDecoration extends RecyclerView.ItemDecoration {
 
         /**
          * 设置背景栏字体颜色、大小
+         *
          * @param textColor
          * @param textSize
          * @return
@@ -202,6 +214,7 @@ public class FloatingBarItemDecoration extends RecyclerView.ItemDecoration {
 
         /**
          * 设置标题左偏移量
+         *
          * @param textStartMargin
          * @return
          */
@@ -233,10 +246,10 @@ public class FloatingBarItemDecoration extends RecyclerView.ItemDecoration {
     }
 
     private void addHeaderToList(int index, String header) {
-        headerList.put(index, header);
+        headerList.put(index + adapterHeaderCount, header);
     }
 
-    public interface ITitleTextGetter<T>{
+    public interface ITitleTextGetter<T> {
         String getTitle(T obj);
     }
 }

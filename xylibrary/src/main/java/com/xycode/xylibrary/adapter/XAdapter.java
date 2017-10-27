@@ -3,6 +3,7 @@ package com.xycode.xylibrary.adapter;
 import android.animation.Animator;
 import android.content.Context;
 import android.support.annotation.LayoutRes;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.SparseArray;
@@ -16,6 +17,7 @@ import com.xycode.xylibrary.R;
 import com.xycode.xylibrary.animation.BaseAnimation;
 import com.xycode.xylibrary.animation.SlideInBottomAnimation;
 import com.xycode.xylibrary.unit.ViewTypeUnit;
+import com.xycode.xylibrary.utils.LogUtil.L;
 import com.xycode.xylibrary.xRefresher.XRefresher;
 
 import java.util.ArrayList;
@@ -35,6 +37,11 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
     public static final int VIEW_TYPE_FOOTER_RETRY = -20344;
     public static final int VIEW_TYPE_FOOTER_NO_DATA = -20355;
 
+    public static final int[] VIEW_TYPE_FOOTERS = new int[]{VIEW_TYPE_FOOTER,
+            VIEW_TYPE_FOOTER_LOADING,
+            VIEW_TYPE_FOOTER_NO_MORE,
+            VIEW_TYPE_FOOTER_RETRY,
+            VIEW_TYPE_FOOTER_NO_DATA };
     /**
      * LOADER_NO_DATA   没有数据
      * LOADER_NO_MORE   已加载全部，有footerLayoutId显示Footer
@@ -188,7 +195,13 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
                                 holder1.setOnClickListener(v -> handleItemViewClick(holder1, null, v.getId(), new ViewTypeUnit(headerKey, headerLayoutIdList.get(headerKey))));
 
                                 holder1.setOnLongClickListener(v -> handleItemViewLongClick(holder1, null, v.getId(), new ViewTypeUnit(headerKey, headerLayoutIdList.get(headerKey))));
-                                creatingHeader(holder1, headerKey);
+                                try {
+                                    creatingHeader(holder1, headerKey);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                    L.e("creatingHeader Exception", e.toString());
+
+                                }
                             }
                         };
                     }
@@ -206,7 +219,12 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
                     protected void createHolder(final CustomHolder holder) {
                         holder.setOnClickListener(v -> handleItemViewClick(holder, dataList.get(holder.getAdapterPosition() - getHeaderCount()), v.getId(), viewTypeUnit));
                         holder.setOnLongClickListener(v -> handleItemViewLongClick(holder, dataList.get(holder.getAdapterPosition() - getHeaderCount()), v.getId(), viewTypeUnit));
-                        creatingHolder(holder, viewTypeUnit);
+                        try {
+                            creatingHolder(holder, viewTypeUnit);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            L.e("createHolder Exception", e.toString());
+                        }
                     }
                 };
         }
@@ -243,12 +261,22 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
             for (int i = 0; i < headerLayoutIdList.size(); i++) {
                 final int headerKey = headerLayoutIdList.keyAt(i);
                 if (getItemViewType(position) == headerKey) {
-                    bindingHeader(((CustomHolder) holder), headerKey);
+                    try {
+                        bindingHeader(((CustomHolder) holder), headerKey);
+                    } catch (Exception e) {
+                        L.e("BindingHeader Exception", e.toString());
+                        e.printStackTrace();
+                    }
                 }
             }
             return;
         }
-        bindingHolder(((CustomHolder) holder), dataList, position - headerLayoutIdList.size());
+        try {
+            bindingHolder(((CustomHolder) holder), dataList, position - headerLayoutIdList.size());
+        } catch (Exception e) {
+            e.printStackTrace();
+            L.e("BindingHolder Exception", e.toString());
+        }
         addAnimation(holder);
     }
 
@@ -263,7 +291,11 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
     public void onViewAttachedToWindow(RecyclerView.ViewHolder holder) {
         super.onViewAttachedToWindow(holder);
         int type = holder.getItemViewType();
-        if (type == VIEW_TYPE_FOOTER || headerLayoutIdList.indexOfKey(type) >= 0) {
+        boolean isFooter = false;
+        for (int viewTypeFooterView : VIEW_TYPE_FOOTERS) {
+            if(type == viewTypeFooterView) isFooter = true;
+        }
+        if (isFooter || headerLayoutIdList.indexOfKey(type) >= 0) {
             setFullSpan(holder);
         } else {
             ViewTypeUnit viewTypeUnit = multiLayoutMap.get(type);
@@ -346,7 +378,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
      * @param holder
      * @param viewTypeUnit
      */
-    public void creatingHolder(CustomHolder holder, ViewTypeUnit viewTypeUnit) {
+    public void creatingHolder(CustomHolder holder, ViewTypeUnit viewTypeUnit)  throws Exception {
 
     }
 
@@ -357,7 +389,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
      * @param dataList
      * @param pos
      */
-    public void bindingHolder(CustomHolder holder, List<T> dataList, int pos) {
+    public void bindingHolder(CustomHolder holder, List<T> dataList, int pos) throws Exception{
 
     }
 
@@ -454,11 +486,26 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
         return footerCount + headerCount;
     }
 
-    public T getItem(int pos) {
-        if (dataList.size() > pos && pos > 0) {
+    public boolean isHeader(int pos) {
+        return pos < headerLayoutIdList.size();
+    }
+
+    /**
+     * 取得列表Item
+     * @param itemPosWithoutHeaderCount 列表中的Item位置, 不包括Header的Item,
+     *                如使用getAdapterPosition()需要减掉getHeaderCount()
+     * @return
+     */
+    public T getItem(int itemPosWithoutHeaderCount) {
+        int pos = itemPosWithoutHeaderCount;
+        if (dataList.size() > pos && pos >= 0) {
             return dataList.get(pos);
         }
         return null;
+    }
+
+    public T getCurrentItem(CustomHolder holder) {
+        return dataList.get(holder.getAdapterPosition() - getHeaderCount());
     }
 
     public OnInitList getOnInitList() {
@@ -606,11 +653,11 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
         headerLayoutIdList.put(headerKey, headerLayoutId);
     }
 
-    protected void creatingHeader(CustomHolder holder, int headerKey) {
+    protected void creatingHeader(CustomHolder holder, int headerKey) throws Exception {
 
     }
 
-    protected void bindingHeader(CustomHolder holder, int headerKey) {
+    protected void bindingHeader(CustomHolder holder, int headerKey) throws Exception{
 
     }
 

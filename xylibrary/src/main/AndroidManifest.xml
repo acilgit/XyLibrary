@@ -18,6 +18,11 @@
             android:name=".utils.crashUtil.CrashActivity"
             android:screenOrientation="nosensor" />
         <activity
+            android:name=".utils.debugger.DebugActivity"
+            android:windowSoftInputMode="adjustResize"
+            android:theme="@style/ServerControllerTheme"
+            android:screenOrientation="nosensor" />
+        <activity
             android:name=".utils.downloadHelper.CompulsiveHelperActivity"
             android:theme="@style/UpdateDialogTheme"
             android:screenOrientation="nosensor" />

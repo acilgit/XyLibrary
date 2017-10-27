@@ -74,6 +74,7 @@
         <attr name="itemCount" format="integer" />
         <attr name="itemMax" format="integer" />
         <attr name="itemMin" format="integer" />
+        <attr name="itemLength" format="integer" />
         <attr name="itemFloat" format="float" />
         <attr name="itemBool" format="boolean" />
         <attr name="itemCheck" format="boolean" />
@@ -90,6 +91,8 @@
         <attr name="itemRes" format="reference" />
         <attr name="itemVisible" />
         <attr name="itemChildVisible" />
+        <!--<attr name="itemHide" />-->
+        <!--<attr name="itemGone" />-->
         <attr name="android:inputType" />
         <attr name="android:minLines" />
         <attr name="android:maxLines" />

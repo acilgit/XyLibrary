@@ -1,12 +1,19 @@
 package com.xycode.xylibrary.okHttp;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.xycode.xylibrary.Xy;
 import com.xycode.xylibrary.base.BaseActivity;
 import com.xycode.xylibrary.utils.LogUtil.JsonTool;
 import com.xycode.xylibrary.utils.LogUtil.L;
+import com.xycode.xylibrary.utils.TS;
+import com.xycode.xylibrary.utils.crashUtil.CrashActivity;
+import com.xycode.xylibrary.utils.debugger.DebugActivity;
+import com.xycode.xylibrary.utils.debugger.DebugItem;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,10 +46,14 @@ import okhttp3.Response;
  */
 public class OkHttp {
 
-    public static final MediaType MEDIA_TYPE_MARKDOWN = MediaType.parse("text/x-markdown; charset=utf-8");
     public static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json; charset=utf-8");
-    public static final MediaType MEDIA_TYPE_URL_ENCODED = MediaType.parse("application/x-www-form-urlencoded; charset=utf-8");
     public static final MediaType MEDIA_TYPE_MULTI_DATA = MediaType.parse("multipart/form-data; charset=utf-8");
+    @Deprecated
+    public static final MediaType MEDIA_TYPE_MARKDOWN = MediaType.parse("text/x-markdown; charset=utf-8");
+    @Deprecated
+    public static final MediaType MEDIA_TYPE_URL_ENCODED = MediaType.parse("application/x-www-form-urlencoded; charset=utf-8");
+
+    private static MediaType mediaType = MEDIA_TYPE_MULTI_DATA;
 
     public static final String UTF8 = "UTF-8";
     public static final String FILE = "file";
@@ -51,7 +62,10 @@ public class OkHttp {
     public static final int POST = 0;
     public static final int GET = 1;
 
-    public static final int RESULT_BLANK = 404; // 还没有对结果进入处理
+    /**
+     * 还没有对结果进入处理
+     */
+    public static final int RESULT_BLANK = 404;
     public static final int RESULT_ERROR = 0;
     public static final int RESULT_SUCCESS = 1;
     public static final int RESULT_VERIFY_ERROR = -1;
@@ -66,6 +80,11 @@ public class OkHttp {
     private static OkHttp.OkOptions okOptions;
 
     private static OkHttp instance;
+
+    /**
+     * Debug模式开启
+     */
+    private static boolean debugMode = false;
 //    private static Context application;
 
     private static Map<String, CallItem> callItems;
@@ -93,15 +112,29 @@ public class OkHttp {
         }
     }
 
+
     /**
      * you can use client as you like
      * when use ali hotfix, set client by this method
+     *
      * @param iOkInit
      * @param client
      */
     public static void init(IOkInit iOkInit, OkHttpClient client) {
         okInit = iOkInit;
         OkHttp.client = client;
+    }
+
+    public static boolean isDebugMode() {
+        return debugMode;
+    }
+
+    public static void setDebugMode(boolean debugMode) {
+        OkHttp.debugMode = debugMode;
+    }
+
+    public static void setRequestMediaType(MediaType mediaType) {
+        OkHttp.mediaType = mediaType;
     }
 
     public static void setMaxTransFileCount(int max) {
@@ -158,112 +191,159 @@ public class OkHttp {
      * @param okResponseListener 回调监听
      * @return
      */
-    static Call request(int method, final Activity activity, String url, Param params, boolean addDefaultParams, Header header, boolean addDefaultHeader,
+    static void request(MediaType itemMediaType, int method, final Activity activity, String url, Param params, boolean addDefaultParams, Header header, boolean addDefaultHeader,
                         final OkResponseListener okResponseListener) {
-        // 参数加默认参数供Get请求处理
-        Param allParam = new Param();
-        // Log内容
-        StringBuffer sb = new StringBuffer();
-        // Log标题
-        String logTitle;
-
-        FormBody.Builder formBodyBuilder = new FormBody.Builder();
-        // 参数处理，并且把参数
-        try {
-            if (params != null) {
-                for (String key : params.keySet()) {
-                    if (sb.length() == 0) sb.append("[Params]");
-                    sb.append("\n  ").append(key).append(": ").append(params.get(key));
-                    formBodyBuilder.add(key, params.get(key));
-                    allParam.add(key, params.getKey(key));
-                }
-            }
-            if (addDefaultParams) {
-                Param defaultParams = okInit.setDefaultParams(new Param());
-                for (String key : defaultParams.keySet()) {
-                    if (sb.length() == 0) sb.append("[Params]");
-                    sb.append("\n  ").append(key).append(": ").append(defaultParams.get(key));
-                    if (params != null && params.containsKey(key)) {
-                        sb.append(" (ignored)");
-                    } else {
-                        formBodyBuilder.add(key, defaultParams.get(key));
-                        allParam.add(key, defaultParams.getKey(key));
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            L.e("[Params Error] " + url, sb.toString());
-            // 参数错误时抛出异常
-            throw e;
-        }
-
-        FormBody body = formBodyBuilder.build();
-        final Request.Builder builder;
-        // 处理请求方法
-        if (method == POST) {
-            builder = new Request.Builder().url(url);
-            builder.post(body);
-            logTitle = "[POST] " + url;
-        } else {
-            StringBuilder sbGet = new StringBuilder(url);
-            //迭代Map拼接请求参数
-            try {
-                sbGet.append(allParam.isEmpty() ? "" : "?");
-                for (Map.Entry<String, String> entry : allParam.entrySet()) {
-                    sbGet.append(entry.getKey()).append('=').append(URLEncoder.encode(entry.getValue(), UTF8));
-                }
-                if (!allParam.isEmpty()) sbGet.deleteCharAt(sbGet.length() - 1);
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-            builder = new Request.Builder().url(sbGet.toString());
-            builder.get();
-            logTitle = "[GET] " + url;
-        }
-        // 请求头处理
-        Header defaultHeader = okInit.setDefaultHeader(new Header());
-        if (header != null && header.size() > 0 || (addDefaultHeader && defaultHeader.size() > 0)) {
-            if (sb.length() > 0) sb.append("\n");
-            sb.append("[Headers]");
-        }
-        if (addDefaultHeader && defaultHeader != null) {
-            for (String key : defaultHeader.keySet()) {
-                sb.append("\n  ").append(key).append(": ").append(defaultHeader.get(key));
-                if (header != null && header.containsKey(key)) {
-                    sb.append(" (ignored)");
-                } else {
-                    builder.addHeader(key, defaultHeader.get(key));
-                }
-            }
-        }
-        if (header != null) {
-            for (String key : header.keySet()) {
-                sb.append("\n  ").append(key).append(": ").append(header.get(key));
-                builder.addHeader(key, header.get(key));
-            }
-        }
-        // 新建okHttp请求
-        final Request request = builder.build();
-        final Call call = getClient().newCall(request);
-
-        L.e(logTitle, sb.toString());
-
+        final Call[] call = {null};
         // 使用RxJava2进行请求管理
         Observable.create(
                 (ObservableOnSubscribe<ResponseItem>) observableEmitter -> {
-                    final Response response = call.execute();
-                    if (call.isCanceled()) {
+                    // 参数加默认参数供Get请求处理
+                    Param allParam = new Param();
+                    // Log内容
+                    StringBuffer sb = new StringBuffer();
+                    // Log标题
+                    String logTitle;
+
+                    FormBody.Builder formBodyBuilder = new FormBody.Builder();
+                    // 参数处理，并且把参数
+                    try {
+                        if (params != null) {
+                            for (String key : params.keySet()) {
+                                if (sb.length() == 0) {
+                                    sb.append("[Params]");
+                                }
+                                sb.append("\n  ").append(key).append(": ").append(params.get(key));
+                                allParam.add(key, params.getKey(key));
+                            }
+                        }
+                        if (addDefaultParams) {
+                            Param defaultParams = okInit.setDefaultParams(new Param());
+                            for (String key : defaultParams.keySet()) {
+                                if (sb.length() == 0) {
+                                    sb.append("[Params]");
+                                }
+                                sb.append("\n  ").append(key).append(": ").append(defaultParams.get(key));
+                                if (params != null && params.containsKey(key)) {
+                                    sb.append(" (ignored)");
+                                } else {
+                                    allParam.add(key, defaultParams.getKey(key));
+                                }
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        L.e("[Params Error] " + url, sb.toString());
+                        // 参数错误时抛出异常
+                        throw e;
+                    }
+
+                   /* DebugActivity.addDebugItem(url, )
+                    if (debugMode) {
+                        skipDebug = false;
+
+//                        Context context;
+                        for (int i = 0; i < 100; i++) {
+                            if (OkHttp.skipDebug) {
+                                break;
+                            } else {
+                                Thread.sleep(500);
+                            }
+                            *//*if (activity != null) {
+                                context = activity;
+                            } else {
+                                context = Xy.getContext();
+                            }*//*
+                        }
+
+                        if (DebugActivity.getParam() != null) {
+                            allParam = DebugActivity.getParam();
+                        }
+                    }*/
+
+                    Param newParam = okInit.setParamsHeadersBeforeRequest(allParam, header);
+                    if (newParam != null) {
+                        allParam = newParam;
+                    }
+
+                    for (String key : allParam.keySet()) {
+                        formBodyBuilder.add(key, allParam.get(key));
+                    }
+
+                    FormBody body = formBodyBuilder.build();
+
+                    final Request.Builder builder;
+                    // 处理请求方法
+                    if (method == POST) {
+                        builder = new Request.Builder().url(url);
+                        if ((itemMediaType != null && itemMediaType.equals(MEDIA_TYPE_JSON)) || (itemMediaType == null && mediaType.equals(MEDIA_TYPE_JSON))) {
+                            RequestBody jsonBody = RequestBody.create(mediaType, JSON.toJSONString(allParam));
+                            builder.post(jsonBody);
+                        } else {
+                            builder.post(body);
+                        }
+                        logTitle = "[POST] " + url;
+                    } else {
+                        StringBuilder sbGet = new StringBuilder(url);
+                        //迭代Map拼接请求参数
+                        try {
+                            sbGet.append(allParam.isEmpty() ? "" : "?");
+                            for (Map.Entry<String, String> entry : allParam.entrySet()) {
+                                sbGet.append(entry.getKey()).append('=').append(URLEncoder.encode(entry.getValue(), UTF8));
+                            }
+                            if (!allParam.isEmpty()) {
+                                sbGet.deleteCharAt(sbGet.length() - 1);
+                            }
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        }
+                        builder = new Request.Builder().url(sbGet.toString());
+                        builder.get();
+                        logTitle = "[GET] " + url;
+                    }
+                    // 请求头处理
+                    Header defaultHeader = okInit.setDefaultHeader(new Header());
+                    if (header != null && header.size() > 0 || (addDefaultHeader && defaultHeader.size() > 0)) {
+                        if (sb.length() > 0) {
+                            sb.append("\n");
+                        }
+                        sb.append("[Headers]");
+                    }
+                    if (addDefaultHeader && defaultHeader != null) {
+                        for (String key : defaultHeader.keySet()) {
+                            sb.append("\n  ").append(key).append(": ").append(defaultHeader.get(key));
+                            if (header != null && header.containsKey(key)) {
+                                sb.append(" (ignored)");
+                            } else {
+                                builder.addHeader(key, defaultHeader.get(key));
+                            }
+                        }
+                    }
+                    if (header != null) {
+                        for (String key : header.keySet()) {
+                            sb.append("\n  ").append(key).append(": ").append(header.get(key));
+                            builder.addHeader(key, header.get(key));
+                        }
+                    }
+                    // 新建okHttp请求
+                    final Request request = builder.build();
+                    call[0] = getClient().newCall(request);
+
+                    L.e(logTitle, sb.toString());
+
+                    final Response response = call[0].execute();
+                    if (call[0] != null && call[0].isCanceled()) {
                         L.e("[Call canceled] " + url, "");
                     } else {
-                        ResponseItem responseItem = new ResponseItem(response, call, okResponseListener);
+//                        ResponseItem responseItem = new ResponseItem(response, call[0], okResponseListener);
+                        final ResponseItem responseItem = new ResponseItem(response, call[0], url, okResponseListener);
                         if (response != null) {
-                            responseItem = responseResult(responseItem);
+                            responseResult(responseItem, null);
                             response.close();
+
                             observableEmitter.onNext(responseItem);
                         } else {
                             // 没有返回数据
-                            noResponse(call, okResponseListener);
+                            noResponse(call[0], okResponseListener);
                         }
                     }
                     // 请求完成
@@ -282,6 +362,7 @@ public class OkHttp {
                     @Override
                     public void onNext(@io.reactivex.annotations.NonNull ResponseItem responseItem) {
                         // 处理返回结果
+                        BaseActivity.dismissLoadingDialogByManualState();
                         handleResultWithResultCode(responseItem);
                     }
 
@@ -289,16 +370,17 @@ public class OkHttp {
                     public void onError(@io.reactivex.annotations.NonNull Throwable throwable) {
                         // 处理请求中出现异常
                         throwable.printStackTrace();
-                        noResponse(call, okResponseListener);
+                        noResponse(call[0], okResponseListener);
+                        BaseActivity.dismissLoadingDialogByManualState();
                     }
 
                     @Override
                     public void onComplete() {
                         // 请求完成，关闭自动关闭的等待对话框
-                        BaseActivity.dismissLoadingDialogByManualState();
+//                        BaseActivity.dismissLoadingDialogByManualState();
                     }
                 });
-        return call;
+//        return call;
     }
 
     /**
@@ -308,23 +390,45 @@ public class OkHttp {
      * @return
      * @throws Exception
      */
-    private static ResponseItem responseResult(ResponseItem responseItem) throws Exception {
+    private static ResponseItem responseResult(ResponseItem responseItem, String debugKey) throws Exception {
         Response response = responseItem.getResponse();
         OkResponseListener okResponseListener = responseItem.getOkResponseListener();
         Call call = responseItem.getCall();
+//        Call call = null;
         if (response.isSuccessful()) {
             String responseStr = "";
             try {
                 final String strResult = response.body().string();
                 responseStr = strResult;
-                final JSONObject jsonObject = JSON.parseObject(strResult);
+
+                responseItem.setStrResult(responseStr);
+
+                if (debugMode) {
+                    DebugItem debugItem = DebugActivity.addDebugItem(responseItem.getUrl());
+                    debugItem.setJson(responseItem.getStrResult());
+                    responseItem.setDebugKey(debugItem.getKey());
+
+                    DebugActivity.startThis(debugItem.getKey(), str -> {
+                        if(str != null) responseItem.setStrResult(str);
+                    });
+
+                    for (int i = 0; i < 600; i++) {
+                        if (debugItem.isPostFinished()) {
+                            break;
+                        } else {
+                            Thread.sleep(500);
+                        }
+                    }
+                }
+
+                final JSONObject jsonObject = JSON.parseObject(responseItem.getStrResult());
                 final int resultCode = okInit.judgeResultWhenFirstReceivedResponse(call, response, jsonObject);
                 responseItem.setResultCode(resultCode);
                 responseItem.setJsonObject(jsonObject);
-                responseItem.setStrResult(responseStr);
+//                responseItem.setStrResult(responseStr);
                 // 判断返回的ResultCode是否可以继续操作，可以此方法执行后台操作，如集中保存数据到数据库
                 if (okInit.resultSuccessByJudge(call, response, jsonObject, resultCode)) {
-                    L.e("[resultJudgeFailed] " + call.request().url().url().toString(), JsonTool.stringToJSON(strResult));
+                    L.e("[resultJudgeFailed] " + responseItem.getUrl(), JsonTool.stringToJSON(strResult));
                     return null;
                 }
                 if (okResponseListener == null) {
@@ -339,15 +443,15 @@ public class OkHttp {
             } catch (Exception e) {
                 // 解释Json错误
                 e.printStackTrace();
-                L.e("[JsonParseFailed] " + call.request().url().url().toString(), "[Error]\n" + e.getMessage() + "\n[Result]\n " + responseStr);
-                okInit.judgeResultParseResponseFailed(call, responseStr, e);
+                L.e("[JsonParseFailed] " + responseItem.getUrl(), "[Error]\n" + e.getMessage() + "\n[Result]\n " + responseItem.getStrResult());
+                okInit.judgeResultParseResponseFailed(call, responseItem.getStrResult(), e);
 
                 responseItem.setResultCode(RESULT_PARSE_FAILED);
-                responseItem.setStrResult(responseStr);
+//                responseItem.setStrResult(responseItem.getStrResult());
             }
         } else {
             // 返回网络错误代码
-            L.e("[NetworkErrorCode: " + response.code() + "] " + call.request().url().url().toString(), "");
+            L.e("[NetworkErrorCode: " + response.code() + "] " + responseItem.getUrl(), "");
             okInit.receivedNetworkErrorCode(call, response);
             responseItem.setResultCode(NETWORK_ERROR_CODE);
         }
@@ -372,19 +476,19 @@ public class OkHttp {
         try {
             switch (resultCode) {
                 case RESULT_SUCCESS:
-                    L.e("[Success] " + call.request().url().url().toString(), JsonTool.stringToJSON(strResult));
+                    L.e("[Success] " + responseItem.getUrl(), JsonTool.stringToJSON(strResult));
                     okResponseListener.handleJsonSuccess(call, response, jsonObject);
                     break;
                 case RESULT_ERROR:
-                    L.e("[Error] " + call.request().url().url().toString(), strResult);
+                    L.e("[Error] " + responseItem.getUrl(), strResult);
                     okResponseListener.handleJsonError(call, response, jsonObject);
                     break;
                 case RESULT_BLANK:
-                    L.e("[Blank] " + call.request().url().url().toString(), strResult);
+                    L.e("[Blank] " + responseItem.getUrl(), strResult);
                     okResponseListener.handleJsonError(call, response, jsonObject);
                     break;
                 case RESULT_VERIFY_ERROR:
-                    L.e("[VerifyError] " + call.request().url().url().toString(), strResult);
+                    L.e("[VerifyError] " + responseItem.getUrl(), strResult);
                     okResponseListener.handleJsonVerifyError(call, response, jsonObject);
                     break;
                 case RESULT_PARSE_FAILED:
@@ -396,7 +500,7 @@ public class OkHttp {
                     okResponseListener.handleResponseCodeError(call, response);
                     break;
                 default:
-                    L.e("[OtherResultCode: " + resultCode + "] " + call.request().url().url().toString(), JsonTool.stringToJSON(strResult));
+                    L.e("[OtherResultCode: " + resultCode + "] " + responseItem.getUrl(), JsonTool.stringToJSON(strResult));
                     okResponseListener.handleJsonOther(call, response, jsonObject);
                     break;
             }
@@ -419,12 +523,15 @@ public class OkHttp {
      * @param okResponseListener
      */
     private static void noResponse(Call call, OkResponseListener okResponseListener) {
-        okInit.networkError(call, call.isCanceled());
-        L.e("[networkError] " + call.request().url().url().toString(), "");
+//        okInit.networkError(call,  call.isCanceled());
+        okInit.networkError(call, false);
+        L.e("[networkError] " + (call != null ? call.request().url().url().toString() : ""), "");
         if (okResponseListener != null) {
-            if (call.isCanceled()) return;
+            if (call != null && call.isCanceled()) {
+                return;
+            }
             try {
-                okResponseListener.handleNoServerNetwork(call, call.isCanceled());
+                okResponseListener.handleNoServerNetwork(call, false);
                 okResponseListener.handleAllFailureSituation(call, NO_NETWORK);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -437,7 +544,9 @@ public class OkHttp {
      * @param call
      * @param e
      */
-  /*  private static void responseResultFailure(Call call, OkResponseListener okResponseListener, Exception e) {
+  /*
+  @Deprecated
+  private static void responseResultFailure(Call call, OkResponseListener okResponseListener, Exception e) {
         okInit.networkError(call, call.isCanceled());
         L.e("[Handle Response Error] " + call.request().url().url().toString(), e.getMessage());
         e.printStackTrace();
@@ -479,7 +588,9 @@ public class OkHttp {
         bodyBuilder.setType(MultipartBody.FORM);
         if (params != null) {
             for (String key : params.keySet()) {
-                if (sb.length() == 0) sb.append("[Params]");
+                if (sb.length() == 0) {
+                    sb.append("[Params]");
+                }
                 sb.append("\n  ").append(key).append(": ").append(params.get(key));
                 bodyBuilder.addFormDataPart(key, params.get(key));
             }
@@ -487,7 +598,9 @@ public class OkHttp {
         if (addDefaultParams) {
             Param defaultParams = okInit.setDefaultParams(new Param());
             for (String key : defaultParams.keySet()) {
-                if (sb.length() == 0) sb.append("[Params]");
+                if (sb.length() == 0) {
+                    sb.append("[Params]");
+                }
                 sb.append("\n  ").append(key).append(": ").append(defaultParams.get(key));
                 if (params != null && params.containsKey(key)) {
                     sb.append("(ignored)");
@@ -497,7 +610,9 @@ public class OkHttp {
             }
         }
 
-        if (sb.length() > 0) sb.append("\n");
+        if (sb.length() > 0) {
+            sb.append("\n");
+        }
         sb.append("[Files]");
         for (String key : files.keySet()) {
             sb.append("\n  ").append(key).append(": ").append(files.get(key).getName());
@@ -542,8 +657,8 @@ public class OkHttp {
             public void onResponse(Call call, Response response) {
                 Observable.create(
                         (ObservableOnSubscribe<ResponseItem>) observableEmitter -> {
-                            ResponseItem responseItem = new ResponseItem(response, call, okResponseListener);
-                            responseItem = responseResult(responseItem);
+                            final ResponseItem responseItem = new ResponseItem(response, call, url, okResponseListener);
+                            responseResult(responseItem, null);
                             response.close();
                             observableEmitter.onNext(responseItem);
                             observableEmitter.onComplete();
@@ -561,17 +676,19 @@ public class OkHttp {
                             @Override
                             public void onNext(@io.reactivex.annotations.NonNull ResponseItem responseItem) {
                                 handleResultWithResultCode(responseItem);
+                                BaseActivity.dismissLoadingDialogByManualState();
                             }
 
                             @Override
                             public void onError(@io.reactivex.annotations.NonNull Throwable throwable) {
                                 throwable.printStackTrace();
                                 noResponse(call, okResponseListener);
+                                BaseActivity.dismissLoadingDialogByManualState();
                             }
 
                             @Override
                             public void onComplete() {
-                                BaseActivity.dismissLoadingDialogByManualState();
+//                                BaseActivity.dismissLoadingDialogByManualState();
                             }
                         });
             }
@@ -579,6 +696,7 @@ public class OkHttp {
             @Override
             public void onFailure(Call call, IOException e) {
                 noResponse(call, okResponseListener);
+                BaseActivity.dismissLoadingDialogByManualState();
             }
 
         });

@@ -4,6 +4,7 @@ package com.xycode.xylibrary.xRefresher;
  * Created by XY on 2016/6/18.
  */
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.Parcelable;
@@ -11,7 +12,7 @@ import android.support.annotation.ColorRes;
 import android.support.annotation.DimenRes;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.AttributeSet;
@@ -24,10 +25,13 @@ import com.xycode.xylibrary.adapter.OnInitList;
 import com.xycode.xylibrary.adapter.XAdapter;
 import com.xycode.xylibrary.annotation.SaveState;
 import com.xycode.xylibrary.base.BaseActivity;
+import com.xycode.xylibrary.interfaces.Interfaces;
 import com.xycode.xylibrary.okHttp.OkResponseListener;
 import com.xycode.xylibrary.okHttp.Param;
 import com.xycode.xylibrary.uiKit.recyclerview.FlexibleDividerDecoration;
 import com.xycode.xylibrary.uiKit.recyclerview.HorizontalDividerItemDecoration;
+import com.xycode.xylibrary.uiKit.recyclerview.XLinearLayoutManager;
+import com.xycode.xylibrary.utils.LogUtil.L;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -132,7 +136,7 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
      */
     public RefreshSetter setup(BaseActivity activity, XAdapter<T> adapter) {
         refreshSetter = new RefreshSetter(this);
-        layoutManager = layoutManager == null ? new LinearLayoutManager(activity) : layoutManager;
+        layoutManager = layoutManager == null ? new XLinearLayoutManager(activity) : layoutManager;
         recyclerView.setLayoutManager(layoutManager);
         this.activity = activity;
         this.adapter = adapter;
@@ -192,11 +196,38 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
          */
         public RefreshSetter setStaggeredGridLayoutManager(int spanCount, int orientation) {
             refresher.layoutManager = new StaggeredGridLayoutManager(spanCount, orientation);
+            refresher.getRecyclerView().setLayoutManager(refresher.layoutManager);
             return this;
         }
 
-        public void setRecyclerViewDivider(@ColorRes int dividerColor, @DimenRes int dividerHeight) {
+        public RefreshSetter setGridLayoutManager(int spanCount, int orientation, boolean reverseLayout, ILayoutManagerSpanListener layoutManagerSpanListener) {
+            refresher.layoutManager = new GridLayoutManager(refresher.activity, spanCount, orientation, reverseLayout);
+            GridLayoutManager layoutManager = (GridLayoutManager) refresher.layoutManager;
+            refresher.getRecyclerView().setLayoutManager(layoutManager);
+            layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+                @Override
+                public int getSpanSize(int position) {
+                    if (refresher.getAdapter().isHeader(position)) {
+                        return layoutManager.getSpanCount();
+                    }
+                    switch (refresher.getAdapter().getItemViewType(position)) {
+                        case XAdapter.VIEW_TYPE_FOOTER :
+                        case XAdapter.VIEW_TYPE_FOOTER_LOADING :
+                        case XAdapter.VIEW_TYPE_FOOTER_NO_MORE :
+                        case XAdapter.VIEW_TYPE_FOOTER_RETRY :
+                            return  layoutManager.getSpanCount();
+                        default:
+                            if(layoutManagerSpanListener != null) return layoutManagerSpanListener.setSpanCount(position);
+                    }
+                    return 1;
+                }
+            });
+            return this;
+        }
+
+        public RefreshSetter setRecyclerViewDivider(@ColorRes int dividerColor, @DimenRes int dividerHeight) {
             setRecyclerViewDivider(dividerColor, dividerHeight, R.dimen.zero, R.dimen.zero);
+            return this;
         }
 
         /**
@@ -207,7 +238,7 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
          * @param marginLeft
          * @param marginRight
          */
-        public void setRecyclerViewDivider(@ColorRes int dividerColor, @DimenRes int dividerHeight, @DimenRes int marginLeft, @DimenRes int marginRight) {
+        public RefreshSetter setRecyclerViewDivider(@ColorRes int dividerColor, @DimenRes int dividerHeight, @DimenRes int marginLeft, @DimenRes int marginRight) {
             HorizontalDividerItemDecoration.Builder builder = new HorizontalDividerItemDecoration.Builder(refresher.activity)
                     .visibilityProvider(refresher)
                     .sizeProvider(refresher)
@@ -216,6 +247,58 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
             refresher.horizontalDividerItemDecoration = builder.build();
             refresher.dividerSize = refresher.activity.getResources().getDimensionPixelSize(dividerHeight);
             refresher.recyclerView.addItemDecoration(refresher.horizontalDividerItemDecoration);
+            return this;
+        }
+
+        public RefreshSetter setRecyclerViewDividerWithGap(@ColorRes int dividerColor, @DimenRes int dividerHeight, @DimenRes int gapWidthId) {
+            HorizontalDividerItemDecoration.Builder builder = new HorizontalDividerItemDecoration.Builder(refresher.activity)
+                    .visibilityProvider(refresher)
+                    .sizeProvider(refresher)
+                    .colorResId(dividerColor)/*.sizeResId(dividerHeight)*/
+                    .setGapProvider(new HorizontalDividerItemDecoration.GapProvider(){
+                        @Override
+                        public int gapLeft(int pos, RecyclerView parent) {
+                            int firstItemPos = refresher.getAdapter().getHeaderCount()-1;
+                            int lastItemPos = refresher.getAdapter().getHeaderCount()-1 + refresher.getAdapter().getShowingList().size();
+
+                            if (parent.getLayoutManager() instanceof StaggeredGridLayoutManager) {
+                                StaggeredGridLayoutManager.LayoutParams lp = (StaggeredGridLayoutManager.LayoutParams)parent.getChildAt(pos).getLayoutParams();
+                                int spanIndex = lp.getSpanIndex();
+                                if(!lp.isFullSpan() && pos >firstItemPos && pos <= lastItemPos) {
+                                    if(spanIndex == 1){
+                                        return refresher.getContext().getResources().getDimensionPixelSize(gapWidthId);
+                                    }
+                                }
+                            }
+                            return 0;
+                        }
+
+                        @Override
+                        public int gapRight(int pos, RecyclerView parent) {
+                            int firstItemPos = refresher.getAdapter().getHeaderCount()-1;
+                            int lastItemPos = refresher.getAdapter().getHeaderCount()-1 + refresher.getAdapter().getShowingList().size();
+
+                            if (parent.getLayoutManager() instanceof StaggeredGridLayoutManager) {
+                                StaggeredGridLayoutManager.LayoutParams lp = (StaggeredGridLayoutManager.LayoutParams)parent.getLayoutParams();
+                                int spanIndex = lp.getSpanIndex();
+                                if(!lp.isFullSpan() && pos >firstItemPos && pos <= lastItemPos) {
+                                    if(spanIndex == 0){
+                                        return refresher.getContext().getResources().getDimensionPixelSize(gapWidthId);
+                                    }
+                                }
+                            }
+                            return 0;
+                        }
+
+                        @Override
+                        public int gapWidth(int position, RecyclerView parent) {
+                            return refresher.getContext().getResources().getDimensionPixelSize(gapWidthId);
+                        }
+                    });
+            refresher.horizontalDividerItemDecoration = builder.build();
+            refresher.dividerSize = refresher.activity.getResources().getDimensionPixelSize(dividerHeight);
+            refresher.recyclerView.addItemDecoration(refresher.horizontalDividerItemDecoration);
+            return this;
         }
 
         public void setOnLastPageListener(OnLastPageListener onLastPageListener) {
@@ -541,7 +624,6 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
             this.loadingRefreshingArrowColorRes = loadingRefreshingArrowColorRes;
             return this;
         }
-
     }
 
     @Override

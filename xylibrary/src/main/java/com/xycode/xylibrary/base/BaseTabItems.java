@@ -18,32 +18,34 @@ public abstract class BaseTabItems {
     protected int layoutId;
     protected int textViewId;
     protected int imageViewId;
-    protected int tabIconsNormalArrayId;
-    protected int tabIconsSelectedArrayId;
+//    protected int tabIconsNormalArrayId;
+//    protected int tabIconsSelectedArrayId;
     protected String[] titles;
-    protected TypedArray tabIconsNormal;
-    protected TypedArray tabIconsSelected;
+    protected int[] iconsNormal;
+    protected int[] iconsSelected;
+//    protected TypedArray tabIconsNormal;
+//    protected TypedArray tabIconsSelected;
     protected int selectedTextColor = 0;
     protected int normalTextColor = 0;
 
-     public BaseTabItems(Context context, TabLayout tabMain, int layoutId, int textViewId, int imageViewId, int titlesStringArrayId, int tabIconsNormalArrayId, int tabIconsSelectedArrayId, int selectedTextColor, int normalTextColor) {
+/*     public BaseTabItems(Context context, TabLayout tabMain, int layoutId, int textViewId, int imageViewId, int titlesStringArrayId, int tabIconsNormalArrayId, int tabIconsSelectedArrayId, int selectedTextColor, int normalTextColor) {
         String[] titles = context.getResources().getStringArray(titlesStringArrayId);
          this.context = context;
          this.tabMain = tabMain;
          this.layoutId = layoutId;
          this.imageViewId = imageViewId;
          this.textViewId = textViewId;
-         this.tabIconsNormalArrayId = tabIconsNormalArrayId;
-         this.tabIconsSelectedArrayId = tabIconsSelectedArrayId;
+//         this.tabIconsNormalArrayId = tabIconsNormalArrayId;
+//         this.tabIconsSelectedArrayId = tabIconsSelectedArrayId;
          this.titles = titles;
          this.selectedTextColor = selectedTextColor;
          this.normalTextColor = normalTextColor;
          this.tabIconsNormal = context.getResources().obtainTypedArray(this.tabIconsNormalArrayId);
          this.tabIconsSelected = context.getResources().obtainTypedArray(this.tabIconsSelectedArrayId);
          setupTabIcons();
-    }
+    }*/
 
-    public BaseTabItems(Context context, TabLayout tabMain, int layoutId, int textViewId, int imageViewId, String[] titles, int tabIconsNormalArrayId, int tabIconsSelectedArrayId, int selectedTextColor, int normalTextColor) {
+/*    public BaseTabItems(Context context, TabLayout tabMain, int layoutId, int textViewId, int imageViewId, String[] titles, int tabIconsNormalArrayId, int tabIconsSelectedArrayId, int selectedTextColor, int normalTextColor) {
         this.context = context;
         this.tabMain = tabMain;
         this.layoutId = layoutId;
@@ -57,6 +59,20 @@ public abstract class BaseTabItems {
         this.tabIconsNormal = context.getResources().obtainTypedArray(this.tabIconsNormalArrayId);
         this.tabIconsSelected = context.getResources().obtainTypedArray(this.tabIconsSelectedArrayId);
         setupTabIcons();
+    }*/
+
+    public BaseTabItems(Context context, TabLayout tabMain, int layoutId, int textViewId, int imageViewId, String[] titles, int[] tabIconsNormalId, int[] tabIconsSelectedId, int selectedTextColor, int normalTextColor) {
+        this.context = context;
+        this.tabMain = tabMain;
+        this.layoutId = layoutId;
+        this.imageViewId = imageViewId;
+        this.textViewId = textViewId;
+        this.iconsNormal = tabIconsNormalId;
+        this.iconsSelected = tabIconsSelectedId;
+        this.titles = titles;
+        this.selectedTextColor = selectedTextColor;
+        this.normalTextColor = normalTextColor;
+        setupTabIcons();
     }
 
     private void setupTabIcons() {
@@ -67,7 +83,7 @@ public abstract class BaseTabItems {
             TextView tvTab = (TextView) view.findViewById(textViewId);
             ImageView ivTab = (ImageView) view.findViewById(imageViewId);
             if (ivTab != null) {
-                ivTab.setImageResource(i == currentIndex ? tabIconsSelected.getResourceId(i, 0) : tabIconsNormal.getResourceId(i, 0));
+                ivTab.setImageResource(i == currentIndex ? iconsSelected[i] : iconsNormal[i]);
             }
             if (tvTab != null) {
                 tvTab.setText(titles[i]);
@@ -90,7 +106,7 @@ public abstract class BaseTabItems {
         View view = tab.getCustomView();
         TextView tvTab = (TextView) view.findViewById(textViewId);
         ImageView ivTab = (ImageView) view.findViewById(imageViewId);
-        ivTab.setImageResource(tabIconsSelected.getResourceId(position, 0));
+        ivTab.setImageResource(iconsSelected[position]);
         tvTab.setTextColor(context.getResources().getColor(selectedTextColor));
         return position;
     }
@@ -100,7 +116,7 @@ public abstract class BaseTabItems {
         View view = tab.getCustomView();
         TextView tvTab = (TextView) view.findViewById(textViewId);
         ImageView ivTab = (ImageView) view.findViewById(imageViewId);
-        ivTab.setImageResource(tabIconsNormal.getResourceId(position, 0));
+        ivTab.setImageResource(iconsNormal[position]);
         tvTab.setTextColor(context.getResources().getColor(normalTextColor));
     }
 

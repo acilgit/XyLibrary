@@ -1,14 +1,18 @@
 package com.test.baserefreshview;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 
 import com.test.baserefreshview.items.MyFragmentAdapter;
+import com.xycode.xylibrary.instance.FrescoLoader;
+import com.xycode.xylibrary.utils.ImageUtils;
 import com.xycode.xylibrary.utils.LogUtil.L;
 import com.xycode.xylibrary.utils.TS;
 
@@ -29,6 +33,14 @@ public class New1Activity extends ABaseActivity {
 
         vp.setAdapter(new MyFragmentAdapter(getSupportFragmentManager()));
 
+        new Thread(() -> {
+            ImageUtils.loadBitmapFromFresco(Uri.parse("https://members.mytaoheung.com//files////afd98eadd2394913bb40d3ade0100c3e//image//2017_10_12//D585B1DD9C8A705F.jpg"), bitmap1 -> {
+                Bitmap bmp = ImageUtils.doGaussianBlur(bitmap1, 30, false, 120);
+                runOnUiThread(() -> {
+                    ((ImageView) findViewById(R.id.iv)).setImageBitmap(bmp);
+                });
+            });
+        }).start();
         btn.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
