@@ -209,22 +209,14 @@ public class OkHttp {
                     try {
                         if (params != null) {
                             for (String key : params.keySet()) {
-                                if (sb.length() == 0) {
-                                    sb.append("[Params]");
-                                }
-                                sb.append("\n  ").append(key).append(": ").append(params.get(key));
                                 allParam.add(key, params.getKey(key));
                             }
                         }
                         if (addDefaultParams) {
                             Param defaultParams = okInit.setDefaultParams(new Param());
                             for (String key : defaultParams.keySet()) {
-                                if (sb.length() == 0) {
-                                    sb.append("[Params]");
-                                }
-                                sb.append("\n  ").append(key).append(": ").append(defaultParams.get(key));
                                 if (params != null && params.containsKey(key)) {
-                                    sb.append(" (ignored)");
+//                                    sb.append(" (ignored)");
                                 } else {
                                     allParam.add(key, defaultParams.getKey(key));
                                 }
@@ -237,32 +229,37 @@ public class OkHttp {
                         throw e;
                     }
 
-                   /* DebugActivity.addDebugItem(url, )
-                    if (debugMode) {
-                        skipDebug = false;
 
-//                        Context context;
-                        for (int i = 0; i < 100; i++) {
-                            if (OkHttp.skipDebug) {
+                    // DebugItem key
+                    final String debugKey;
+                    String keyForDebug = null;
+                    if (debugMode) {
+                        DebugItem debugItem = DebugActivity.addDebugItem(url);
+                        keyForDebug = debugItem.getKey();
+
+                        DebugActivity.startThis(debugItem.getKey(), allParam);
+
+                        for (int i = 0; i < 600; i++) {
+                            if (debugItem.isPostBegun()) {
                                 break;
                             } else {
                                 Thread.sleep(500);
                             }
-                            *//*if (activity != null) {
-                                context = activity;
-                            } else {
-                                context = Xy.getContext();
-                            }*//*
                         }
-
-                        if (DebugActivity.getParam() != null) {
-                            allParam = DebugActivity.getParam();
-                        }
-                    }*/
+                        allParam = debugItem.getParam();
+                    }
+                    debugKey = keyForDebug;
 
                     Param newParam = okInit.setParamsHeadersBeforeRequest(allParam, header);
                     if (newParam != null) {
                         allParam = newParam;
+                    }
+
+                    for (Map.Entry<String, String> entry : allParam.entrySet()) {
+                        if (sb.length() == 0) {
+                            sb.append("[Params]");
+                        }
+                        sb.append("\n  ").append(entry.getKey()).append(": ").append(entry.getValue());
                     }
 
                     for (String key : allParam.keySet()) {
@@ -337,7 +334,7 @@ public class OkHttp {
 //                        ResponseItem responseItem = new ResponseItem(response, call[0], okResponseListener);
                         final ResponseItem responseItem = new ResponseItem(response, call[0], url, okResponseListener);
                         if (response != null) {
-                            responseResult(responseItem, null);
+                            responseResult(responseItem, debugKey);
                             response.close();
 
                             observableEmitter.onNext(responseItem);
@@ -404,19 +401,22 @@ public class OkHttp {
                 responseItem.setStrResult(responseStr);
 
                 if (debugMode) {
-                    DebugItem debugItem = DebugActivity.addDebugItem(responseItem.getUrl());
-                    debugItem.setJson(responseItem.getStrResult());
-                    responseItem.setDebugKey(debugItem.getKey());
+                    DebugItem debugItem = DebugActivity.getDebugItem(debugKey);
+                    if (debugItem != null) {
+                        debugItem.setJson(responseItem.getStrResult());
+                        responseItem.setDebugKey(debugItem.getKey());
 
-                    DebugActivity.startThis(debugItem.getKey(), str -> {
-                        if(str != null) responseItem.setStrResult(str);
-                    });
+                        DebugActivity.startThis(debugItem.getKey());
 
-                    for (int i = 0; i < 600; i++) {
-                        if (debugItem.isPostFinished()) {
-                            break;
-                        } else {
-                            Thread.sleep(500);
+                        for (int i = 0; i < 600; i++) {
+                            if (debugItem.isPostFinished()) {
+                                break;
+                            } else {
+                                Thread.sleep(500);
+                            }
+                        }
+                        if (debugItem.getJsonModify()!= null) {
+                            responseItem.setStrResult(debugItem.getJsonModify());
                         }
                     }
                 }
@@ -645,6 +645,27 @@ public class OkHttp {
                 }
             }
         }
+
+        // DebugItem key
+        final String debugKey;
+        String keyForDebug = null;
+        if (debugMode) {
+            DebugItem debugItem = DebugActivity.addDebugItem(url);
+            keyForDebug = debugItem.getKey();
+
+            /*DebugActivity.startThis(debugItem.getKey(), allParam);
+
+            for (int i = 0; i < 600; i++) {
+                if (debugItem.isPostBegun()) {
+                    break;
+                } else {
+                    Thread.sleep(500);
+                }
+            }
+            allParam = debugItem.getParam();*/
+        }
+        debugKey = keyForDebug;
+
         Request request = requestBuilder.build();
 
         Call call = OkHttp.getClient().newCall(request);
@@ -658,7 +679,7 @@ public class OkHttp {
                 Observable.create(
                         (ObservableOnSubscribe<ResponseItem>) observableEmitter -> {
                             final ResponseItem responseItem = new ResponseItem(response, call, url, okResponseListener);
-                            responseResult(responseItem, null);
+                            responseResult(responseItem, debugKey);
                             response.close();
                             observableEmitter.onNext(responseItem);
                             observableEmitter.onComplete();

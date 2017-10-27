@@ -53,47 +53,61 @@ public class DebugItem {
         return url;
     }
 
-    public void setUrl(String url) {
+    public DebugItem setUrl(String url) {
         this.url = url;
+        return this;
     }
 
     public String getJson() {
         return json;
     }
 
-    public void setJson(String json) {
+    public DebugItem setJson(String json) {
         this.json = json;
+        return this;
     }
 
     public String getJsonModify() {
         return jsonModify;
     }
 
-    public void setJsonModify(String jsonModify) {
+    public DebugItem setJsonModify(String jsonModify) {
         this.jsonModify = jsonModify;
+        return this;
     }
 
     public boolean isPostFinished() {
         return postFinished;
     }
 
-    public void setPostFinished(boolean postFinished) {
+    public DebugItem setPostFinished(boolean postFinished) {
         this.postFinished = postFinished;
+        return this;
+    }
+
+    public boolean isPostBegun() {
+        return postBegun;
+    }
+
+    public void setPostBegun(boolean postBegun) {
+        this.postBegun = postBegun;
     }
 
     public Interfaces.CB getCb() {
         return cb;
     }
 
-    public void setCb(Interfaces.CB cb) {
+    public DebugItem setCb(Interfaces.CB cb) {
         this.cb = cb;
+        return this;
     }
 
     public Param getParam() {
         return param;
     }
 
-    public void setParam(Param param) {
+    public DebugItem setParam(Param param) {
         this.param = param;
+        return this;
     }
 }
