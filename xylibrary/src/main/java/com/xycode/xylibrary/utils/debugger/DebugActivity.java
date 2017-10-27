@@ -5,6 +5,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -12,13 +18,19 @@ import android.widget.TextView;
 import com.alibaba.fastjson.JSON;
 import com.xycode.xylibrary.R;
 import com.xycode.xylibrary.Xy;
+import com.xycode.xylibrary.adapter.CustomHolder;
+import com.xycode.xylibrary.adapter.OnInitList;
+import com.xycode.xylibrary.adapter.XAdapter;
 import com.xycode.xylibrary.base.BaseActivity;
 import com.xycode.xylibrary.interfaces.Interfaces;
 import com.xycode.xylibrary.okHttp.Param;
+import com.xycode.xylibrary.unit.ViewTypeUnit;
 import com.xycode.xylibrary.utils.TS;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -32,11 +44,13 @@ public class DebugActivity extends BaseActivity {
     public static final String DEBUG_KEY = "DEBUG_KEY";
     public static final String PARAMS_JSON = "PARAMS_JSON";
     public static final String POST_IS_FINISH = "POST_IS_FINISH";
+    public static final String POST_BEGIN = "POST_BEGIN";
     /**
      *
      */
     public static final String POST_URL = "POST_URL";
     private static DebugActivity instance;
+    private boolean postBegin;
 
     public static DebugActivity getInstance() {
         return instance;
@@ -46,6 +60,7 @@ public class DebugActivity extends BaseActivity {
 
     private DebugItem debugItem;
 
+    private XAdapter<ParamItem> adapter = null;
     /*public static Param getParam() {
         return param;
     }
@@ -67,22 +82,24 @@ public class DebugActivity extends BaseActivity {
     }
 
     /**
-     * 暂不使用修改参数
+     * 修改参数
      *
+     * @param param
      */
-   /* public static void startThis(Param param) {
-        Intent intent = new Intent(Xy.getContext(), DebugActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.putExtra(DebugActivity.PARAMS_JSON, JSON.toJSONString(param))
-                .putExtra();
-        Xy.getContext().startActivity(intent);
-    }*/
-    public static void startThis(String debugKey, Interfaces.CB<String> cb) {
+    public static void startThis(String debugKey, Param param) {
         Intent intent = new Intent(Xy.getContext(), DebugActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(DebugActivity.DEBUG_KEY, debugKey)
-                .putExtra(DebugActivity.POST_IS_FINISH, true);
-        getDebugItem(debugKey).setCb(cb);
+                .putExtra(DebugActivity.POST_BEGIN, true);
+        getDebugItem(debugKey).setParam(param);
+        Xy.getContext().startActivity(intent);
+    }
+
+    public static void startThis(String debugKey) {
+        Intent intent = new Intent(Xy.getContext(), DebugActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra(DebugActivity.DEBUG_KEY, debugKey);
+//        getDebugItem(debugKey);
         Xy.getContext().startActivity(intent);
     }
 
@@ -112,29 +129,131 @@ public class DebugActivity extends BaseActivity {
     private void initViews() {
         setContentView(R.layout.activity_debug);
 
+        /* 修改参数 */
+        postBegin = getIntent().getBooleanExtra(DebugActivity.POST_BEGIN, false);
+        if (postBegin) {
+            rootHolder().setVisibility(R.id.rv, View.VISIBLE)
+                    .setVisibility(R.id.scrollView, View.GONE);
+            RecyclerView rv = rootHolder().getRecyclerView(R.id.rv);
+            rv.setLayoutManager(new LinearLayoutManager(getThis()));
+            adapter = new XAdapter<ParamItem>(getThis(), () -> {
+                List list = new ArrayList();
+                for (Map.Entry<String, String> entry : debugItem.getParam().entrySet()) {
+                    list.add(new ParamItem(entry.getKey(), entry.getValue()));
+                }
+                return list;
+            }) {
+                @Override
+                protected ViewTypeUnit getViewTypeUnitForLayout(ParamItem item) {
+                    return new ViewTypeUnit(0, R.layout.item_debug_param);
+                }
+
+                @Override
+                public void creatingHolder(CustomHolder holder, ViewTypeUnit viewTypeUnit) throws Exception {
+                    ((EditText) holder.getView(R.id.etName)).addTextChangedListener(new TextWatcher() {
+                        @Override
+                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                        }
+
+                        @Override
+                        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                        }
+
+                        @Override
+                        public void afterTextChanged(Editable s) {
+                            adapter.getShowingList().get(holder.getAdapterPosition()).setKey(s.toString());
+                        }
+                    });
+                    ((EditText) holder.getView(R.id.etValue)).addTextChangedListener(new TextWatcher() {
+                        @Override
+                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                        }
+
+                        @Override
+                        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                        }
+
+                        @Override
+                        public void afterTextChanged(Editable s) {
+                            adapter.getShowingList().get(holder.getAdapterPosition()).setValue(s.toString());
+                        }
+                    });
+                   /* ((EditText) holder.getView(R.id.etName)).setOnFocusChangeListener((v, hasFocus) -> {
+                        if (!hasFocus) {
+                            adapter.getShowingList().get(holder.getAdapterPosition()).setKey(holder.getText(R.id.etName));
+                        }
+                    });
+                    ((EditText) holder.getView(R.id.etValue)).setOnFocusChangeListener((v, hasFocus) -> {
+                        if (!hasFocus) {
+                            adapter.getShowingList().get(holder.getAdapterPosition()).setValue(holder.getText(R.id.etValue));
+                        }
+                    });*/
+                }
+
+                @Override
+                public void bindingHolder(CustomHolder holder, List<ParamItem> dataList, int pos) throws Exception {
+                    holder.setText(R.id.etName, dataList.get(pos).getKey())
+                            .setText(R.id.etValue, dataList.get(pos).getValue());
+                }
+
+                @Override
+                protected void creatingFooter(CustomHolder holder) {
+                    holder.setClick(R.id.tvAdd, v -> {
+                        adapter.addItem(new ParamItem("", ""));
+                    });
+                }
+            };
+            adapter.setFooter(R.layout.footer_debug);
+            adapter.setShowNoDataFooter(true);
+            rv.setAdapter(adapter);
+
+        } else {
+            rootHolder().setVisibility(R.id.rv, View.GONE)
+                    .setVisibility(R.id.scrollView, View.VISIBLE);
+
+        }
+
+        rootHolder().setText(R.id.tvTitle, "[" + (postBegin ? "Param" : "Result") + " Debug] " + debugItem.getUrl());
         ((EditText) rootHolder().getView(R.id.et)).setText(debugItem.getJson());
-        rootHolder().setText(R.id.tvTitle, "[Debug] " + debugItem.getUrl());
         rootHolder().setClick(R.id.tvCancel, v -> {
-            debugItem.setPostFinished(true);
+            setStatus();
             finish();
-        })
-                .setClick(R.id.tvCommit, v -> {
-                    if (debugItem.getCb() != null) {
-                        debugItem.setJsonModify(rootHolder().getText(R.id.et));
-                        debugItem.getCb().go(rootHolder().getText(R.id.et));
+        }).setClick(R.id.tvCommit, v -> {
+            if (postBegin) {
+                Param param = new Param();
+                for (ParamItem paramItem : adapter.getShowingList()) {
+                    if (paramItem.getKey() != null && !TextUtils.isEmpty(paramItem.getKey().trim())) {
+                        param.add(paramItem.getKey().trim(), paramItem.getValue());
                     }
-                    debugItem.setPostFinished(true);
-                    finish();
-                });
+                }
+                debugItem.setParam(param);
+            } else {
+                debugItem.setJsonModify(rootHolder().getText(R.id.et));
+            }
+            setStatus();
+            finish();
+        });
     }
 
     @Override
     public void onBackPressed() {
-        if(!debugItem.isPostFinished())
-            debugItem.setPostFinished(true);
+        setStatus();
+//        if (!debugItem.isPostFinished())
+//            debugItem.setPostFinished(true);
         super.onBackPressed();
 
     }
+
+    private void setStatus() {
+        debugItem.setPostBegun(postBegin);
+        debugItem.setPostFinished(!postBegin);
+        hideSoftInput();
+    }
+
 
     @Override
     protected void onDestroy() {
@@ -144,5 +263,31 @@ public class DebugActivity extends BaseActivity {
     @Override
     protected AlertDialog setLoadingDialog() {
         return null;
+    }
+
+    static class ParamItem {
+        String key;
+        String value;
+
+        public ParamItem(String key, String value) {
+            this.key = key;
+            this.value = value;
+        }
+
+        public String getKey() {
+            return key;
+        }
+
+        public void setKey(String key) {
+            this.key = key;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
+        }
     }
 }
