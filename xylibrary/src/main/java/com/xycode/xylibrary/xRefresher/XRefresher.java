@@ -4,7 +4,6 @@ package com.xycode.xylibrary.xRefresher;
  * Created by XY on 2016/6/18.
  */
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.Parcelable;
@@ -25,13 +24,11 @@ import com.xycode.xylibrary.adapter.OnInitList;
 import com.xycode.xylibrary.adapter.XAdapter;
 import com.xycode.xylibrary.annotation.SaveState;
 import com.xycode.xylibrary.base.BaseActivity;
-import com.xycode.xylibrary.interfaces.Interfaces;
 import com.xycode.xylibrary.okHttp.OkResponseListener;
 import com.xycode.xylibrary.okHttp.Param;
 import com.xycode.xylibrary.uiKit.recyclerview.FlexibleDividerDecoration;
 import com.xycode.xylibrary.uiKit.recyclerview.HorizontalDividerItemDecoration;
 import com.xycode.xylibrary.uiKit.recyclerview.XLinearLayoutManager;
-import com.xycode.xylibrary.utils.LogUtil.L;
 
 import java.io.Serializable;
 import java.util.ArrayList;

@@ -23,10 +23,13 @@ public class PhotoSelectActivity extends PhotoSelectBaseActivity {
 //    RelativeLayout rlMain;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_photo_select);
-//        ButterKnife.bind(this);
+    protected int setActivityLayout() {
+        return R.layout.activity_photo_select;
+    }
+
+    @Override
+    protected void initOnCreate() {
+
     }
 
     @Override

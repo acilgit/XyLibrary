@@ -82,7 +82,7 @@ public class L {
     }
 
     public static boolean showLog() {
-        return showLog;
+        return Xy.getContext() != null && showLog;
     }
 
     public static void setShowLongErrorMode(boolean isLong) {
@@ -132,6 +132,24 @@ public class L {
             }
         }
         addLogItem(title, msg);
+    }
+
+    public static void crash(String title, Exception e) {
+        StringBuffer sb = new StringBuffer();
+        for (StackTraceElement traceElement : e.getStackTrace()) {
+            sb.append("\n").append(traceElement.toString());
+        }
+        String content = e.toString() + "\n" + sb.toString();
+        if (showLog()) {
+            if (isLong) {
+                eLong(title, content);
+            } else {
+                Log.e(TAG, TextUtils.isEmpty(title) ? e.toString() : title + "\n" + e.toString());
+            }
+        }
+        if (!logList.get(logList.size()-1).getContent().contains(e.toString())) {
+            addLogItem(title, content, LogItem.LOG_TYPE_CRASH);
+        }
     }
 
     private static void eLong(String title, String longString) {

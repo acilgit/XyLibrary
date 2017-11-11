@@ -199,7 +199,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
                                     creatingHeader(holder1, headerKey);
                                 } catch (Exception e) {
                                     e.printStackTrace();
-                                    L.e("creatingHeader Exception", e.toString());
+                                    L.crash("creatingHeader Exception", e);
 
                                 }
                             }
@@ -217,13 +217,13 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
                 return new CustomHolder(itemView) {
                     @Override
                     protected void createHolder(final CustomHolder holder) {
-                        holder.setOnClickListener(v -> handleItemViewClick(holder, dataList.get(holder.getAdapterPosition() - getHeaderCount()), v.getId(), viewTypeUnit));
-                        holder.setOnLongClickListener(v -> handleItemViewLongClick(holder, dataList.get(holder.getAdapterPosition() - getHeaderCount()), v.getId(), viewTypeUnit));
+                        holder.setOnClickListener(v -> handleItemViewClick(holder, getShowingList().get(holder.getAdapterPosition() - getHeaderCount()), v.getId(), viewTypeUnit));
+                        holder.setOnLongClickListener(v -> handleItemViewLongClick(holder, getShowingList().get(holder.getAdapterPosition() - getHeaderCount()), v.getId(), viewTypeUnit));
                         try {
                             creatingHolder(holder, viewTypeUnit);
                         } catch (Exception e) {
                             e.printStackTrace();
-                            L.e("createHolder Exception", e.toString());
+                            L.crash("createHolder Exception", e);
                         }
                     }
                 };
@@ -264,7 +264,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
                     try {
                         bindingHeader(((CustomHolder) holder), headerKey);
                     } catch (Exception e) {
-                        L.e("BindingHeader Exception", e.toString());
+                        L.crash("BindingHeader Exception", e);
                         e.printStackTrace();
                     }
                 }
@@ -275,7 +275,11 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
             bindingHolder(((CustomHolder) holder), dataList, position - headerLayoutIdList.size());
         } catch (Exception e) {
             e.printStackTrace();
-            L.e("BindingHolder Exception", e.toString());
+            StringBuffer sb = new StringBuffer();
+            for (StackTraceElement traceElement : e.getStackTrace()) {
+                sb.append("\n").append(traceElement.toString());
+            }
+            L.crash("BindingHolder Exception", e);
         }
         addAnimation(holder);
     }

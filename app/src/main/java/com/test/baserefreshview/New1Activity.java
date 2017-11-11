@@ -23,7 +23,16 @@ public class New1Activity extends ABaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_new1);
+
+    }
+
+    @Override
+    protected int setActivityLayout() {
+        return R.layout.activity_new1;
+    }
+
+    @Override
+    protected void initOnCreate() {
         Button btn = (Button) findViewById(R.id.btn);
         vp = (ViewPager) findViewById(R.id.vpMain);
 

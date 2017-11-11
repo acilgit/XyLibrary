@@ -31,8 +31,17 @@ public class MultiImageSelectorActivity extends BaseActivity implements MultiIma
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //        ImageSelectorOptions.setOptions(ImageSelectorOptions.options());
-        setContentView(R.layout.activity_image_selector);
+//        setContentView(R.layout.activity_image_selector);
 
+    }
+
+    @Override
+    protected int setActivityLayout() {
+        return R.layout.activity_image_selector;
+    }
+
+    @Override
+    protected void initOnCreate() {
         Bundle bundle = new Bundle();
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.fmImageGrid, Fragment.instantiate(this, MultiImageSelectorFragment.class.getName(), bundle))
@@ -49,7 +58,7 @@ public class MultiImageSelectorActivity extends BaseActivity implements MultiIma
                 finish();
             }
         });*/
-        
+
         submitButton = (Button) findViewById(R.id.btnCommit);
         if(options().selectedList == null || options().selectedList.size()<=0){
             submitButton.setText(R.string.text_done);

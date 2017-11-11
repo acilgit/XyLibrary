@@ -50,12 +50,21 @@ public abstract class BasePhotoActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         //remove ActionBar
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         //set full screen
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setContentView(R.layout.activity_base_photo);
+        super.onCreate(savedInstanceState);
+
+    }
+
+    @Override
+    protected int setActivityLayout() {
+        return R.layout.activity_base_photo;
+    }
+
+    @Override
+    protected void initOnCreate() {
         options = setDisplayOptions();
         vpMain = (NoScrollViewPager) findViewById(R.id.vpMain);
         RelativeLayout rlMain = (RelativeLayout) findViewById(R.id.rlMain);

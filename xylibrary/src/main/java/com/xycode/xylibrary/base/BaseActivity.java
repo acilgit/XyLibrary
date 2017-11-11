@@ -16,7 +16,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 
@@ -24,9 +23,7 @@ import com.xycode.xylibrary.adapter.CustomHolder;
 import com.xycode.xylibrary.annotation.annotationHelper.StateBinder;
 import com.xycode.xylibrary.interfaces.Interfaces;
 import com.xycode.xylibrary.okHttp.CallItem;
-import com.xycode.xylibrary.okHttp.Header;
 import com.xycode.xylibrary.okHttp.OkHttp;
-import com.xycode.xylibrary.okHttp.Param;
 import com.xycode.xylibrary.utils.LogUtil.LogLayout;
 import com.xycode.xylibrary.unit.MsgEvent;
 import com.xycode.xylibrary.utils.LogUtil.L;
@@ -38,9 +35,6 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-
-import okhttp3.Call;
-import okhttp3.RequestBody;
 
 /**
  * Created by Administrator on 2016/1/11 0011.
@@ -68,14 +62,50 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected LogLayout logLayout;
 
     private CustomHolder rootHolder;
+    private int activityLayout = 0;
+    private boolean firstShowOnStart = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         thisActivity = this;
         addActivity(this);
+        activityLayout = setActivityLayout();
+        if (activityLayout != 0) {
+            setContentView(activityLayout);
+        }
         if (useEventBus()) {
             EventBus.getDefault().register(this);
+        }
+        initOnCreate();
+    }
+
+    protected abstract int setActivityLayout();
+
+    protected abstract void initOnCreate();
+
+    protected void showOnStart(boolean firstShow) {
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (L.showLog() && logLayout == null) {
+            logLayout = LogLayout.attachLogLayoutToActivity(getThis());
+        }
+        showOnStart(firstShowOnStart);
+        if (firstShowOnStart) {
+            firstShowOnStart = false;
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (logLayout != null) {
+            logLayout.removeLayout();
+            logLayout = null;
         }
     }
 
@@ -94,22 +124,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if (L.showLog() && logLayout == null) {
-            logLayout = LogLayout.attachLogLayoutToActivity(getThis());
-        }
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (logLayout != null) {
-            logLayout.removeLayout();
-            logLayout = null;
-        }
-    }
 
     public CustomHolder rootHolder(){
         if (rootHolder == null) {
