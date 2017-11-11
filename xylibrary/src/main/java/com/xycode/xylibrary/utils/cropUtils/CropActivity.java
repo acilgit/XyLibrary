@@ -49,11 +49,12 @@ public class CropActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_crop);
 
-        this.findViews();
-        this.setListeners();
-        this.init();
+    }
+
+    @Override
+    protected int setActivityLayout() {
+        return R.layout.activity_crop;
     }
 
     @Override
@@ -91,7 +92,10 @@ public class CropActivity extends BaseActivity {
         });
     }
 
-    protected void init() {
+    protected void initOnCreate() {
+        this.findViews();
+        this.setListeners();
+
         mHandler = new Handler();
 
         Intent intent = getIntent();

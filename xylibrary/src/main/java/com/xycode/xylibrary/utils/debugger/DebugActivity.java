@@ -104,8 +104,12 @@ public class DebugActivity extends BaseActivity {
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected int setActivityLayout() {
+        return R.layout.activity_debug;
+    }
+
+    @Override
+    protected void initOnCreate() {
         DebugActivity.instance = this;
 //        param  = JSON.parseObject(getIntent().getStringExtra(PARAMS_JSON), Param.class);
         String key = getIntent().getStringExtra(DEBUG_KEY);
@@ -123,11 +127,6 @@ public class DebugActivity extends BaseActivity {
             finish();
             return;
         }
-        initViews();
-    }
-
-    private void initViews() {
-        setContentView(R.layout.activity_debug);
 
         /* 修改参数 */
         postBegin = getIntent().getBooleanExtra(DebugActivity.POST_BEGIN, false);

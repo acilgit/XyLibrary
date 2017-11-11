@@ -27,9 +27,13 @@ public class PhotoDemoActivity extends BaseActivity {
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_photo_demo);
+    protected int setActivityLayout() {
+        return R.layout.activity_photo_demo;
+    }
+
+    @Override
+    protected void initOnCreate() {
+
         MultiImageView multiImageView = (MultiImageView) findViewById(R.id.multiView);
 
         List<UrlData> images = new ArrayList<>();

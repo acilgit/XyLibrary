@@ -7,8 +7,8 @@ apply plugin: 'me.tatarka.retrolambda'
     }
 }*/
 android {
-    compileSdkVersion 25
-    buildToolsVersion '25.0.2'
+    compileSdkVersion 26
+    buildToolsVersion '26.0.2'
 
     signingConfigs {
         XyCode {
@@ -57,7 +57,7 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
     compile project(path: ':xylibrary')
-    compile 'com.androidadvance:topsnackbar:1.0.0'
+//    compile 'com.androidadvance:topsnackbar:1.0.0'
 //    compile 'com.jakewharton:butterknife:8.4.0'
 //    annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
     compile 'com.aliyun.ams:alicloud-android-hotfix:3.1.1'

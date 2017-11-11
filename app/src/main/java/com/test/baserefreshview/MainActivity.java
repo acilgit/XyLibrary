@@ -36,6 +36,7 @@ import com.xycode.xylibrary.uiKit.views.MultiImageView;
 import com.xycode.xylibrary.uiKit.views.loopview.AdLoopView;
 import com.xycode.xylibrary.uiKit.views.nicespinner.NiceSpinner;
 import com.xycode.xylibrary.unit.MsgEvent;
+import com.xycode.xylibrary.unit.StringData;
 import com.xycode.xylibrary.unit.UrlData;
 import com.xycode.xylibrary.unit.ViewTypeUnit;
 import com.xycode.xylibrary.unit.WH;
@@ -84,10 +85,13 @@ public class MainActivity extends ABaseActivity {
     private XAdapter<ContentBean> adapter;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected int setActivityLayout() {
+        return R.layout.activity_main;
+    }
+
+    @Override
+    protected void initOnCreate() {
         setWindowMode(WindowMode.INPUT_ADJUST);
-        setContentView(R.layout.activity_main);
 //        ButterKnife.bind(this);
 //        start(TestA.class);
         xRefresher = (XRefresher) findViewById(R.id.xRefresher);
@@ -194,6 +198,7 @@ public class MainActivity extends ABaseActivity {
         tags.setOnTagSelectListener((childViewList, dataList, selectedStateList, clickPos) -> {
 //            adapter.notifyDataSetChanged();
 //            adapter.setDataList(new ArrayList<>());
+            PhotoActivity.startThis(getThis(), "http://mxycsku.qiniucdn.com/group5/M00/5B/0C/wKgBfVXdYkqAEzl0AAL6ZFMAdKk401.jpg");
 
             newCall().url(api().getSomeAddress)
                     .body(new Param("p", "PPP"))
@@ -321,9 +326,6 @@ public class MainActivity extends ABaseActivity {
                 ContentBean item = dataList.get(pos);
                 switch (getLayoutId(item.getId())) {
                     case R.layout.item_house:
-                        holder.setText(R.id.tvName, item.getPosterTitle())
-//                        .setImageUrl(R.id.siv, item.getCoverPicture(), new ResizeOptions(getResources().getDimensionPixelSize(R.dimen.imageSelectorFolderCoverSize)))
-                                .setText(R.id.tvText, pos + "");
                         ((CheckBox) holder.getView(R.id.cb)).setChecked(item.isExpanded());
                         MultiImageView mvItem = holder.getView(R.id.mvItem);
 //                            ImageUtils.setFrescoViewUri(holder.getView(R.id.siv), null, nu);
@@ -338,7 +340,14 @@ public class MainActivity extends ABaseActivity {
                         }
                         mvItem.setList(list);
 
+                        StringData stringData = null;
                         holder.setExpand(item.isExpanded(), false);
+                        holder
+                                .setText(R.id.tvText, pos + "")
+//                        .setImageUrl(R.id.siv, item.getCoverPicture(), new ResizeOptions(getResources().getDimensionPixelSize(R.dimen.imageSelectorFolderCoverSize)))
+                                .setText(R.id.tvName, item.getPosterTitle() )
+                                .setText(R.id.tvText, stringData.getString())
+                        ;
                        /* TextView tv = holder.getView(R.id.tvText);
 
                         Html.fromHtml(content, source -> {
@@ -468,7 +477,7 @@ public class MainActivity extends ABaseActivity {
                 }
             });*/
 
-        }).setRefreshRequest(new RefreshRequest<ContentBean>() {
+                }).setRefreshRequest(new RefreshRequest<ContentBean>() {
             @Override
             public String setRequestParamsReturnUrl(Param params) {
                 params.add("a", "asfafasfasdfasfasfasfasfasfasdfasfdasdfadsfasdfsadfas");
@@ -499,7 +508,7 @@ public class MainActivity extends ABaseActivity {
         })
 //                .setRefreshPageSize(6).setStaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
 //        }).setRefreshPageSize(6).setGridLayoutManager(2, GridLayoutManager.VERTICAL, false)
-        .setRecyclerViewDividerWithGap(R.color.transparent, R.dimen.dividerHeight, R.dimen.dividerHeight);
+                .setRecyclerViewDividerWithGap(R.color.transparent, R.dimen.dividerHeight, R.dimen.dividerHeight);
         xRefresher.getRecyclerView().addItemDecoration(floatingBarItemDecoration);
 //        new FloatingBarItemDecoration(getThis(), )
 //        xRefresher.getRecyclerView().addItemDecoration();

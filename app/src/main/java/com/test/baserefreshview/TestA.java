@@ -26,10 +26,20 @@ public class TestA extends BaseActivity implements ImageCompressTask.CompressLis
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //one = (NiceSpinner) findViewById(R.id.test_one);
+
+    }
+
+    @Override
+    protected int setActivityLayout() {
+        return 0;
+    }
+
+    @Override
+    protected void initOnCreate() {
+//one = (NiceSpinner) findViewById(R.id.test_one);
         //two = (NiceSpinner) findViewById(R.id.test_two);
-       // button = (Button) findViewById(R.id.btn);
-       // button.setOnClickListener((view) -> PhotoSelectActivity.startForResult(getThis(), PhotoSelectActivity.class, PhotoSelectBaseActivity.CropParam.out(0, 0)));
+        // button = (Button) findViewById(R.id.btn);
+        // button.setOnClickListener((view) -> PhotoSelectActivity.startForResult(getThis(), PhotoSelectActivity.class, PhotoSelectBaseActivity.CropParam.out(0, 0)));
         List<String> list = new ArrayList<>();
         list.add("或在在要要在");
         list.add("在在要要在");
