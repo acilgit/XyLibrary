@@ -23,7 +23,6 @@ import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DimenRes;
-import android.support.v7.app.AlertDialog;
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -35,7 +34,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.xycode.xylibrary.Xy;
-import com.xycode.xylibrary.base.BaseActivity;
+import com.xycode.xylibrary.base.XyBaseActivity;
 import com.xycode.xylibrary.interfaces.Interfaces;
 import com.xycode.xylibrary.uiKit.recyclerview.HorizontalDividerItemDecoration;
 import com.xycode.xylibrary.unit.ContactUnit;
@@ -805,7 +804,7 @@ public class Tools {
     public static void pickNumber(Activity activity) {
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType(ContactsContract.CommonDataKinds.Phone.CONTENT_TYPE);
-        activity.startActivityForResult(intent, BaseActivity.REQUEST_CODE_GOT_PHONE_NUMBER);
+        activity.startActivityForResult(intent, XyBaseActivity.REQUEST_CODE_GOT_PHONE_NUMBER);
     }
 
     public static ContactUnit receivedPhoneNumber(Intent data) throws Exception {

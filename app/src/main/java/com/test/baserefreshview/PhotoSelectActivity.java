@@ -28,7 +28,7 @@ public class PhotoSelectActivity extends PhotoSelectBaseActivity {
     }
 
     @Override
-    protected void initOnCreate() {
+    protected void initOnCreate(Bundle savedInstanceState) {
 
     }
 

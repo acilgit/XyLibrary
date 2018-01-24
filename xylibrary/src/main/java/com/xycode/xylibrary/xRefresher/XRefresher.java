@@ -23,7 +23,7 @@ import com.xycode.xylibrary.adapter.CustomHolder;
 import com.xycode.xylibrary.adapter.OnInitList;
 import com.xycode.xylibrary.adapter.XAdapter;
 import com.xycode.xylibrary.annotation.SaveState;
-import com.xycode.xylibrary.base.BaseActivity;
+import com.xycode.xylibrary.base.XyBaseActivity;
 import com.xycode.xylibrary.okHttp.OkResponseListener;
 import com.xycode.xylibrary.okHttp.Param;
 import com.xycode.xylibrary.uiKit.recyclerview.FlexibleDividerDecoration;
@@ -56,7 +56,7 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
     @SaveState
     private boolean backgroundIsRes = false;
 
-    private BaseActivity activity;
+    private XyBaseActivity activity;
 
     private RecyclerView.LayoutManager layoutManager;
 
@@ -120,7 +120,7 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
     }
 
     @Deprecated
-    public void setup(BaseActivity activity, XAdapter<T> adapter, boolean loadMore, OnSwipeListener swipeListener, RefreshRequest refreshRequest) {
+    public void setup(XyBaseActivity activity, XAdapter<T> adapter, boolean loadMore, OnSwipeListener swipeListener, RefreshRequest refreshRequest) {
         RefreshSetter setter = setup(activity, adapter).setOnSwipeListener(swipeListener).setRefreshRequest(refreshRequest);
         if (loadMore) setter.setLoadMore();
     }
@@ -131,7 +131,7 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
      * @param adapter
      * @return
      */
-    public RefreshSetter setup(BaseActivity activity, XAdapter<T> adapter) {
+    public RefreshSetter setup(XyBaseActivity activity, XAdapter<T> adapter) {
         refreshSetter = new RefreshSetter(this);
         layoutManager = layoutManager == null ? new XLinearLayoutManager(activity) : layoutManager;
         recyclerView.setLayoutManager(layoutManager);

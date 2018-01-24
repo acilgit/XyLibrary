@@ -30,8 +30,8 @@ public abstract class BaseLazyFragment extends Fragment {
     boolean loaded = false;
     private boolean loadFailed = false;
 
-    protected BaseActivity getThis() {
-        return (BaseActivity) getActivity();
+    protected XyBaseActivity getThis() {
+        return (XyBaseActivity) getActivity();
     }
 
     @Override

@@ -32,7 +32,7 @@ public class New1Activity extends ABaseActivity {
     }
 
     @Override
-    protected void initOnCreate() {
+    protected void initOnCreate(Bundle savedInstanceState) {
         Button btn = (Button) findViewById(R.id.btn);
         vp = (ViewPager) findViewById(R.id.vpMain);
 

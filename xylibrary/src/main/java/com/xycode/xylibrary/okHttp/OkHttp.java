@@ -1,17 +1,12 @@
 package com.xycode.xylibrary.okHttp;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.xycode.xylibrary.Xy;
-import com.xycode.xylibrary.base.BaseActivity;
+import com.xycode.xylibrary.base.XyBaseActivity;
 import com.xycode.xylibrary.utils.LogUtil.JsonTool;
 import com.xycode.xylibrary.utils.LogUtil.L;
-import com.xycode.xylibrary.utils.TS;
-import com.xycode.xylibrary.utils.crashUtil.CrashActivity;
 import com.xycode.xylibrary.utils.debugger.DebugActivity;
 import com.xycode.xylibrary.utils.debugger.DebugItem;
 
@@ -359,7 +354,7 @@ public class OkHttp {
                     @Override
                     public void onNext(@io.reactivex.annotations.NonNull ResponseItem responseItem) {
                         // 处理返回结果
-                        BaseActivity.dismissLoadingDialogByManualState();
+                        XyBaseActivity.dismissLoadingDialogByManualState();
                         handleResultWithResultCode(responseItem);
                     }
 
@@ -368,13 +363,13 @@ public class OkHttp {
                         // 处理请求中出现异常
                         throwable.printStackTrace();
                         noResponse(call[0], okResponseListener);
-                        BaseActivity.dismissLoadingDialogByManualState();
+                        XyBaseActivity.dismissLoadingDialogByManualState();
                     }
 
                     @Override
                     public void onComplete() {
                         // 请求完成，关闭自动关闭的等待对话框
-//                        BaseActivity.dismissLoadingDialogByManualState();
+//                        XyBaseActivity.dismissLoadingDialogByManualState();
                     }
                 });
 //        return call;
@@ -697,19 +692,19 @@ public class OkHttp {
                             @Override
                             public void onNext(@io.reactivex.annotations.NonNull ResponseItem responseItem) {
                                 handleResultWithResultCode(responseItem);
-                                BaseActivity.dismissLoadingDialogByManualState();
+                                XyBaseActivity.dismissLoadingDialogByManualState();
                             }
 
                             @Override
                             public void onError(@io.reactivex.annotations.NonNull Throwable throwable) {
                                 throwable.printStackTrace();
                                 noResponse(call, okResponseListener);
-                                BaseActivity.dismissLoadingDialogByManualState();
+                                XyBaseActivity.dismissLoadingDialogByManualState();
                             }
 
                             @Override
                             public void onComplete() {
-//                                BaseActivity.dismissLoadingDialogByManualState();
+//                                XyBaseActivity.dismissLoadingDialogByManualState();
                             }
                         });
             }
@@ -717,7 +712,7 @@ public class OkHttp {
             @Override
             public void onFailure(Call call, IOException e) {
                 noResponse(call, okResponseListener);
-                BaseActivity.dismissLoadingDialogByManualState();
+                XyBaseActivity.dismissLoadingDialogByManualState();
             }
 
         });

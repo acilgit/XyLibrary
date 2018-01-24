@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 
-import com.xycode.xylibrary.base.BaseActivity;
+import com.xycode.xylibrary.base.XyBaseActivity;
 import com.xycode.xylibrary.uiKit.views.MultiImageView;
 import com.xycode.xylibrary.unit.UrlData;
 
@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Created by thisfeng on 2016/11/24 0024.
  */
-public class PhotoDemoActivity extends BaseActivity {
+public class PhotoDemoActivity extends XyBaseActivity {
 
     @Override
     protected boolean useEventBus() {
@@ -32,7 +32,7 @@ public class PhotoDemoActivity extends BaseActivity {
     }
 
     @Override
-    protected void initOnCreate() {
+    protected void initOnCreate(Bundle savedInstanceState) {
 
         MultiImageView multiImageView = (MultiImageView) findViewById(R.id.multiView);
 

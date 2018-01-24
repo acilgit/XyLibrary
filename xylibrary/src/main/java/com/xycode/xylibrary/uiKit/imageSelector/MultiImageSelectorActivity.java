@@ -6,18 +6,17 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.widget.Button;
 
 import com.xycode.xylibrary.R;
-import com.xycode.xylibrary.base.BaseActivity;
+import com.xycode.xylibrary.base.XyBaseActivity;
 
 import java.io.File;
 import java.util.ArrayList;
 
 import static com.xycode.xylibrary.uiKit.imageSelector.ImageSelectorOptions.options;
 
-public class MultiImageSelectorActivity extends BaseActivity implements MultiImageSelectorFragment.Callback{
+public class MultiImageSelectorActivity extends XyBaseActivity implements MultiImageSelectorFragment.Callback{
 
     public static final int MODE_SINGLE = 0;
     public static final int MODE_MULTI = 1;
@@ -41,7 +40,7 @@ public class MultiImageSelectorActivity extends BaseActivity implements MultiIma
     }
 
     @Override
-    protected void initOnCreate() {
+    protected void initOnCreate(Bundle savedInstanceState) {
         Bundle bundle = new Bundle();
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.fmImageGrid, Fragment.instantiate(this, MultiImageSelectorFragment.class.getName(), bundle))

@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.widget.Button;
 
-import com.xycode.xylibrary.base.BaseActivity;
+import com.xycode.xylibrary.base.XyBaseActivity;
 import com.xycode.xylibrary.interfaces.Interfaces;
 import com.xycode.xylibrary.uiKit.views.nicespinner.NiceSpinner;
 import com.xycode.xylibrary.utils.Tools;
@@ -18,7 +18,7 @@ import java.util.List;
 /**
  * Created by Administrator on 2016/9/26 0026.
  */
-public class TestA extends BaseActivity implements ImageCompressTask.CompressListener{
+public class TestA extends XyBaseActivity implements ImageCompressTask.CompressListener{
     NiceSpinner<String> one;
     NiceSpinner<String> two;
     Button button;
@@ -35,7 +35,7 @@ public class TestA extends BaseActivity implements ImageCompressTask.CompressLis
     }
 
     @Override
-    protected void initOnCreate() {
+    protected void initOnCreate(Bundle savedInstanceState) {
 //one = (NiceSpinner) findViewById(R.id.test_one);
         //two = (NiceSpinner) findViewById(R.id.test_two);
         // button = (Button) findViewById(R.id.btn);

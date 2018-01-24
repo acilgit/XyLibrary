@@ -1,35 +1,26 @@
 package com.xycode.xylibrary.utils.debugger;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
-import com.alibaba.fastjson.JSON;
 import com.xycode.xylibrary.R;
 import com.xycode.xylibrary.Xy;
 import com.xycode.xylibrary.adapter.CustomHolder;
-import com.xycode.xylibrary.adapter.OnInitList;
 import com.xycode.xylibrary.adapter.XAdapter;
-import com.xycode.xylibrary.base.BaseActivity;
-import com.xycode.xylibrary.interfaces.Interfaces;
+import com.xycode.xylibrary.base.XyBaseActivity;
 import com.xycode.xylibrary.okHttp.Param;
 import com.xycode.xylibrary.unit.ViewTypeUnit;
 import com.xycode.xylibrary.utils.TS;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -39,7 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author xiuye
  */
-public class DebugActivity extends BaseActivity {
+public class DebugActivity extends XyBaseActivity {
 
     public static final String DEBUG_KEY = "DEBUG_KEY";
     public static final String PARAMS_JSON = "PARAMS_JSON";
@@ -109,7 +100,7 @@ public class DebugActivity extends BaseActivity {
     }
 
     @Override
-    protected void initOnCreate() {
+    protected void initOnCreate(Bundle savedInstanceState) {
         DebugActivity.instance = this;
 //        param  = JSON.parseObject(getIntent().getStringExtra(PARAMS_JSON), Param.class);
         String key = getIntent().getStringExtra(DEBUG_KEY);
