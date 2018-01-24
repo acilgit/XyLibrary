@@ -15,7 +15,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 
 import com.xycode.xylibrary.R;
-import com.xycode.xylibrary.base.BaseActivity;
+import com.xycode.xylibrary.base.XyBaseActivity;
 import com.xycode.xylibrary.utils.ImageUtils;
 import com.xycode.xylibrary.utils.cropUtils.component.BaseImageView;
 //import com.xycode.xylibrary.utils.cropUtils.util.BitmapOperator;
@@ -23,7 +23,7 @@ import com.xycode.xylibrary.utils.cropUtils.component.BaseImageView;
 import java.io.File;
 
 
-public class CropActivity extends BaseActivity {
+public class CropActivity extends XyBaseActivity {
 
 //    public final int HARDWARE_ACCELERATED_MAX_SIZE = 2048;
 
@@ -92,7 +92,7 @@ public class CropActivity extends BaseActivity {
         });
     }
 
-    protected void initOnCreate() {
+    protected void initOnCreate(Bundle savedInstanceState) {
         this.findViews();
         this.setListeners();
 

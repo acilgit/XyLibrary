@@ -1,20 +1,18 @@
 package com.xycode.xylibrary.utils.crashUtil;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.alibaba.fastjson.JSON;
 import com.xycode.xylibrary.R;
 import com.xycode.xylibrary.Xy;
-import com.xycode.xylibrary.base.BaseActivity;
+import com.xycode.xylibrary.base.XyBaseActivity;
 import com.xycode.xylibrary.interfaces.Interfaces;
 import com.xycode.xylibrary.utils.LogUtil.LogItem;
 import com.xycode.xylibrary.utils.LogUtil.LogLayout;
@@ -115,7 +113,7 @@ public class CrashActivity extends AppCompatActivity {
                 intent.putExtra(CrashActivity.MSG, info);
                 Xy.getContext().startActivity(intent);
                 // 杀死该应用进程
-                BaseActivity.exitApplication();
+                XyBaseActivity.exitApplication();
             }
 
         });

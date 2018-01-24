@@ -25,25 +25,25 @@ import com.xycode.xylibrary.utils.Tools;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class BasePhotoActivity extends BaseActivity {
+public abstract class BasePhotoActivity extends XyBaseActivity {
 
     private static final String photos = "photos";
     private static final String position = "position";
-    private static BaseActivity activity;
+    private static XyBaseActivity activity;
     View.OnLongClickListener longClickListener;
     private LinearLayout llIndexContainer;
     private NoScrollViewPager vpMain;
     private int pos;
     private Options options;
 
-    public static void startThis(BaseActivity activity, Class photoActivityClass, String url) {
+    public static void startThis(XyBaseActivity activity, Class photoActivityClass, String url) {
         List<UrlData> urls = new ArrayList<>();
         urls.add(new UrlData(url));
         BasePhotoActivity.activity = activity;
         startThis(activity, photoActivityClass, urls, 0);
     }
 
-    public static void startThis(BaseActivity activity, Class photoActivityClass, List<UrlData> urls, int pos) {
+    public static void startThis(XyBaseActivity activity, Class photoActivityClass, List<UrlData> urls, int pos) {
 //        getPhotoStorage(activity).put(photos, JSON.toJSONString(urls));
         activity.startActivity(new Intent(activity, photoActivityClass).putExtra(photos, JSON.toJSONString(urls)).putExtra(position, pos));
     }
@@ -64,7 +64,7 @@ public abstract class BasePhotoActivity extends BaseActivity {
     }
 
     @Override
-    protected void initOnCreate() {
+    protected void initOnCreate(Bundle savedInstanceState) {
         options = setDisplayOptions();
         vpMain = (NoScrollViewPager) findViewById(R.id.vpMain);
         RelativeLayout rlMain = (RelativeLayout) findViewById(R.id.rlMain);
@@ -189,7 +189,7 @@ public abstract class BasePhotoActivity extends BaseActivity {
     class PhotoPagerAdapter extends PagerAdapter {
 
         private LayoutInflater inflater;
-        private BaseActivity context;
+        private XyBaseActivity context;
         private List<UrlData> dataList;
 
         PhotoPagerAdapter(BasePhotoActivity context, List<UrlData> dataList) {

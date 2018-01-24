@@ -18,7 +18,7 @@ import com.yalantis.ucrop.UCrop;
 
 import java.io.Serializable;
 
-public abstract class PhotoSelectBaseActivity extends BaseActivity {
+public abstract class PhotoSelectBaseActivity extends XyBaseActivity {
 
     public static final String PARAM = "param";
     public static final String MULTI_SELECT = "multiSelect";
@@ -41,13 +41,13 @@ public abstract class PhotoSelectBaseActivity extends BaseActivity {
         activity.startActivityForResult(new Intent(activity, activityClass).putExtra(IS_CROP, isCrop), REQUEST_CODE_PHOTO_SELECT);
     }*/
 
-    public static void startForResult(BaseActivity activity, Class activityClass, ImageSelectorOptions options) {
+    public static void startForResult(XyBaseActivity activity, Class activityClass, ImageSelectorOptions options) {
         Intent intent = new Intent(activity, activityClass);
         intent.putExtra(MULTI_SELECT, true);
         activity.startActivityForResult(intent, REQUEST_CODE_MULTI_PHOTO_SELECT);
     }
 
-    public static void startForResult(BaseActivity activity, Class activityClass, CropParam param) {
+    public static void startForResult(XyBaseActivity activity, Class activityClass, CropParam param) {
         Intent intent = new Intent(activity, activityClass);
         if (param == null) {
             param = new CropParam();

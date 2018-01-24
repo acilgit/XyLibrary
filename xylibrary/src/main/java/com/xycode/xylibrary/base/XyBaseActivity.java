@@ -39,7 +39,7 @@ import java.util.List;
 /**
  * Created by Administrator on 2016/1/11 0011.
  */
-public abstract class BaseActivity extends AppCompatActivity {
+public abstract class XyBaseActivity extends AppCompatActivity {
 
     public static final int REQUEST_CODE_GOT_RESULT = 100;
     public static final int REQUEST_CODE_PHOTO_SELECT = 202;
@@ -56,7 +56,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected List<CallItem> requestList = new ArrayList<>();
 
     private BroadcastReceiver finishReceiver;
-    private BaseActivity thisActivity;
+    private XyBaseActivity thisActivity;
 
     public static final String ACTION_FINISH_ACTIVITY = "FinishBaseActivity";
     protected LogLayout logLayout;
@@ -77,12 +77,16 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (useEventBus()) {
             EventBus.getDefault().register(this);
         }
-        initOnCreate();
+        initOnCreate(savedInstanceState);
     }
 
     protected abstract int setActivityLayout();
 
-    protected abstract void initOnCreate();
+    /**
+     * onCreate方法时进行初始化操作
+     * @param savedInstanceState savedInstanceState
+     */
+    protected abstract void initOnCreate(Bundle savedInstanceState);
 
     protected void showOnStart(boolean firstShow) {
 
@@ -132,7 +136,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         return rootHolder;
     }
 
-    protected BaseActivity getThis() {
+    protected XyBaseActivity getThis() {
         return this;
     }
 

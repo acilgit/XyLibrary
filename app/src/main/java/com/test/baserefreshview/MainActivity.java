@@ -90,7 +90,7 @@ public class MainActivity extends ABaseActivity {
     }
 
     @Override
-    protected void initOnCreate() {
+    protected void initOnCreate(Bundle savedInstanceState) {
         setWindowMode(WindowMode.INPUT_ADJUST);
 //        ButterKnife.bind(this);
 //        start(TestA.class);
@@ -635,7 +635,7 @@ public class MainActivity extends ABaseActivity {
 
 //                DownloadHelper.getInstance().update(getThis(), "http://m.bg114.cn/scene/api/public/down_apk/1/driver1.0.20.apk", "有新版本了啊！！");
 //                Uri destination = Uri.fromFile(getTempHead());  // 保存地址
-//                Crop.of(uri, destination).withSize(150, 150).crop(getThis(), BaseActivity.REQUEST_CODE_GOT_RESULT);
+//                Crop.of(uri, destination).withSize(150, 150).crop(getThis(), XyBaseActivity.REQUEST_CODE_GOT_RESULT);
 //                TS.show(getThis(), "Hi + " + position + " real:" + realPosition);
         });
         bannerView.initData(bannerList);
