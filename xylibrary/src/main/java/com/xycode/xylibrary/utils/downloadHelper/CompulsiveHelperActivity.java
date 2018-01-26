@@ -1,25 +1,26 @@
 package com.xycode.xylibrary.utils.downloadHelper;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ProgressBar;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.xycode.xylibrary.R;
 import com.xycode.xylibrary.interfaces.Interfaces;
 import com.xycode.xylibrary.okHttp.Param;
 import com.xycode.xylibrary.utils.TS;
+import com.xycode.xylibrary.utils.fileprovider.FileProvider7;
+import com.yanzhenjie.permission.AndPermission;
+import com.yanzhenjie.permission.Permission;
+import com.yanzhenjie.permission.PermissionListener;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -29,14 +30,17 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
 
 /**
- * Created by Administrator on 2016/10/22 0022.
+ * fix on 2018/1/25 0022.
+ * 已适配8.0权限组  & 7.0文件访问
  */
 
 public class CompulsiveHelperActivity extends AppCompatActivity {
+
     public static final String Title = "title";
     public static final String Illustration = "illustration";
     public static final String Cancel = "cancel";
@@ -64,6 +68,10 @@ public class CompulsiveHelperActivity extends AppCompatActivity {
     private TextView tvCancel;
     private ProgressBar progressBar;
     private TextView tvIgnore;
+
+
+
+    private static final int REQ_PERMISSION_CODE_STORE = 102;
 
     public interface CancelCallBack {
 
@@ -146,15 +154,15 @@ public class CompulsiveHelperActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        tvTitle = (TextView) findViewById(R.id.tv_title);
-        tvIllustration = (TextView) findViewById(R.id.tv_illustration);
-        tvUpdateProgress = (TextView) findViewById(R.id.tv_update_progress);
-        tvDownFileLength = (TextView) findViewById(R.id.tv_downFileLength);
-        tvFileLength = (TextView) findViewById(R.id.tv_fileLength);
-        tvConfirm = (TextView) findViewById(R.id.confirm);
-        tvCancel = (TextView) findViewById(R.id.cancel);
-        tvIgnore = (TextView) findViewById(R.id.tvIgnore);
-        progressBar = (ProgressBar) findViewById(R.id.pb_update_progress);
+        tvTitle = findViewById(R.id.tv_title);
+        tvIllustration = findViewById(R.id.tv_illustration);
+        tvUpdateProgress = findViewById(R.id.tv_update_progress);
+        tvDownFileLength = findViewById(R.id.tv_downFileLength);
+        tvFileLength = findViewById(R.id.tv_fileLength);
+        tvConfirm = findViewById(R.id.confirm);
+        tvCancel = findViewById(R.id.cancel);
+        tvIgnore = findViewById(R.id.tvIgnore);
+        progressBar = findViewById(R.id.pb_update_progress);
     }
 
     private void init() {
@@ -181,7 +189,6 @@ public class CompulsiveHelperActivity extends AppCompatActivity {
         if (!TextUtils.isEmpty(confirm)) {
             tvConfirm.setText(confirm);
         }
-
 
         //if is not must ,show the cancel button
         tvCancel.setVisibility(isMust() ? View.GONE : View.VISIBLE);
@@ -224,8 +231,12 @@ public class CompulsiveHelperActivity extends AppCompatActivity {
                             Intent intent = new Intent();
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             intent.setAction(Intent.ACTION_VIEW);
-                            intent.setDataAndType(Uri.fromFile(new File(getDownloadTempFileName())),
-                                    "application/vnd.android.package-archive");
+                          /*  intent.setDataAndType(Uri.fromFile(new File(getDownloadTempFileName())),
+                            "application/vnd.android.package-archive");*/
+                            //适配7.0文件访问
+                            FileProvider7.setIntentDataAndType(CompulsiveHelperActivity.this,
+                                    intent, "application/vnd.android.package-archive", new File(getDownloadTempFileName()), true);
+
                             startActivity(intent);
                             if (cancelCallBack != null) {
                                 cancelCallBack.onFinish(isMust());
@@ -255,22 +266,34 @@ public class CompulsiveHelperActivity extends AppCompatActivity {
         }
         //when update click
         tvConfirm.setOnClickListener((v) -> {
-            //is updating
-            if (tvConfirm.isSelected() && Integer.valueOf(tvDownFileLength.getText().toString().trim()) > 0) {
-                tvConfirm.setSelected(false);
-                cancelDownload = true;
-            } else {
-                if (keyPressed) {
-                    return;
-                }
-                keyPressed = true;
-                tvIllustration.setVisibility(View.GONE);
-                tvCancel.setVisibility(View.GONE);
-                tvIgnore.setVisibility(View.GONE);
-                new Thread(CompulsiveHelperActivity.this::downFile).start();
-                tvConfirm.setText(R.string.update_connecting);
-                tvConfirm.setSelected(true);
-            }
+            //权限限框架适配8.0 申请一组权限
+            AndPermission.with(this)
+                    .requestCode(REQ_PERMISSION_CODE_STORE)
+                    .permission(Permission.STORAGE)
+                    .callback(new PermissionListener() {
+                        @Override
+                        public void onSucceed(int requestCode, @NonNull List<String> grantPermissions) {
+//                            L.e("拿到了PHONE+" + grantPermissions.toString());
+                            commitDownload();
+                        }
+
+                        @Override
+                        public void onFailed(int requestCode, @NonNull List<String> deniedPermissions) {
+                            // 第一种：用默认的提示语。
+                            //如果被禁止，需要弹窗让他去设置页面开启
+                            if (AndPermission.hasAlwaysDeniedPermission(CompulsiveHelperActivity.this, deniedPermissions)) {
+                                AndPermission.defaultSettingDialog(CompulsiveHelperActivity.this).show();
+                            }
+                        }
+                    })
+                    // rationale作用是：用户拒绝一次权限，再次申请时先征求用户同意，再打开授权对话框；
+                    // 这样避免用户勾选不再提示，导致以后无法申请权限。
+                    // 你也可以不设置。
+                    .rationale((requestCode, rationale) -> {
+                        // 这里的对话框可以自定义，只要调用rationale.resume()就可以继续申请。
+                        AndPermission.rationaleDialog(CompulsiveHelperActivity.this, rationale).show();
+                    })
+                    .start();
         });
 
         //can only visible on update not must
@@ -279,18 +302,42 @@ public class CompulsiveHelperActivity extends AppCompatActivity {
                 return;
             }
             keyPressed = true;
-            if(cancelCallBack != null) cancelCallBack.onAbortUpdate();
+            if (cancelCallBack != null) cancelCallBack.onAbortUpdate();
             finish();
         });
+        //忽略此版本
         tvIgnore.setOnClickListener(v -> {
             if (keyPressed) {
                 return;
             }
             keyPressed = true;
-            if(ignoreCallback != null) ignoreCallback.go(null);
-            if(cancelCallBack != null) cancelCallBack.onAbortUpdate();
+            if (ignoreCallback != null) ignoreCallback.go(null);
+            if (cancelCallBack != null) cancelCallBack.onAbortUpdate();
             finish();
         });
+    }
+
+
+    /**
+     * 确认下载更新
+     */
+    private void commitDownload() {
+        //is updating
+        if (tvConfirm.isSelected() && Integer.valueOf(tvDownFileLength.getText().toString().trim()) > 0) {
+            tvConfirm.setSelected(false);
+            cancelDownload = true;
+        } else {
+            if (keyPressed) {
+                return;
+            }
+            keyPressed = true;
+            tvIllustration.setVisibility(View.GONE);
+            tvCancel.setVisibility(View.GONE);
+            tvIgnore.setVisibility(View.GONE);
+            new Thread(CompulsiveHelperActivity.this::downFile).start();
+            tvConfirm.setText(R.string.update_connecting);
+            tvConfirm.setSelected(true);
+        }
     }
 
     @Override
@@ -310,6 +357,9 @@ public class CompulsiveHelperActivity extends AppCompatActivity {
         return Environment.getExternalStorageDirectory().getAbsolutePath() + "/tempdownload/" + tempDownloadFileName;
     }
 
+    /**
+     * 下载文件
+     */
     public void downFile() {
         fileLength = 0;
         int downedFileLength = 0;

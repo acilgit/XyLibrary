@@ -48,7 +48,8 @@
             style="@style/sivPicBase"
             android:layout_width="match_parent"
             android:layout_height="180dp"
-            android:visibility="gone" />
+
+              />
 
         <com.test.baserefreshview.TagLayout
             android:id="@+id/tags"

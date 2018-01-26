@@ -27,11 +27,13 @@ import com.xycode.xylibrary.okHttp.OkHttp;
 import com.xycode.xylibrary.utils.LogUtil.LogLayout;
 import com.xycode.xylibrary.unit.MsgEvent;
 import com.xycode.xylibrary.utils.LogUtil.L;
+import com.xycode.xylibrary.utils.fileprovider.FileProvider7;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -84,6 +86,7 @@ public abstract class XyBaseActivity extends AppCompatActivity {
 
     /**
      * onCreate方法时进行初始化操作
+     *
      * @param savedInstanceState savedInstanceState
      */
     protected abstract void initOnCreate(Bundle savedInstanceState);
@@ -129,7 +132,7 @@ public abstract class XyBaseActivity extends AppCompatActivity {
     }
 
 
-    public CustomHolder rootHolder(){
+    public CustomHolder rootHolder() {
         if (rootHolder == null) {
             rootHolder = new CustomHolder(getWindow().getDecorView().getRootView());
         }
@@ -184,7 +187,7 @@ public abstract class XyBaseActivity extends AppCompatActivity {
 
     private void showDialog(boolean manualDismiss) {
         loadingDialogShowManual = manualDismiss;
-        if(loadingDialog!=null) loadingDialog.dismiss();
+        if (loadingDialog != null) loadingDialog.dismiss();
         loadingDialog = setLoadingDialog();
         if (loadingDialog != null && !loadingDialog.isShowing()) {
             loadingDialog.show();
@@ -419,6 +422,7 @@ public abstract class XyBaseActivity extends AppCompatActivity {
 
     /**
      * 设置输入法模式
+     *
      * @param windowMode 在 WindowMode 中选择相应选项，或从WindowManager.LayoutParams中选择
      */
     protected void setWindowMode(int windowMode) {
