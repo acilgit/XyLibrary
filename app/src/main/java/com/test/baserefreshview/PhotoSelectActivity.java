@@ -6,21 +6,14 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 
 import com.xycode.xylibrary.base.PhotoSelectBaseActivity;
-import com.xycode.xylibrary.utils.TS;
 import com.yalantis.ucrop.UCrop;
 
-//import butterknife.Bind;
 
-public class PhotoSelectActivity extends PhotoSelectBaseActivity {
+public class PhotoSelectActivity extends PhotoSelectBaseActivity implements View.OnClickListener {
 
-//    @BindView(R.id.btnCamera)
-//    Button btnCamera;
-//    @BindView(R.id.btnAlbum)
-//    Button btnAlbum;
-//    @BindView(R.id.btnCancel)
-//    Button btnCancel;
-//    @BindView(R.id.rlMain)
-//    RelativeLayout rlMain;
+
+    Button btnCamera, btnAlbum, btnCancel;
+    RelativeLayout rlMain;
 
     @Override
     protected int setActivityLayout() {
@@ -30,6 +23,10 @@ public class PhotoSelectActivity extends PhotoSelectBaseActivity {
     @Override
     protected void initOnCreate(Bundle savedInstanceState) {
 
+        findViewById(R.id.btnCamera).setOnClickListener(this);
+        findViewById(R.id.btnAlbum).setOnClickListener(this);
+        findViewById(R.id.btnCancel).setOnClickListener(this);
+        findViewById(R.id.rlMain).setOnClickListener(this);
     }
 
     @Override
@@ -37,9 +34,9 @@ public class PhotoSelectActivity extends PhotoSelectBaseActivity {
         return false;
     }
 
-//    @OnClick({R.id.btnCamera, R.id.btnAlbum, R.id.btnCancel, R.id.rlMain})
-    public void onClick(View view) {
-        switch (view.getId()) {
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
             case R.id.btnCamera:
                 onCamera();
                 break;
@@ -53,10 +50,11 @@ public class PhotoSelectActivity extends PhotoSelectBaseActivity {
         }
     }
 
-    @Override
-    protected void permissionOnDenied(String permission) {
-        TS.show("no " + permission);
-    }
+
+    /**
+     *
+     * @return
+     */
 
     @Override
     protected UCrop.Options getCropOptions() {
@@ -66,4 +64,6 @@ public class PhotoSelectActivity extends PhotoSelectBaseActivity {
         options.setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
         return options;
     }
+
+
 }
