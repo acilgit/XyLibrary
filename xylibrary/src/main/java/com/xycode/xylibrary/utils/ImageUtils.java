@@ -1,5 +1,6 @@
 package com.xycode.xylibrary.utils;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -40,6 +41,7 @@ import com.xycode.xylibrary.Xy;
 import com.xycode.xylibrary.instance.FrescoLoader;
 import com.xycode.xylibrary.interfaces.Interfaces;
 import com.xycode.xylibrary.utils.LogUtil.L;
+import com.xycode.xylibrary.utils.fileprovider.FileProvider7;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -57,7 +59,10 @@ public class ImageUtils {
     private static final String TEMP_IMAGE_FILE_NAME = "tempImage.jpg";
     private static final String TEMP_CROP_IMAGE_FILE_NAME = "tempCropImage";
 
-    public static Uri getTempImageUri() {
+    /**
+     * @return 创建一个临时文件图片地址 已适配7.0文件访问
+     */
+    public static Uri getTempImageUri(Context context) {
         File file = new File(Xy.getContext().getExternalCacheDir(), TEMP_IMAGE_FILE_NAME);
         if (!file.exists()) {
             try {
@@ -66,11 +71,14 @@ public class ImageUtils {
                 e.printStackTrace();
             }
         }
-        Uri uri = Uri.fromFile(file);
-        return Uri.parse("file://" + uri.getPath());
+        Uri uri = FileProvider7.getUriForFile(context, file);
+        return uri;//content://com.test.baserefreshview.android7.fileprovider/external_cache_path/tempImage.jpg
     }
 
-    public static Uri getTempCropImageUri() {
+    /**
+     * @return 获取临时裁剪后的图片地址
+     */
+    public static Uri getTempCropImageUri(Context context) {
         File file = new File(Xy.getContext().getFilesDir(), TEMP_CROP_IMAGE_FILE_NAME + DateUtils.getNow() + ".jpg");
         if (!file.exists()) {
             try {
@@ -79,11 +87,11 @@ public class ImageUtils {
                 e.printStackTrace();
             }
         }
-        Uri uri = Uri.fromFile(file);
-        return Uri.parse("file://" + uri.getPath());
+        return FileProvider7.getUriForFile(context, file);
+
     }
 
-    public static Uri getNewTempImageUri() {
+    public static Uri getNewTempImageUri(Context context) {
         File file = new File(Xy.getContext().getFilesDir(), TEMP_FILE_NAME + DateUtils.getNow() + ".jpg");
         if (!file.exists()) {
             try {
@@ -92,8 +100,8 @@ public class ImageUtils {
                 e.printStackTrace();
             }
         }
-        Uri uri = Uri.fromFile(file);
-        return Uri.parse("file://" + uri.getPath());
+        Uri uri = FileProvider7.getUriForFile(context, file);
+        return uri;
     }
 
   /*  private static boolean isGif(String url) {
@@ -785,6 +793,7 @@ public class ImageUtils {
 
     /**
      * Please use {@link FrescoLoader#setImageUrl(android.widget.ImageView, Object)} for this method
+     *
      * @param simpleDraweeView
      * @param url
      * @param previewUri

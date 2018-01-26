@@ -1,0 +1,86 @@
+package com.test.baserefreshview;
+
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
+import android.view.View;
+
+import com.facebook.drawee.view.SimpleDraweeView;
+import com.test.baserefreshview.test.FitAndroid7Activity;
+import com.xycode.xylibrary.base.PhotoSelectBaseActivity;
+import com.xycode.xylibrary.base.XyBaseActivity;
+import com.xycode.xylibrary.utils.fileprovider.FileProvider7;
+import com.yalantis.ucrop.UCrop;
+
+/**
+ * @author thisfeng
+ * @date 2018/1/26-上午9:16
+ */
+
+public class HomeActivity extends XyBaseActivity implements View.OnClickListener {
+
+
+    SimpleDraweeView sivPhoto;
+
+
+    @Override
+    protected int setActivityLayout() {
+        return R.layout.activity_home;
+    }
+
+    @Override
+    protected void initOnCreate(Bundle savedInstanceState) {
+
+        findViewById(R.id.btnMain).setOnClickListener(this);
+        findViewById(R.id.btnFile).setOnClickListener(this);
+        findViewById(R.id.btnTakePhoto).setOnClickListener(this);
+        findViewById(R.id.btnUCrop).setOnClickListener(this);
+
+        sivPhoto = findViewById(R.id.sivPhoto);
+    }
+
+    @Override
+    protected AlertDialog setLoadingDialog() {
+        return null;
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btnMain:
+                start(MainActivity.class);
+                break;
+            case R.id.btnFile:
+                start(FitAndroid7Activity.class);
+                break;
+            case R.id.btnTakePhoto:
+                PhotoSelectActivity.startForResult(getThis(), PhotoSelectActivity.class, new PhotoSelectBaseActivity.CropParam());
+
+//                PhotoSelectActivity.startForResult(getThis(), Const.cropParam, null, true);
+
+                break;
+            case R.id.btnUCrop:
+
+//                UCrop.of(sourceUri, destinationUri)
+//                        .withAspectRatio(16, 9)
+//                        .withMaxResultSize(maxWidth, maxHeight)
+//                        .start(context);
+                break;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    protected void onPhotoSelectResult(int resultCode, Uri uri) {
+        super.onPhotoSelectResult(resultCode, uri);
+        if (resultCode == RESULT_OK) {
+            String address = uri.getPath();
+            sivPhoto.setImageURI(uri);
+        }
+    }
+}

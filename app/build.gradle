@@ -18,16 +18,16 @@ android {
             storePassword 'xycode'
         }
         XyCode_debug {
-            keyAlias 'xycode_debug'
+            keyAlias 'xycode'
             keyPassword 'xycode'
-            storeFile file('src/main/xykey_debug.jks')
+            storeFile file('src/main/xykey.jks')
             storePassword 'xycode'
         }
     }
     defaultConfig {
         applicationId "com.test.baserefreshview"
         minSdkVersion 16
-        targetSdkVersion 22
+        targetSdkVersion 26
         versionCode 101
         versionName "1.0.3"
         /*jackOptions {
@@ -50,6 +50,12 @@ android {
     compileOptions {
         targetCompatibility 1.8
         sourceCompatibility 1.8
+    }
+
+    //lint检查关闭
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
     }
 }
 

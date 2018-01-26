@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 
 import com.xycode.xylibrary.utils.LogUtil.L;
+import com.xycode.xylibrary.utils.fileprovider.FileProvider7;
 
 import java.io.File;
 import java.io.FileDescriptor;
@@ -54,7 +55,8 @@ public class BitmapOperator {
                 saveResult.isOK = false;
                 return saveResult;
             }
-            outUri = Uri.fromFile(file);
+//            outUri = Uri.fromFile(file); old
+            outUri = FileProvider7.getUriForFile(context, file);
         }
 
         L.d("save to " + outUri.toString());
