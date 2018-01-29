@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">XySample</string>
     <string name="ts_no_network">网络不给力</string>
+    <string name="confirm">确认</string>
+    <string name="cancle">取消</string>
     <array name="test_array">
         <item>1</item>
         <item>2</item>

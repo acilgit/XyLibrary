@@ -1,26 +1,32 @@
 package com.xycode.xylibrary.utils.downloadHelper;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.xycode.xylibrary.R;
 import com.xycode.xylibrary.interfaces.Interfaces;
 import com.xycode.xylibrary.okHttp.Param;
 import com.xycode.xylibrary.utils.TS;
 import com.xycode.xylibrary.utils.fileprovider.FileProvider7;
-import com.yanzhenjie.permission.AndPermission;
-import com.yanzhenjie.permission.Permission;
-import com.yanzhenjie.permission.PermissionListener;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -30,13 +36,11 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
 
 /**
  * fix on 2018/1/25 0022.
- * 已适配8.0权限组  & 7.0文件访问
  */
 
 public class CompulsiveHelperActivity extends AppCompatActivity {
@@ -68,7 +72,6 @@ public class CompulsiveHelperActivity extends AppCompatActivity {
     private TextView tvCancel;
     private ProgressBar progressBar;
     private TextView tvIgnore;
-
 
 
     private static final int REQ_PERMISSION_CODE_STORE = 102;
@@ -266,34 +269,20 @@ public class CompulsiveHelperActivity extends AppCompatActivity {
         }
         //when update click
         tvConfirm.setOnClickListener((v) -> {
-            //权限限框架适配8.0 申请一组权限
-            AndPermission.with(this)
-                    .requestCode(REQ_PERMISSION_CODE_STORE)
-                    .permission(Permission.STORAGE)
-                    .callback(new PermissionListener() {
-                        @Override
-                        public void onSucceed(int requestCode, @NonNull List<String> grantPermissions) {
-//                            L.e("拿到了PHONE+" + grantPermissions.toString());
-                            commitDownload();
-                        }
 
-                        @Override
-                        public void onFailed(int requestCode, @NonNull List<String> deniedPermissions) {
-                            // 第一种：用默认的提示语。
-                            //如果被禁止，需要弹窗让他去设置页面开启
-                            if (AndPermission.hasAlwaysDeniedPermission(CompulsiveHelperActivity.this, deniedPermissions)) {
-                                AndPermission.defaultSettingDialog(CompulsiveHelperActivity.this).show();
-                            }
-                        }
-                    })
-                    // rationale作用是：用户拒绝一次权限，再次申请时先征求用户同意，再打开授权对话框；
-                    // 这样避免用户勾选不再提示，导致以后无法申请权限。
-                    // 你也可以不设置。
-                    .rationale((requestCode, rationale) -> {
-                        // 这里的对话框可以自定义，只要调用rationale.resume()就可以继续申请。
-                        AndPermission.rationaleDialog(CompulsiveHelperActivity.this, rationale).show();
-                    })
-                    .start();
+            /**
+             * 原始方式获取权限 成功后去下载
+              */
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                    && ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQ_PERMISSION_CODE_STORE);
+                }
+            } else {
+                commitDownload();
+            }
+
         });
 
         //can only visible on update not must
@@ -317,6 +306,37 @@ public class CompulsiveHelperActivity extends AppCompatActivity {
         });
     }
 
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQ_PERMISSION_CODE_STORE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                for (int permission : grantResults) {
+                    if (permission != PackageManager.PERMISSION_GRANTED) {
+                        Toast.makeText(this, "未获取权限,请到应用管理设置", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                }
+                commitDownload();
+            } else {
+                // Permission Denied 可以弹窗告知去跳转设置页面
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("提示");
+                builder.setMessage("您未授予访问媒体文件权限，请前去设置");
+                builder.setPositiveButton("去设置", (dialog, which) -> {
+                    Intent localIntent = new Intent();
+                    localIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    localIntent.setAction("android.settings.APPLICATION_DETAILS_SETTINGS");
+                    localIntent.setData(Uri.fromParts("package", getPackageName(), null));
+                    startActivity(localIntent);
+                });
+                builder.setNegativeButton("取消", null);
+                builder.show();
+
+            }
+        }
+    }
 
     /**
      * 确认下载更新
