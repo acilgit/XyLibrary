@@ -24,7 +24,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="installApk"
-        android:text="installApk"
+        android:text="安装APK同时获取权限"
         android:visibility="visible" />
 
     <Button

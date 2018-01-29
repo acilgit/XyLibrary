@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -17,13 +18,18 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.test.baserefreshview.R;
+import com.test.baserefreshview.dialogs.TipsDialog;
 import com.xycode.xylibrary.base.XyBaseActivity;
+import com.xycode.xylibrary.interfaces.Interfaces;
+import com.xycode.xylibrary.interfaces.PermissionListener;
+import com.xycode.xylibrary.utils.ImageUtils;
 import com.xycode.xylibrary.utils.downloadHelper.CompulsiveHelperActivity;
 import com.xycode.xylibrary.utils.fileprovider.FileProvider7;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -70,7 +76,9 @@ public class FitAndroid7Activity extends XyBaseActivity implements View.OnClickL
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn1:
-                //如果没权限先去申请权限
+                /**
+                 * 如果没权限先去申请权限 原始方式
+                 */
                 if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                     ActivityCompat.requestPermissions(this,
                             new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQ_PERMISSION_CODE_TAKE_PHOTO);
@@ -80,50 +88,44 @@ public class FitAndroid7Activity extends XyBaseActivity implements View.OnClickL
                 }
                 break;
             case R.id.btn2:
-                //如果没申请权限就去申请
-                if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        != PackageManager.PERMISSION_GRANTED) {
+                /**
+                 * 封装Base中的权限获取方式，如果没申请权限就去申请   已测试版本 4.4 6.0 7.0 8.0 完全OJ8K
+                 */
+                String[] requestPermissions = new String[]{
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE};
+                requestRuntimePermissions(requestPermissions, new PermissionListener() {
+                    @Override
+                    public void onGranted() {
+                        Toast.makeText(FitAndroid7Activity.this, "Permission onGranted", Toast.LENGTH_SHORT).show();
+                        installApk();
+                    }
 
-                    ActivityCompat.requestPermissions(this,
-                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                            REQ_PERMISSION_CODE_SDCARD);
+                    @Override
+                    public void onDenied(List<String> deniedPermissions) {
+                        // TODO: 2018/1/29 一般可具体的告诉用户为什么要获取这权限
+                        new TipsDialog(getThis(), "权限获取失败", deniedPermissions.toString() + "权限被拒绝,您可以到应用管理中设置", "去设置", "取消", new Interfaces.OnCommitListener() {
+                            @Override
+                            public void onCommit(Object obj) {
+                                Intent localIntent = new Intent();
+                                localIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                localIntent.setAction("android.settings.APPLICATION_DETAILS_SETTINGS");
+                                localIntent.setData(Uri.fromParts("package", getPackageName(), null));
+                                startActivity(localIntent);
+                            }
 
-                } else {
-                    //有权限了
-                    installApk();
-                }
+                            @Override
+                            public void onCancel(Object obj) {
+
+                            }
+                        }).show();
+
+                    }
+                });
                 break;
             case R.id.btn3:
-                //权限框架
+                //弹窗点击更新时，内部已经做了运行时权限框架
                 update();
-               /* AndPermission.with(this)
-                        .requestCode(102)
-                        .permission(Permission.STORAGE)
-                        .callback(new PermissionListener() {
-                            @Override
-                            public void onSucceed(int requestCode, @NonNull List<String> grantPermissions) {
-                                L.e("拿到了PHONE+" + grantPermissions.toString());
-                                update();
-                            }
-
-                            @Override
-                            public void onFailed(int requestCode, @NonNull List<String> deniedPermissions) {
-                                // 第一种：用默认的提示语。
-                                //如果被禁止，需要弹窗让他去设置页面开启
-                                if (AndPermission.hasAlwaysDeniedPermission(getThis(), deniedPermissions)) {
-                                    AndPermission.defaultSettingDialog(getThis()).show();
-                                }
-                            }
-                        })
-                        // rationale作用是：用户拒绝一次权限，再次申请时先征求用户同意，再打开授权对话框；
-                        // 这样避免用户勾选不再提示，导致以后无法申请权限。
-                        // 你也可以不设置。
-                        .rationale((requestCode, rationale) -> {
-                            // 这里的对话框可以自定义，只要调用rationale.resume()就可以继续申请。
-                            AndPermission.rationaleDialog(getThis(), rationale).show();
-                        })
-                        .start();*/
-
                 break;
 
         }
@@ -172,7 +174,7 @@ public class FitAndroid7Activity extends XyBaseActivity implements View.OnClickL
 
 
     private void installApk() {
-        // 需要自己修改安装包路径  ／／外部储存目录
+        // 需要自己修改安装包路径  否则无用
         File file = new File(Environment.getExternalStorageDirectory(),
                 "app-debug.apk");
         Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -206,16 +208,7 @@ public class FitAndroid7Activity extends XyBaseActivity implements View.OnClickL
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        if (requestCode == REQ_PERMISSION_CODE_SDCARD) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                installApk();
-            } else {
-                // Permission Denied
-                Toast.makeText(FitAndroid7Activity.this, "Permission Denied", Toast.LENGTH_SHORT).show();
-            }
-            return;
-        } else if (requestCode == REQ_PERMISSION_CODE_TAKE_PHOTO) {
+        if (requestCode == REQ_PERMISSION_CODE_TAKE_PHOTO) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 takePhotoNoCompress();
             } else {

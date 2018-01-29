@@ -1,4 +1,4 @@
-package com.test.baserefreshview;
+package com.test.baserefreshview.test;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -7,6 +7,9 @@ import android.support.v7.app.AlertDialog;
 import android.view.View;
 
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.test.baserefreshview.MainActivity;
+import com.test.baserefreshview.PhotoSelectActivity;
+import com.test.baserefreshview.R;
 import com.test.baserefreshview.test.FitAndroid7Activity;
 import com.xycode.xylibrary.base.PhotoSelectBaseActivity;
 import com.xycode.xylibrary.base.XyBaseActivity;

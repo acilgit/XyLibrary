@@ -33,4 +33,5 @@
     <string name="zero">0</string>
     <string name="update_connecting">正在连接</string>
     <string name="update_error_tips">更新包时出现问题:</string>
+
 </resources>

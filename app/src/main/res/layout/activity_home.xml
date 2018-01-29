@@ -21,7 +21,7 @@
         android:id="@+id/btnTakePhoto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="拍照" />
+        android:text="PhotoSelect拍照" />
 
     <Button
         android:id="@+id/btnUCrop"
