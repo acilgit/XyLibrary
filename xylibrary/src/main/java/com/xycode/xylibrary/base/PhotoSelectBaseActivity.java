@@ -1,20 +1,20 @@
 package com.xycode.xylibrary.base;
 
+import android.Manifest;
+import android.annotation.TargetApi;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 
 import com.xycode.xylibrary.annotation.SaveState;
+import com.xycode.xylibrary.interfaces.PermissionListener;
 import com.xycode.xylibrary.uiKit.imageSelector.ImageSelectorOptions;
 import com.xycode.xylibrary.utils.ImageUtils;
-import com.xycode.xylibrary.utils.Tools;
 import com.yalantis.ucrop.UCrop;
-import com.yanzhenjie.permission.AndPermission;
-import com.yanzhenjie.permission.Permission;
-import com.yanzhenjie.permission.PermissionListener;
 
 import java.io.Serializable;
 import java.util.List;
@@ -76,54 +76,38 @@ public abstract class PhotoSelectBaseActivity extends XyBaseActivity {
         options = getCropOptions();
     }
 
+    /**
+     * 请求权限并调用相机
+     */
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     protected void onCamera() {
-        //原始方式获取权限 如果没权限先去申请权限 待测试
-      /*  if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQ_PERMISSION_CODE_TAKE_PHOTO);
+        /*请求权限*/
+        String[] requestPermissions = new String[]{Manifest.permission.CAMERA,
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        requestRuntimePermissions(requestPermissions, new PermissionListener() {
+            @Override
+            public void onGranted() {
+                 /* 调用相机 */
+                Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                Uri tempImageUri = ImageUtils.getTempImageUri(getThis());
+                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, tempImageUri);
+                cameraIntent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 0);
+                startActivityForResult(cameraIntent, REQUEST_CODE_CAMERA);
+            }
 
-        } else {
-            Intent cameraIntent = new Intent("android.media.action.IMAGE_CAPTURE");
-            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, ImageUtils.getTempImageUri());
-            cameraIntent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 0);
-            startActivityForResult(cameraIntent, REQUEST_CODE_CAMERA);
-        }*/
+            @Override
+            public void onDenied(List<String> deniedPermissions) {
 
-        AndPermission.with(this)
-                .requestCode(REQ_PERMISSION_CODE_TAKE_PHOTO)
-                .permission(Permission.CAMERA, Permission.STORAGE)
-                .callback(new PermissionListener() {
-                    @Override
-                    public void onSucceed(int requestCode, @NonNull List<String> grantPermissions) {
-                        /* 调用相机 */
-                        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                        Uri tempImageUri = ImageUtils.getTempImageUri(getThis());
-                        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, tempImageUri);
-                        cameraIntent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 0);
-                        startActivityForResult(cameraIntent, REQUEST_CODE_CAMERA);
-
-                    }
-
-                    @Override
-                    public void onFailed(int requestCode, @NonNull List<String> deniedPermissions) {
-                        /* 第一种：用默认的提示语。如果被不再询问并禁止，需要弹窗让他去设置页面开启 */
-                        if (AndPermission.hasAlwaysDeniedPermission(getThis(), deniedPermissions)) {
-                            AndPermission.defaultSettingDialog(getThis()).show();
-                        }
-                    }
-                })
-                /*rationale作用是：用户拒绝一次权限，再次申请时先征求用户同意，再打开授权对话框；
-                    这样避免用户勾选不再提示，导致以后无法申请权限。你也可以不设置。*/
-                .rationale((requestCode, rationale) -> {
-                    /* 这里的对话框可以自定义，只要调用rationale.resume()就可以继续申请。*/
-                    AndPermission.rationaleDialog(getThis(), rationale).show();
-                })
-                .start();
+            }
+        });
 
     }
 
+    /**
+     * 打开相册
+     */
     protected void onAlbum() {
-
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
@@ -178,28 +162,8 @@ public abstract class PhotoSelectBaseActivity extends XyBaseActivity {
                 finish();
             }
         } else {
-            final Throwable cropError = UCrop.getError(data);
-            cropError.printStackTrace();
             onResultFailure();
         }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        //原始方式获取权限结果Result 可删除
-     /*   if (requestCode == REQ_PERMISSION_CODE_TAKE_PHOTO) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Intent cameraIntent = new Intent("android.media.action.IMAGE_CAPTURE");
-                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, ImageUtils.getTempImageUri());
-                cameraIntent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 0);
-                startActivityForResult(cameraIntent, REQUEST_CODE_CAMERA);
-            } else {
-                // Permission Denied
-                Toast.makeText(this, "未获取权限", Toast.LENGTH_SHORT).show();
-            }
-            return;
-        }*/
     }
 
 

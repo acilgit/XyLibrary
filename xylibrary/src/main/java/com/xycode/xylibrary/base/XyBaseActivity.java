@@ -7,8 +7,12 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -22,6 +26,7 @@ import android.view.inputmethod.InputMethodManager;
 import com.xycode.xylibrary.adapter.CustomHolder;
 import com.xycode.xylibrary.annotation.annotationHelper.StateBinder;
 import com.xycode.xylibrary.interfaces.Interfaces;
+import com.xycode.xylibrary.interfaces.PermissionListener;
 import com.xycode.xylibrary.okHttp.CallItem;
 import com.xycode.xylibrary.okHttp.OkHttp;
 import com.xycode.xylibrary.utils.LogUtil.LogLayout;
@@ -47,6 +52,7 @@ public abstract class XyBaseActivity extends AppCompatActivity {
     public static final int REQUEST_CODE_PHOTO_SELECT = 202;
     public static final int REQUEST_CODE_MULTI_PHOTO_SELECT = 203;
     public static final int REQUEST_CODE_GOT_PHONE_NUMBER = 301;
+    private static final int REQUEST_PEIMISSION_CODE = 1000;
 
     private static List<Activity> activities = new LinkedList<>();
 
@@ -66,6 +72,8 @@ public abstract class XyBaseActivity extends AppCompatActivity {
     private CustomHolder rootHolder;
     private int activityLayout = 0;
     private boolean firstShowOnStart = true;
+
+    private PermissionListener mListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -428,5 +436,57 @@ public abstract class XyBaseActivity extends AppCompatActivity {
     protected void setWindowMode(int windowMode) {
         getWindow().setSoftInputMode(windowMode);
     }
+
+
+    /**
+     * 权限封装处理
+     */
+    public void requestRuntimePermissions(String[] permissions, PermissionListener listener) {
+        mListener = listener;
+        List<String> permissionList = new ArrayList<>();
+        for (String permission : permissions) {
+            /* 检测是否授权，没有授权添加入list中去授权*/
+            if (ContextCompat.checkSelfPermission(this, permission)
+                    != PackageManager.PERMISSION_GRANTED) {
+                permissionList.add(permission);
+            }
+        }
+        /* 如果有未授权的则去请求权限 */
+        if (!permissionList.isEmpty()) {
+            ActivityCompat.requestPermissions(
+                    this,
+                    permissionList.toArray(new String[permissionList.size()]),
+                    REQUEST_PEIMISSION_CODE);
+        } else {
+            mListener.onGranted();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case REQUEST_PEIMISSION_CODE:
+                if (grantResults.length > 0) {
+                    /* 存储拒绝的权限 */
+                    List<String> deniedPermission = new ArrayList<>();
+                    for (int i = 0; i < grantResults.length; i++) {
+                        int grantResult = grantResults[i];
+                        if (grantResult == PackageManager.PERMISSION_DENIED) {
+                            deniedPermission.add(permissions[i]);
+                        }
+                    }
+                    if (deniedPermission.isEmpty()) {
+                        mListener.onGranted();
+                    } else {
+                        mListener.onDenied(deniedPermission);
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
 
 }
