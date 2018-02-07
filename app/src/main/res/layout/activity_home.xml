@@ -28,6 +28,21 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="裁剪" />
+    <Button
+        android:id="@+id/btnDrag"
+        android:layout_width="match_parent"
+        android:text="拖拽"
+        android:layout_height="wrap_content" />
+    <Button
+        android:id="@+id/btnDragSample"
+        android:layout_width="match_parent"
+        android:text="拖拽例子"
+        android:layout_height="wrap_content" />
+    <Button
+        android:id="@+id/btnGuide"
+        android:layout_width="match_parent"
+        android:text="BGABanner首次启动指南广告"
+        android:layout_height="wrap_content" />
 
     <com.facebook.drawee.view.SimpleDraweeView
         android:id="@+id/sivPhoto"

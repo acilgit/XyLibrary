@@ -10,11 +10,8 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import com.test.baserefreshview.MainActivity;
 import com.test.baserefreshview.PhotoSelectActivity;
 import com.test.baserefreshview.R;
-import com.test.baserefreshview.test.FitAndroid7Activity;
 import com.xycode.xylibrary.base.PhotoSelectBaseActivity;
 import com.xycode.xylibrary.base.XyBaseActivity;
-import com.xycode.xylibrary.utils.fileprovider.FileProvider7;
-import com.yalantis.ucrop.UCrop;
 
 /**
  * @author thisfeng
@@ -39,7 +36,9 @@ public class HomeActivity extends XyBaseActivity implements View.OnClickListener
         findViewById(R.id.btnFile).setOnClickListener(this);
         findViewById(R.id.btnTakePhoto).setOnClickListener(this);
         findViewById(R.id.btnUCrop).setOnClickListener(this);
-
+        findViewById(R.id.btnDrag).setOnClickListener(this);
+        findViewById(R.id.btnDragSample).setOnClickListener(this);
+        findViewById(R.id.btnGuide).setOnClickListener(this);
         sivPhoto = findViewById(R.id.sivPhoto);
     }
 
@@ -69,6 +68,15 @@ public class HomeActivity extends XyBaseActivity implements View.OnClickListener
 //                        .withAspectRatio(16, 9)
 //                        .withMaxResultSize(maxWidth, maxHeight)
 //                        .start(context);
+                break;
+            case R.id.btnDrag:
+                start(DragTestActivity.class);
+                break;
+            case R.id.btnDragSample:
+                start(DragSampleActivity.class);
+                break;
+            case R.id.btnGuide:
+                start(GuideActivity.class);
                 break;
         }
     }

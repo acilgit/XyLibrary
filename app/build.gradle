@@ -28,7 +28,7 @@ android {
         applicationId "com.test.baserefreshview"
         minSdkVersion 16
         targetSdkVersion 26
-        versionCode 101
+        versionCode 103
         versionName "1.0.3"
         /*jackOptions {
             enabled true
@@ -36,7 +36,7 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.XyCode
         }
