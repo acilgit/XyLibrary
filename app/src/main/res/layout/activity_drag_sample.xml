@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.xycode.xylibrary.xRefresher.XRefresher
+        android:id="@+id/xRefresher1"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <View style="@style/divider" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:gravity="center"
+        android:text="上面长按图标可进行拖拽至下面列表"
+        android:layout_height="wrap_content" />
+    <com.xycode.xylibrary.xRefresher.XRefresher
+        android:id="@+id/xRefresher2"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+    <RelativeLayout
+        android:visibility="gone"
+
+        android:id="@+id/rlContent"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_alignParentBottom="true"
+        android:background="@android:color/holo_green_light">
+
+        <TextView
+            android:id="@+id/tvContent"
+            android:layout_centerInParent="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </RelativeLayout>
+
+
+</LinearLayout>

@@ -39,6 +39,8 @@
         <activity android:name=".test.FitAndroid7Activity" />
 
         <activity android:name=".MainActivity" />
+        <activity android:name=".test.DragTestActivity" />
+        <activity android:name=".test.DragSampleActivity" />
 
 
         <!--阿里Hotfix-->
