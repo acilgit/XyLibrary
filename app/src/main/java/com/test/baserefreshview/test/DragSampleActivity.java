@@ -57,7 +57,7 @@ public class DragSampleActivity extends BaseActivity {
 
         List<DragDataBean> list2 = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            list2.add(new DragDataBean("Tag" + i, i));
+            list2.add(new DragDataBean("Target" + i, i));
 
         }
 
@@ -157,7 +157,7 @@ public class DragSampleActivity extends BaseActivity {
                     public void complete(String mLocalState, String data) {
 
                         Log.e("complete()", "回调:" + mLocalState + data);
-                        TS.show(mLocalState + "-" + data + "------taget" + holder.getLayoutPosition());
+                        TS.show(mLocalState + "-" + data + "------Target" + holder.getLayoutPosition());
 //                        holder.setText(R.id.tvContent, data);
 //                        adapter2.notifyDataSetChanged();
                         DragDataBean dataBean = list2.get(holder.getLayoutPosition());

@@ -41,6 +41,9 @@
         <activity android:name=".MainActivity" />
         <activity android:name=".test.DragTestActivity" />
         <activity android:name=".test.DragSampleActivity" />
+        <activity android:name=".test.GuideActivity"
+            android:theme="@style/AppTheme.Splash"
+            />
 
 
         <!--阿里Hotfix-->

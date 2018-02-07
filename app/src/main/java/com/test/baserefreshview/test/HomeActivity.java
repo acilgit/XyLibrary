@@ -38,6 +38,7 @@ public class HomeActivity extends XyBaseActivity implements View.OnClickListener
         findViewById(R.id.btnUCrop).setOnClickListener(this);
         findViewById(R.id.btnDrag).setOnClickListener(this);
         findViewById(R.id.btnDragSample).setOnClickListener(this);
+        findViewById(R.id.btnGuide).setOnClickListener(this);
         sivPhoto = findViewById(R.id.sivPhoto);
     }
 
@@ -73,6 +74,9 @@ public class HomeActivity extends XyBaseActivity implements View.OnClickListener
                 break;
             case R.id.btnDragSample:
                 start(DragSampleActivity.class);
+                break;
+            case R.id.btnGuide:
+                start(GuideActivity.class);
                 break;
         }
     }
