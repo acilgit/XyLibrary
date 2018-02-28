@@ -42,7 +42,7 @@ import okhttp3.Response;
  * Created by XY on 2016/6/17.
  * 列表刷新器
  */
-public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerDecoration.VisibilityProvider, FlexibleDividerDecoration.SizeProvider {
+public class XRefresher extends CoordinatorLayout implements FlexibleDividerDecoration.VisibilityProvider, FlexibleDividerDecoration.SizeProvider {
 
     public static final int HEADER_ONE = 0;
 
@@ -62,7 +62,7 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
 
     @SaveState
     private RefreshState state;
-    private XAdapter<T> adapter;
+    private XAdapter adapter;
     private RefreshSetter refreshSetter;
 
     private SwipeRefreshLayout swipe;
@@ -120,7 +120,7 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
     }
 
     @Deprecated
-    public void setup(XyBaseActivity activity, XAdapter<T> adapter, boolean loadMore, OnSwipeListener swipeListener, RefreshRequest refreshRequest) {
+    public void setup(XyBaseActivity activity, XAdapter adapter, boolean loadMore, OnSwipeListener swipeListener, RefreshRequest refreshRequest) {
         RefreshSetter setter = setup(activity, adapter).setOnSwipeListener(swipeListener).setRefreshRequest(refreshRequest);
         if (loadMore) setter.setLoadMore();
     }
@@ -131,7 +131,7 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
      * @param adapter
      * @return
      */
-    public RefreshSetter setup(XyBaseActivity activity, XAdapter<T> adapter) {
+    public RefreshSetter setup(XyBaseActivity activity, XAdapter adapter) {
         refreshSetter = new RefreshSetter(this);
         layoutManager = layoutManager == null ? new XLinearLayoutManager(activity) : layoutManager;
         recyclerView.setLayoutManager(layoutManager);
@@ -337,6 +337,7 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
         }
         this.addDefaultHeader = defaultHeaderAdded ? this.addDefaultHeader : addDefaultHeader;
         this.addDefaultParam = defaultParamAdded ? this.addDefaultParam : addDefaultParam;
+
         activity.newCall().url(url)
                 .body(params)
                 .addDefaultParams(this.addDefaultParam)
@@ -344,15 +345,15 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
                 .call(new OkResponseListener() {
                     @Override
                     public void handleJsonSuccess(Call call, Response response, JSONObject json) {
-                        List<T> getList = refreshRequest.setListData(json);
-                        final List<T> newList;
+                        List getList = refreshRequest.setListData(json);
+                        final List newList;
                         if (getList == null) {
                             newList = new ArrayList<>();
                         } else {
                             newList = getList;
                         }
                         state.setLastPage(/* (refreshType != REFRESH) &&*/ newList.size() < postPageSize);
-                        final List<T> list = new ArrayList<>();
+                        final List list = new ArrayList<>();
                         switch (refreshType) {
                             case REFRESH:
                                 swipe.setRefreshing(false);
@@ -365,9 +366,9 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
                         }
                         adapter.loadingMoreEnd(state.lastPage);
                         if (newList.size() > 0) {
-                            for (T newItem : newList) {
+                            for (Object newItem : newList) {
                                 boolean hasSameItem = false;
-                                for (T listItem : list) {
+                                for (Object listItem : list) {
                                     if (refreshRequest.ignoreSameItem(newItem, listItem)) {
                                         hasSameItem = true;
                                         break;
@@ -457,7 +458,7 @@ public class XRefresher<T> extends CoordinatorLayout implements FlexibleDividerD
         this.state.pageIndex = options.firstPage;
     }
 
-    public XAdapter<T> getAdapter() {
+    public XAdapter getAdapter() {
         return adapter;
     }
 
