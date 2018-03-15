@@ -11,7 +11,9 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -73,8 +75,19 @@ public class CompulsiveHelperActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private TextView tvIgnore;
 
-
     private static final int REQ_PERMISSION_CODE_STORE = 102;
+
+    private static final int MSG_NOTIFY_FILE_LENGTH = 0;
+
+    private static final int MSG_NOTIFY_FILE_DOWNLOAD_LENGTH = 1;
+
+    private static final int MSG_NOTIFY_FILE_DOWNLOAD_FINISH = 2;
+
+    /**
+     * 8.0上请求安装未知来源权限
+     */
+    private static final int REQUEST_CODE_INSTALL_PERMISSION = 10086;
+
 
     public interface CancelCallBack {
 
@@ -101,7 +114,12 @@ public class CompulsiveHelperActivity extends AppCompatActivity {
     private OutputStream outputStream;
     private boolean cancelDownload;
     private boolean noFileLength = false;
-    // 是否已经点击操作了，免费多个按键同时按下报Null
+
+    private boolean isDownloadComplete = false;
+
+    /**
+     * 是否已经点击操作了，免费多个按键同时按下报Null
+     */
     private boolean keyPressed = false;
 
 //    private Options options;
@@ -126,6 +144,7 @@ public class CompulsiveHelperActivity extends AppCompatActivity {
     }
 
     public static void update(Context context, CancelCallBack cancelCallback, Options options) {
+
         Intent intent = new Intent(context, CompulsiveHelperActivity.class);
         cancelCallBack = cancelCallback;
         ignoreCallback = options.getIgnoreCallback();
@@ -198,89 +217,26 @@ public class CompulsiveHelperActivity extends AppCompatActivity {
         tvIgnore.setVisibility(ignoreCallback == null ? View.GONE : View.VISIBLE);
 
         if (downloadHandler == null) {
-            downloadHandler = new Handler() {
-                int fileLength = 0;
-
-                @Override
-                public void handleMessage(Message msg) {
-                    super.handleMessage(msg);
-                    switch (msg.what) {
-                        case 0: // fileLength
-                            fileLength = msg.arg1;
-                            noFileLength = fileLength <= 0;
-                            if (fileLength <= 0) {
-                                fileLength = defaultDownloadFileSize;
-                            }
-                            tvFileLength.setText(String.valueOf(fileLength / 1024));
-                            break;
-                        case 1: // fileDownloadLength
-                            tvConfirm.setSelected(true);
-                            tvConfirm.setText(R.string.text_cancel_update);
-                            if (noFileLength && msg.arg1 * 1.05f >= fileLength) {
-                                fileLength = (int) (fileLength * 1.2f);
-                                tvFileLength.setText(String.valueOf(fileLength / 1024));
-                            }
-                            tvCancel.setVisibility(View.GONE);
-                            tvIgnore.setVisibility(View.GONE);
-                            tvDownFileLength.setText(String.valueOf(msg.arg1 / 1024));
-                            int progress = (int) ((100.0d * msg.arg1) / fileLength);
-                            progressBar.setProgress(progress);
-                            tvUpdateProgress.setText(String.format(getString(R.string.percent), String.valueOf(progress)));
-                            if (cancelCallBack != null) {
-                                cancelCallBack.onDownLoad(msg.arg1, fileLength);
-                            }
-                            break;
-                        case 2: // finish
-                            Intent intent = new Intent();
-                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            intent.setAction(Intent.ACTION_VIEW);
-                          /*  intent.setDataAndType(Uri.fromFile(new File(getDownloadTempFileName())),
-                            "application/vnd.android.package-archive");*/
-                            //适配7.0文件访问
-                            FileProvider7.setIntentDataAndType(CompulsiveHelperActivity.this,
-                                    intent, "application/vnd.android.package-archive", new File(getDownloadTempFileName()), true);
-
-                            startActivity(intent);
-                            if (cancelCallBack != null) {
-                                cancelCallBack.onFinish(isMust());
-                            }
-                            break;
-                        default: // failed
-                            if (cancelDownload) {
-                                if (cancelCallBack != null) {
-                                    cancelCallBack.onCancel(isMust());
-                                }
-                                finish();
-                            } else {
-                                tvIllustration.setText(TextUtils.isEmpty(errorTips) ?
-                                        getString(R.string.update_error_tips) : errorTips + "\n" + msg.obj + "\n" +
-                                        contacts_way);
-                                tvIllustration.setVisibility(View.VISIBLE);
-                                tvConfirm.setSelected(false);
-                                tvConfirm.setText(TextUtils.isEmpty(confirm) ? getString(R.string.update_now) : confirm);
-                                if (!isMust()) {
-                                    tvCancel.setVisibility(View.VISIBLE);
-                                }
-                            }
-                            break;
-                    }
-                }
-            };
+            downloadHandler = new DownloadHandler();
         }
         //when update click
         tvConfirm.setOnClickListener((v) -> {
-
-            /**
-             * 原始方式获取权限 成功后去下载
-              */
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-                    && ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                    ActivityCompat.requestPermissions(this,
-                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQ_PERMISSION_CODE_STORE);
-                }
+            /* 如果已经下载完成了直接安装 */
+            if (isDownloadComplete) {
+                installProcess();
             } else {
-                commitDownload();
+                /**
+                 * 原始方式获取权限 成功后去下载
+                 */
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                        && ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                        ActivityCompat.requestPermissions(this,
+                                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQ_PERMISSION_CODE_STORE);
+                    }
+                } else {
+                    commitDownload();
+                }
             }
 
         });
@@ -306,6 +262,139 @@ public class CompulsiveHelperActivity extends AppCompatActivity {
         });
     }
 
+    class DownloadHandler extends Handler {
+        int fileLength = 0;
+
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                /* 文件长度 */
+                case MSG_NOTIFY_FILE_LENGTH:
+                    fileLength = msg.arg1;
+                    noFileLength = fileLength <= 0;
+                    if (fileLength <= 0) {
+                        fileLength = defaultDownloadFileSize;
+                    }
+                    tvFileLength.setText(String.valueOf(fileLength / 1024));
+                    break;
+                 /* 文件已下载长度 */
+                case MSG_NOTIFY_FILE_DOWNLOAD_LENGTH:
+                    tvConfirm.setSelected(true);
+                    tvConfirm.setText(R.string.text_cancel_update);
+                    if (noFileLength && msg.arg1 * 1.05f >= fileLength) {
+                        fileLength = (int) (fileLength * 1.2f);
+                        tvFileLength.setText(String.valueOf(fileLength / 1024));
+                    }
+                    tvCancel.setVisibility(View.GONE);
+                    tvIgnore.setVisibility(View.GONE);
+                    tvDownFileLength.setText(String.valueOf(msg.arg1 / 1024));
+                    int progress = (int) ((100.0d * msg.arg1) / fileLength);
+                    progressBar.setProgress(progress);
+                    tvUpdateProgress.setText(String.format(getString(R.string.percent), String.valueOf(progress)));
+                    if (cancelCallBack != null) {
+                        cancelCallBack.onDownLoad(msg.arg1, fileLength);
+                    }
+                    break;
+                /* 文件下载结束 */
+                case MSG_NOTIFY_FILE_DOWNLOAD_FINISH:
+
+                    isDownloadComplete = true;
+
+                    tvConfirm.setText(R.string.install_apk);
+
+                    installProcess();
+
+                    if (cancelCallBack != null) {
+                        cancelCallBack.onFinish(isMust());
+                    }
+
+                    break;
+                default: // failed
+                    if (cancelDownload) {
+                        if (cancelCallBack != null) {
+                            cancelCallBack.onCancel(isMust());
+                        }
+                        finish();
+                    } else {
+                        tvIllustration.setText(TextUtils.isEmpty(errorTips) ?
+                                getString(R.string.update_error_tips) : errorTips + "\n" + msg.obj + "\n" +
+                                contacts_way);
+                        tvIllustration.setVisibility(View.VISIBLE);
+                        tvConfirm.setSelected(false);
+                        tvConfirm.setText(TextUtils.isEmpty(confirm) ? getString(R.string.update_now) : confirm);
+                        if (!isMust()) {
+                            tvCancel.setVisibility(View.VISIBLE);
+                        }
+                    }
+                    break;
+            }
+        }
+    }
+
+    /**
+     * 安装应用的流程  大于8.0需要用户手动打开未知来源安装权限
+     */
+    private void installProcess() {
+
+        boolean haveInstallPermission;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            haveInstallPermission = getPackageManager().canRequestPackageInstalls();
+            if (!haveInstallPermission) {
+                //没有未知来源安装权限权限
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle(R.string.tips);
+
+                builder.setMessage(R.string.not_have_install_permission);
+                builder.setPositiveButton(R.string.go_to_set, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            startInstallPermissionSettingActivity();
+                        }
+                    }
+                });
+                builder.show();
+                return;
+            }
+        }
+
+        installApk();
+
+    }
+
+    /**
+     * 有权限，开始安装应用程序
+     */
+    private void installApk() {
+        Intent intent = new Intent();
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setAction(Intent.ACTION_VIEW);
+                          /*  intent.setDataAndType(Uri.fromFile(new File(getDownloadTempFileName())),
+                            "application/vnd.android.package-archive");*/
+        //适配7.0文件访问
+        FileProvider7.setIntentDataAndType(CompulsiveHelperActivity.this,
+                intent, "application/vnd.android.package-archive", new File(getDownloadTempFileName()), true);
+        startActivity(intent);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void startInstallPermissionSettingActivity() {
+        //注意这个是8.0新API
+        Uri packageURI = Uri.parse("package:" + getPackageName());
+        Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, packageURI);
+        startActivityForResult(intent, REQUEST_CODE_INSTALL_PERMISSION);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK && requestCode == REQUEST_CODE_INSTALL_PERMISSION) {
+            installProcess();//再次执行安装流程，包含权限判等
+        }
+
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -314,7 +403,7 @@ public class CompulsiveHelperActivity extends AppCompatActivity {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 for (int permission : grantResults) {
                     if (permission != PackageManager.PERMISSION_GRANTED) {
-                        Toast.makeText(this, "未获取权限,请到应用管理设置", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, R.string.failed_to_get_permission_please_go_settings, Toast.LENGTH_SHORT).show();
                         return;
                     }
                 }
@@ -322,16 +411,16 @@ public class CompulsiveHelperActivity extends AppCompatActivity {
             } else {
                 // Permission Denied 可以弹窗告知去跳转设置页面
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("提示");
-                builder.setMessage("您未授予访问媒体文件权限，请前去设置");
-                builder.setPositiveButton("去设置", (dialog, which) -> {
+                builder.setTitle(R.string.tips);
+                builder.setMessage(R.string.not_have_permission_to_assess_media_failes);
+                builder.setPositiveButton(R.string.go_to_set, (dialog, which) -> {
                     Intent localIntent = new Intent();
                     localIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     localIntent.setAction("android.settings.APPLICATION_DETAILS_SETTINGS");
                     localIntent.setData(Uri.fromParts("package", getPackageName(), null));
                     startActivity(localIntent);
                 });
-                builder.setNegativeButton("取消", null);
+                builder.setNegativeButton(R.string.cancel, null);
                 builder.show();
 
             }
@@ -346,6 +435,7 @@ public class CompulsiveHelperActivity extends AppCompatActivity {
         if (tvConfirm.isSelected() && Integer.valueOf(tvDownFileLength.getText().toString().trim()) > 0) {
             tvConfirm.setSelected(false);
             cancelDownload = true;
+
         } else {
             if (keyPressed) {
                 return;
@@ -434,7 +524,7 @@ public class CompulsiveHelperActivity extends AppCompatActivity {
             outputStream = new FileOutputStream(file);
 
             message.arg1 = fileLength;
-            message.what = 0;
+            message.what = MSG_NOTIFY_FILE_LENGTH;
             downloadHandler.sendMessage(message);
 
             try {
@@ -449,14 +539,14 @@ public class CompulsiveHelperActivity extends AppCompatActivity {
                     downedFileLength = downedFileLength + length;
                     Message message1 = new Message();
                     message1.arg1 = downedFileLength;
-                    message1.what = 1;
+                    message1.what = MSG_NOTIFY_FILE_DOWNLOAD_LENGTH;
                     downloadHandler.sendMessage(message1);
                 }
                 fos.flush();
                 fos.close();
                 inputStream.close();
                 Message message2 = new Message();
-                message2.what = 2;
+                message2.what = MSG_NOTIFY_FILE_DOWNLOAD_FINISH;
                 downloadHandler.sendMessage(message2);
             } catch (Exception e) {
                 e.printStackTrace();

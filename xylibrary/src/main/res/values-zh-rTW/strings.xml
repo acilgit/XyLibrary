@@ -1,0 +1,69 @@
+<resources>
+
+
+    <!--跟随系统语言，此目录为繁体 引用名称需相同-->
+    <string name="app_name">XYLibrary</string>
+        
+    <string name="blank"></string>
+        
+    <string name="text_take_photo">拍攝照片</string>
+        
+    <string name="text_photo_unit">張</string>
+        
+    <string name="text_done">完成</string>
+        
+    <string name="text_folder_all">所有照片</string>
+        
+    <string name="text_preview">預覽</string>
+        
+    <string name="msg_photo_error">圖片錯誤</string>
+        
+    <string name="msg_no_camera">沒有系統相機</string>
+        
+    <string name="msg_amount_limit">已經達到最高選擇數量</string>
+        
+    <string name="compress_listener_not_null">壓縮圖片監聽不能為空</string>
+        
+    <string name="compress_parent_path_can_not_be_null">壓縮目錄不能為空</string>
+        
+    <string name="father_can_not_be_a_file">父目錄不能是文件</string>
+        
+    <string name="file_uri_error">文件uri錯誤</string>
+        
+    <string name="file_no_exits">文件不存在</string>
+        
+    <string name="params_can_not_be_null">參數不能為空​​</string>
+        
+    <string name="array_out_of_bouds">array_out_of_bouds</string>
+        
+    <string name="text_today">"今天 "</string>
+        
+    <string name="text_yestoday">"昨天 "</string>
+        
+    <string name="text_before_yestoday">"前天 "</string>
+
+    <string name="ignoreThisVersion">忽略此版本</string>
+    <string name="update_now">現在更新</string>
+    <string name="new_version">新版本</string>
+    <string name="text_update_next_time">暫不更新</string>
+    <string name="text_updating">正在更新</string>
+    <string name="text_cancel_update">取消更新</string>
+    <string name="text_update_now">現在更新</string>
+    <string name="update_illustration">暫無說明</string>
+    <string name="tips_get_dowload_url_fail">獲取下載地址失敗</string>
+    <string name="separator">/</string>
+    <string name="percent" formatted="false">%s%%</string>
+    <string name="zero">0</string>
+    <string name="update_connecting">正在連接</string>
+    <string name="update_error_tips">更新包時出現問題:</string>
+
+    <string name="failed_to_get_permission_please_go_settings">未獲取權限,請到應用管理設置</string>
+    <string name="tips">提示</string>
+    <string name="not_have_permission_to_assess_media_failes">您未授予訪問媒體文件權限，請前去設置</string>
+    <string name="go_to_set">去設置</string>
+    <string name="cancel">取消</string>
+    <string name="not_have_install_permission">安裝應用需要打開未知來源權限，請去設置中開啟應用權限，以允許安裝來自此來源的應用</string>
+
+    <string name="install_apk">安裝Apk</string>
+
+</resources>
