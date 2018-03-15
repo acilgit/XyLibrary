@@ -27,7 +27,7 @@ public class FileProvider7 {
      */
     public static Uri getUriForFile(Context context, File file) {
         Uri fileUri = null;
-        if (Build.VERSION.SDK_INT >= 24) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             fileUri = getUriForFile24(context, file);
         } else {
             fileUri = Uri.fromFile(file);
@@ -54,7 +54,8 @@ public class FileProvider7 {
                                             String type,
                                             File file,
                                             boolean writeAble) {
-        if (Build.VERSION.SDK_INT >= 24) {
+        /*  Android7.0之后获取uri要用contentProvider */
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             intent.setDataAndType(getUriForFile(context, file), type);
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             if (writeAble) {
@@ -70,7 +71,7 @@ public class FileProvider7 {
                                      Intent intent,
                                      File file,
                                      boolean writeAble) {
-        if (Build.VERSION.SDK_INT >= 24) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             intent.setData(getUriForFile(context, file));
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             if (writeAble) {

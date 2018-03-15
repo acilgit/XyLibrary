@@ -7,6 +7,9 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
+    <!--安装未知来源权限 -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+
     <application
         android:name=".App"
         android:allowBackup="true"
@@ -41,9 +44,9 @@
         <activity android:name=".MainActivity" />
         <activity android:name=".test.DragTestActivity" />
         <activity android:name=".test.DragSampleActivity" />
-        <activity android:name=".test.GuideActivity"
-            android:theme="@style/AppTheme.Splash"
-            />
+        <activity
+            android:name=".test.GuideActivity"
+            android:theme="@style/AppTheme.Splash" />
 
 
         <!--阿里Hotfix-->
