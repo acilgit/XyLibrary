@@ -46,7 +46,9 @@ dependencies {
     compile 'com.android.support:appcompat-v7:26.1.0'
     compile 'com.android.support:design:26.1.0'
     /* json解析*/
-    compile 'com.alibaba:fastjson:1.2.14'
+    compile 'com.alibaba:fastjson:1.2.31'
+//    compile 'com.alibaba:fastjson:1.2.46'
+//    compile 'com.alibaba:fastjson:1.2.14'
     /* SQLite */
 //    compile 'org.greenrobot:greendao:3.1.0'
     /* 水波纹 */
@@ -88,7 +90,7 @@ ext {
     siteUrl = 'https://github.com/acilgit/XyLibrary'
     gitUrl = 'https://github.com/acilgit/XyLibrary.git'
 
-    libraryVersion = '0.8.49'
+    libraryVersion = '0.8.53'
 
     developerId = 'acil'
     developerName = 'acil-fong'
