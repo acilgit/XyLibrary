@@ -78,6 +78,7 @@ public class HomeActivity extends XyBaseActivity implements View.OnClickListener
             case R.id.btnGuide:
                 start(GuideActivity.class);
                 break;
+                default:
         }
     }
 

@@ -50,6 +50,7 @@ public class PhotoActivity extends BasePhotoActivity {
 
     @Override
     protected Options setDisplayOptions() {
+
         Options options = new Options();
         options.setShowDotsView(true);
         options.setBitmapFailureRes(R.mipmap.ic_launcher);

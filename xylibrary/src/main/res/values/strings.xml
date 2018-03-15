@@ -19,6 +19,7 @@
     <string name="text_today">"今天 "</string>
     <string name="text_yestoday">"昨天 "</string>
     <string name="text_before_yestoday">"前天 "</string>
+
     <string name="ignoreThisVersion">忽略此版本</string>
     <string name="update_now">现在更新</string>
     <string name="new_version">新版本</string>
@@ -33,5 +34,12 @@
     <string name="zero">0</string>
     <string name="update_connecting">正在连接</string>
     <string name="update_error_tips">更新包时出现问题:</string>
+    <string name="failed_to_get_permission_please_go_settings">未获取权限,请到应用管理设置</string>
+    <string name="tips">提示</string>
+    <string name="not_have_permission_to_assess_media_failes">您未授予访问媒体文件权限，请前去设置</string>
+    <string name="go_to_set">去设置</string>
+    <string name="cancel">取消</string>
+    <string name="not_have_install_permission">安装应用需要打开未知来源权限，请去设置中开启应用权限，以允许安装来自此来源的应用</string>
+    <string name="install_apk">安装Apk</string>
 
 </resources>
