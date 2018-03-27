@@ -178,7 +178,7 @@ public class OkHttp {
      * 网络请求命令，只供CallItem调用
      *
      * @param activity           当传入Activity时，或者Activity没有被销毁则运行在主线程，否则运行在IO线程
-     * @param url                请求地址，Get请求只要把拼接参数写进param内则可
+     * @param originUrl          请求地址，Get请求只要把拼接参数写进param内则可
      * @param params             Post或Get的参数
      * @param addDefaultParams   添加默认参数
      * @param header             请求头
@@ -186,7 +186,7 @@ public class OkHttp {
      * @param okResponseListener 回调监听
      * @return
      */
-    static void request(MediaType itemMediaType, int method, final Activity activity, String url, Param params, boolean addDefaultParams, Header header, boolean addDefaultHeader,
+    static void request(MediaType itemMediaType, int method, final Activity activity, String originUrl, Param params, boolean addDefaultParams, Header header, boolean addDefaultHeader,
                         final OkResponseListener okResponseListener) {
         final Call[] call = {null};
         // 使用RxJava2进行请求管理
@@ -198,6 +198,8 @@ public class OkHttp {
                     StringBuffer sb = new StringBuffer();
                     // Log标题
                     String logTitle;
+
+                    String url = originUrl;
 
                     FormBody.Builder formBodyBuilder = new FormBody.Builder();
                     // 参数处理，并且把参数
@@ -242,6 +244,7 @@ public class OkHttp {
                             }
                         }
                         allParam = debugItem.getParam();
+                        url = debugItem.getUrl();
                     }
                     debugKey = keyForDebug;
 

@@ -36,6 +36,10 @@ public abstract class ApiHelper {
     }
 
     public String getServer(String apiAddress) {
+        return getServer(-1, apiAddress);
+    }
+
+    public String getServer(int port, String apiAddress) {
         String url = TextUtils.isEmpty(apiAddress) ? "" : apiAddress;
         if (Xy.isRelease()) {
             server = getReleaseUrl();
@@ -44,13 +48,20 @@ public abstract class ApiHelper {
                 String tempServer = Xy.getStorage(Xy.getContext()).getString(SERVER);
                 if (!TextUtils.isEmpty(tempServer)) {
                     server = tempServer;
-                    return server + url;
+                    return replacePort(server, port) + url;
                 }
                 server = getDebugUrl();
             }
         }
-        url = server + url;
+        url = replacePort(server, port) + url;
         return url;
+    }
+
+    private String replacePort(String server, int port) {
+        String url = server;
+//        int portColonPos = server.indexOf(":", server.indexOf("://"));
+//        int portSlashPos = server.indexOf("/", portColonPos);
+        return url + (port >= 0 ? (":" + port) : "");
     }
 
     /**
@@ -73,7 +84,7 @@ public abstract class ApiHelper {
         String listString = Xy.getStorage(Xy.getContext()).getString(SERVER_LIST);
         List<String> list;
         list = setOptionUrlList(new ArrayList<>());
-        if (list == null ) {
+        if (list == null) {
             list = new ArrayList<>();
         }
         list.add(0, getDebugUrl());
