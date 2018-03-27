@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">XYLibrary</string>
     <string name="blank"></string>
     <string name="text_take_photo">拍摄照片</string>
     <string name="text_photo_unit">张</string>
@@ -19,7 +18,6 @@
     <string name="text_today">"今天 "</string>
     <string name="text_yestoday">"昨天 "</string>
     <string name="text_before_yestoday">"前天 "</string>
-
     <string name="ignoreThisVersion">忽略此版本</string>
     <string name="update_now">现在更新</string>
     <string name="new_version">新版本</string>
