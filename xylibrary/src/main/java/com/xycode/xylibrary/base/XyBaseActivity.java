@@ -29,6 +29,7 @@ import com.xycode.xylibrary.interfaces.Interfaces;
 import com.xycode.xylibrary.interfaces.PermissionListener;
 import com.xycode.xylibrary.okHttp.CallItem;
 import com.xycode.xylibrary.okHttp.OkHttp;
+import com.xycode.xylibrary.takephoto.model.TImage;
 import com.xycode.xylibrary.utils.LogUtil.LogLayout;
 import com.xycode.xylibrary.unit.MsgEvent;
 import com.xycode.xylibrary.utils.LogUtil.L;
@@ -54,7 +55,7 @@ public abstract class XyBaseActivity extends AppCompatActivity {
     public static final int REQUEST_CODE_GOT_PHONE_NUMBER = 301;
     private static final int REQUEST_PEIMISSION_CODE = 1000;
 
-    private static List<Activity> activities = new LinkedList<>();
+    protected static List<Activity> activities = new LinkedList<>();
 
     private static AlertDialog loadingDialog;
 
@@ -409,10 +410,12 @@ public abstract class XyBaseActivity extends AppCompatActivity {
         if (data != null) {
             uri = data.getData();
         }
-        onPhotoSelectResult(resultCode, uri);
+//        if(requestCode == PhotoSelectBaseActivity.REQUEST_CODE_SELECT_PHOTO && resultCode == RESULT_OK)
+        if( resultCode == RESULT_OK && data.getBooleanExtra(PhotoSelectBaseActivity.SELECT_SUCCESS, false))
+            onPhotoSelectResult(data, (ArrayList<TImage>)data.getSerializableExtra(PhotoSelectBaseActivity.IMAGES));
     }
 
-    protected void onPhotoSelectResult(int resultCode, Uri uri) {
+    protected void onPhotoSelectResult(Intent data, ArrayList<TImage> images) {
 
     }
 

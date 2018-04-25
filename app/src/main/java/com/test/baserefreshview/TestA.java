@@ -39,7 +39,7 @@ public class TestA extends XyBaseActivity implements ImageCompressTask.CompressL
 //one = (NiceSpinner) findViewById(R.id.test_one);
         //two = (NiceSpinner) findViewById(R.id.test_two);
         // button = (Button) findViewById(R.id.btn);
-        // button.setOnClickListener((view) -> PhotoSelectActivity.startForResult(getThis(), PhotoSelectActivity.class, PhotoSelectBaseActivity.CropParam.out(0, 0)));
+        // button.setOnClickListener((view) -> PhotoSelectActivity.startForResult(getThis(), PhotoSelectActivity.class, PhotoSelectBaseActivity.PhotoParam.out(0, 0)));
         List<String> list = new ArrayList<>();
         list.add("或在在要要在");
         list.add("在在要要在");
@@ -75,7 +75,7 @@ public class TestA extends XyBaseActivity implements ImageCompressTask.CompressL
         return null;
     }
 
-    @Override
+ /*   @Override
     protected void onPhotoSelectResult(int resultCode, final Uri uri) {
         super.onPhotoSelectResult(resultCode, uri);
         showLoadingDialog();
@@ -83,7 +83,7 @@ public class TestA extends XyBaseActivity implements ImageCompressTask.CompressL
             new Thread(new ImageCompressTask(getThis(), uri, App.getInstance().getCacheDir().getAbsolutePath()+ File.separator + "transfer" + File.separator, TestA.this)).start();
         }
         //setMultiView(uri);
-    }
+    }*/
 
     @Override
     public void done(List<File> files, List<File> fails, boolean allSuccess) {
