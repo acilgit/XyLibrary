@@ -406,16 +406,15 @@ public abstract class XyBaseActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Uri uri = null;
-        if (data != null) {
-            uri = data.getData();
+        if( resultCode == RESULT_OK && data != null && data.getBooleanExtra(PhotoSelectBaseActivity.SELECT_SUCCESS, false)) {
+            ArrayList<TImage> images = (ArrayList<TImage>) data.getSerializableExtra(PhotoSelectBaseActivity.IMAGES);
+            if(images == null) images = new ArrayList<>();
+            TImage image = images.size() > 0 ? images.get(0) : null;
+            onPhotoSelectResult(data, images, image);
         }
-//        if(requestCode == PhotoSelectBaseActivity.REQUEST_CODE_SELECT_PHOTO && resultCode == RESULT_OK)
-        if( resultCode == RESULT_OK && data.getBooleanExtra(PhotoSelectBaseActivity.SELECT_SUCCESS, false))
-            onPhotoSelectResult(data, (ArrayList<TImage>)data.getSerializableExtra(PhotoSelectBaseActivity.IMAGES));
     }
 
-    protected void onPhotoSelectResult(Intent data, ArrayList<TImage> images) {
+    protected void onPhotoSelectResult(Intent data, ArrayList<TImage> images, TImage image) {
 
     }
 
@@ -424,7 +423,6 @@ public abstract class XyBaseActivity extends AppCompatActivity {
     public AlertDialog getLoadingDialog() {
         return loadingDialog;
     }
-
 
     protected interface WindowMode {
         // 输入适应

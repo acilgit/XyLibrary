@@ -374,22 +374,20 @@ public class TakePhotoImpl implements TakePhoto {
     @Override
     public void onPickFromCapture(Uri outPutUri) {
         this.fromType = TImage.FromType.CAMERA;
-        L.e("1");
         if (PermissionManager.TPermissionType.WAIT.equals(permissionType)) {
             return;
-        }L.e("2");
-        if (Build.VERSION.SDK_INT >= 23) {
-            this.outPutUri = TUriParse.convertFileUriToFileProviderUri(contextWrap.getActivity(), outPutUri);L.e("21");
-        } else {
-            this.outPutUri = outPutUri;L.e("22");
         }
-        L.e("3");
+        if (Build.VERSION.SDK_INT >= 23) {
+            this.outPutUri = TUriParse.convertFileUriToFileProviderUri(contextWrap.getActivity(), outPutUri);
+        } else {
+            this.outPutUri = outPutUri;
+        }
         try {
             TUtils.captureBySafely(contextWrap,
                 new TIntentWap(IntentUtils.getCaptureIntent(this.outPutUri), TConstant.RC_PICK_PICTURE_FROM_CAPTURE));
         } catch (TException e) {
             takeResult(TResult.of(TImage.of("", fromType)), e.getDetailMessage());
-            e.printStackTrace();L.e("4");
+            e.printStackTrace();
         }
     }
 

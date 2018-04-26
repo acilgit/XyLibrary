@@ -66,7 +66,7 @@ public class HomeActivity extends XyBaseActivity implements View.OnClickListener
             case R.id.btnTakePhoto:
                 CropOptions options = new CropOptions.Builder().create();
                 options.setCrop(false);
-                PhotoSelectActivity.startForResult(getThis(), PhotoSelectActivity.class, new PhotoSelectBaseActivity.PhotoParam()
+                PhotoSelectActivity.startForResult(getThis(), PhotoSelectActivity.class, new PhotoSelectBaseActivity.PhotoParam(true)
                 ,options);
 
 //                PhotoSelectActivity.startForResult(getThis(), Const.cropParam, null, true);
@@ -93,15 +93,14 @@ public class HomeActivity extends XyBaseActivity implements View.OnClickListener
     }
 
 
-
     @Override
-    protected void onPhotoSelectResult(Intent data, ArrayList<TImage> images) {
-        super.onPhotoSelectResult(data, images);
+    protected void onPhotoSelectResult(Intent data, ArrayList<TImage> images, TImage image) {
+        super.onPhotoSelectResult(data, images, image);
 
         if (images != null && images.size() > 0) {
-            Uri uri = Uri.fromFile(new File(images.get(0).getOriginalPath()));
+            Uri uri = Uri.fromFile(new File(images.get(0).getCompressPath()));
             L.e("path2: " + Tools.getRealFilePath(uri));
-            rootHolder().setImageUrl(R.id.sivPhoto, "file://" + Tools.getRealFilePath(uri));
+            rootHolder().setImageUrl(R.id.sivPhoto, new File(images.get(0).getCompressPath()));
         }
     }
 

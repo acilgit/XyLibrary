@@ -13,8 +13,10 @@ import com.xycode.xylibrary.interfaces.PermissionListener;
 import com.xycode.xylibrary.takephoto.app.TakePhoto;
 import com.xycode.xylibrary.takephoto.app.TakePhotoActivity;
 import com.xycode.xylibrary.takephoto.model.CropOptions;
+import com.xycode.xylibrary.takephoto.model.TImage;
 import com.xycode.xylibrary.takephoto.model.TResult;
 import com.xycode.xylibrary.takephoto.model.TakePhotoOptions;
+import com.xycode.xylibrary.utils.ImageUtils;
 import com.xycode.xylibrary.utils.LogUtil.L;
 
 import java.io.File;
@@ -86,7 +88,8 @@ public abstract class PhotoSelectBaseActivity extends TakePhotoActivity {
         if (cropOptions.isCrop()) {
             takePhoto.onPickFromCaptureWithCrop(imageUri, cropOptions);
         } else {
-            takePhoto.onPickFromCapture(imageUri);
+            takePhoto.onPickFromCaptureWithCrop(imageUri, cropOptions.setCrop(true));
+//            takePhoto.onPickFromCapture(imageUri);
         }
     }
 
@@ -132,18 +135,72 @@ public abstract class PhotoSelectBaseActivity extends TakePhotoActivity {
     }
 
     public static class PhotoParam implements Serializable {
+
+        /**
+         * 多选限制
+         */
         int multiSelectLimit = 1;
+
+        /**
+         * 图片压缩质量
+         */
+        int jpgQuality = 80;
+        int jpgMaxSide = 1024;
+        int jpgMinSide = 256;
+
+        boolean useCompress = false;
 
         public PhotoParam() {
 
+        }
+
+        public PhotoParam(boolean useCompress) {
+            this.useCompress = useCompress;
         }
 
         public int getMultiSelectLimit() {
             return multiSelectLimit;
         }
 
-        public void setMultiSelectLimit(int multiSelectLimit) {
+        public PhotoParam setMultiSelectLimit(int multiSelectLimit) {
             this.multiSelectLimit = multiSelectLimit;
+            return this;
+        }
+
+        public int getJpgQuality() {
+            return jpgQuality;
+        }
+
+        public PhotoParam setJpgQuality(int jpgQuality) {
+            this.jpgQuality = jpgQuality;
+            return this;
+        }
+
+        public int getJpgMaxSide() {
+            return jpgMaxSide;
+        }
+
+        public PhotoParam setJpgMaxSide(int jpgMaxSide) {
+            this.jpgMaxSide = jpgMaxSide;
+            return this;
+        }
+
+        public int getJpgMinSide() {
+            return jpgMinSide;
+        }
+
+        public PhotoParam setJpgMinSide(int jpgMinSide) {
+            this.jpgMinSide = jpgMinSide;
+            return this;
+        }
+
+        public boolean isUseCompress() {
+            return useCompress;
+        }
+
+        public PhotoParam setUseCompress(boolean useCompress) {
+            this.useCompress = useCompress;
+            return this;
         }
     }
 
@@ -152,10 +209,27 @@ public abstract class PhotoSelectBaseActivity extends TakePhotoActivity {
         super.takeSuccess(result);
         Intent intent = new Intent();
         intent.putExtra(SELECT_SUCCESS, true);
-        intent.putExtra(IMAGES, result.getImages());
-        for (int i = 0; i < result.getImages().size(); i++) {
-            L.e("path: " + result.getImages().get(i).getOriginalPath());
+
+        if (param.isUseCompress()) {
+            for (int i = 0; i < result.getImages().size(); i++) {
+                TImage img = result.getImages().get(i);
+                File file = new File(Environment.getExternalStorageDirectory(), "/temp/compress" + System.currentTimeMillis() + ".jpg");
+
+                try {
+                    if (ImageUtils.compressBitmapFromPathToFile(img.getOriginalPath(), file, param.jpgQuality, param.jpgMaxSide, param.jpgMinSide)) {
+                        img.setCompressed(true);
+                        img.setCompressPath(file.getAbsolutePath());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    L.e(e.getMessage());
+                }
+
+                L.i("path: " + new File(result.getImages().get(i).getOriginalPath()).length()+  "  "+result.getImages().get(i).isCompressed()+ " com: "+ file.length());
+            }
         }
+
+        intent.putExtra(IMAGES, result.getImages());
         setResult(RESULT_OK, intent);
         finish();
     }

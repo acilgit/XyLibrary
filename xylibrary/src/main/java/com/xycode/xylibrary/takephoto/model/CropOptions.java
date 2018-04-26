@@ -25,48 +25,60 @@ public class CropOptions implements Serializable {
         return isCrop;
     }
 
-    public void setCrop(boolean crop) {
+    public CropOptions setCrop(boolean crop) {
+
         isCrop = crop;
+        return this;
     }
 
     public int getAspectX() {
         return aspectX;
     }
 
-    public void setAspectX(int aspectX) {
+    public CropOptions setAspectX(int aspectX) {
+
         this.aspectX = aspectX;
+        return this;
     }
 
     public int getAspectY() {
         return aspectY;
     }
 
-    public void setAspectY(int aspectY) {
+    public CropOptions setAspectY(int aspectY) {
+
         this.aspectY = aspectY;
+        return this;
     }
 
     public int getOutputX() {
         return outputX;
     }
 
-    public void setOutputX(int outputX) {
+    public CropOptions setOutputX(int outputX) {
+
         this.outputX = outputX;
+        return this;
     }
 
     public int getOutputY() {
         return outputY;
     }
 
-    public void setOutputY(int outputY) {
+    public CropOptions setOutputY(int outputY) {
+
         this.outputY = outputY;
+        return this;
     }
 
     public boolean isWithOwnCrop() {
         return withOwnCrop;
     }
 
-    public void setWithOwnCrop(boolean withOwnCrop) {
+    public CropOptions setWithOwnCrop(boolean withOwnCrop) {
+
         this.withOwnCrop = withOwnCrop;
+        return this;
     }
 
     public static class Builder {
@@ -98,6 +110,10 @@ public class CropOptions implements Serializable {
 
         public Builder setWithOwnCrop(boolean withOwnCrop) {
             options.setWithOwnCrop(withOwnCrop);
+            return this;
+        }
+        public Builder setCrop(boolean isCrop) {
+            options.setCrop(isCrop);
             return this;
         }
 
