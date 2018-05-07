@@ -321,6 +321,7 @@ public class CompulsiveHelperActivity extends AppCompatActivity {
                                 getString(R.string.update_error_tips) : errorTips + "\n" + msg.obj + "\n" +
                                 contacts_way);
                         tvIllustration.setVisibility(View.VISIBLE);
+                        keyPressed = false;
                         tvConfirm.setSelected(false);
                         tvConfirm.setText(TextUtils.isEmpty(confirm) ? getString(R.string.update_now) : confirm);
                         if (!isMust()) {
