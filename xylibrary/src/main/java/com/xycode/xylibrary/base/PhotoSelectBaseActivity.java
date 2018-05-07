@@ -33,6 +33,7 @@ public abstract class PhotoSelectBaseActivity extends TakePhotoActivity {
     private PhotoParam param;
     private CropOptions cropOptions;
 
+
     public static void startForResult(XyBaseActivity activity, Class activityClass, PhotoParam param) {
         startForResult(activity, activityClass, param, null);
     }
@@ -65,7 +66,7 @@ public abstract class PhotoSelectBaseActivity extends TakePhotoActivity {
         if (param.multiSelectLimit > 1) {
             builder.setWithOwnGallery(true);
         }
-        builder.setCorrectImage(true);
+        builder.setCorrectImage(false);
         takePhoto.setTakePhotoOptions(builder.create());
 
     }
@@ -88,8 +89,8 @@ public abstract class PhotoSelectBaseActivity extends TakePhotoActivity {
         if (cropOptions.isCrop()) {
             takePhoto.onPickFromCaptureWithCrop(imageUri, cropOptions);
         } else {
-            takePhoto.onPickFromCaptureWithCrop(imageUri, cropOptions.setCrop(true));
-//            takePhoto.onPickFromCapture(imageUri);
+//            takePhoto.onPickFromCaptureWithCrop(imageUri, cropOptions.setCrop(true));
+            takePhoto.onPickFromCapture(imageUri);
         }
     }
 
@@ -210,6 +211,16 @@ public abstract class PhotoSelectBaseActivity extends TakePhotoActivity {
         Intent intent = new Intent();
         intent.putExtra(SELECT_SUCCESS, true);
 
+//        File file1 = new File(result.getImages().get(0).getOriginalPath());
+//        L.e("resutl length: " + file1.length() + " exists:" + file1.exists());
+
+        for (int i = 0; i < result.getImages().size(); i++) {
+            TImage img = result.getImages().get(i);
+            File imgFile = new File(img.getOriginalPath());
+            if (!imgFile.exists()) {
+                img.setOriginalPath(new File(Environment.getExternalStorageDirectory(), "/temp/" + imgFile.getName()).getAbsolutePath());
+            }
+        }
         if (param.isUseCompress()) {
             for (int i = 0; i < result.getImages().size(); i++) {
                 TImage img = result.getImages().get(i);

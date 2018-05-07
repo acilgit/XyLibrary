@@ -92,15 +92,17 @@ public class HomeActivity extends XyBaseActivity implements View.OnClickListener
         }
     }
 
-
     @Override
     protected void onPhotoSelectResult(Intent data, ArrayList<TImage> images, TImage image) {
         super.onPhotoSelectResult(data, images, image);
 
         if (images != null && images.size() > 0) {
-            Uri uri = Uri.fromFile(new File(images.get(0).getCompressPath()));
-            L.e("path2: " + Tools.getRealFilePath(uri));
-            rootHolder().setImageUrl(R.id.sivPhoto, new File(images.get(0).getCompressPath()));
+//            Uri uri = Uri.fromFile(new File(images.get(0).getCompressPath()));
+//            L.e("path2: " + Tools.getRealFilePath(uri));
+            File file = new File(images.get(0).getOriginalPath());
+            L.e("length: " + file.length() + " exists:" + file.exists());
+            rootHolder().setImageUrl(R.id.sivPhoto, file);
+//            rootHolder().setImageUrl(R.id.sivPhoto, new File(images.get(0).getCompressPath()));
         }
     }
 
