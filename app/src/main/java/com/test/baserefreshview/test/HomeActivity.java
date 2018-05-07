@@ -12,6 +12,13 @@ import com.test.baserefreshview.PhotoSelectActivity;
 import com.test.baserefreshview.R;
 import com.xycode.xylibrary.base.PhotoSelectBaseActivity;
 import com.xycode.xylibrary.base.XyBaseActivity;
+import com.xycode.xylibrary.takephoto.model.CropOptions;
+import com.xycode.xylibrary.takephoto.model.TImage;
+import com.xycode.xylibrary.utils.LogUtil.L;
+import com.xycode.xylibrary.utils.Tools;
+
+import java.io.File;
+import java.util.ArrayList;
 
 /**
  * @author thisfeng
@@ -57,7 +64,10 @@ public class HomeActivity extends XyBaseActivity implements View.OnClickListener
                 start(FitAndroid7Activity.class);
                 break;
             case R.id.btnTakePhoto:
-                PhotoSelectActivity.startForResult(getThis(), PhotoSelectActivity.class, new PhotoSelectBaseActivity.CropParam());
+                CropOptions options = new CropOptions.Builder().create();
+                options.setCrop(false);
+                PhotoSelectActivity.startForResult(getThis(), PhotoSelectActivity.class, new PhotoSelectBaseActivity.PhotoParam(true)
+                ,options);
 
 //                PhotoSelectActivity.startForResult(getThis(), Const.cropParam, null, true);
 
@@ -78,21 +88,22 @@ public class HomeActivity extends XyBaseActivity implements View.OnClickListener
             case R.id.btnGuide:
                 start(GuideActivity.class);
                 break;
-                default:
+            default:
         }
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-    }
+    protected void onPhotoSelectResult(Intent data, ArrayList<TImage> images, TImage image) {
+        super.onPhotoSelectResult(data, images, image);
 
-    @Override
-    protected void onPhotoSelectResult(int resultCode, Uri uri) {
-        super.onPhotoSelectResult(resultCode, uri);
-        if (resultCode == RESULT_OK) {
-            String address = uri.getPath();
-            sivPhoto.setImageURI(uri);
+        if (images != null && images.size() > 0) {
+//            Uri uri = Uri.fromFile(new File(images.get(0).getCompressPath()));
+//            L.e("path2: " + Tools.getRealFilePath(uri));
+            File file = new File(images.get(0).getOriginalPath());
+            L.e("length: " + file.length() + " exists:" + file.exists());
+            rootHolder().setImageUrl(R.id.sivPhoto, file);
+//            rootHolder().setImageUrl(R.id.sivPhoto, new File(images.get(0).getCompressPath()));
         }
     }
+
 }

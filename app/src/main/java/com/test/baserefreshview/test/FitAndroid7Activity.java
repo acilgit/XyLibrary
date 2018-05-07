@@ -135,7 +135,8 @@ public class FitAndroid7Activity extends XyBaseActivity implements View.OnClickL
     private void update() {
 //        String url = "https://cloud.ablegenius.com/files//null/image/2018_01_25/F002E9EBEE0B97BF.apk";
 //        String url = "https://cloud.ablegenius.com/files//null/image/2018_01_25/F7FF83E56AC9F3AD.apk";
-        String url = "https://cloud.ablegenius.com/files//d4b09e2bf5244732be4f342e545964d3/image/2018_02_08/B8A43BBE73349696.apk";
+//        String url = "https://cloud.ablegenius.com/files//d4b09e2bf5244732be4f342e545964d3/image/2018_02_08/B8A43BBE73349696.apk";
+        String url = "http://api.yisiduoer.com/duoerapp/estorer_1.0.0.apk";
         CompulsiveHelperActivity.Options options = new CompulsiveHelperActivity.Options(url);
 //                        options.setTitle(bean.getData().getVersions());
         options.setMust(false).setIllustration("测试的");

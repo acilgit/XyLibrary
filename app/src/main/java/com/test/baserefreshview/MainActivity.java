@@ -603,7 +603,7 @@ public class MainActivity extends ABaseActivity {
 //                list.add("或在在要在");
 //                list.add("要");
 //                tags.setDataList(list);
-            PhotoSelectActivity.startForResult(getThis(), PhotoSelectActivity.class, new PhotoSelectBaseActivity.CropParam());
+            PhotoSelectActivity.startForResult(getThis(), PhotoSelectActivity.class, new PhotoSelectBaseActivity.PhotoParam());
 //            TS.show("count " + xRefresher.getAdapter().getItemCount());
 
             RelativeLayout rl = new RelativeLayout(getThis());
@@ -641,7 +641,7 @@ public class MainActivity extends ABaseActivity {
         bannerView.initData(bannerList);
     }
 
-    @Override
+   /* @Override
     protected void onPhotoSelectResult(int resultCode, Uri uri) {
         super.onPhotoSelectResult(resultCode, uri);
         if (resultCode == RESULT_OK) {
@@ -655,7 +655,7 @@ public class MainActivity extends ABaseActivity {
         } else {
 
         }
-    }
+    }*/
 
     @Override
     public void onEvent(MsgEvent event) {

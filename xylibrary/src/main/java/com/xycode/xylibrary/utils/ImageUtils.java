@@ -285,6 +285,7 @@ public class ImageUtils {
         if (!dir.exists()) {
             dir.mkdirs();
         }
+        L.i("compressing:" + sourcePath);
         try {
             FileOutputStream outputStream = new FileOutputStream(targetFile);
             bitmap.compress(Bitmap.CompressFormat.JPEG, jpegQuality, outputStream);
@@ -678,7 +679,6 @@ public class ImageUtils {
             }
         }
         return localFile;
-
     }
 
     public static void loadBitmapFromFresco(Uri uri, final IGetFrescoBitmap iGetFrescoBitmap) {
@@ -800,10 +800,10 @@ public class ImageUtils {
      * @param resizeOptions
      */
     public static void setImageUriWithPreview(SimpleDraweeView simpleDraweeView, String url, String previewUri, ResizeOptions resizeOptions) {
-        setImageUriWithPreview(simpleDraweeView, url == null ? null : Uri.parse(url), previewUri == null ? null : Uri.parse(previewUri), resizeOptions);
+        setImageUriWithPreviewUri(simpleDraweeView, url == null ? null : Uri.parse(url), previewUri == null ? null : Uri.parse(previewUri), resizeOptions);
     }
 
-    static void setImageUriWithPreview(SimpleDraweeView simpleDraweeView, Uri uri, Uri previewUri, ResizeOptions resizeOptions) {
+    public static void setImageUriWithPreviewUri(SimpleDraweeView simpleDraweeView, Uri uri, Uri previewUri, ResizeOptions resizeOptions) {
         if (uri == null) {
             simpleDraweeView.setImageURI(null);
             return;

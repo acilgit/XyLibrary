@@ -247,9 +247,7 @@ public class CompulsiveHelperActivity extends AppCompatActivity {
                 return;
             }
             keyPressed = true;
-            if (cancelCallBack != null) {
-                cancelCallBack.onAbortUpdate();
-            }
+            if (cancelCallBack != null) cancelCallBack.onAbortUpdate();
             finish();
         });
         //忽略此版本
@@ -258,12 +256,8 @@ public class CompulsiveHelperActivity extends AppCompatActivity {
                 return;
             }
             keyPressed = true;
-            if (ignoreCallback != null) {
-                ignoreCallback.go(null);
-            }
-            if (cancelCallBack != null) {
-                cancelCallBack.onAbortUpdate();
-            }
+            if (ignoreCallback != null) ignoreCallback.go(null);
+            if (cancelCallBack != null) cancelCallBack.onAbortUpdate();
             finish();
         });
     }
@@ -327,6 +321,7 @@ public class CompulsiveHelperActivity extends AppCompatActivity {
                                 getString(R.string.update_error_tips) : errorTips + "\n" + msg.obj + "\n" +
                                 contacts_way);
                         tvIllustration.setVisibility(View.VISIBLE);
+                        keyPressed = false;
                         tvConfirm.setSelected(false);
                         tvConfirm.setText(TextUtils.isEmpty(confirm) ? getString(R.string.update_now) : confirm);
                         if (!isMust()) {
@@ -340,7 +335,6 @@ public class CompulsiveHelperActivity extends AppCompatActivity {
 
     /**
      * 安装应用的流程  大于8.0需要用户手动打开未知来源安装权限
-     * 需要在清单文件中加入权限  REQUEST_INSTALL_PACKAGES
      */
     private void installProcess() {
 
@@ -368,6 +362,7 @@ public class CompulsiveHelperActivity extends AppCompatActivity {
         }
 
         installApk();
+
     }
 
     /**
@@ -399,6 +394,7 @@ public class CompulsiveHelperActivity extends AppCompatActivity {
         if (resultCode == RESULT_OK && requestCode == REQUEST_CODE_INSTALL_PERMISSION) {
             installProcess();//再次执行安装流程，包含权限判等
         }
+
     }
 
     @Override

@@ -1,12 +1,15 @@
 package com.test.baserefreshview;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 
 import com.xycode.xylibrary.base.PhotoSelectBaseActivity;
-import com.yalantis.ucrop.UCrop;
+import com.xycode.xylibrary.takephoto.model.TImage;
+
+import java.util.ArrayList;
 
 
 public class PhotoSelectActivity extends PhotoSelectBaseActivity implements View.OnClickListener {
@@ -49,21 +52,5 @@ public class PhotoSelectActivity extends PhotoSelectBaseActivity implements View
                 break;
         }
     }
-
-
-    /**
-     *
-     * @return
-     */
-
-    @Override
-    protected UCrop.Options getCropOptions() {
-        UCrop.Options options = new UCrop.Options();
-        options.setFreeStyleCropEnabled(true);
-        options.setToolbarColor(getResources().getColor(R.color.colorPrimary));
-        options.setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
-        return options;
-    }
-
 
 }

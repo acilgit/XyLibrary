@@ -207,7 +207,12 @@ public class DebugActivity extends XyBaseActivity {
 
         }
 
-        rootHolder().setText(R.id.tvTitle, "[" + (postBegin ? "Param" : "Result") + " Debug] " + debugItem.getUrl());
+        rootHolder().setText(R.id.tvTitle, "[" + (postBegin ? "Param" : "Result") + " Debug] " + (postBegin ? "" : debugItem.getUrl()));
+        if(postBegin) {
+            ((EditText) rootHolder().getView(R.id.etUrl)).setText(debugItem.getUrl());
+        }else{
+            rootHolder().setVisibility(R.id.etUrl, View.GONE);
+        }
         ((EditText) rootHolder().getView(R.id.et)).setText(debugItem.getJson());
         rootHolder().setClick(R.id.tvCancel, v -> {
             setStatus();
@@ -221,6 +226,7 @@ public class DebugActivity extends XyBaseActivity {
                     }
                 }
                 debugItem.setParam(param);
+                debugItem.setUrl(((EditText) rootHolder().getView(R.id.etUrl)).getEditableText().toString());
             } else {
                 debugItem.setJsonModify(rootHolder().getText(R.id.et));
             }
