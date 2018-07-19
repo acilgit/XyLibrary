@@ -15,8 +15,11 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
@@ -155,14 +158,34 @@ public class OkHttp {
 
     public static Map<String, CallItem> getCallItems() {
         if (callItems == null) {
-            callItems = new HashMap<>();
+//            callItems = new HashMap<>();
+            callItems = new ConcurrentSkipListMap<>();
         } else {
-            for (String key : callItems.keySet()) {
-                if (callItems.get(key) == null) {
-                    callItems.remove(key);
+
+            //容易引发 ConcurrentModificationException
+//            for (String key : callItems.keySet()) {
+//                if (callItems.get(key) == null) {
+//                    callItems.remove(key);
+//                }
+//            }
+
+            try {
+
+                Iterator<Map.Entry<String, CallItem>> entries = callItems.entrySet().iterator();
+
+                while (entries.hasNext()) {
+
+                    Map.Entry<String, CallItem> entry = entries.next();
+
+                    if (callItems.get(entry.getKey()) == null) {
+                        callItems.remove(entry.getKey());
+                    }
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
+
         return callItems;
     }
 
@@ -413,7 +436,7 @@ public class OkHttp {
                                 Thread.sleep(500);
                             }
                         }
-                        if (debugItem.getJsonModify()!= null) {
+                        if (debugItem.getJsonModify() != null) {
                             responseItem.setStrResult(debugItem.getJsonModify());
                         }
                     }

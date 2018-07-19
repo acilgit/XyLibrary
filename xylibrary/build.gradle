@@ -9,7 +9,7 @@ apply plugin: 'me.tatarka.retrolambda'
 android {
     compileSdkVersion 27
     buildToolsVersion '26.0.2'
-    resourcePrefix "resourcePrefix"
+
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 26
@@ -17,9 +17,6 @@ android {
         versionName "0.2.35"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
-        /* jackOptions {
-             enabled true
-         }*/
     }
 
     buildTypes {
@@ -107,7 +104,7 @@ ext {
     siteUrl = 'https://github.com/acilgit/XyLibrary'
     gitUrl = 'https://github.com/acilgit/XyLibrary.git'
 
-    libraryVersion = '0.8.66'
+    libraryVersion = '0.8.67'
 
     developerId = 'acil'
     developerName = 'acil-fong'
