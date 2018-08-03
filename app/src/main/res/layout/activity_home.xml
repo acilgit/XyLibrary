@@ -15,6 +15,12 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+
+            <Button
+                android:id="@+id/btnCrash"
+                android:layout_width="match_parent"
+                android:text="TestCrash"
+                android:layout_height="wrap_content" />
             <Button
                 android:id="@+id/btnMain"
                 android:layout_width="match_parent"

@@ -8,7 +8,15 @@ import android.support.annotation.LayoutRes;
  */
 
 public interface ICrash {
-    @LayoutRes int getLayoutId();
+    @LayoutRes
+    int getLayoutId();
 
     void setViews(CrashActivity activity, CrashItem crashItem);
+
+    /**
+     * 是否保存写入本地data/data/com...文件
+     *
+     * @return true
+     */
+    boolean getIsSaveCrashLogFile();
 }

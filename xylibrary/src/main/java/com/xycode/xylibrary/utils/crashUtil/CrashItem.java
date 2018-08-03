@@ -4,6 +4,7 @@ package com.xycode.xylibrary.utils.crashUtil;
  * Created by XY on 2017-06-05.
  */
 public class CrashItem {
+    private String packageName;
     private String versionName;
     private int versionCode;
     private String release;
@@ -17,6 +18,14 @@ public class CrashItem {
     private String mark;
 
     public CrashItem() {
+    }
+
+    public String getPackageName() {
+        return packageName;
+    }
+
+    public void setPackageName(String packageName) {
+        this.packageName = packageName;
     }
 
     public String getVersionName() {
@@ -110,7 +119,8 @@ public class CrashItem {
     @Override
     public String toString() {
         return "CrashItem{" +
-                "versionName='" + versionName + '\'' +
+                "packageName='" + packageName + '\'' +
+                ", versionName='" + versionName + '\'' +
                 ", versionCode=" + versionCode +
                 ", release='" + release + '\'' +
                 ", sdk=" + sdk +
@@ -121,6 +131,6 @@ public class CrashItem {
                 ", mark='" + mark + '\'' +
                 ", errorMsgTitle='" + errorMsgTitle + '\'' +
                 ", errorMsg='" + errorMsg + '\'' +
-                '}';
+                '}' + '\n';
     }
 }

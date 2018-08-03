@@ -486,7 +486,6 @@ public class CompulsiveHelperActivity extends AppCompatActivity {
                 dir.mkdir();
             }
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         try {
@@ -497,7 +496,6 @@ public class CompulsiveHelperActivity extends AppCompatActivity {
                 file.createNewFile();
             }
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 

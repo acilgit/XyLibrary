@@ -2,8 +2,10 @@ package com.test.baserefreshview;
 
 import android.app.Application;
 import android.graphics.Point;
+import android.text.TextUtils;
 import android.widget.Button;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.facebook.imagepipeline.common.ResizeOptions;
 import com.taobao.sophix.PatchStatus;
@@ -14,6 +16,7 @@ import com.xycode.xylibrary.instance.FrescoLoader;
 import com.xycode.xylibrary.okHttp.Header;
 import com.xycode.xylibrary.okHttp.IOkInit;
 import com.xycode.xylibrary.okHttp.OkHttp;
+import com.xycode.xylibrary.okHttp.OkResponseListener;
 import com.xycode.xylibrary.okHttp.Param;
 import com.xycode.xylibrary.okHttp.XSSSocketLFactory;
 import com.xycode.xylibrary.utils.VersionUtils;
@@ -65,24 +68,21 @@ public class App extends Application {
         initHotfix();
         CrashActivity.setCrashOperation(crashItem -> {
             L.e(crashItem.toString());
-          /*  OkHttp.postForm(CrashActivity.getInstance(), "https://www.taichi-tiger.com:8080/append/app_poster/selectAllPosters",
-                    OkHttp.setFormBody(new Param("pageSize", "1").add("page", "1")),
-                    false, new OkHttp.OkResponseListener() {
-                        @Override
-                        public void handleJsonSuccess(Call call, Response response, JSONObject json) throws Exception {
-                            TS.show("Ok");
-                        }
 
-                        @Override
-                        public void handleJsonError(Call call, Response response, JSONObject json) throws Exception {
+            String jsonString = JSON.toJSONString(L.getLogList());
 
-                        }
+            OkHttp.newCall(CrashActivity.getInstance()).url("http://192.168.90.54:8080/a/api/app/log/submit").body(new Param()
+                    .add("channel", "ANDROID").add("serial", "2FwGqS703X386W5").add("content", crashItem.toString())).call(new OkResponseListener() {
+                @Override
+                public void handleJsonSuccess(Call call, Response response, JSONObject json) throws Exception {
+                    TS.show("错误信息已发送");
+                }
 
-                        @Override
-                        protected void handleAllFailureSituation(Call call, int resultCode) throws Exception {
-                            TS.show("Ok");
-                        }
-                    });*/
+                @Override
+                public void handleJsonError(Call call, Response response, JSONObject json) throws Exception {
+
+                }
+            });
         }, new ICrash() {
             @Override
             public int getLayoutId() {
@@ -97,10 +97,17 @@ public class App extends Application {
                         v -> TS.show("okok......")
                 );
             }
+
+            @Override
+            public boolean getIsSaveCrashLogFile() {
+                return true;
+            }
+
+
         });
 //        Fresco.initialize(this);
 
-        OkHttp.OkOptions okOptions = new OkHttp.OkOptions(1,1,1){
+        OkHttp.OkOptions okOptions = new OkHttp.OkOptions(1, 1, 1) {
             @Override
             public void setOkHttpBuilder(OkHttpClient.Builder builder) {
                 super.setOkHttpBuilder(builder);
@@ -109,7 +116,7 @@ public class App extends Application {
             }
         };
         OkHttp.init(new IOkInit() {
-           @Override
+            @Override
             public int judgeResultWhenFirstReceivedResponse(Call call, Response response, JSONObject json) {
                 String resultCode = json.getString("status");
                 if ("1".equals(resultCode)) {
@@ -242,7 +249,7 @@ public class App extends Application {
                 WH wh = Tools.getWidthHeightFromFilename((String) urlObject, "_wh", "_");
                 Point screenSize = Tools.getScreenSize();
                 int x, y;
-                if (wh.isAvailable() && wh.width> screenSize.x) {
+                if (wh.isAvailable() && wh.width > screenSize.x) {
                     x = screenSize.x;
                     y = (int) ((1.0 * x) / wh.getAspectRatio());
                     return new ResizeOptions(x, y);
@@ -280,6 +287,7 @@ public class App extends Application {
             }
         });*/
     }
+
     // 阿里执修复
     private void initHotfix() {
         SophixManager.getInstance().setContext(getInstance())
@@ -290,7 +298,7 @@ public class App extends Application {
                     @Override
                     public void onLoad(final int mode, final int code, final String info, final int handlePatchVersion) {
                         // 补丁加载回调通知
-                        String s = "mode:" + mode + " code:"+ code + "\npatchVersion:" + handlePatchVersion + "\ninfo:" + info;
+                        String s = "mode:" + mode + " code:" + code + "\npatchVersion:" + handlePatchVersion + "\ninfo:" + info;
                         if (code == PatchStatus.CODE_LOAD_SUCCESS) {
                             // 表明补丁加载成功
                             L.e("[Hotfix Success]", s);

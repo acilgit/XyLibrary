@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -41,6 +43,7 @@ public class L {
     private static File outputFile = null;
 
     private static String LOG_DIR;
+
     private static final String LOG_NAME = "CrashLog.txt";
 
     // Log的输出List
@@ -67,8 +70,8 @@ public class L {
 
     public static void addLogItem(String title, String msg, int type) {
         String addTitle = "", addMsg = "";
-        if(title != null) addTitle = new String(title);
-        if(msg != null) addMsg = new String(msg);
+        if (title != null) addTitle = new String(title);
+        if (msg != null) addMsg = new String(msg);
         getLogList().add(new LogItem(DateUtils.formatDateTime("yyyy-M-d HH:mm:ss:SSS", DateUtils.getNow()), addTitle, addMsg, type));
         if (!showLog() && MAX_LOG_LIST_SIZE_IN_RELEASE_MODE != -1 && getLogList().size() > MAX_LOG_LIST_SIZE_IN_RELEASE_MODE) {
             getLogList().remove(0);
@@ -147,7 +150,7 @@ public class L {
                 Log.e(TAG, TextUtils.isEmpty(title) ? e.toString() : title + "\n" + e.toString());
             }
         }
-        if (!logList.get(logList.size()-1).getContent().contains(e.toString())) {
+        if (!logList.get(logList.size() - 1).getContent().contains(e.toString())) {
             addLogItem(title, content, LogItem.LOG_TYPE_CRASH);
         }
     }
@@ -197,7 +200,7 @@ public class L {
         }*/
     }
 
-    private static void writeLog(Context context, Throwable ex) {
+    public static void writeLog(Context context, Throwable ex, String crashItem) {
         LOG_DIR = Tools.getCacheDir() + "/log/";
         String info = null;
         ByteArrayOutputStream baos = null;
@@ -205,7 +208,12 @@ public class L {
         try {
             baos = new ByteArrayOutputStream();
             printStream = new PrintStream(baos);
-            ex.printStackTrace(printStream);
+            if (crashItem != null) {
+                printStream.print(crashItem);
+            }
+            if (ex != null) {
+                ex.printStackTrace(printStream);
+            }
             byte[] data = baos.toByteArray();
             info = new String(data);
             data = null;

@@ -46,6 +46,10 @@ public class HomeActivity extends XyBaseActivity implements View.OnClickListener
         findViewById(R.id.btnDrag).setOnClickListener(this);
         findViewById(R.id.btnDragSample).setOnClickListener(this);
         findViewById(R.id.btnGuide).setOnClickListener(this);
+        findViewById(R.id.btnCrash).setOnClickListener(v -> {
+            // 在这里模拟异常抛出情况，人为抛出一个运行时异常
+            throw new RuntimeException("自定义异常：这是自己抛出的异常aaaaaa");
+        });
         sivPhoto = findViewById(R.id.sivPhoto);
     }
 
@@ -57,6 +61,9 @@ public class HomeActivity extends XyBaseActivity implements View.OnClickListener
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+
+
+
             case R.id.btnMain:
                 start(MainActivity.class);
                 break;
@@ -67,7 +74,7 @@ public class HomeActivity extends XyBaseActivity implements View.OnClickListener
                 CropOptions options = new CropOptions.Builder().create();
                 options.setCrop(false);
                 PhotoSelectActivity.startForResult(getThis(), PhotoSelectActivity.class, new PhotoSelectBaseActivity.PhotoParam(true)
-                ,options);
+                        , options);
 
 //                PhotoSelectActivity.startForResult(getThis(), Const.cropParam, null, true);
 
