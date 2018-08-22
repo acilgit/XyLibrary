@@ -218,9 +218,9 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
                     @Override
                     protected void createHolder(final CustomHolder holder) {
                         try {
-                            holder.setOnClickListener(v -> handleItemViewClick(holder, getShowingList().get(holder.getAdapterPosition() - getHeaderCount()), v.getId(), viewTypeUnit));
+                            holder.setOnClickListener(v -> handleItemViewClick(holder, getShowingList().get(holder.getLayoutPosition() - getHeaderCount()), v.getId(), viewTypeUnit));
 
-                            holder.setOnLongClickListener(v -> handleItemViewLongClick(holder, getShowingList().get(holder.getAdapterPosition() - getHeaderCount()), v.getId(), viewTypeUnit));
+                            holder.setOnLongClickListener(v -> handleItemViewLongClick(holder, getShowingList().get(holder.getLayoutPosition() - getHeaderCount()), v.getId(), viewTypeUnit));
 
                             creatingHolder(holder, viewTypeUnit);
                         } catch (Exception e) {
