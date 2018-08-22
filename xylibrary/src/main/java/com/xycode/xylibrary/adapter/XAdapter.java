@@ -41,7 +41,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
             VIEW_TYPE_FOOTER_LOADING,
             VIEW_TYPE_FOOTER_NO_MORE,
             VIEW_TYPE_FOOTER_RETRY,
-            VIEW_TYPE_FOOTER_NO_DATA };
+            VIEW_TYPE_FOOTER_NO_DATA};
     /**
      * LOADER_NO_DATA   没有数据
      * LOADER_NO_MORE   已加载全部，有footerLayoutId显示Footer
@@ -217,9 +217,11 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
                 return new CustomHolder(itemView) {
                     @Override
                     protected void createHolder(final CustomHolder holder) {
-                        holder.setOnClickListener(v -> handleItemViewClick(holder, getShowingList().get(holder.getAdapterPosition() - getHeaderCount()), v.getId(), viewTypeUnit));
-                        holder.setOnLongClickListener(v -> handleItemViewLongClick(holder, getShowingList().get(holder.getAdapterPosition() - getHeaderCount()), v.getId(), viewTypeUnit));
                         try {
+                            holder.setOnClickListener(v -> handleItemViewClick(holder, getShowingList().get(holder.getAdapterPosition() - getHeaderCount()), v.getId(), viewTypeUnit));
+
+                            holder.setOnLongClickListener(v -> handleItemViewLongClick(holder, getShowingList().get(holder.getAdapterPosition() - getHeaderCount()), v.getId(), viewTypeUnit));
+
                             creatingHolder(holder, viewTypeUnit);
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -297,7 +299,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
         int type = holder.getItemViewType();
         boolean isFooter = false;
         for (int viewTypeFooterView : VIEW_TYPE_FOOTERS) {
-            if(type == viewTypeFooterView) isFooter = true;
+            if (type == viewTypeFooterView) isFooter = true;
         }
         if (isFooter || headerLayoutIdList.indexOfKey(type) >= 0) {
             setFullSpan(holder);
@@ -382,7 +384,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
      * @param holder
      * @param viewTypeUnit
      */
-    public void creatingHolder(CustomHolder holder, ViewTypeUnit viewTypeUnit)  throws Exception {
+    public void creatingHolder(CustomHolder holder, ViewTypeUnit viewTypeUnit) throws Exception {
 
     }
 
@@ -393,7 +395,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
      * @param dataList
      * @param pos
      */
-    public void bindingHolder(CustomHolder holder, List<T> dataList, int pos) throws Exception{
+    public void bindingHolder(CustomHolder holder, List<T> dataList, int pos) throws Exception {
 
     }
 
@@ -496,8 +498,9 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
 
     /**
      * 取得列表Item
+     *
      * @param itemPosWithoutHeaderCount 列表中的Item位置, 不包括Header的Item,
-     *                如使用getAdapterPosition()需要减掉getHeaderCount()
+     *                                  如使用getAdapterPosition()需要减掉getHeaderCount()
      * @return
      */
     public T getItem(int itemPosWithoutHeaderCount) {
@@ -661,7 +664,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
 
     }
 
-    protected void bindingHeader(CustomHolder holder, int headerKey) throws Exception{
+    protected void bindingHeader(CustomHolder holder, int headerKey) throws Exception {
 
     }
 
