@@ -165,6 +165,9 @@ public class CrashActivity extends AppCompatActivity {
             crashItem.setModel(Build.MODEL);
             crashItem.setErrorMsg(errorMsg);
 
+            crashItem.setTime(DateUtils.formatDateTime("yyyy-M-d HH:mm:ss:SSS", DateUtils.getNow()));
+
+
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }

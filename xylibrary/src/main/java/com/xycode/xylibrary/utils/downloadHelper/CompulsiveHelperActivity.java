@@ -27,7 +27,7 @@ import android.widget.Toast;
 import com.xycode.xylibrary.R;
 import com.xycode.xylibrary.interfaces.Interfaces;
 import com.xycode.xylibrary.okHttp.Param;
-import com.xycode.xylibrary.utils.TS;
+import com.xycode.xylibrary.utils.toast.TS;
 import com.xycode.xylibrary.utils.fileprovider.FileProvider7;
 
 import java.io.File;

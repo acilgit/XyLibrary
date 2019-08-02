@@ -18,7 +18,7 @@ import com.xycode.xylibrary.adapter.XAdapter;
 import com.xycode.xylibrary.base.XyBaseActivity;
 import com.xycode.xylibrary.okHttp.Param;
 import com.xycode.xylibrary.unit.ViewTypeUnit;
-import com.xycode.xylibrary.utils.TS;
+import com.xycode.xylibrary.utils.toast.TS;
 
 import java.util.ArrayList;
 import java.util.List;

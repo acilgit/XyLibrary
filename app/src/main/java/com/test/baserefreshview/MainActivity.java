@@ -42,7 +42,7 @@ import com.xycode.xylibrary.unit.ViewTypeUnit;
 import com.xycode.xylibrary.unit.WH;
 import com.xycode.xylibrary.utils.ImageUtils;
 import com.xycode.xylibrary.utils.LogUtil.L;
-import com.xycode.xylibrary.utils.TS;
+import com.xycode.xylibrary.utils.toast.TS;
 import com.xycode.xylibrary.utils.Tools;
 import com.xycode.xylibrary.utils.serverApiHelper.ServerControllerActivity;
 import com.xycode.xylibrary.xRefresher.RefreshRequest;

@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">XYLibrary</string>
+
     <string name="blank"></string>
     <string name="text_take_photo">拍摄照片</string>
     <string name="text_photo_unit">张</string>
@@ -41,7 +42,6 @@
     <string name="cancel">取消</string>
     <string name="not_have_install_permission">安装应用需要打开未知来源权限，请去设置中开启应用权限，以允许安装来自此来源的应用</string>
     <string name="install_apk">安装Apk</string>
-
 
 
     <!--TakePhoto-->

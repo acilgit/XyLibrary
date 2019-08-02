@@ -1,4 +1,4 @@
-package com.xycode.xylibrary.utils;
+package com.xycode.xylibrary.utils.toast;
 
 import android.content.Context;
 import android.os.Handler;
@@ -93,7 +93,7 @@ public class TS {
             toast.setDuration(Toast.LENGTH_SHORT);
             if (toastSetter != null) toastSetter.onToastLayout(view, toast, object);
         } else {
-            toast = Toast.makeText(context, text, Toast.LENGTH_SHORT);
+            toast = ToastCompat.makeText(context, text, Toast.LENGTH_SHORT);
         }
 
         toast.show();

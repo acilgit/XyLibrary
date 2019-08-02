@@ -33,7 +33,7 @@ import com.xycode.xylibrary.uiKit.imageSelector.adapter.ImageAdapter;
 import com.xycode.xylibrary.uiKit.imageSelector.bean.FolderBean;
 import com.xycode.xylibrary.uiKit.imageSelector.bean.ImageBean;
 import com.xycode.xylibrary.uiKit.imageSelector.utils.FileUtils;
-import com.xycode.xylibrary.utils.TS;
+import com.xycode.xylibrary.utils.toast.TS;
 import com.xycode.xylibrary.utils.Tools;
 
 import java.io.File;

@@ -16,6 +16,7 @@ public class CrashItem {
     private String id;
     private String user;
     private String mark;
+    private String time;
 
     public CrashItem() {
     }
@@ -116,9 +117,18 @@ public class CrashItem {
         this.mark = mark;
     }
 
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
     @Override
     public String toString() {
         return "CrashItem{" +
+                "time='" + time + '\'' +
                 "packageName='" + packageName + '\'' +
                 ", versionName='" + versionName + '\'' +
                 ", versionCode=" + versionCode +

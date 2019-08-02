@@ -1,10 +1,8 @@
 <resources>
 
+    <string name="app_name">XYLibrary</string>
 
     <!--跟随系统语言，此目录为英文  引用名称需相同-->
-
-
-        
     <string name="blank"></string>
         
     <string name="text_take_photo">Shooting photos</string>

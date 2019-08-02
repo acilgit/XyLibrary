@@ -2,7 +2,6 @@ package com.test.baserefreshview;
 
 import android.app.Application;
 import android.graphics.Point;
-import android.text.TextUtils;
 import android.widget.Button;
 
 import com.alibaba.fastjson.JSON;
@@ -23,7 +22,7 @@ import com.xycode.xylibrary.utils.VersionUtils;
 import com.xycode.xylibrary.utils.crashUtil.CrashActivity;
 import com.xycode.xylibrary.unit.WH;
 import com.xycode.xylibrary.utils.LogUtil.L;
-import com.xycode.xylibrary.utils.TS;
+import com.xycode.xylibrary.utils.toast.TS;
 import com.xycode.xylibrary.utils.Tools;
 import com.xycode.xylibrary.utils.crashUtil.CrashItem;
 import com.xycode.xylibrary.utils.crashUtil.ICrash;

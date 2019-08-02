@@ -223,6 +223,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
                             holder.setOnLongClickListener(v -> handleItemViewLongClick(holder, getShowingList().get(holder.getLayoutPosition() - getHeaderCount()), v.getId(), viewTypeUnit));
 
                             creatingHolder(holder, viewTypeUnit);
+
                         } catch (Exception e) {
                             e.printStackTrace();
                             L.crash("createHolder Exception", e);
@@ -387,6 +388,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
     public void creatingHolder(CustomHolder holder, ViewTypeUnit viewTypeUnit) throws Exception {
 
     }
+
 
     /**
      * 绑定展示数据时执行，多次执行

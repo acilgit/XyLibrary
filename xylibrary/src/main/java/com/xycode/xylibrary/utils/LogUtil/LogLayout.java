@@ -83,7 +83,7 @@ public class LogLayout {
             }
 
             @Override
-            public void creatingHolder(CustomHolder holder, ViewTypeUnit viewTypeUnit) {
+            public void creatingHolder(CustomHolder holder, ViewTypeUnit viewTypeUnit ) {
                 holder.setClick(R.id.tvContent, v -> {
                     selectItemPos = selectItemPos == holder.getAdapterPosition() ? -1 : holder.getAdapterPosition();
                     notifyDataSetChanged();

@@ -18,7 +18,7 @@ import com.xycode.xylibrary.adapter.CustomHolder;
 import com.xycode.xylibrary.adapter.OnInitList;
 import com.xycode.xylibrary.adapter.XAdapter;
 import com.xycode.xylibrary.unit.ViewTypeUnit;
-import com.xycode.xylibrary.utils.TS;
+import com.xycode.xylibrary.utils.toast.TS;
 import com.xycode.xylibrary.xRefresher.OnSwipeListener;
 import com.xycode.xylibrary.xRefresher.XRefresher;
 
@@ -79,8 +79,8 @@ public class DragSampleActivity extends BaseActivity {
             }
 
             @Override
-            public void creatingHolder(CustomHolder holder, ViewTypeUnit viewTypeUnit) throws Exception {
-                super.creatingHolder(holder, viewTypeUnit);
+            public void creatingHolder(CustomHolder holder, ViewTypeUnit viewTypeUnit ) throws Exception {
+                super.creatingHolder(holder, viewTypeUnit );
                 holder.setClick(R.id.tvContent);
                 holder.setLongClick(R.id.ivLogo);
             }
@@ -145,8 +145,7 @@ public class DragSampleActivity extends BaseActivity {
             }
 
             @Override
-            public void creatingHolder(CustomHolder holder, ViewTypeUnit viewTypeUnit) throws Exception {
-                super.creatingHolder(holder, viewTypeUnit);
+            public void creatingHolder(CustomHolder holder, ViewTypeUnit viewTypeUnit ) throws Exception {
                 holder.setClick(R.id.tvContent);
                 /**
                  * 给每一个Item的某个View设置监听拖拽事件

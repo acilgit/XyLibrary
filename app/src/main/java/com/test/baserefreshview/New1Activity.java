@@ -1,6 +1,5 @@
 package com.test.baserefreshview;
 
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,10 +10,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 
 import com.test.baserefreshview.items.MyFragmentAdapter;
-import com.xycode.xylibrary.instance.FrescoLoader;
 import com.xycode.xylibrary.utils.ImageUtils;
-import com.xycode.xylibrary.utils.LogUtil.L;
-import com.xycode.xylibrary.utils.TS;
+import com.xycode.xylibrary.utils.toast.TS;
 
 public class New1Activity extends ABaseActivity {
 
