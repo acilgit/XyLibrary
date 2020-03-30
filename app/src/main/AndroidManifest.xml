@@ -47,6 +47,8 @@
         <activity
             android:name=".test.GuideActivity"
             android:theme="@style/AppTheme.Splash" />
+        <activity android:name=".test.DragTest2Activity" />
+        <activity android:name=".test.DragTestSaveActivity" />
 
 
         <!--阿里Hotfix-->

@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.annotation.ColorInt;
+import androidx.annotation.ColorInt;
 import android.util.AttributeSet;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;

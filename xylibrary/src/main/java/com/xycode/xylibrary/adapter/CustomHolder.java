@@ -3,11 +3,11 @@ package com.xycode.xylibrary.adapter;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.graphics.Bitmap;
-import android.net.Uri;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.IdRes;
-import android.support.annotation.StringRes;
-import android.support.v7.widget.RecyclerView;
+
+import androidx.annotation.DrawableRes;
+import androidx.annotation.IdRes;
+import androidx.annotation.StringRes;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.SparseArray;
 import android.view.View;
@@ -22,7 +22,6 @@ import com.xycode.xylibrary.interfaces.Interfaces;
 import com.xycode.xylibrary.uiKit.views.MultiImageView;
 import com.xycode.xylibrary.uiKit.views.nicespinner.NiceSpinner;
 import com.xycode.xylibrary.utils.DateUtils;
-import com.xycode.xylibrary.utils.ImageUtils;
 import com.xycode.xylibrary.utils.LogUtil.L;
 
 

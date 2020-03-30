@@ -2,30 +2,41 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginBottom="@dimen/sideMargin"
     android:layout_marginTop="@dimen/sideMargin"
+    android:layout_marginBottom="@dimen/sideMargin"
     android:orientation="vertical">
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:orientation="vertical">
 
         <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
             android:text="APP提示"
-            android:textSize="20dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:textSize="20dp" />
 
-        <TextView
-            android:layout_margin="24dp"
-            android:text="App在操作过程中遇到了问题，为您带来不便深感抱歉！"
-            android:textSize="14dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:fillViewport="true">
+
+            <TextView
+                android:id="@+id/tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:padding="8dp"
+                android:text="App在操作过程中遇到了问题，为您带来不便深感抱歉！"
+                android:textColor="@color/gray"
+                android:textSize="12dp" />
+
+        </ScrollView>
 
     </LinearLayout>
 

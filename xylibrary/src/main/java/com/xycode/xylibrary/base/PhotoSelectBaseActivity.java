@@ -1,15 +1,11 @@
 package com.xycode.xylibrary.base;
 
-import android.Manifest;
-import android.annotation.TargetApi;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.v7.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
 
-import com.xycode.xylibrary.interfaces.PermissionListener;
 import com.xycode.xylibrary.takephoto.app.TakePhoto;
 import com.xycode.xylibrary.takephoto.app.TakePhotoActivity;
 import com.xycode.xylibrary.takephoto.model.CropOptions;
@@ -21,7 +17,6 @@ import com.xycode.xylibrary.utils.LogUtil.L;
 
 import java.io.File;
 import java.io.Serializable;
-import java.util.List;
 
 public abstract class PhotoSelectBaseActivity extends TakePhotoActivity {
 

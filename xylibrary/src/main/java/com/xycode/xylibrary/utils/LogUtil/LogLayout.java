@@ -5,15 +5,14 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.text.InputType;
+
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
@@ -22,11 +21,8 @@ import com.xycode.xylibrary.adapter.CustomHolder;
 import com.xycode.xylibrary.adapter.XAdapter;
 import com.xycode.xylibrary.okHttp.OkHttp;
 import com.xycode.xylibrary.uiKit.recyclerview.XLinearLayoutManager;
-import com.xycode.xylibrary.unit.MsgEvent;
 import com.xycode.xylibrary.unit.ViewTypeUnit;
 import com.xycode.xylibrary.utils.Tools;
-
-import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
 

@@ -1,7 +1,7 @@
 package com.test.baserefreshview;
 
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
 import android.view.View;
 
 import com.xycode.xylibrary.base.XyBaseActivity;
@@ -34,7 +34,7 @@ public class PhotoDemoActivity extends XyBaseActivity {
     @Override
     protected void initOnCreate(Bundle savedInstanceState) {
 
-        MultiImageView multiImageView = (MultiImageView) findViewById(R.id.multiView);
+        MultiImageView multiImageView = findViewById(R.id.multiView);
 
         List<UrlData> images = new ArrayList<>();
         images.add(new UrlData("res:///" + R.mipmap.aa));

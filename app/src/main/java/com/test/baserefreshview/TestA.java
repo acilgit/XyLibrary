@@ -1,8 +1,7 @@
 package com.test.baserefreshview;
 
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
 import android.widget.Button;
 
 import com.xycode.xylibrary.base.XyBaseActivity;

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<com.test.baserefreshview.test.weiget.MyHorizontalScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+            <com.test.baserefreshview.test.weiget.DragLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/dragLayout"
+                android:layout_width="2000dp"
+                android:layout_height="match_parent"
+                android:background="@color/transparent"
+                android:orientation="vertical">
+
+
+                <TextView
+                    android:id="@+id/textview1"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_gravity="center"
+                    android:layout_margin="10dp"
+                    android:background="#FFDCD665"
+                    android:gravity="center"
+                    android:text="可直接拖动的View" />
+
+                <TextView
+                    android:id="@+id/tvChange"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_gravity="center"
+                    android:layout_margin="10dp"
+                    android:background="#FFDCD665"
+                    android:gravity="center"
+                    android:text="触摸边界可拖动的View" />
+
+
+                <TextView
+                    android:id="@+id/button"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_margin="10dp"
+                    android:background="#FFDCD665"
+                    android:gravity="center"
+                    android:text="Button add" />
+
+                <TextView
+                    android:id="@+id/btnSave"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_gravity="right"
+                    android:layout_margin="10dp"
+                    android:background="#FFDCD665"
+                    android:gravity="center"
+                    android:text="Save 当前" />
+
+
+            </com.test.baserefreshview.test.weiget.DragLayout>
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom">
+
+                <Button
+                    android:id="@+id/btnTop"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="50dp"
+                    android:text="上移" />
+
+                <Button
+                    android:id="@+id/btnLeft"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/btnTop"
+                    android:text="左移" />
+
+                <Button
+                    android:id="@+id/btnRight"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@id/btnLeft"
+                    android:layout_toRightOf="@id/btnLeft"
+                    android:text="右移" />
+
+
+                <Button
+                    android:id="@+id/btnBottom"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/btnLeft"
+                    android:layout_marginLeft="50dp"
+                    android:text="下移" />
+
+
+            </RelativeLayout>
+        </FrameLayout>
+    </LinearLayout>
+
+</com.test.baserefreshview.test.weiget.MyHorizontalScrollView>

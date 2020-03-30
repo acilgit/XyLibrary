@@ -3,12 +3,13 @@ package com.test.baserefreshview;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AlertDialog;
+import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.app.AlertDialog;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import com.annimon.stream.Stream;
 import com.test.baserefreshview.items.MyFragmentAdapter;
 import com.xycode.xylibrary.utils.ImageUtils;
 import com.xycode.xylibrary.utils.toast.TS;
@@ -20,6 +21,7 @@ public class New1Activity extends ABaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
 
     }
 

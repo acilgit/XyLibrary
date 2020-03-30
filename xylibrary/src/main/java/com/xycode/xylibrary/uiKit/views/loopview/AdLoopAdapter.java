@@ -1,8 +1,8 @@
 package com.xycode.xylibrary.uiKit.views.loopview;
 
 import android.content.Context;
-import android.net.Uri;
-import android.support.v4.view.ViewPager;
+
+import androidx.viewpager.widget.ViewPager;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -11,7 +11,6 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import com.xycode.xylibrary.instance.FrescoLoader;
 import com.xycode.xylibrary.uiKit.views.loopview.internal.BaseLoopAdapter;
 import com.xycode.xylibrary.unit.UrlData;
-import com.xycode.xylibrary.utils.ImageUtils;
 
 import java.util.HashMap;
 import java.util.List;

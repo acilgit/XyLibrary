@@ -1,13 +1,5 @@
 package com.xycode.xylibrary.base;
 
-import android.content.Context;
-import android.content.res.TypedArray;
-import android.support.design.widget.TabLayout;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
-
 /**
  * Created by XY on 2016-08-09.
  */

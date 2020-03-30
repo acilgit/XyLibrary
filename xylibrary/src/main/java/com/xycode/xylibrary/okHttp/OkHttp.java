@@ -361,7 +361,7 @@ public class OkHttp {
                             observableEmitter.onNext(responseItem);
                         } else {
                             // 没有返回数据
-                            noResponse(call[0], okResponseListener);
+                            noResponse(call[0], new Exception("No response data"), okResponseListener);
                         }
                     }
                     // 请求完成
@@ -388,7 +388,7 @@ public class OkHttp {
                     public void onError(@io.reactivex.annotations.NonNull Throwable throwable) {
                         // 处理请求中出现异常
                         throwable.printStackTrace();
-                        noResponse(call[0], okResponseListener);
+                        noResponse(call[0], throwable, okResponseListener);
                         XyBaseActivity.dismissLoadingDialogByManualState();
                     }
 
@@ -543,9 +543,10 @@ public class OkHttp {
      * @param call
      * @param okResponseListener
      */
-    private static void noResponse(Call call, OkResponseListener okResponseListener) {
+    private static void noResponse(Call call, Throwable throwable, OkResponseListener okResponseListener) {
 //        okInit.networkError(call,  call.isCanceled());
-        okInit.networkError(call, false);
+
+        okInit.networkError(call, false, throwable);
         L.e("[networkError] " + (call != null ? call.request().url().url().toString() : ""), "");
         if (okResponseListener != null) {
             if (call != null && call.isCanceled()) {
@@ -558,7 +559,9 @@ public class OkHttp {
                 e.printStackTrace();
             }
         }
+
     }
+
 
     /**
      * 返回结果后操作过程错误
@@ -724,7 +727,7 @@ public class OkHttp {
                             @Override
                             public void onError(@io.reactivex.annotations.NonNull Throwable throwable) {
                                 throwable.printStackTrace();
-                                noResponse(call, okResponseListener);
+                                noResponse(call,throwable, okResponseListener);
                                 XyBaseActivity.dismissLoadingDialogByManualState();
                             }
 
@@ -737,7 +740,7 @@ public class OkHttp {
 
             @Override
             public void onFailure(Call call, IOException e) {
-                noResponse(call, okResponseListener);
+                noResponse(call, e, okResponseListener);
                 XyBaseActivity.dismissLoadingDialogByManualState();
             }
 

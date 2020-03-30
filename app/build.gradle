@@ -1,14 +1,8 @@
 apply plugin: 'com.android.application'
-apply plugin: 'me.tatarka.retrolambda'
 
-/*gradle.projectsEvaluated {
-    tasks.withType(JavaCompile) {
-        options.compilerArgs << "-Xbootclasspath/a:" + System.properties.get("java.home") + "/lib/rt.jar"
-    }
-}*/
 android {
-    compileSdkVersion 27
-    buildToolsVersion "27.0.3"
+    compileSdkVersion 29
+    buildToolsVersion '28.0.3'
 
     signingConfigs {
         XyCode {
@@ -27,7 +21,7 @@ android {
     defaultConfig {
         applicationId "com.test.baserefreshview"
         minSdkVersion 16
-        targetSdkVersion 26
+        targetSdkVersion 29
         versionCode 103
         versionName "1.0.3"
         /*jackOptions {
@@ -60,11 +54,10 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    testCompile 'junit:junit:4.12'
-    compile project(path: ':xylibrary')
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    testImplementation 'junit:junit:4.12'
+    implementation project(path: ':xylibrary')
     //    compile 'com.androidadvance:topsnackbar:1.0.0'
     //    compile 'com.jakewharton:butterknife:8.4.0'
     //    annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
-    compile 'com.aliyun.ams:alicloud-android-hotfix:3.1.1'
 }

@@ -3,13 +3,11 @@ package com.test.baserefreshview;
 import android.app.Application;
 import android.graphics.Point;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.facebook.imagepipeline.common.ResizeOptions;
-import com.taobao.sophix.PatchStatus;
-import com.taobao.sophix.SophixManager;
-import com.taobao.sophix.listener.PatchLoadStatusListener;
 import com.xycode.xylibrary.Xy;
 import com.xycode.xylibrary.instance.FrescoLoader;
 import com.xycode.xylibrary.okHttp.Header;
@@ -18,16 +16,17 @@ import com.xycode.xylibrary.okHttp.OkHttp;
 import com.xycode.xylibrary.okHttp.OkResponseListener;
 import com.xycode.xylibrary.okHttp.Param;
 import com.xycode.xylibrary.okHttp.XSSSocketLFactory;
-import com.xycode.xylibrary.utils.VersionUtils;
-import com.xycode.xylibrary.utils.crashUtil.CrashActivity;
 import com.xycode.xylibrary.unit.WH;
 import com.xycode.xylibrary.utils.LogUtil.L;
-import com.xycode.xylibrary.utils.toast.TS;
 import com.xycode.xylibrary.utils.Tools;
+import com.xycode.xylibrary.utils.crashUtil.CrashActivity;
 import com.xycode.xylibrary.utils.crashUtil.CrashItem;
 import com.xycode.xylibrary.utils.crashUtil.ICrash;
+import com.xycode.xylibrary.utils.toast.TS;
 import com.xycode.xylibrary.xRefresher.InitRefresher;
 import com.xycode.xylibrary.xRefresher.XRefresher;
+
+import java.net.SocketTimeoutException;
 
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
@@ -64,49 +63,13 @@ public class App extends Application {
         });*/
 
         Xy.init(this, false);
-        initHotfix();
-        CrashActivity.setCrashOperation(crashItem -> {
-            L.e(crashItem.toString());
-
-            String jsonString = JSON.toJSONString(L.getLogList());
-
-            OkHttp.newCall(CrashActivity.getInstance()).url("http://192.168.90.54:8080/a/api/app/log/submit").body(new Param()
-                    .add("channel", "ANDROID").add("serial", "2FwGqS703X386W5").add("content", crashItem.toString())).call(new OkResponseListener() {
-                @Override
-                public void handleJsonSuccess(Call call, Response response, JSONObject json) throws Exception {
-                    TS.show("错误信息已发送");
-                }
-
-                @Override
-                public void handleJsonError(Call call, Response response, JSONObject json) throws Exception {
-
-                }
-            });
-        }, new ICrash() {
-            @Override
-            public int getLayoutId() {
-                return R.layout.activity_crash;
-            }
-
-            @Override
-            public void setViews(CrashActivity activity, CrashItem crashItem) {
-
-                Button btn = (Button) activity.findViewById(R.id.btn);
-                btn.setOnClickListener(
-                        v -> TS.show("okok......")
-                );
-            }
-
-            @Override
-            public boolean getIsSaveCrashLogFile() {
-                return true;
-            }
 
 
-        });
+
+        initCrash();
 //        Fresco.initialize(this);
 
-        OkHttp.OkOptions okOptions = new OkHttp.OkOptions(1, 1, 1) {
+        OkHttp.OkOptions okOptions = new OkHttp.OkOptions(10, 10, 10) {
             @Override
             public void setOkHttpBuilder(OkHttpClient.Builder builder) {
                 super.setOkHttpBuilder(builder);
@@ -129,8 +92,17 @@ public class App extends Application {
             }
 
             @Override
-            public void networkError(Call call, boolean isCanceled) {
+            public void networkError(Call call, boolean isCanceled, Throwable throwable) {
 
+                if (throwable instanceof SocketTimeoutException) {
+                    //如果服务器超时 发送 日志记录给服务端
+
+                    StringBuffer errorStr = new StringBuffer();
+                    errorStr.append(call.request().url().url().toString());
+
+                    errorStr.append(throwable.toString());
+
+                }
             }
 
             @Override
@@ -287,44 +259,51 @@ public class App extends Application {
         });*/
     }
 
-    // 阿里执修复
-    private void initHotfix() {
-        SophixManager.getInstance().setContext(getInstance())
-                .setAppVersion(VersionUtils.getVersionName(this))
-                .setAesKey(null)
-                .setEnableDebug(true)
-                .setPatchLoadStatusStub(new PatchLoadStatusListener() {
-                    @Override
-                    public void onLoad(final int mode, final int code, final String info, final int handlePatchVersion) {
-                        // 补丁加载回调通知
-                        String s = "mode:" + mode + " code:" + code + "\npatchVersion:" + handlePatchVersion + "\ninfo:" + info;
-                        if (code == PatchStatus.CODE_LOAD_SUCCESS) {
-                            // 表明补丁加载成功
-                            L.e("[Hotfix Success]", s);
-                        } else if (code == PatchStatus.CODE_LOAD_RELAUNCH) {
-                            L.e("[Hotfix CODE_LOAD_RELAUNCH]", s);
-                            TS.show(s);
-                            try {
-                                Thread.sleep(1000);
-                                SophixManager.getInstance().killProcessSafely();
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            // 表明新补丁生效需要重启. 开发者可提示用户或者强制重启;
-                            // 建议: 用户可以监听进入后台事件, 然后应用自杀
-                        } else if (code == PatchStatus.CODE_LOAD_FAIL) {
-                            L.e("[Hotfix CODE_LOAD_FAIL]", s);
-                            // 内部引擎异常, 推荐此时清空本地补丁, 防止失败补丁重复加载
-                            SophixManager.getInstance().cleanPatches();
-                        } else if (code == PatchStatus.CODE_DOWNLOAD_SUCCESS) {
-                            L.e("[Hotfix CODE_DOWNLOAD_SUCCESS]", s);
-                        } else {
-                            // 其它错误信息, 查看PatchStatus类说明
-                            L.e("[Hotfix else]", s);
-                        }
+    private void initCrash() {
+        CrashActivity.setCrashOperation(crashItem -> {
+            L.e(crashItem.toString());
 
-                    }
-                }).initialize();
-        SophixManager.getInstance().queryAndLoadNewPatch();
+            String jsonString = JSON.toJSONString(L.getLogList());
+
+            OkHttp.newCall(CrashActivity.getInstance()).url("http://192.168.90.54:8080/a/api/app/log/submit").body(new Param()
+                    .add("channel", "ANDROID").add("serial", "2FwGqS703X386W5").add("content", crashItem.toString())).call(new OkResponseListener() {
+                @Override
+                public void handleJsonSuccess(Call call, Response response, JSONObject json) throws Exception {
+                    TS.show("错误信息已发送");
+                }
+
+                @Override
+                public void handleJsonError(Call call, Response response, JSONObject json) throws Exception {
+
+                }
+            });
+        }, new ICrash() {
+            @Override
+            public int getLayoutId() {
+                return R.layout.activity_crash;
+            }
+
+            @Override
+            public void setViews(CrashActivity activity, CrashItem crashItem) {
+
+                Button btn = activity.findViewById(R.id.btn);
+                btn.setOnClickListener(
+                        v -> TS.show("okok......")
+                );
+
+                TextView tv = activity.findViewById(R.id.tv);
+                //!Xy.isRelease() && L.showLog() ?
+                tv.setText(crashItem.toString());
+            }
+
+            @Override
+            public boolean getIsSaveCrashLogFile() {
+                return true;
+            }
+
+
+        });
     }
+
+
 }

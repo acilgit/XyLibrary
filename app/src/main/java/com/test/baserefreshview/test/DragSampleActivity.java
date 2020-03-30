@@ -3,7 +3,7 @@ package com.test.baserefreshview.test;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -115,6 +115,7 @@ public class DragSampleActivity extends BaseActivity {
                         LinearLayout llItem = holder.getView(R.id.llItem);
                         //启动拖拽的View将会有影子呈现，data可自由传递拖拽携带过去的值 Object
                         llItem.startDrag(clipData, new View.DragShadowBuilder(llItem), data.getName(), 0);
+
 
                         break;
 

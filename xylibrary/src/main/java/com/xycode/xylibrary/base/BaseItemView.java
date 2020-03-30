@@ -3,26 +3,22 @@ package com.xycode.xylibrary.base;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.annotation.ColorRes;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.StringRes;
-import android.support.annotation.StyleableRes;
+import androidx.annotation.ColorRes;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.StringRes;
+import androidx.annotation.StyleableRes;
 import android.util.AttributeSet;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.andexert.library.RippleView;
 import com.xycode.xylibrary.R;
-import com.xycode.xylibrary.adapter.XAdapter;
 import com.xycode.xylibrary.annotation.SaveState;
 import com.xycode.xylibrary.annotation.annotationHelper.StateBinder;
 import com.xycode.xylibrary.instance.FrescoLoader;
@@ -30,8 +26,6 @@ import com.xycode.xylibrary.utils.DateUtils;
 
 import java.util.Arrays;
 import java.util.Calendar;
-
-import com.xycode.xylibrary.annotation.annotationHelper.StateBinder;
 
 /**
  * Created by XY on 2016-08-08.

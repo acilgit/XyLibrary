@@ -1,7 +1,6 @@
 package com.xycode.xylibrary.utils.crashUtil;
 
-import android.app.Activity;
-import android.support.annotation.LayoutRes;
+import androidx.annotation.LayoutRes;
 
 /**
  * Created by XY on 2017-06-05.

@@ -31,8 +31,9 @@ public interface IOkInit {
      *
      * @param call
      * @param isCanceled
+     * @param throwable
      */
-    void networkError(Call call, boolean isCanceled);
+    void networkError(Call call, boolean isCanceled,Throwable throwable);
 
     /**
      * after judgeResultWhenFirstReceivedResponse

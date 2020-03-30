@@ -40,7 +40,7 @@ public class FileProvider7 {
      * SDK大于24的情况
      */
     public static Uri getUriForFile24(Context context, File file) {
-        Uri fileUri = android.support.v4.content.FileProvider.getUriForFile(context,
+        Uri fileUri = androidx.core.content.FileProvider.getUriForFile(context,
 //                context.getPackageName() + ".android7.fileprovider", file);
                 context.getPackageName() + ".fileprovider", file);
         return fileUri;

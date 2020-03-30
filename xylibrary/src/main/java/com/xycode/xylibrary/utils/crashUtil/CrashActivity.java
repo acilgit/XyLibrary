@@ -1,13 +1,14 @@
 package com.xycode.xylibrary.utils.crashUtil;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import androidx.appcompat.app.AppCompatActivity;
+
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -21,14 +22,8 @@ import com.xycode.xylibrary.utils.LogUtil.LogLayout;
 import com.xycode.xylibrary.utils.DateUtils;
 import com.xycode.xylibrary.utils.LogUtil.L;
 
-import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 public class CrashActivity extends AppCompatActivity {
@@ -65,7 +60,7 @@ public class CrashActivity extends AppCompatActivity {
     }
 
     private void initViews() {
-        crashItem = getCrashItem(errorMsg);
+        crashItem = getCrashItem(instance,errorMsg);
         if (cb != null) {
             cb.go(crashItem);
         }
@@ -146,12 +141,12 @@ public class CrashActivity extends AppCompatActivity {
     }
 
 
-    public CrashItem getCrashItem(String errorMsg) {
+    public static CrashItem getCrashItem(Context context,String errorMsg) {
         CrashItem crashItem = null;
         try {
             //应用的包名版本名称和版本号
-            PackageManager pm = this.getPackageManager();
-            PackageInfo pi = pm.getPackageInfo(this.getPackageName(), PackageManager.GET_ACTIVITIES);
+            PackageManager pm = context.getPackageManager();
+            PackageInfo pi = pm.getPackageInfo(context.getPackageName(), PackageManager.GET_ACTIVITIES);
             crashItem = new CrashItem();
             crashItem.setPackageName(pi.packageName);
             crashItem.setVersionName(pi.versionName);

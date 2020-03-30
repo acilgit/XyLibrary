@@ -7,7 +7,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import androidx.fragment.app.Fragment;
 import android.widget.Toast;
 
 import com.darsh.multipleimageselect.helpers.Constants;
@@ -34,7 +34,6 @@ import com.xycode.xylibrary.takephoto.uitl.TFileUtils;
 import com.xycode.xylibrary.takephoto.uitl.TImageFiles;
 import com.xycode.xylibrary.takephoto.uitl.TUtils;
 import com.soundcloud.android.crop.Crop;
-import com.xycode.xylibrary.utils.LogUtil.L;
 
 import java.io.File;
 import java.util.ArrayList;

@@ -5,14 +5,13 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AlertDialog;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -22,7 +21,6 @@ import com.test.baserefreshview.dialogs.TipsDialog;
 import com.xycode.xylibrary.base.XyBaseActivity;
 import com.xycode.xylibrary.interfaces.Interfaces;
 import com.xycode.xylibrary.interfaces.PermissionListener;
-import com.xycode.xylibrary.utils.ImageUtils;
 import com.xycode.xylibrary.utils.downloadHelper.CompulsiveHelperActivity;
 import com.xycode.xylibrary.utils.fileprovider.FileProvider7;
 
@@ -178,6 +176,7 @@ public class FitAndroid7Activity extends XyBaseActivity implements View.OnClickL
 
 
     private void installApk() {
+
         // 需要自己修改安装包路径  否则无用
         File file = new File(Environment.getExternalStorageDirectory(),
                 "app-debug.apk");

@@ -1,6 +1,6 @@
 package com.xycode.xylibrary.unit;
 
-import android.support.annotation.LayoutRes;
+import androidx.annotation.LayoutRes;
 
 /**
  * Created by XY on 2016-08-05.

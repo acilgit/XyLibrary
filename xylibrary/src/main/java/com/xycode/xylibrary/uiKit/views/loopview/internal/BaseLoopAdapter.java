@@ -1,10 +1,9 @@
 package com.xycode.xylibrary.uiKit.views.loopview.internal;
 
 import android.content.Context;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
 import com.facebook.drawee.drawable.ScalingUtils;
