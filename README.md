@@ -14,7 +14,7 @@ Android Studio
  dependencies {
 	        implementation 'com.github.thisfeng:XyLibrary:0.8.75'
 	}
-    ``` 
+
     
 初始化XyLibrary 
 
