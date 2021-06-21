@@ -18,6 +18,6 @@ Android Studio
     
 初始化XyLibrary 
 
-```  Xy.init(context,isRelease);```
+ Xy.init(context,isRelease);
   
   #### 详情下载查看请使用 Rxjava 最新分支 
