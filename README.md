@@ -4,7 +4,16 @@ Android BaseLibrary 基础框架包,建立与快速开发，封装OkHttp请求�
 ### 用法
 Android Studio
   
-    compile 'com.xycode.xylibrary:xylibrary:0.8.75'
+  allprojects {
+		repositories {
+			...
+			maven { url 'https://jitpack.io' }
+		}
+	}
+
+ dependencies {
+	        implementation 'com.github.thisfeng:XyLibrary:0.8.75'
+	}
     
     
 初始化XyLibrary 
