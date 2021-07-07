@@ -4,12 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.Handler;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
+
+import androidx.viewpager.widget.ViewPager;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.MotionEvent;
-import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
@@ -115,12 +114,7 @@ public abstract class BaseLoopView extends RelativeLayout implements ILoopView {
             }
         });
 
-        adapter.setPreviewUrlListener(onPreviewUrlListener);
         adapter.setImageScaleType(actualScale);
-    }
-
-    public void setPreviewUrlListener(OnPreviewUrlListener onPreviewUrlListener) {
-        this.onPreviewUrlListener = onPreviewUrlListener;
     }
 
     /**

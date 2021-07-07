@@ -1,32 +1,35 @@
 package com.test.baserefreshview;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 
 import com.xycode.xylibrary.base.PhotoSelectBaseActivity;
-import com.xycode.xylibrary.utils.TS;
-import com.yalantis.ucrop.UCrop;
+import com.xycode.xylibrary.takephoto.model.TImage;
 
-//import butterknife.Bind;
+import java.util.ArrayList;
 
-public class PhotoSelectActivity extends PhotoSelectBaseActivity {
 
-//    @BindView(R.id.btnCamera)
-//    Button btnCamera;
-//    @BindView(R.id.btnAlbum)
-//    Button btnAlbum;
-//    @BindView(R.id.btnCancel)
-//    Button btnCancel;
-//    @BindView(R.id.rlMain)
-//    RelativeLayout rlMain;
+public class PhotoSelectActivity extends PhotoSelectBaseActivity implements View.OnClickListener {
+
+
+    Button btnCamera, btnAlbum, btnCancel;
+    RelativeLayout rlMain;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_photo_select);
-//        ButterKnife.bind(this);
+    protected int setActivityLayout() {
+        return R.layout.activity_photo_select;
+    }
+
+    @Override
+    protected void initOnCreate(Bundle savedInstanceState) {
+
+        findViewById(R.id.btnCamera).setOnClickListener(this);
+        findViewById(R.id.btnAlbum).setOnClickListener(this);
+        findViewById(R.id.btnCancel).setOnClickListener(this);
+        findViewById(R.id.rlMain).setOnClickListener(this);
     }
 
     @Override
@@ -34,9 +37,9 @@ public class PhotoSelectActivity extends PhotoSelectBaseActivity {
         return false;
     }
 
-//    @OnClick({R.id.btnCamera, R.id.btnAlbum, R.id.btnCancel, R.id.rlMain})
-    public void onClick(View view) {
-        switch (view.getId()) {
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
             case R.id.btnCamera:
                 onCamera();
                 break;
@@ -50,17 +53,4 @@ public class PhotoSelectActivity extends PhotoSelectBaseActivity {
         }
     }
 
-    @Override
-    protected void permissionOnDenied(String permission) {
-        TS.show("no " + permission);
-    }
-
-    @Override
-    protected UCrop.Options getCropOptions() {
-        UCrop.Options options = new UCrop.Options();
-        options.setFreeStyleCropEnabled(true);
-        options.setToolbarColor(getResources().getColor(R.color.colorPrimary));
-        options.setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
-        return options;
-    }
 }

@@ -1,10 +1,10 @@
 package com.test.baserefreshview;
 
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
 import android.view.View;
 
-import com.xycode.xylibrary.base.BaseActivity;
+import com.xycode.xylibrary.base.XyBaseActivity;
 import com.xycode.xylibrary.uiKit.views.MultiImageView;
 import com.xycode.xylibrary.unit.UrlData;
 
@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Created by thisfeng on 2016/11/24 0024.
  */
-public class PhotoDemoActivity extends BaseActivity {
+public class PhotoDemoActivity extends XyBaseActivity {
 
     @Override
     protected boolean useEventBus() {
@@ -27,10 +27,14 @@ public class PhotoDemoActivity extends BaseActivity {
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_photo_demo);
-        MultiImageView multiImageView = (MultiImageView) findViewById(R.id.multiView);
+    protected int setActivityLayout() {
+        return R.layout.activity_photo_demo;
+    }
+
+    @Override
+    protected void initOnCreate(Bundle savedInstanceState) {
+
+        MultiImageView multiImageView = findViewById(R.id.multiView);
 
         List<UrlData> images = new ArrayList<>();
         images.add(new UrlData("res:///" + R.mipmap.aa));

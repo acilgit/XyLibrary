@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.annotation.ColorInt;
+import androidx.annotation.ColorInt;
 import android.util.AttributeSet;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
@@ -215,7 +215,8 @@ public abstract class BaseFlowTagLayout extends ViewGroup {
     protected abstract int getLayoutId();
 
         public void setDataList(List dataList) {
-        if (dataList != null && (this.dataList == null || !dataList.containsAll(this.dataList) || !this.dataList.containsAll(dataList))) {
+//        if (dataList != null && (this.dataList == null || !dataList.containsAll(this.dataList) || !this.dataList.containsAll(dataList))) {
+        if (dataList != null) {
             this.dataList = dataList;
             viewList.clear();
             removeAllViews();

@@ -32,6 +32,7 @@ import android.webkit.PermissionRequest;
 import android.webkit.SslErrorHandler;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
@@ -63,9 +64,13 @@ public class AdvancedWebView extends WebView {
 
         void onPageError(int errorCode, String description, String failingUrl);
 
+        void onPageErrorSdk6(WebResourceRequest request, WebResourceError error);
+
         void onDownloadRequested(String url, String userAgent, String contentDisposition, String mimetype, long contentLength);
 
         void onExternalPageRequest(String url);
+
+        void onReceivedTitle(String title);
     }
 
     public static final String PACKAGE_NAME_DOWNLOAD_MANAGER = "com.android.providers.downloads";
@@ -434,6 +439,21 @@ public class AdvancedWebView extends WebView {
             }
 
             @Override
+            public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+                setLastError();
+
+                if (mListener != null) {
+                    mListener.onPageErrorSdk6(request, error);
+                }
+
+                if (customWebViewClient != null) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        customWebViewClient.onReceivedError(view,request, error);
+                    }
+                }
+            }
+
+            @Override
             public boolean shouldOverrideUrlLoading(final WebView view, final String url) {
                 // if the hostname may not be accessed
                 if (!isHostnameAllowed(url)) {
@@ -639,6 +659,9 @@ public class AdvancedWebView extends WebView {
 
             @Override
             public void onReceivedTitle(WebView view, String title) {
+                if (mListener!=null) {
+                    mListener.onReceivedTitle(title);
+                }
                 if (mCustomWebChromeClient != null) {
                     mCustomWebChromeClient.onReceivedTitle(view, title);
                 } else {

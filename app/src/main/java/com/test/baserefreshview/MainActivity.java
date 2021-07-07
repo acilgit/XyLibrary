@@ -1,13 +1,14 @@
 package com.test.baserefreshview;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.appcompat.app.AlertDialog;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.Html;
 import android.text.Spanned;
 import android.view.View;
@@ -26,29 +27,38 @@ import com.xycode.xylibrary.adapter.XAdapter;
 import com.xycode.xylibrary.animation.SlideInBottomAnimation;
 import com.xycode.xylibrary.annotation.SaveState;
 import com.xycode.xylibrary.base.PhotoSelectBaseActivity;
+import com.xycode.xylibrary.instance.FrescoLoader;
 import com.xycode.xylibrary.okHttp.Header;
-import com.xycode.xylibrary.okHttp.OkHttp;
+import com.xycode.xylibrary.okHttp.OkResponseListener;
 import com.xycode.xylibrary.okHttp.Param;
+import com.xycode.xylibrary.uiKit.recyclerview.FloatingBarItemDecoration;
 import com.xycode.xylibrary.uiKit.views.MultiImageView;
 import com.xycode.xylibrary.uiKit.views.loopview.AdLoopView;
 import com.xycode.xylibrary.uiKit.views.nicespinner.NiceSpinner;
 import com.xycode.xylibrary.unit.MsgEvent;
+import com.xycode.xylibrary.unit.StringData;
 import com.xycode.xylibrary.unit.UrlData;
 import com.xycode.xylibrary.unit.ViewTypeUnit;
 import com.xycode.xylibrary.unit.WH;
 import com.xycode.xylibrary.utils.ImageUtils;
 import com.xycode.xylibrary.utils.LogUtil.L;
-import com.xycode.xylibrary.utils.TS;
+import com.xycode.xylibrary.utils.toast.TS;
 import com.xycode.xylibrary.utils.Tools;
 import com.xycode.xylibrary.utils.serverApiHelper.ServerControllerActivity;
 import com.xycode.xylibrary.xRefresher.RefreshRequest;
 import com.xycode.xylibrary.xRefresher.XRefresher;
 
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
+import io.reactivex.Flowable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import okhttp3.Call;
 import okhttp3.Response;
 
@@ -75,10 +85,13 @@ public class MainActivity extends ABaseActivity {
     private XAdapter<ContentBean> adapter;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected int setActivityLayout() {
+        return R.layout.activity_main;
+    }
+
+    @Override
+    protected void initOnCreate(Bundle savedInstanceState) {
         setWindowMode(WindowMode.INPUT_ADJUST);
-        setContentView(R.layout.activity_main);
 //        ButterKnife.bind(this);
 //        start(TestA.class);
         xRefresher = (XRefresher) findViewById(R.id.xRefresher);
@@ -93,12 +106,62 @@ public class MainActivity extends ABaseActivity {
         spinner.getStringData().getObject()
         */
 
+        Intent intent = getIntent();
 
-        findViewById(R.id.xtv).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ServerControllerActivity.startThis(getThis(), api());
+        String action = intent.getAction();
+        if (Intent.ACTION_VIEW.equals(action)) {
+            Uri uri = intent.getData();
+            if (uri != null) {
+                String host = uri.getHost();
+                String dataString = intent.getDataString();
+                String id = uri.getQueryParameter("id");
+                String path = uri.getPath();
+                String path1 = uri.getEncodedPath();
+                String queryString = uri.getQuery();
+                L.d("host:"+host);
+                L.d("dataString:" + dataString);
+                L.d("id:" + id);
+                L.d("path:" + path);
+                L.d("path1:" + path1);
+                L.d("queryString:" + queryString);
             }
+        }
+
+        findViewById(R.id.xtv).setOnClickListener(v -> {
+            L.e("----------------- start");
+            Flowable.interval(2, 1, TimeUnit.SECONDS)
+//                    .observeOn(Schedulers.io())
+                    .subscribeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Subscriber<Long>() {
+                        Subscription subscription;
+                        @Override
+                        public void onSubscribe(Subscription s) {
+                            L.e("----------------- onSubscribe");
+                            subscription = s;
+                            s.request(4);
+                        }
+
+                        @Override
+                        public void onNext(Long aLong) {
+                            L.e("----------------- next: "+ aLong);
+                            if (aLong == 3) {
+                                subscription.cancel();
+                            }
+
+                        }
+
+                        @Override
+                        public void onError(Throwable t) {
+                            t.printStackTrace();
+                            L.e("----------------- error:" );
+                        }
+
+                        @Override
+                        public void onComplete() {
+                            L.e("----------------- onComplete");
+                        }
+                    });
+            ServerControllerActivity.startThis(getThis(), api());
         });
 
 //        DrawerLayout drawerLayout = (DrawerLayout) getLayoutInflater().inflate(com.xycode.xylibrary.R.layout.layout_base_console_view, null);
@@ -135,13 +198,14 @@ public class MainActivity extends ABaseActivity {
         tags.setOnTagSelectListener((childViewList, dataList, selectedStateList, clickPos) -> {
 //            adapter.notifyDataSetChanged();
 //            adapter.setDataList(new ArrayList<>());
+            PhotoActivity.startThis(getThis(), "http://mxycsku.qiniucdn.com/group5/M00/5B/0C/wKgBfVXdYkqAEzl0AAL6ZFMAdKk401.jpg");
 
             newCall().url(api().getSomeAddress)
                     .body(new Param("p", "PPP"))
                     .addDefaultHeader(true)
                     .addDefaultParams(true)
                     .header(new Header("a", "callA"))
-                    .call(new OkHttp.OkResponseListener() {
+                    .call(new OkResponseListener() {
                         @Override
                         public void handleJsonSuccess(Call call, Response response, JSONObject json) throws Exception {
                             ListBean listBean = JSON.parseObject(null, ListBean.class);
@@ -157,8 +221,9 @@ public class MainActivity extends ABaseActivity {
         });
         Uri uri = Uri.parse("http://mxycsku.qiniucdn.com/group5/M00/5B/0C/wKgBfVXdYkqAEzl0AAL6ZFMAdKk401.jpg");
 //        siv.setImageURI();
+        FrescoLoader.setImageUrl(siv, "http://47.52.25.198/files//1/image/2017_08_14/7D87ADF7E151063A.gif");
 
-        ImageUtils.setFrescoViewUri(siv, uri, null);
+//        ImageUtils.setFrescoViewUri(siv, uri, null);
 
         //                        .setImageUrl(R.id.siv, item.getCoverPicture(), new ResizeOptions(getResources().getDimensionPixelSize(R.dimen.imageSelectorFolderCoverSize)))
 //                            ImageUtils.setFrescoViewUri(holder.getView(R.id.siv), null, nu);
@@ -169,7 +234,18 @@ public class MainActivity extends ABaseActivity {
  * 默认大小：bitmap.getWidth(), bitmap.getHeight()<br/>
  * 适配屏幕：getDrawableAdapter
  */
+        FloatingBarItemDecoration floatingBarItemDecoration = new FloatingBarItemDecoration(getThis(), null,
+                new FloatingBarItemDecoration.Options(R.dimen.margin32)
+                        .setBackgroundColor(R.color.gray).setTextPaint(R.color.white, R.dimen.text14),
+                obj -> ((ContentBean) obj).getPosterTitle());
         adapter = new XAdapter<ContentBean>(this, () -> bean.getContent()) {
+
+            @Override
+            protected void beforeSetDataList(List<ContentBean> dataList) {
+                floatingBarItemDecoration.setList(dataList, adapter.getHeaderCount());
+                super.beforeSetDataList(dataList);
+            }
+
             @Override
             protected ViewTypeUnit getViewTypeUnitForLayout(ContentBean item) {
                 switch (item.getId()) {
@@ -195,10 +271,6 @@ public class MainActivity extends ABaseActivity {
                         holder.setClick(R.id.llItem);
                         holder.setClick(R.id.tvName);
                         MultiImageView mvItem = holder.getView(R.id.mvItem);
-                        mvItem.setLoadImageListener(position -> {
-                            WH wh = Tools.getWidthHeightFromFilename(list.get(position), "_wh", "x");
-                            return Uri.parse(list.get(position) + "!" + (wh.getAspectRatio() * 20) + "!20");
-                        });
 
                         mvItem.setOverlayDrawableListener(position -> {
                             if (position == 8) {
@@ -223,16 +295,25 @@ public class MainActivity extends ABaseActivity {
             protected void handleItemViewClick(CustomHolder holder, ContentBean item, int viewId, ViewTypeUnit viewTypeUnit) {
                 switch (viewId) {
                     case R.id.tvName:
-                        TS.show(" YES tvNameas " + viewId);
+                        String s1 = String.format("%.0f", 0.0001d);
+                        String s2 = String.format("%s", 0.0000100d);
+                        TS.show(" YES tvName s1:" + s1 + "   s2:"+s2);
+//                        TS.show(" no tvNameas " + viewId);
                         item.setExpanded(!item.isExpanded());
                         holder.setExpand(item.isExpanded(), true, obj -> notifyDataSetChanged());
                         break;
                     case R.id.item:
-                        TS.show(" YES tvName " + viewId);
-                        adapter.setDataList(new ArrayList<>());
+//                        String s1 = String.format("%.0f", 0.0001d);
+//                        String s2 = String.format("%s", 0.0000100d);
+//                        TS.show(" YES tvName s1:" + s1 + "   s2:"+s2);
+//                        adapter.setDataList(new ArrayList<>());
+
                         break;
                     case R.id.tvText:
-                        TS.show(" YES text " + viewId);
+//                        String s1 = String.format("%.0f", 0.0001d);
+//                        String s2 = String.format("%s", 0.0000100d);
+//                        TS.show(" YES tvName s1:" + s1 + "   s2:"+s2);
+//                        TS.show(" YES text " + viewId);
                         break;
                     default:
 //                        TS.show(item.getAddress() + " YES " + viewId);
@@ -245,9 +326,6 @@ public class MainActivity extends ABaseActivity {
                 ContentBean item = dataList.get(pos);
                 switch (getLayoutId(item.getId())) {
                     case R.layout.item_house:
-                        holder.setText(R.id.tvName, item.getPosterTitle())
-//                        .setImageUrl(R.id.siv, item.getCoverPicture(), new ResizeOptions(getResources().getDimensionPixelSize(R.dimen.imageSelectorFolderCoverSize)))
-                                .setText(R.id.tvText, pos + "");
                         ((CheckBox) holder.getView(R.id.cb)).setChecked(item.isExpanded());
                         MultiImageView mvItem = holder.getView(R.id.mvItem);
 //                            ImageUtils.setFrescoViewUri(holder.getView(R.id.siv), null, nu);
@@ -262,7 +340,14 @@ public class MainActivity extends ABaseActivity {
                         }
                         mvItem.setList(list);
 
+                        StringData stringData = null;
                         holder.setExpand(item.isExpanded(), false);
+                        holder
+                                .setText(R.id.tvText, pos + "")
+//                        .setImageUrl(R.id.siv, item.getCoverPicture(), new ResizeOptions(getResources().getDimensionPixelSize(R.dimen.imageSelectorFolderCoverSize)))
+                                .setText(R.id.tvName, item.getPosterTitle() )
+                                .setText(R.id.tvText, stringData.getString())
+                        ;
                        /* TextView tv = holder.getView(R.id.tvText);
 
                         Html.fromHtml(content, source -> {
@@ -294,8 +379,9 @@ public class MainActivity extends ABaseActivity {
                     case 2:
                         AdLoopView bannerView = holder.getView(R.id.banner);
                         setBanner(bannerView);
-                        ImageUtils.loadBitmapFromFresco(Uri.parse("http://mxycsku.qiniucdn.com/group5/M00/5B/0C/wKgBfVXdYkqAEzl0AAL6ZFMAdKk401.jpg"), bitmap1 -> {
-                            Bitmap bmp = ImageUtils.doGaussianBlur(bitmap1, 30, false);
+//                        ImageUtils.loadBitmapFromFresco(Uri.parse("http://mxycsku.qiniucdn.com/group5/M00/5B/0C/wKgBfVXdYkqAEzl0AAL6ZFMAdKk401.jpg"), bitmap1 -> {
+                        ImageUtils.loadBitmapFromFresco(Uri.parse("https://members.mytaoheung.com//files////afd98eadd2394913bb40d3ade0100c3e//image//2017_10_12//D585B1DD9C8A705F.jpg"), bitmap1 -> {
+                            Bitmap bmp = ImageUtils.doGaussianBlur(bitmap1, 30, false, 100);
                             holder.setImageBitmap(R.id.iv, bmp);
                         });
                         holder.setClick(R.id.iv, v1 -> {
@@ -377,8 +463,8 @@ public class MainActivity extends ABaseActivity {
 //        adapter.addHeader(4, R.layout.layout_recyclerview);
 //        adapter.setFooter(R.layout.footer);
 
-//        xRefresher.setStaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
-        xRefresher.setup(this, adapter).setLoadMore().setOnSwipeListener(() -> {
+        xRefresher.setup(this, adapter).setLoadMore()
+                .setOnSwipeListener(() -> {
            /* postForm("https://www.taichi-tiger.com:8080/append/app_poster/selectAllPosters", new Param(), false, new OkHttp.OkResponseListener() {
                 @Override
                 public void handleJsonSuccess(Call call, Response response, JSONObject json) throws Exception {
@@ -391,14 +477,18 @@ public class MainActivity extends ABaseActivity {
                 }
             });*/
 
-        }).setRefreshRequest(new RefreshRequest<ContentBean>() {
+                }).setRefreshRequest(new RefreshRequest<ContentBean>() {
             @Override
             public String setRequestParamsReturnUrl(Param params) {
-                params.add("aasdfasfsassa", "asfafasfasdfasfasfasfasfasfasdfasfdasdfadsfasdfsadfas");
+                params.add("a", "asfafasfasdfasfasfasfasfasfasdfasfdasdfadsfasdfsadfas");
+                params.add("b", "asfafasfasdfasfasfasfasfasfasdfasfdasdfadsfasdfsadfas");
+                params.add("c", "asfafasfasdfasfasfasfasfasfasdfasfdasdfadsfasdfsadfas");
+                L.e(JSON.toJSONString(params));
 //                return "http://zhijia51.com/append/store_recommend/sell_house_page";
 //                return "http://www.zhijia51.com/append/store_recommend/sell_house_page";
                 return api().getSomeAddress;
             }
+
 
             @Override
             public List<ContentBean> setListData(JSONObject json) {
@@ -415,7 +505,11 @@ public class MainActivity extends ABaseActivity {
                 return newItem.getId().equals(listItem.getId());
             }*/
 
-        }).setRefreshPageSize(6);
+        })
+//                .setRefreshPageSize(6).setStaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+//        }).setRefreshPageSize(6).setGridLayoutManager(2, GridLayoutManager.VERTICAL, false)
+                .setRecyclerViewDividerWithGap(R.color.transparent, R.dimen.dividerHeight, R.dimen.dividerHeight);
+        xRefresher.getRecyclerView().addItemDecoration(floatingBarItemDecoration);
 //        new FloatingBarItemDecoration(getThis(), )
 //        xRefresher.getRecyclerView().addItemDecoration();
 //        xRefresher.setRecyclerViewDivider(android.R.color.holo_orange_light, R.dimen.margin32, R.dimen.sideMargin, R.dimen.sideMargin);
@@ -509,7 +603,7 @@ public class MainActivity extends ABaseActivity {
 //                list.add("或在在要在");
 //                list.add("要");
 //                tags.setDataList(list);
-            PhotoSelectActivity.startForResult(getThis(), PhotoSelectActivity.class, new PhotoSelectBaseActivity.CropParam());
+            PhotoSelectActivity.startForResult(getThis(), PhotoSelectActivity.class, new PhotoSelectBaseActivity.PhotoParam());
 //            TS.show("count " + xRefresher.getAdapter().getItemCount());
 
             RelativeLayout rl = new RelativeLayout(getThis());
@@ -541,13 +635,13 @@ public class MainActivity extends ABaseActivity {
 
 //                DownloadHelper.getInstance().update(getThis(), "http://m.bg114.cn/scene/api/public/down_apk/1/driver1.0.20.apk", "有新版本了啊！！");
 //                Uri destination = Uri.fromFile(getTempHead());  // 保存地址
-//                Crop.of(uri, destination).withSize(150, 150).crop(getThis(), BaseActivity.REQUEST_CODE_GOT_RESULT);
+//                Crop.of(uri, destination).withSize(150, 150).crop(getThis(), XyBaseActivity.REQUEST_CODE_GOT_RESULT);
 //                TS.show(getThis(), "Hi + " + position + " real:" + realPosition);
         });
         bannerView.initData(bannerList);
     }
 
-    @Override
+   /* @Override
     protected void onPhotoSelectResult(int resultCode, Uri uri) {
         super.onPhotoSelectResult(resultCode, uri);
         if (resultCode == RESULT_OK) {
@@ -557,11 +651,11 @@ public class MainActivity extends ABaseActivity {
             siv.setImageURI(uri);
             CustomHolder holder = xRefresher.getHeader(2);
 //            holder.setImageUrl(R.id.iv, "");
-            holder.setImageURI(R.id.iv, String.valueOf(uri));
+            holder.setImageUrl(R.id.iv, String.valueOf(uri));
         } else {
 
         }
-    }
+    }*/
 
     @Override
     public void onEvent(MsgEvent event) {

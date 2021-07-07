@@ -44,7 +44,7 @@
                 android:text="GoBottom" />
 
             <TextView
-                android:id="@+id/tvClear"
+                android:id="@+id/tvDebug"
                 android:layout_marginLeft="4dp"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -52,7 +52,7 @@
                 android:background="@drawable/selector_item_white"
                 android:gravity="center"
                 android:textColor="@color/grayDark"
-                android:text="Clear" />
+                android:text="Debug" />
 
             <ImageView
                 android:id="@+id/ivHide"
@@ -71,12 +71,19 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <android.support.v7.widget.RecyclerView
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scrollbarAlwaysDrawHorizontalTrack="true"
                 android:scrollbars="vertical" />
+
+         <!--   <View
+                android:id="@+id/vDebug"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="20dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"/>-->
         </RelativeLayout>
     </LinearLayout>
 

@@ -1,0 +1,85 @@
+<resources>
+
+    <string name="app_name">XYLibrary</string>
+
+    <!--跟随系统语言，此目录为英文  引用名称需相同-->
+    <string name="blank"></string>
+        
+    <string name="text_take_photo">Shooting photos</string>
+        
+    <string name="text_photo_unit"> Zhang </string>
+        
+    <string name="text_done"> complete </string>
+        
+    <string name="text_folder_all">All Photos</string>
+        
+    <string name="text_preview">Preview</string>
+        
+    <string name="msg_photo_error">Image Error</string>
+        
+    <string name="msg_no_camera">No system camera</string>
+        
+    <string name="msg_amount_limit"> has reached the maximum selection number </string>
+        
+    <string name="compress_listener_not_null"> compressed image listener can not be empty </string>
+        
+    <string name="compress_parent_path_can_not_be_null">Compressed directory cannot be empty</string>
+        
+    <string name="father_can_not_be_a_file"> parent directory cannot be a file </string>
+        
+    <string name="file_uri_error">file uri error</string>
+        
+    <string name="file_no_exits"> file does not exist </string>
+        
+    <string name="params_can_not_be_null"> parameter can not be empty </string>
+        
+    <string name="array_out_of_bouds">array_out_of_bouds</string>
+        
+    <string name="text_today">"Today"</string>
+        
+    <string name="text_yestoday">"yesterday"</string>
+        
+    <string name="text_before_yestoday">"The day before yesterday"</string>
+    <string name="ignoreThisVersion"> Ignore this version</string>
+        
+    <string name="update_now">Update Now</string>
+        
+    <string name="new_version"> new version </string>
+        
+    <string name="text_update_next_time"> not update </string>
+        
+    <string name="text_updating"> Updating </string>
+        
+    <string name="text_cancel_update"> cancel update </string>
+        
+    <string name="text_update_now">Update Now</string>
+        
+    <string name="update_illustration"> No description </string>
+        
+    <string name="tips_get_dowload_url_fail">Failed to get download address</string>
+        
+    <string name="separator">/</string>
+        
+    <string name="percent" formatted="false">%s%%</string>
+        
+    <string name="zero">0</string>
+        
+    <string name="update_connecting">Connecting</string>
+        
+    <string name="update_error_tips"> Problem while updating package: </string>
+        
+    <string name="failed_to_get_permission_please_go_settings"> did not obtain permissions, please go to the application management settings </string>
+        
+    <string name="tips">Tip</string>
+        
+    <string name="not_have_permission_to_assess_media_failes"> You do not have permission to access media files, please go to Settings </string>
+        
+    <string name="go_to_set"> to set </string>
+        
+    <string name="cancel"> cancel </string>
+        
+    <string name="not_have_install_permission"> to install the application need to open the unknown source permissions, please go to the settings to open the application permissions to allow the installation of applications from this source </string>
+
+    <string name="install_apk">install apk</string>
+
+</resources>

@@ -7,14 +7,17 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
+    <!--安装未知来源权限 -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+
     <application
         android:name=".App"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/ico_logo"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".test.HomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -23,12 +26,30 @@
         </activity>
         <activity android:name=".PhotoSelectActivity" />
         <activity android:name=".TestA" />
-        <activity android:name=".New1Activity"></activity>
+        <activity android:name=".New1Activity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="mysxcheme" />
+            </intent-filter>
+        </activity>
         <!--<activity android:name=".New1Activity"></activity>-->
         <activity android:name=".PhotoDemoActivity" />
+        <activity android:name=".PhotoActivity" />
+        <activity android:name=".test.FitAndroid7Activity" />
+
+        <activity android:name=".MainActivity" />
+        <activity android:name=".test.DragTestActivity" />
+        <activity android:name=".test.DragSampleActivity" />
         <activity
-            android:name=".PhotoActivity"
-             />
+            android:name=".test.GuideActivity"
+            android:theme="@style/AppTheme.Splash" />
+        <activity android:name=".test.DragTest2Activity" />
+        <activity android:name=".test.DragTestSaveActivity" />
+
 
         <!--阿里Hotfix-->
         <meta-data

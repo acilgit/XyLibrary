@@ -1,17 +1,16 @@
 apply plugin: 'com.android.library'
-//apply plugin: 'com.github.dcendents.android-maven'
-apply plugin: 'me.tatarka.retrolambda'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion '25.0.2'
-    resourcePrefix "resourcePrefix"
+    compileSdkVersion 29
+    buildToolsVersion '28.0.3'
+
     defaultConfig {
         minSdkVersion 15
-        targetSdkVersion 22
+        targetSdkVersion 29
         versionCode 235
         versionName "0.2.35"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
     }
 
     buildTypes {
@@ -20,36 +19,85 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    compileOptions.encoding ="UTF-8"
+    compileOptions.encoding = "UTF-8"
 
     compileOptions {
-        targetCompatibility 1.8
-        sourceCompatibility 1.8
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    packagingOptions {
+        pickFirst 'protobuf.meta'
+        exclude 'META-INF/rxjava.properties'
+//        exclude 'META-INF/NOTICE' // will not include NOTICE file
+//        exclude 'META-INF/LICENSE' // will not include LICENSE file
+        // … and any other excludes go here
     }
 }
 
+
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+    api fileTree(include: ['*.jar'], dir: 'libs')
+    androidTestImplementation('androidx.test.espresso:espresso-core:3.1.0', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:25.3.1'
-    compile 'com.android.support:design:25.3.1'
-    compile 'com.alibaba:fastjson:1.2.14'
-    compile 'org.greenrobot:greendao:3.1.0'
-    compile 'com.github.traex.rippleeffect:library:1.3'
-    compile 'com.annimon:stream:1.1.2'
-    compile 'com.anthonycr.grant:permissions:1.0'
-    compile 'com.yalantis:ucrop:2.1.2'
-    compile 'com.squareup.okhttp3:okhttp:3.8.1'
-    compile 'com.facebook.fresco:fresco:0.10.0'
-    compile "com.facebook.fresco:imagepipeline-okhttp3:0.10.0"
-    compile 'org.greenrobot:eventbus:3.0.0'
-//    compile 'com.theartofdev.edmodo:android-image-cropper:2.3.1'
-    //    compile 'com.facebook.fresco:animated-gif:0.12.0'
-    //    compile 'com.facebook.fresco:animated-webp:0.12.0'
-    //    compile 'com.facebook.fresco:webpsupport:0.12.0'
+    testImplementation 'junit:junit:4.12'
+
+    /* Google组件*/
+    api 'androidx.appcompat:appcompat:1.0.0'
+    api 'com.google.android.material:material:1.0.0'
+
+    /* json解析*/
+    api 'com.alibaba:fastjson:1.2.31'
+
+    //    api 'com.alibaba:fastjson:1.2.46'
+
+    //    api 'com.alibaba:fastjson:1.2.14'
+
+    /* SQLite */
+
+    //    api 'org.greenrobot:greendao:3.1.0'
+
+    /* 水波纹 */
+    api 'com.github.traex.rippleeffect:library:1.3'
+
+    /* java8 流Stream 数据处理   */
+    api 'com.annimon:stream:1.2.1'
+
+    /* 图片裁剪 */
+
+    //    api 'com.yalantis:ucrop:2.2.0'
+
+    /* 网络请求 */
+    api 'com.squareup.okhttp3:okhttp:3.8.1'
+
+    /* 图片处理 */
+    api 'com.facebook.fresco:fresco:0.10.0'
+    api 'com.facebook.fresco:imagepipeline-okhttp3:0.10.0'
+
+    //    api 'com.jph.takephoto:takephoto_library:4.1.0'
+
+    /* 事件通讯 */
+    api 'org.greenrobot:eventbus:3.0.0'
+
+    /* Rxjava*/
+    api 'io.reactivex.rxjava2:rxjava:2.1.3'
+    api 'io.reactivex.rxjava2:rxandroid:2.0.1'
+
+    //    api 'com.theartofdev.edmodo:android-image-cropper:2.3.1'
+
+    //    api 'com.facebook.fresco:animated-gif:0.12.0'
+    api 'com.facebook.fresco:animated-gif:0.10.0'
+
+    //    api 'com.facebook.fresco:animated-webp:0.12.0'
+
+    //    api 'com.facebook.fresco:webpsupport:0.12.0'
+
+    //    annotationProcessor 'com.google.dagger:dagger-compiler:2.0'
+    api 'com.soundcloud.android.crop:lib_crop:1.0.0'
+    api 'com.darsh.multipleimageselect:multipleimageselect:1.0.5'
+
+    //    api 'me.shaohui.advancedluban:library:1.3.2'
 }
 
 ext {
@@ -62,11 +110,11 @@ ext {
     artifact = 'xylibrary'
 
     libraryDescription = 'library for Android'
- 
+
     siteUrl = 'https://github.com/acilgit/XyLibrary'
     gitUrl = 'https://github.com/acilgit/XyLibrary.git'
 
-    libraryVersion = '0.4.83'
+    libraryVersion = '0.8.86'
 
     developerId = 'acil'
     developerName = 'acil-fong'
@@ -89,5 +137,7 @@ tasks.withType(Javadoc) {
         }
     }
 }
+/*
 apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
 apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'
+*/

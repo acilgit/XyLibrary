@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -47,8 +47,9 @@
             android:id="@+id/siv"
             style="@style/sivPicBase"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone" />
+            android:layout_height="180dp"
+
+              />
 
         <com.test.baserefreshview.TagLayout
             android:id="@+id/tags"
@@ -72,6 +73,7 @@
             android:layout_height="match_parent" />
 
         <com.facebook.drawee.view.SimpleDraweeView
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:actualImageScaleType="centerCrop"
@@ -124,4 +126,4 @@
 
     </android.support.v4.widget.DrawerLayout>-->
 
-</android.support.design.widget.CoordinatorLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

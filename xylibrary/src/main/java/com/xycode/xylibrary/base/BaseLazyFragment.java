@@ -2,8 +2,8 @@ package com.xycode.xylibrary.base;
 
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,14 +24,14 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-
+@Deprecated
 public abstract class BaseLazyFragment extends Fragment {
 
     boolean loaded = false;
     private boolean loadFailed = false;
 
-    protected BaseActivity getThis() {
-        return (BaseActivity) getActivity();
+    protected XyBaseActivity getThis() {
+        return (XyBaseActivity) getActivity();
     }
 
     @Override

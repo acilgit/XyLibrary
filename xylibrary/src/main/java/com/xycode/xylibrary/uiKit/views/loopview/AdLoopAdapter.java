@@ -1,8 +1,8 @@
 package com.xycode.xylibrary.uiKit.views.loopview;
 
 import android.content.Context;
-import android.net.Uri;
-import android.support.v4.view.ViewPager;
+
+import androidx.viewpager.widget.ViewPager;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -11,7 +11,6 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import com.xycode.xylibrary.instance.FrescoLoader;
 import com.xycode.xylibrary.uiKit.views.loopview.internal.BaseLoopAdapter;
 import com.xycode.xylibrary.unit.UrlData;
-import com.xycode.xylibrary.utils.ImageUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -32,7 +31,7 @@ class AdLoopAdapter extends BaseLoopAdapter {
     /**
      * @param imageUrl
      */
-    public View instantiateItemView(String imageUrl, int position) {
+    public View instantiateItemView(Object imageUrl, int position) {
         SimpleDraweeView imageView = imageViewList.get(position);
         if (imageView == null) {
             imageView = new SimpleDraweeView(context);
@@ -47,14 +46,14 @@ class AdLoopAdapter extends BaseLoopAdapter {
         if (imageView.getTag() != null && imageView.getTag().equals(imageUrl)) {
             return imageView;
         }
-        Uri uri = Uri.parse(imageUrl);
-        if (uri != null) {
-            if (onPreviewUrlListener != null) {
-                ImageUtils.setImageUriWithPreview(imageView, imageUrl, onPreviewUrlListener.getPreviewUrl(imageUrl, position));
-            } else {
-                FrescoLoader.setImageURI(imageView, imageUrl);
-            }
-        }
+//        Uri uri = Uri.parse(imageUrl);
+//        if (uri != null) {
+//            if (onPreviewUrlListener != null) {
+//                ImageUtils.setImageUriWithPreview(imageView, imageUrl, onPreviewUrlListener.getPreviewUrl(imageUrl, position));
+//            } else {
+                FrescoLoader.setImageUrl(imageView, imageUrl);
+//            }
+//        }
         imageView.setTag(imageUrl);
 
         return imageView;

@@ -3,8 +3,8 @@ package com.xycode.xylibrary.base;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,37 +25,46 @@ import com.xycode.xylibrary.utils.Tools;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class BasePhotoActivity extends BaseActivity {
+public abstract class BasePhotoActivity extends XyBaseActivity {
 
     private static final String photos = "photos";
     private static final String position = "position";
-    private static BaseActivity activity;
+    private static XyBaseActivity activity;
     View.OnLongClickListener longClickListener;
     private LinearLayout llIndexContainer;
     private NoScrollViewPager vpMain;
     private int pos;
     private Options options;
 
-    public static void startThis(BaseActivity activity, Class photoActivityClass, String url) {
+    public static void startThis(XyBaseActivity activity, Class photoActivityClass, String url) {
         List<UrlData> urls = new ArrayList<>();
         urls.add(new UrlData(url));
         BasePhotoActivity.activity = activity;
         startThis(activity, photoActivityClass, urls, 0);
     }
 
-    public static void startThis(BaseActivity activity, Class photoActivityClass, List<UrlData> urls, int pos) {
+    public static void startThis(XyBaseActivity activity, Class photoActivityClass, List<UrlData> urls, int pos) {
 //        getPhotoStorage(activity).put(photos, JSON.toJSONString(urls));
         activity.startActivity(new Intent(activity, photoActivityClass).putExtra(photos, JSON.toJSONString(urls)).putExtra(position, pos));
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         //remove ActionBar
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         //set full screen
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setContentView(R.layout.activity_base_photo);
+        super.onCreate(savedInstanceState);
+
+    }
+
+    @Override
+    protected int setActivityLayout() {
+        return R.layout.activity_base_photo;
+    }
+
+    @Override
+    protected void initOnCreate(Bundle savedInstanceState) {
         options = setDisplayOptions();
         vpMain = (NoScrollViewPager) findViewById(R.id.vpMain);
         RelativeLayout rlMain = (RelativeLayout) findViewById(R.id.rlMain);
@@ -180,7 +189,7 @@ public abstract class BasePhotoActivity extends BaseActivity {
     class PhotoPagerAdapter extends PagerAdapter {
 
         private LayoutInflater inflater;
-        private BaseActivity context;
+        private XyBaseActivity context;
         private List<UrlData> dataList;
 
         PhotoPagerAdapter(BasePhotoActivity context, List<UrlData> dataList) {
@@ -199,7 +208,7 @@ public abstract class BasePhotoActivity extends BaseActivity {
             ivPhoto.setOnClickListener(v -> context.finish());
             ivPhoto.setOnLongClickListener(longClickListener);
             if (data.getUrl() != null) {
-                ImageUtils.loadBitmapFromFresco(Uri.parse(data.getUrl()), bitmap -> runOnUiThread(() -> {
+                ImageUtils.loadBitmapFromFresco(Uri.parse((String) data.getUrl()), bitmap -> runOnUiThread(() -> {
                     if (bitmap != null) {
                         float pRatio = (bitmap.getHeight() * 1.0f) / bitmap.getWidth();
                         float ratio = pRatio / 1.6f;

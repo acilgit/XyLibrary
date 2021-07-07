@@ -2,9 +2,9 @@ package com.xycode.xylibrary.adapter;
 
 import android.animation.Animator;
 import android.content.Context;
-import android.support.annotation.LayoutRes;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
+import androidx.annotation.LayoutRes;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +16,7 @@ import com.xycode.xylibrary.R;
 import com.xycode.xylibrary.animation.BaseAnimation;
 import com.xycode.xylibrary.animation.SlideInBottomAnimation;
 import com.xycode.xylibrary.unit.ViewTypeUnit;
+import com.xycode.xylibrary.utils.LogUtil.L;
 import com.xycode.xylibrary.xRefresher.XRefresher;
 
 import java.util.ArrayList;
@@ -35,6 +36,11 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
     public static final int VIEW_TYPE_FOOTER_RETRY = -20344;
     public static final int VIEW_TYPE_FOOTER_NO_DATA = -20355;
 
+    public static final int[] VIEW_TYPE_FOOTERS = new int[]{VIEW_TYPE_FOOTER,
+            VIEW_TYPE_FOOTER_LOADING,
+            VIEW_TYPE_FOOTER_NO_MORE,
+            VIEW_TYPE_FOOTER_RETRY,
+            VIEW_TYPE_FOOTER_NO_DATA};
     /**
      * LOADER_NO_DATA   没有数据
      * LOADER_NO_MORE   已加载全部，有footerLayoutId显示Footer
@@ -188,7 +194,13 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
                                 holder1.setOnClickListener(v -> handleItemViewClick(holder1, null, v.getId(), new ViewTypeUnit(headerKey, headerLayoutIdList.get(headerKey))));
 
                                 holder1.setOnLongClickListener(v -> handleItemViewLongClick(holder1, null, v.getId(), new ViewTypeUnit(headerKey, headerLayoutIdList.get(headerKey))));
-                                creatingHeader(holder1, headerKey);
+                                try {
+                                    creatingHeader(holder1, headerKey);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                    L.crash("creatingHeader Exception", e);
+
+                                }
                             }
                         };
                     }
@@ -204,9 +216,17 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
                 return new CustomHolder(itemView) {
                     @Override
                     protected void createHolder(final CustomHolder holder) {
-                        holder.setOnClickListener(v -> handleItemViewClick(holder, dataList.get(holder.getAdapterPosition() - getHeaderCount()), v.getId(), viewTypeUnit));
-                        holder.setOnLongClickListener(v -> handleItemViewLongClick(holder, dataList.get(holder.getAdapterPosition() - getHeaderCount()), v.getId(), viewTypeUnit));
-                        creatingHolder(holder, viewTypeUnit);
+                        try {
+                            holder.setOnClickListener(v -> handleItemViewClick(holder, getShowingList().get(holder.getLayoutPosition() - getHeaderCount()), v.getId(), viewTypeUnit));
+
+                            holder.setOnLongClickListener(v -> handleItemViewLongClick(holder, getShowingList().get(holder.getLayoutPosition() - getHeaderCount()), v.getId(), viewTypeUnit));
+
+                            creatingHolder(holder, viewTypeUnit);
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            L.crash("createHolder Exception", e);
+                        }
                     }
                 };
         }
@@ -243,12 +263,26 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
             for (int i = 0; i < headerLayoutIdList.size(); i++) {
                 final int headerKey = headerLayoutIdList.keyAt(i);
                 if (getItemViewType(position) == headerKey) {
-                    bindingHeader(((CustomHolder) holder), headerKey);
+                    try {
+                        bindingHeader(((CustomHolder) holder), headerKey);
+                    } catch (Exception e) {
+                        L.crash("BindingHeader Exception", e);
+                        e.printStackTrace();
+                    }
                 }
             }
             return;
         }
-        bindingHolder(((CustomHolder) holder), dataList, position - headerLayoutIdList.size());
+        try {
+            bindingHolder(((CustomHolder) holder), dataList, position - headerLayoutIdList.size());
+        } catch (Exception e) {
+            e.printStackTrace();
+            StringBuffer sb = new StringBuffer();
+            for (StackTraceElement traceElement : e.getStackTrace()) {
+                sb.append("\n").append(traceElement.toString());
+            }
+            L.crash("BindingHolder Exception", e);
+        }
         addAnimation(holder);
     }
 
@@ -263,7 +297,11 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
     public void onViewAttachedToWindow(RecyclerView.ViewHolder holder) {
         super.onViewAttachedToWindow(holder);
         int type = holder.getItemViewType();
-        if (type == VIEW_TYPE_FOOTER || headerLayoutIdList.indexOfKey(type) >= 0) {
+        boolean isFooter = false;
+        for (int viewTypeFooterView : VIEW_TYPE_FOOTERS) {
+            if (type == viewTypeFooterView) isFooter = true;
+        }
+        if (isFooter || headerLayoutIdList.indexOfKey(type) >= 0) {
             setFullSpan(holder);
         } else {
             ViewTypeUnit viewTypeUnit = multiLayoutMap.get(type);
@@ -274,7 +312,7 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
     }
 
     /**
-     * thanks for CymChad for this method
+     * thanks CymChad for this method
      * When set to true, the item will layout using all span area. That means, if orientation
      * is vertical, the view will have full width; if orientation is horizontal, the view will
      * have full height.
@@ -346,9 +384,10 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
      * @param holder
      * @param viewTypeUnit
      */
-    public void creatingHolder(CustomHolder holder, ViewTypeUnit viewTypeUnit) {
+    public void creatingHolder(CustomHolder holder, ViewTypeUnit viewTypeUnit) throws Exception {
 
     }
+
 
     /**
      * 绑定展示数据时执行，多次执行
@@ -357,18 +396,9 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
      * @param dataList
      * @param pos
      */
-    public void bindingHolder(CustomHolder holder, List<T> dataList, int pos) {
+    public void bindingHolder(CustomHolder holder, List<T> dataList, int pos) throws Exception {
 
     }
-
- /*   public int getLoadMoreState() {
-        return loadMoreState;
-    }
-
-    public void setLoadMoreState(int loadMoreState) {
-        this.loadMoreState = loadMoreState;
-        notifyDataSetChanged();
-    }*/
 
     /**
      * 根据Mark确定展示的Layout
@@ -463,11 +493,27 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
         return footerCount + headerCount;
     }
 
-    public T getItem(int pos) {
-        if (dataList.size() > pos && pos > 0) {
+    public boolean isHeader(int pos) {
+        return pos < headerLayoutIdList.size();
+    }
+
+    /**
+     * 取得列表Item
+     *
+     * @param itemPosWithoutHeaderCount 列表中的Item位置, 不包括Header的Item,
+     *                                  如使用getAdapterPosition()需要减掉getHeaderCount()
+     * @return
+     */
+    public T getItem(int itemPosWithoutHeaderCount) {
+        int pos = itemPosWithoutHeaderCount;
+        if (dataList.size() > pos && pos >= 0) {
             return dataList.get(pos);
         }
         return null;
+    }
+
+    public T getCurrentItem(CustomHolder holder) {
+        return dataList.get(holder.getAdapterPosition() - getHeaderCount());
     }
 
     public OnInitList getOnInitList() {
@@ -615,11 +661,11 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
         headerLayoutIdList.put(headerKey, headerLayoutId);
     }
 
-    protected void creatingHeader(CustomHolder holder, int headerKey) {
+    protected void creatingHeader(CustomHolder holder, int headerKey) throws Exception {
 
     }
 
-    protected void bindingHeader(CustomHolder holder, int headerKey) {
+    protected void bindingHeader(CustomHolder holder, int headerKey) throws Exception {
 
     }
 
@@ -729,7 +775,6 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter {
 
     public void setLoadMoreListener(ILoadMoreListener loadMoreListener) {
         this.loadMoreListener = loadMoreListener;
-//        loadMoreState = LOADER_CAN_LOAD;
     }
 
     public void setLoadingLayout(@LayoutRes int loadingLayoutId) {

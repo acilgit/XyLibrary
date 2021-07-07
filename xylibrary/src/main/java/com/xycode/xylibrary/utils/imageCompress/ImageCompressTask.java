@@ -3,7 +3,7 @@ package com.xycode.xylibrary.utils.imageCompress;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Environment;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.xycode.xylibrary.R;
 import com.xycode.xylibrary.utils.ImageUtils;

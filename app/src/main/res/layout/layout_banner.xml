@@ -7,13 +7,15 @@
     android:layout_height="wrap_content">
 
     <ImageView
+        android:visibility="gone"
         android:id="@+id/iv"
         android:scaleType="fitCenter"
         android:layout_width="match_parent"
         android:layout_height="120dp"/>
     <ImageView
         android:id="@+id/iv2"
-        android:src="@mipmap/ic_ball"
+        android:visibility="visible"
+        android:src="@mipmap/ic_launcher"
         android:scaleType="fitCenter"
         android:layout_width="match_parent"
         android:layout_height="120dp"/>

@@ -10,4 +10,11 @@
 
     <style name="AppDialog" parent="Base.AlertDialog.AppCompat" />
 
+
+    <style name="AppTheme.Splash">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
 </resources>

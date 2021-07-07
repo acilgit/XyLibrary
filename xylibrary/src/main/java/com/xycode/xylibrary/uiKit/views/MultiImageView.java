@@ -135,7 +135,8 @@ public class MultiImageView<T> extends LinearLayout {
     }
 
     public void setList(List<UrlData> lists) {
-        if (imagesList == null || imagesList.size() != lists.size() || !imagesList.containsAll(lists) ) {
+//        if (imagesList == null || imagesList.size() != lists.size() || !imagesList.containsAll(lists) ) {
+        if (lists != null) {
             imagesList = lists;
             initList(lists);
         }
@@ -282,7 +283,7 @@ public class MultiImageView<T> extends LinearLayout {
     }
 
     private ImageView createImageView(final int position, final boolean isMultiImage) {
-        String url = imagesList.get(position).getUrl();
+        Object url = imagesList.get(position).getUrl();
         if (url == null) url = "";
         SimpleDraweeView imageView;
 
@@ -330,7 +331,7 @@ public class MultiImageView<T> extends LinearLayout {
             }
         });
 
-        FrescoLoader.setImageURI(imageView,url);
+        FrescoLoader.setImageUrl(imageView,url);
 //        ImageUtils.setImageUriWithPreview(imageView, Uri.parse(url), previewUri);
         imageView.setTag(url);
         imageView.setOnClickListener(v -> {
@@ -344,15 +345,17 @@ public class MultiImageView<T> extends LinearLayout {
     private void resetImages() {
         for (int i = 0; i < imageViewList.size(); i++) {
             SimpleDraweeView imageView = imageViewList.get(i);
-            String url = imagesList.get(i).getUrl();
+            Object url = imagesList.get(i).getUrl();
             if (imageView.getTag()!=null && url.equals(imageView.getTag())) {
                 continue;
             }
-            Uri previewUri = null;
+            String previewUri = null;
             if (imageLoadListener != null) {
                 previewUri = imageLoadListener.setPreviewUri(i);
+                ImageUtils.setImageUriWithPreview(imageView, (String) url, previewUri, null);
+            } else {
+                FrescoLoader.setImageUrl(imageView, url);
             }
-            ImageUtils.setImageUriWithPreview(imageView, Uri.parse(url), previewUri, null);
             imageView.setTag(url);
         }
     }
@@ -366,6 +369,11 @@ public class MultiImageView<T> extends LinearLayout {
         pxOneMiniAspectRatio = aspectRatio;
     }
 
+    /**
+     * 此方法已弃用，请使用{@link FrescoLoader#setImageUrl(ImageView, Object)}
+     * @param imageLoadListener
+     */
+    @Deprecated
     public void setLoadImageListener(OnImageLoadListener imageLoadListener) {
         this.imageLoadListener = imageLoadListener;
     }
@@ -382,7 +390,7 @@ public class MultiImageView<T> extends LinearLayout {
     }
 
     public interface OnImageLoadListener {
-        Uri setPreviewUri(int position);
+        String setPreviewUri(int position);
     }
 
     public interface OnImageOverlayListener {

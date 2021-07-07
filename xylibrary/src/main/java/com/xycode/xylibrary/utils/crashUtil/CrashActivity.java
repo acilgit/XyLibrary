@@ -1,20 +1,21 @@
 package com.xycode.xylibrary.utils.crashUtil;
 
-import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.view.ViewGroup;
+import android.os.Environment;
+import androidx.appcompat.app.AppCompatActivity;
+
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.alibaba.fastjson.JSON;
 import com.xycode.xylibrary.R;
 import com.xycode.xylibrary.Xy;
-import com.xycode.xylibrary.base.BaseActivity;
+import com.xycode.xylibrary.base.XyBaseActivity;
 import com.xycode.xylibrary.interfaces.Interfaces;
 import com.xycode.xylibrary.utils.LogUtil.LogItem;
 import com.xycode.xylibrary.utils.LogUtil.LogLayout;
@@ -38,6 +39,10 @@ public class CrashActivity extends AppCompatActivity {
 
     private static CrashActivity instance;
 
+
+    private static final String PATH = Environment.getExternalStorageDirectory().getPath() + "/CrashTest/log/";
+    private static final String FILE_NAME = "crash.txt";
+
     public static CrashActivity getInstance() {
         return instance;
     }
@@ -55,10 +60,19 @@ public class CrashActivity extends AppCompatActivity {
     }
 
     private void initViews() {
-        crashItem = getCrashItem(errorMsg);
+        crashItem = getCrashItem(instance,errorMsg);
         if (cb != null) {
             cb.go(crashItem);
         }
+
+        //是否保存到本地缓存文件，目录为 data/data/app/
+        if (iCrash != null) {
+            if (iCrash.getIsSaveCrashLogFile()) {
+                String jsonString = JSON.toJSONString(L.getLogList());
+                L.writeLog(Xy.getContext(), null, jsonString);
+            }
+        }
+
         if (iCrash != null && iCrash.getLayoutId() != 0) {
             setContentView(iCrash.getLayoutId());
             iCrash.setViews(this, crashItem);
@@ -72,6 +86,8 @@ public class CrashActivity extends AppCompatActivity {
                     v -> finish()
             );
         }
+
+
     }
 
     @Override
@@ -83,7 +99,7 @@ public class CrashActivity extends AppCompatActivity {
     }
 
     public static void setCrashOperation(Interfaces.CB<CrashItem> catchErrorCallback) {
-        setCrashOperation( catchErrorCallback, null);
+        setCrashOperation(catchErrorCallback, null);
     }
 
     /**
@@ -103,7 +119,9 @@ public class CrashActivity extends AppCompatActivity {
                 byte[] data = baos.toByteArray();
                 info = new String(data);
                 data = null;
+                //添加至logList中
                 L.getLogList().add(new LogItem(DateUtils.formatDateTime("yyyy-M-d HH:mm:ss:SSS", DateUtils.getNow()), info, LogItem.LOG_TYPE_CRASH));
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -112,22 +130,25 @@ public class CrashActivity extends AppCompatActivity {
             if (Xy.getStorage(Xy.getContext()).getEditor().putString(CRASH_LOG, jsonString).commit()) {
                 Intent intent = new Intent(Xy.getContext(), CrashActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                //将信息携带过去页面
                 intent.putExtra(CrashActivity.MSG, info);
                 Xy.getContext().startActivity(intent);
                 // 杀死该应用进程
-                BaseActivity.exitApplication();
+                XyBaseActivity.exitApplication();
             }
 
         });
     }
 
-    public CrashItem getCrashItem(String errorMsg) {
+
+    public static CrashItem getCrashItem(Context context,String errorMsg) {
         CrashItem crashItem = null;
         try {
-            //应用的版本名称和版本号
-            PackageManager pm = this.getPackageManager();
-            PackageInfo pi = pm.getPackageInfo(this.getPackageName(), PackageManager.GET_ACTIVITIES);
+            //应用的包名版本名称和版本号
+            PackageManager pm = context.getPackageManager();
+            PackageInfo pi = pm.getPackageInfo(context.getPackageName(), PackageManager.GET_ACTIVITIES);
             crashItem = new CrashItem();
+            crashItem.setPackageName(pi.packageName);
             crashItem.setVersionName(pi.versionName);
             crashItem.setVersionCode(pi.versionCode);
             //android版本号
@@ -138,6 +159,10 @@ public class CrashActivity extends AppCompatActivity {
             //手机型号
             crashItem.setModel(Build.MODEL);
             crashItem.setErrorMsg(errorMsg);
+
+            crashItem.setTime(DateUtils.formatDateTime("yyyy-M-d HH:mm:ss:SSS", DateUtils.getNow()));
+
+
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }

@@ -30,10 +30,18 @@
         android:layout_centerInParent="true"
         android:text="图片查看" />
 
-    <android.support.v4.view.ViewPager
+
+    <ImageView
+        android:visibility="visible"
+        android:id="@+id/iv"
+        android:scaleType="centerCrop"
+        android:layout_width="match_parent"
+        android:layout_height="160dp"/>
+
+    <androidx.viewpager.widget.ViewPager
         android:id="@+id/vpMain"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-    </android.support.v4.view.ViewPager>
+    </androidx.viewpager.widget.ViewPager>
 
 </LinearLayout>

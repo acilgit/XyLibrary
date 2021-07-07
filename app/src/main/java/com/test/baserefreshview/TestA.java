@@ -1,11 +1,10 @@
 package com.test.baserefreshview;
 
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
 import android.widget.Button;
 
-import com.xycode.xylibrary.base.BaseActivity;
+import com.xycode.xylibrary.base.XyBaseActivity;
 import com.xycode.xylibrary.interfaces.Interfaces;
 import com.xycode.xylibrary.uiKit.views.nicespinner.NiceSpinner;
 import com.xycode.xylibrary.utils.Tools;
@@ -18,7 +17,7 @@ import java.util.List;
 /**
  * Created by Administrator on 2016/9/26 0026.
  */
-public class TestA extends BaseActivity implements ImageCompressTask.CompressListener{
+public class TestA extends XyBaseActivity implements ImageCompressTask.CompressListener{
     NiceSpinner<String> one;
     NiceSpinner<String> two;
     Button button;
@@ -26,10 +25,20 @@ public class TestA extends BaseActivity implements ImageCompressTask.CompressLis
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //one = (NiceSpinner) findViewById(R.id.test_one);
+
+    }
+
+    @Override
+    protected int setActivityLayout() {
+        return 0;
+    }
+
+    @Override
+    protected void initOnCreate(Bundle savedInstanceState) {
+//one = (NiceSpinner) findViewById(R.id.test_one);
         //two = (NiceSpinner) findViewById(R.id.test_two);
-       // button = (Button) findViewById(R.id.btn);
-       // button.setOnClickListener((view) -> PhotoSelectActivity.startForResult(getThis(), PhotoSelectActivity.class, PhotoSelectBaseActivity.CropParam.out(0, 0)));
+        // button = (Button) findViewById(R.id.btn);
+        // button.setOnClickListener((view) -> PhotoSelectActivity.startForResult(getThis(), PhotoSelectActivity.class, PhotoSelectBaseActivity.PhotoParam.out(0, 0)));
         List<String> list = new ArrayList<>();
         list.add("或在在要要在");
         list.add("在在要要在");
@@ -65,7 +74,7 @@ public class TestA extends BaseActivity implements ImageCompressTask.CompressLis
         return null;
     }
 
-    @Override
+ /*   @Override
     protected void onPhotoSelectResult(int resultCode, final Uri uri) {
         super.onPhotoSelectResult(resultCode, uri);
         showLoadingDialog();
@@ -73,7 +82,7 @@ public class TestA extends BaseActivity implements ImageCompressTask.CompressLis
             new Thread(new ImageCompressTask(getThis(), uri, App.getInstance().getCacheDir().getAbsolutePath()+ File.separator + "transfer" + File.separator, TestA.this)).start();
         }
         //setMultiView(uri);
-    }
+    }*/
 
     @Override
     public void done(List<File> files, List<File> fails, boolean allSuccess) {

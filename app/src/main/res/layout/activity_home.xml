@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+
+            <Button
+                android:id="@+id/btnCrash"
+                android:layout_width="match_parent"
+                android:text="TestCrash"
+                android:layout_height="wrap_content" />
+            <Button
+                android:id="@+id/btnMain"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="MainActivity" />
+
+            <Button
+                android:id="@+id/btnFile"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="FileProvider 7.0测试" />
+
+            <Button
+                android:id="@+id/btnTakePhoto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="PhotoSelect拍照" />
+
+            <Button
+                android:id="@+id/btnUCrop"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="裁剪" />
+
+            <Button
+                android:id="@+id/btnDrag"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="拖拽" />
+            <Button
+                android:id="@+id/btnDragTest"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="桌台添加拖拽摆放记录坐标" />
+
+            <Button
+                android:id="@+id/btnDragSample"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="拖拽例子" />
+
+
+            <Button
+                android:id="@+id/btnGuide"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="BGABanner首次启动指南广告" />
+
+            <Button
+                android:id="@+id/btnTest"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="post test" />
+            <Button
+                android:id="@+id/btnTest2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="post test2" />
+
+            <com.facebook.drawee.view.SimpleDraweeView
+                android:id="@+id/sivPhoto"
+                style="@style/sivPicBase"
+                android:layout_width="280dp"
+                android:layout_height="280dp"
+                app:placeholderImage="@mipmap/ic_launcher" />
+
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

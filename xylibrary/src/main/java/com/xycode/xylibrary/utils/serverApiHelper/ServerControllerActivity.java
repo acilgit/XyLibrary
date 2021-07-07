@@ -3,14 +3,13 @@ package com.xycode.xylibrary.utils.serverApiHelper;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Switch;
 import android.widget.TextView;
 
 import com.xycode.xylibrary.R;
 import com.xycode.xylibrary.Xy;
-import com.xycode.xylibrary.interfaces.Interfaces;
 import com.xycode.xylibrary.utils.LogUtil.L;
 
 /**

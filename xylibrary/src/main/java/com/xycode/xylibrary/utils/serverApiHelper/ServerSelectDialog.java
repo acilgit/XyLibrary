@@ -1,9 +1,7 @@
 package com.xycode.xylibrary.utils.serverApiHelper;
 
-import android.support.design.widget.TextInputLayout;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.appcompat.app.AlertDialog;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
@@ -14,6 +12,7 @@ import android.widget.LinearLayout;
 import com.xycode.xylibrary.R;
 import com.xycode.xylibrary.adapter.CustomHolder;
 import com.xycode.xylibrary.adapter.XAdapter;
+import com.xycode.xylibrary.uiKit.recyclerview.XLinearLayoutManager;
 import com.xycode.xylibrary.unit.ViewTypeUnit;
 
 import java.util.List;
@@ -44,7 +43,7 @@ public class ServerSelectDialog implements View.OnClickListener {
         et = (EditText) layout.findViewById(R.id.et);
         et.setText(api.getServer());
         rv = (RecyclerView) layout.findViewById(R.id.rv);
-        rv.setLayoutManager(new LinearLayoutManager(activity));
+        rv.setLayoutManager(new XLinearLayoutManager(activity));
         serverList = api.getStoredServerList();
 
         rv.setAdapter(new XAdapter<String>(activity, ()->serverList) {

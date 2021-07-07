@@ -1,11 +1,12 @@
 package com.xycode.xylibrary.okHttp;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 /**
  * Created by XY on 2016/7/11.
  */
-public class Param extends HashMap<String, String> {
+public class Param extends LinkedHashMap<String, String> {
 
     public Param() {
         super();

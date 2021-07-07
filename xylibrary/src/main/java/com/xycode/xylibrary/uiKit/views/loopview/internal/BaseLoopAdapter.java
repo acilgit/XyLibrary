@@ -1,10 +1,9 @@
 package com.xycode.xylibrary.uiKit.views.loopview.internal;
 
 import android.content.Context;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
 import com.facebook.drawee.drawable.ScalingUtils;
@@ -27,7 +26,6 @@ public abstract class BaseLoopAdapter extends PagerAdapter {
     protected int defaultImgId;
     protected ScalingUtils.ScaleType imageScaleType = ScalingUtils.ScaleType.FIT_XY;
     protected float aspectRatio;
-    protected BaseLoopView.OnPreviewUrlListener onPreviewUrlListener;
 
     public BaseLoopAdapter(Context context, List<UrlData> loopData, ViewPager viewPager) {
         super();
@@ -77,7 +75,7 @@ public abstract class BaseLoopAdapter extends PagerAdapter {
     public Object instantiateItem(ViewGroup container, final int position) {
         final View view;
         final int index = position % loopData.size();
-        String imageUrl = loopData.get(index).getUrl();
+        Object imageUrl = loopData.get(index).getUrl();
 
         view = instantiateItemView(imageUrl, index);
 
@@ -95,19 +93,10 @@ public abstract class BaseLoopAdapter extends PagerAdapter {
         container.removeView(view);
     }
 
-    public abstract View instantiateItemView(String imageUrl, int position);
+    public abstract View instantiateItemView(Object imageUrl, int position);
 
     public void setOnItemClickListener(OnItemClickListener listener) {
         onItemClickListener = listener;
-    }
-
-    /**
-     * use FrescoLoader
-     * @param listener
-     */
-    @Deprecated
-    public void setPreviewUrlListener(BaseLoopView.OnPreviewUrlListener listener) {
-        onPreviewUrlListener = listener;
     }
 
     public void setImageScaleType(ScalingUtils.ScaleType imageScaleType) {

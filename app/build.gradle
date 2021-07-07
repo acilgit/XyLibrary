@@ -1,9 +1,8 @@
 apply plugin: 'com.android.application'
-apply plugin: 'me.tatarka.retrolambda'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion '25.0.2'
+    compileSdkVersion 29
+    buildToolsVersion '28.0.3'
 
     signingConfigs {
         XyCode {
@@ -13,22 +12,25 @@ android {
             storePassword 'xycode'
         }
         XyCode_debug {
-            keyAlias 'xycode_debug'
+            keyAlias 'xycode'
             keyPassword 'xycode'
-            storeFile file('src/main/xykey_debug.jks')
+            storeFile file('src/main/xykey.jks')
             storePassword 'xycode'
         }
     }
     defaultConfig {
         applicationId "com.test.baserefreshview"
         minSdkVersion 16
-        targetSdkVersion 22
-        versionCode 101
+        targetSdkVersion 29
+        versionCode 103
         versionName "1.0.3"
+        /*jackOptions {
+            enabled true
+        }*/
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.XyCode
         }
@@ -40,25 +42,22 @@ android {
     }
 
     compileOptions {
-        targetCompatibility 1.8
-        sourceCompatibility 1.8
+        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_8
+    }
+
+    //lint检查关闭
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
     }
 }
-//tasks.withType(JavaCompile) {
-//    options.encoding = "UTF-8"
-//}
-dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    testCompile 'junit:junit:4.12'
-//    compile "com.facebook.fresco:imagepipeline-okhttp3:0.10.0"
-    compile 'com.androidadvance:topsnackbar:1.0.0'
-//    compile 'com.jakewharton:butterknife:8.4.0'
-//    annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
-    compile project(path: ':xylibrary')
-    //compile project(':multi-image-selector')
 
-    compile 'com.aliyun.ams:alicloud-android-hotfix:3.0.2'
-    /*compile ('com.aliyun.ams:alicloud-android-hotfix:3.0.2') {
-        exclude(module:'alicloud-android-utdid')
-    }*/
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    testImplementation 'junit:junit:4.12'
+    implementation project(path: ':xylibrary')
+    //    compile 'com.androidadvance:topsnackbar:1.0.0'
+    //    compile 'com.jakewharton:butterknife:8.4.0'
+    //    annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
 }
